@@ -1,0 +1,62 @@
+<!doctype html>
+<style>
+  html,body{
+    height:100%;
+    min-height: 100%;
+    width="100%";
+    min-width="100%"
+  }
+</style>
+<html>
+<head>
+  <title>Pie/Doughnut Chart</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.min.js"></script>
+</head>
+<body>
+<table width="100%" height="100%">
+  <tr>
+    <td width="50%" height="50%"><canvas id="canvas1" height="100%" width="100%"></canvas></td>
+    <td width="50%" height="50%"><canvas id="canvas2" height="100%" width="100%"></canvas></td>
+  </tr>
+</table>
+
+<script>
+  var randomScalingFactor = function () {
+    return Math.round(Math.random() * 100)
+  };
+
+  var data = [
+    {
+      value: 300,
+      color:"#F7464A",
+      highlight: "#FF5A5E",
+      label: "Red"
+    },
+    {
+      value: 50,
+      color: "#46BFBD",
+      highlight: "#5AD3D1",
+      label: "Green"
+    },
+    {
+      value: 100,
+      color: "#FDB45C",
+      highlight: "#FFC870",
+      label: "Yellow"
+    }
+  ];
+
+  window.onload = function () {
+    var ctx1 = document.getElementById("canvas1").getContext("2d");
+    var ctx2 = document.getElementById("canvas2").getContext("2d");
+    window.chart1 = new Chart(ctx1).Pie(data, {
+      responsive : true
+    });
+    window.chart2 = new Chart(ctx2).Doughnut(data, {
+      responsive : true
+    });
+  }
+
+</script>
+</body>
+</html>

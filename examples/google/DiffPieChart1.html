@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+
+<style>
+  html, body {
+    height: 100%;
+    min-height: 100%;
+    width: 100%;
+    min-width: 100%;
+  }
+
+  #DiffPieChartArea1 {
+    height: 100%;
+    width: 100%;
+  }
+</style>
+<body>
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+<script src="../../build/js/dex-all.js"></script>
+<script src="../../src/charts/google/DiffPieChart.js"></script>
+
+<div id="DiffPieChartArea1" class="DiffPieChartArea"></div>
+
+<script>
+  google.load("visualization", '1.1', {packages : ['corechart']});
+  google.setOnLoadCallback(drawChart);
+
+  function drawChart() {
+
+    // Turn debug mode on
+    // dex.console.logLevel("DEBUG");
+    var csv = {
+      'header' : ['Category', 'Major', 'Degrees'],
+      'data'   : [
+        ['old', 'Business', 256070],
+        ['old', 'Education', 108034],
+        ['old', 'Social Sciences & History', 127101],
+        ['old', 'Health', 81863],
+        ['old', 'Psychology', 74194],
+        ['new', 'Business', 358293],
+        ['new', 'Education', 101265],
+        ['new', 'Social Sciences & History', 172780],
+        ['new', 'Health', 129634],
+        ['new', 'Psychology', 97216]]
+    };
+
+    dex.console.debug("CSV", csv);
+
+    // A simple Pie Chart
+    var diffpiechart1 = new dex.charts.google.DiffPieChart({
+      'parent'  : "#DiffPieChartArea1",
+      'id'      : 'diffpiechart1',
+      'class'   : 'diffpiechart',
+      'csv'     : csv,
+      'diff'    : {
+        'category'      : 'Category',
+        'compareGroups' : ['old', 'new']
+      },
+      'options' : {
+        'pieSliceText'     : 'none',
+        'legend.alignment' : 'center'
+      },
+      resizeable : true
+    });
+    diffpiechart1.render();
+  }
+</script>

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+  html, body {
+    height: 100%;
+    min-height: 100%;
+    width: 100%;
+    min-width: 100%;
+  }
+</style>
+<body>
+<div id="TypesTableArea" height="100%" width="100%"></div>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+<script src="../../dex.js"></script>
+<script src="../../src/dex/component/TypesTable.js"></script>
+<script>
+  csv =
+  {
+    'header' : ["President", "Start", "End"],
+    'data'   : [
+      ['Washington', '3/29/1789', '2/3/1797'],
+      ['Adams', '2/3/1797', '2/3/1801'],
+      ['Jefferson', '2/3/1801', '2/3/1809']
+    ]
+  };
+
+  // Configure a chart.
+  var table = new TypesTable({
+    'parent' : '#TypesTableArea',
+    'csv'    : csv
+  });
+
+  table.render();
+
+</script>

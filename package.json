@@ -1,0 +1,21 @@
+{
+  "name": "dex-js",
+  "description": "dex-js : Dex explorer js",
+  "version": "0.1.0",
+  "keywords" : [ "chart", "charting", "visualization", "d3" ],
+  "homepage" : "http://dexvis.com",
+  "email" : "patrick145@msn.com",
+  "url" : "http://dexvis.wordpress.com/",
+  "files" : [ "src/dex.js" ],
+  "main": "src/dex.js",
+  "dependencies": {
+    "jquery": "2.1.3",
+    "underscore": "1.8.3"
+  },
+  "devDependencies": {
+    "gulp": "*",
+    "gulp-rename": "*",
+    "gulp-uglify": "*",
+    "gulp-clean": "*"
+  }
+}

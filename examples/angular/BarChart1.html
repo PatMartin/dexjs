@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    body {
+      font: 14px sans-serif;
+    }
+
+    .axis path, .axis line {
+      fill: none;
+      stroke: black;
+      shape-rendering: crispEdges;
+    }
+
+    .axis path {
+      fill: none;
+      stroke: none;
+    }
+
+    .bar {
+      fill: steelblue;
+    }
+  </style>
+</head>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.2.1/angular.min.js"></script>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/d3/3.3.9/d3.min.js"></script>
+<script src="../../dex.js"></script>
+<script src="../../src/dex/component/angular/app.js"></script>
+<script src="../../src/dex/component/angular/controller/BarChartCtrl.js"></script>
+
+<script src="../../src/dex/component/angular/directive/BarChartDir.js"></script>
+<script src="../../src/dex/component/d3/BarChart.js"></script>
+
+<body>
+
+<div ng-app="dexcharts">
+  <div ng-controller="BarChartCtrl">
+    X Title: {{xtitle}}<br/>
+    <input type="text" ng-model="xtitle" /><br>
+    Height: {{height}}<br/>
+    <input type="range" ng-model="height" min="100" max="800"/><br>
+    Width: {{width}}<br/>
+    <input type="range" ng-model="width" min="100" max="800"/><br>
+    <bar-chart data-ng-attr-height="{{height}}" data-ng-attr-width="{{width}}" ng-attr-csv="{{csv}}"></bar-chart>
+  </div>
+</div>
+
+<script>
+</script>
+</body>
+</html>

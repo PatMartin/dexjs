@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+
+<style>
+  .PieChartArea {
+    height: 200px;
+    width: auto;
+  }
+</style>
+<body>
+
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+<script src="../../build/js/dex-all.js"></script>
+<script src="../../src/charts/google/PieChart.js"></script>
+
+<div id="PieChartArea1" class="PieChartArea"></div>
+<div id="PieChartArea2" class="PieChartArea"></div>
+<div id="PieChartArea3" class="PieChartArea"></div>
+
+<script>
+  google.load("visualization", "1", {packages : ["corechart"]});
+  google.setOnLoadCallback(drawChart);
+  function drawChart() {
+
+    // Turn debug mode on
+    // dex.console.logLevel("DEBUG");
+    var csv = {
+      'header' : ["Task", "Hours per Day"],
+      'data'   : [
+        ['Work', 8],
+        ['Eat', 2],
+        ['Watch TV', 1],
+        ['Sleep', 7],
+        ['Chores', 2],
+        ['Code', 4]
+      ]
+    };
+
+    dex.console.debug("CSV", csv);
+
+    // A simple Pie Chart
+    var piechart1 = new dex.charts.google.PieChart({
+      'parent'        : "#PieChartArea1",
+      'id'            : 'piechart1',
+      'class'         : 'piechart',
+      'csv'           : csv,
+      'options.title' : 'Simple Pie Chart'
+    });
+    piechart1.render();
+
+    // A 3D Pie Chart
+    var piechart2 = new dex.charts.google.PieChart({
+      'parent'        : "#PieChartArea2",
+      'id'            : 'piechart2',
+      'class'         : 'piechart',
+      'csv'           : csv,
+      'options.title' : "3D Pie Chart",
+      'options.is3D'  : true
+    });
+    piechart2.render();
+
+    // A Donut Chart
+    var piechart3 = new dex.charts.google.PieChart({
+      'parent'          : "#PieChartArea3",
+      'id'              : 'piechart3',
+      'class'           : 'piechart',
+      'csv'             : csv,
+      'options.title'   : "Donut Chart",
+      'options.pieHole' : .15
+    });
+    piechart3.render();
+  }
+</script>

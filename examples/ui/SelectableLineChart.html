@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.2/themes/smoothness/jquery-ui.css"/>
+<style>
+  html, body, table, svg {
+    height: 100%;
+    min-height: 100%;
+    width: 100%;
+    min-width: 100%;
+  }
+
+  #controls {
+    display: inline;
+    float: left;
+    padding: 0.5em;
+    position: absolute;
+    top: 0%;
+    right: 0%;
+  }
+
+  #controls h3 {
+    text-align: center;
+    margin: 0;
+  }
+
+  #xselect .ui-selecting {
+    background: #BBBBBB;
+  }
+
+  #xselect .ui-selected {
+    background: steelblue;
+    color: white;
+  }
+
+  #xselect ol {
+    padding: 0px;
+    list-style-type: none;
+  }
+
+  #yselect .ui-selecting {
+    background: #BBBBBB;
+  }
+
+  #yselect .ui-selected {
+    background: steelblue;
+    color: white;
+  }
+
+  #yselect ol {
+    padding: 0px;
+    list-style-type: none;
+  }
+
+  .axis path,
+  .axis line {
+    fill: none;
+    stroke: #000;
+    shape-rendering: crispEdges;
+  }
+
+  .x.axis path {
+    /*display: none;*/
+  }
+
+  .line {
+    fill: none;
+  }
+
+</style>
+<body>
+<table>
+  <tr>
+    <td>
+      <svg id="linechart"></svg>
+    </td>
+    <td>
+      <div id="controls"></div>
+    </td>
+  </tr>
+</table>
+</body>
+
+<script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min.js"></script>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.js"></script>
+
+<script src="../../dist/js/dex.js"></script>
+<script src="../../dist/js/ui/jqueryui/ConfigurationBox.js"></script>
+<script src="../../dist/js/ui/jqueryui/Selectable.js"></script>
+<script src="../../dist/js/charts/d3/LineChart.js"></script>
+<script>
+
+  var csv =
+  {
+    'header' : dex.range(1, 11).map(function (d) {
+      return "C" + d;
+    }),
+    'data'   : dex.matrix.addIndex(
+        dex.datagen.randomMatrix({"rows" : 100, "columns" : 10, "min" : 1, "max" : 100}))
+  };
+
+  var configBox = new dex.ui.jqueryui.ConfigurationBox({
+    'parent' : '#controls',
+    'width'  : 200,
+    'height' : 320
+  });
+
+  var xSelector = new dex.ui.jqueryui.Selectable({
+    'id'        : "xselect",
+    'class'     : 'xselect',
+    'label'     : "X",
+    'selection' : csv.header
+  });
+
+  var ySelector = new dex.ui.jqueryui.Selectable({
+    'id'        : "yselect",
+    'class'     : 'yselect',
+    'label'     : "Y",
+    'selection' : csv.header,
+    'mode'      : "MULTIPLE"
+  });
+
+  configBox.add(xSelector, ySelector);
+  configBox.render();
+
+  var linechart = new dex.charts.d3.LineChart({
+    'parent' : "#linechart",
+    'csv'    : csv
+  });
+
+  linechart.render();
+
+  var yselected = [];
+
+  linechart.subscribe(xSelector, "selected", function (msg) {
+    dex.console.log("X-SELECTED: ", msg);
+    linechart.attr('xi', msg.id).update();
+  });
+
+  linechart.subscribe(xSelector, "unselected", function (msg) {
+    dex.console.log("X-UNSELECTED: ", msg);
+  });
+
+  linechart.subscribe(ySelector, "selected", function (msg) {
+    dex.console.log("Y-SELECTED: ", msg);
+    if (yselected.indexOf(msg.id) < 0) {
+      yselected.push(msg.id);
+    }
+    dex.console.log("Y SELECTION IS NOW: " + yselected);
+    linechart.attr("yi", yselected).update();
+  });
+
+  linechart.subscribe(ySelector, "unselected", function (msg) {
+    dex.console.log("Y-UNSELECTED: ", msg);
+    var index = yselected.indexOf(msg.id);
+    if (index >= 0) {
+      yselected.splice(index, 1);
+    }
+    dex.console.log("Y SELECTION IS NOW: ", yselected);
+    linechart.attr("yi", yselected).update();
+  });
+
+</script>
+

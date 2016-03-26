@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.2/themes/smoothness/jquery-ui.css" />
+<style>
+body
+{
+  font-size:12px;
+  margin : 0;
+}
+
+#ConfigurationBox {
+  display:inline;
+  float:left;
+  width: 300px;
+  height: 250px;
+  padding: 0.5em;
+}
+#ConfigurationBox h3 {
+  text-align: center;
+  margin: 0;
+}
+
+#Selectable .ui-selecting { background: #BBBBBB; }
+#Selectable .ui-selected { background: steelblue; color: white; }
+#Selectable ol {
+padding: 0px;
+list-style-type: none;
+}
+
+#Tabs-left { 
+    position: relative; 
+    padding-left: 6.5em; 
+}
+#Tabs-left .ui-tabs-nav { 
+    position: absolute; 
+    left: 0.25em; 
+    top: 0.25em; 
+    bottom: 0.25em; 
+    width: 6em; 
+    padding: 0.2em 0 0.2em 0.2em; 
+} 
+#Tabs-left .ui-tabs-nav li { 
+    right: 1px; 
+    width: 100%; 
+    border-right: none; 
+    border-bottom-width: 1px !important; 
+    -moz-border-radius: 4px 0px 0px 4px; 
+    -webkit-border-radius: 4px 0px 0px 4px; 
+    border-radius: 4px 0px 0px 4px; 
+    overflow: hidden; 
+} 
+#Tabs-left .ui-tabs-nav li.ui-tabs-selected, 
+#Tabs-left .ui-tabs-nav li.ui-state-active { 
+    border-right: 1px solid transparent; 
+} 
+#Tabs-left .ui-tabs-nav li a { 
+    float: right;
+    width: 100%;
+    text-align: right;
+}
+
+.SliderLabel {
+}
+
+.SliderInput {
+}
+</style>
+<body>
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script src="../../dex.js"></script>
+<script src="../../src/dex/component/jquery-ui/ConfigurationBox.js"></script>
+<script src="../../src/dex/component/jquery-ui/Tabs.js"></script>
+<script src="../../src/dex/component/d3/Dendrogram.js"></script>
+<script src="../../src/dex/component/jquery-ui/Slider.js"></script>
+<script src="../../src/dex/component/jquery-ui/Selectable.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.2/jquery-ui.min.js"></script>
+<script>
+
+var svg = d3.select("body").append("svg")
+  .attr("id", "ChartArea")
+  .attr("width", 1000)
+  .attr("height", 900)
+  .append("g");
+
+var csv =
+{
+  'header' : [ "Presidency","President","Party","Home State" ],
+  'data'   :
+  [
+  ["1","George Washington","Independent","Virginia"],
+  ["2","John Adams","Federalist","Massachusetts"],
+  ["3","Thomas Jefferson","Dem-Rep","Virginia"],
+  ["4","James Madison","Dem-Rep","Virginia"],
+  ["5","James Monroe","Dem-Rep","Virginia"],
+  ["6","John Quincy Adams","Dem-Rep/Nat Rep","Massachusetts"],
+  ["7","Andrew Jackson","Democratic","Tennessee"],
+  ["8","Martin Van Buren","Democratic","New York"],
+  ["9","William Henry Harrison","Whig","Ohio"],
+  ["10","John Tyler","Whig","Virginia"],
+  ["11","James K. Polk","Democratic","Tennessee"],
+  ["12","Zachary Taylor","Whig","Louisiana"],
+  ["13","Millard Fillmore","Whig","New York"],
+  ["14","Franklin Pierce","Democratic","New Hampshire"],
+  ["15","James Buchanan","Democratic","Pennsylvania"],
+  ["16","Abraham Lincoln","Rep/Nat Union","Illinois"],
+  ["17","Andrew Johnson","Dem/Nat Union","Tennessee"],
+  ["18","Ulysses S. Grant","Republican","Ohio"],
+  ["19","Rutherford B. Hayes","Republican","Ohio"],
+  ["20","James A. Garfield","Republican","Ohio"],
+  ["21","Chester A. Arthur","Republican","New York"],
+  ["22","Grover Cleveland","Democratic","New York"],
+  ["23","Benjamin Harrison","Republican","Indiana"],
+  ["24","Grover Cleveland (2nd)","Democratic","New York"],
+  ["25","William McKinley","Republican","Ohio"],
+  ["26","Theodore Roosevelt","Republican","New York"],
+  ["27","William Howard Taft","Republican","Ohio"],
+  ["28","Woodrow Wilson","Democratic","New Jersey"],
+  ["29","Warren G. Harding","Republican","Ohio"],
+  ["30","Calvin Coolidge","Republican","Massachusetts"],
+  ["31","Herbert Hoover","Republican","Iowa"],
+  ["32","Franklin D. Roosevelt","Democratic","New York"],
+  ["33","Harry S. Truman","Democratic","Missouri"],
+  ["34","Dwight D. Eisenhower","Republican","Texas"],
+  ["35","John F. Kennedy","Democratic","Massachusetts"],
+  ["36","Lyndon B. Johnson","Democratic","Texas"],
+  ["37","Richard Nixon","Republican","California"],
+  ["38","Gerald Ford","Republican","Michigan"],
+  ["39","Jimmy Carter","Democratic","Georgia"],
+  ["40","Ronald Reagan","Republican","California"],
+  ["41","George H. W. Bush","Republican","Texas"],
+  ["42","Bill Clinton","Democratic","Arkansas"],
+  ["43","George W. Bush","Republican","Texas"],
+  ["44","Barack Obama","Democratic","Illinois"]
+  ]
+};
+
+var tabs = new Tabs();
+var configBox = new ConfigurationBox();
+
+var enodeSizeSlider = new Slider(
+{
+  'label' : 'Expanded Node Size:',
+  'id' : 'enodeNodeSizeSizeSlider',
+  'options' :
+  {
+    'min'   : 0,
+    'max'   : 100,
+    'value' : 10
+  }
+});
+
+var cnodeSizeSlider = new Slider(
+{
+  'label' : 'Collapsed Node Size:',
+  'id' : 'collapsedNodeSizeSlider',
+  'options' :
+  {
+    'min'   : 0,
+    'max'   : 100,
+    'value' : 15
+  }
+});
+
+var connectionLengthSlider = new Slider(
+{
+  'label' : 'Connection Length:',
+  'id' : 'connectionLengthSlider',
+  'options' :
+  {
+    'min'   : 0,
+    'max'   : 500,
+    'value' : 100
+  }
+});
+
+var strokeWidthSlider = new Slider({ 'label' : 'Stroke Width:', 'id' : 's2'});
+
+var columnSelector = new Selectable(
+{
+  'label'     : "Columns",
+  'selection' : csv.header
+});
+
+tabs.add("Data", columnSelector);
+tabs.add("Nodes", enodeSizeSlider, cnodeSizeSlider);
+tabs.add("Links", strokeWidthSlider, connectionLengthSlider);
+
+configBox.add(tabs);
+
+configBox.render();
+
+var selected = [];
+
+var dendrogram = new Dendrogram(
+{
+  'parent'       : "#ChartArea",
+  'csv'          : { 'header' : [], 'data' : []},
+  'xoffset'      : 100,
+  'yoffset'      : 30,
+  'height'       : 800,
+
+  'node.expanded.circle.radius'       : 10,
+  'node.expanded.circle.style.color'  : 'steelblue',
+  'node.collapsed.circle.radius'      : 20,
+  'node.collapsed.circle.style.color' : 'lightgreen',
+
+  'node.expanded.label.x'            : -14,
+  'node.expanded.label.y'            : -4,
+  'node.expanded.label.font.size'    : 14,
+
+  'node.collapsed.label.x'           : -25,
+  'node.collapsed.label.y'           : -6,
+  'node.collapsed.label.font.size'   : 16,
+  'node.collapsed.label.font.weight' : 'bold',
+  
+  'link.stroke.color' : "red",
+  'link.stroke.width' : 2,
+  'link.stroke.opacity' : 1,
+  'link.stroke.dasharray' : "5 5",
+  
+  'root.name' : "Vehicle Owners",
+
+  'node.collapsed.label.transform' : 'rotate(45)',
+  'node.expanded.label.transform' : 'rotate(45)'
+});
+
+cnodeSizeSlider.addListener("slider-change", dendrogram, function(chartEvent)
+{
+  d3.select('#Dendrogram').remove();
+  dendrogram.attr('node.collapsed.circle.radius', chartEvent.value).update();
+});
+
+enodeSizeSlider.addListener("slider-change", dendrogram, function(chartEvent)
+{
+  d3.select('#Dendrogram').remove();
+  dendrogram.attr('node.expanded.circle.radius', chartEvent.value).update();
+});
+
+strokeWidthSlider.addListener("slider-change", dendrogram, function(chartEvent)
+{
+  d3.select('#Dendrogram').remove();
+  dendrogram.attr('link.stroke.width', chartEvent.value).update();
+});
+
+connectionLengthSlider.addListener("slider-change", dendrogram, function(chartEvent)
+{
+  d3.select('#Dendrogram').remove();
+  dendrogram.attr('connection.length', chartEvent.value).update();
+});
+
+var clone = (function(){ 
+  return function (obj) { Clone.prototype=obj; return new Clone() };
+  function Clone(){}
+}());
+
+columnSelector.addListener("selected", dendrogram, function(chartEvent)
+{
+  var myCsv = clone(csv);
+
+  var i = selected.indexOf(chartEvent.id);
+  if (i>-1)
+  {
+    selected.splice(i, 1);
+  }
+  
+  selected.push(chartEvent.id);
+  dex.console.log("SELECTED", selected, "CSV", csv, "MYCSV", myCsv);
+  //dex.console.log("CHARTEVENT", chartEvent);
+  d3.select('#Dendrogram').remove();
+  dendrogram.attr('csv', dex.csv.columnSlice(myCsv, selected)).update();
+});
+
+columnSelector.addListener("unselected", dendrogram, function(chartEvent)
+{
+  var myCsv = clone(csv);
+  var i = selected.indexOf(chartEvent.id);
+  dex.console.log("BEFORE UN-SELECTED", selected, chartEvent.id, i);
+
+  if (i>-1)
+  {
+    selected.splice(i, 1);
+  }
+  dex.console.log("AFTER UN-SELECTED", selected);
+  dex.console.log("CHARTEVENT", chartEvent);
+  d3.select('#Dendrogram').remove();
+  dendrogram.attr('csv', dex.csv.columnSlice(myCsv, selected)).update();
+});
+
+dendrogram.render();
+
+</script>
+

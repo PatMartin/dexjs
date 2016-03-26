@@ -1,0 +1,42 @@
+<head>
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<style>
+    html, body, #myDiv {
+        height: 100%;
+        min-height: 100%;
+        width: 100%;
+        min-width: 100%;
+    }
+</style>
+<body>
+<!-- Plotly chart will be drawn inside this DIV -->
+<div id="myDiv"></div>
+<script>
+    Plotly.d3.csv('https://raw.githubusercontent.com/plotly/datasets/master/2010_alcohol_consumption_by_country.csv', function(err, rows){
+        function unpack(rows, key) {
+            return rows.map(function(row) { return row[key]; });
+        }
+        console.log(unpack(rows, 'postal'));
+        var data = [{
+            type: 'choropleth',
+            locationmode: 'country names',
+            locations: unpack(rows, 'location'),
+            z: unpack(rows, 'alcohol'),
+            text: unpack(rows, 'location'),
+            autocolorscale: true
+        }];
+
+        var layout = {
+            title: 'Pure alcohol consumption<br>among adults (age 15+) in 2010',
+            geo: {
+                projection: {
+                    //type: 'robinson'
+                    type: 'stereographic'
+                }
+            }
+        };
+        Plotly.plot(myDiv, data, layout, {showLink: false});
+    });
+</script>
+</body>

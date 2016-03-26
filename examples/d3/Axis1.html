@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+</style>
+<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.css">
+<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.theme.min.css">
+<body>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+<script src="../../build/js/dex.js"></script>
+<script src="../../src/charts/d3/Axis.js"></script>
+
+<table width="100%">
+  <tr>
+    <td colspan="4">
+      <svg id="AxisArea1" width="100%" height="50"></svg>
+    </td>
+  </tr>
+  <tr>
+    <td colspan="4">
+      <svg id="AxisArea2" width="100%" height="50"></svg>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <svg id="AxisArea3" width="200" height="800"></svg>
+    </td>
+    <td>
+      <svg id="AxisArea4" width="200" height="800"></svg>
+    </td>
+    <td>
+      <svg id="AxisArea5" width="200" height="800"></svg>
+    </td>
+    <td>
+      <svg id="AxisArea6" width="200" height="800"></svg>
+    </td>
+  </tr>
+</table>
+
+<div>
+  <svg id="AxisArea5" width="1000" height="200"></svg>
+</div>
+<div>
+  <svg id="AxisArea6" width="1000" height="200"></svg>
+</div>
+<div>
+  <svg id="AxisArea7" width="1000" height="200"></svg>
+</div>
+<script>
+  console.log(dex);
+  // Turn debug mode on
+  // dex.console.logLevel("DEBUG");
+  var csv =
+  {
+    'header' : ["X", "Y"],
+    'data'   : []
+  };
+
+  for (var i = -100; i <= 100; i++) {
+    csv.data.push([i, i * i]);
+  }
+
+  dex.console.debug("CSV", csv);
+  //dex.console.log(dex.charts.d3.Axis);
+
+  // Configure a minimal axis based off column 1.
+  var axis1 = dex.charts.d3.Axis({
+    'parent'     : "#AxisArea1",
+    'id'         : 'axis1',
+    'class'      : 'axis1',
+    'csv'        : csv,
+    'column'     : 1,
+    'title.text' : 'Axis Example #1'
+  });
+  axis1.render();
+
+  // Configure a minimal axis based off column 2.
+  var axis2 = dex.charts.d3.Axis({
+    'parent'     : "#AxisArea2",
+    'id'         : 'axis2',
+    'class'      : 'axis2',
+    'csv'        : csv,
+    'column'     : 2,
+    'title.text' : 'Axis Example #2'
+  });
+  axis2.render();
+
+  var axis3;
+  axis3 = dex.charts.d3.Axis({
+    'parent'          : "#AxisArea3",
+    'id'              : 'axis3',
+    'class'           : 'axis3',
+    'csv'             : csv,
+    'column'          : 1,
+    'transform'       : 'translate(100,0)',
+    'axis.orient'     : 'left',
+    'axis.scale.type' : 'linear',
+    'title.text'      : 'Axis Example #3',
+    'title.anchor'    : 'middle',
+    'title.y'         : function (d, i) {
+      return axis3.attr("width") / 2;
+    },
+    'title.x'         : 80,
+    'title.transform' : 'rotate(90)'
+  });
+  axis3.render();
+
+  var axis4 = dex.charts.d3.Axis({
+    'parent'          : "#AxisArea4",
+    'id'              : 'axis4',
+    'class'           : 'axis4',
+    'csv'             : csv,
+    'column'          : 1,
+    'transform'       : 'translate(100,0)',
+    'axis.orient'     : 'right',
+    'axis.scale.type' : 'linear',
+    'title.text'      : 'Axis Example #4',
+    'title.anchor'    : 'middle',
+    'title.y'         : function (d, i) {
+      return axis4.attr("width") / 2;
+    },
+    'title.x'         : 80,
+    'title.transform' : 'rotate(90)'
+  });
+  axis4.render();
+
+  var axis5 = dex.charts.d3.Axis({
+    'parent'                          : "#AxisArea5",
+    'id'                              : 'axis5',
+    'class'                           : 'axis5',
+    'csv'                             : csv,
+    'column'                          : 1,
+    'transform'                       : 'translate(100,0)',
+    'axis.orient'                     : 'right',
+    'axis.scale.type'                 : 'linear',
+    'axis.path.stroke.dasharray'      : '3 3',
+    'axis.path.stroke.width'          : 3,
+    'axis.path.stroke.color'          : 'blue',
+    'axis.tickLine.stroke.color'     : 'blue',
+    'axis.tickLine.stroke.width'     : 3,
+    'axis.tickLine.stroke.dasharray' : "3 3",
+    'axis.tickLine.fill.fillColor'   : 'none',
+    'axis.tickLine.fill.opacity'     : 1,
+    'title.text'                      : 'Axis Example #5',
+    'title.anchor'                    : 'middle',
+    'title.y'                         : function (d, i) {
+      return axis4.attr("width") / 2;
+    },
+    'title.x'                         : 80,
+    'title.transform'                 : 'rotate(90)'
+  });
+  axis5.render();
+
+  /*
+   var axis5 = new Axis({
+   'parent'                         : "#AxisArea5",
+   'id'                             : 'axis5',
+   'class'                          : 'axis5',
+   'csv'                            : csv,
+   'column'                         : 1,
+   'transform'       : 'translate(100,0)',
+   'axis.orient'                    : 'left',
+   'axis.scale.type'                : 'log',
+   'title.text'                     : 'Log Axis',
+   'title.x'                        : 80,
+   'title.y'                        : function (d, i) {
+   return axis5.attr("width") / 2;
+   },
+   'title.writingMode'              : 'tb',
+   'title.glyphOrientationVertical' : 0,
+   'title.font.wordSpacing'         : 0,
+   'title.font.letterSpacing'       : -5,
+   'title.font.size'                : 24,
+   'title.font.weight'              : 'bold',
+   'title.fill.fillColor'           : 'steelblue'
+   });
+   axis5.render();
+
+   var axis6 = new Axis({
+   'parent'                         : "#AxisArea6",
+   'id'                             : 'axis6',
+   'class'                          : 'axis6',
+   'csv'                            : csv,
+   'column'                         : 1,
+   'axis.orient'                    : 'left',
+   'axis.scale.type'                : 'time',
+   'axis.scale.domain'              : [new Date(2012, 0, 1), new Date(2013, 0, 1)],
+   'axis.scale.range'               : [0, 500],
+   'title.text'                     : 'Time Axis',
+   'title.x'                        : -70,
+   'title.y'                        : 0,
+   'title.writingMode'              : 'tb',
+   'title.glyphOrientationVertical' : 0,
+   'title.font.wordSpacing'         : 0,
+   'title.font.letterSpacing'       : -5,
+   'title.font.size'                : 24,
+   'title.font.weight'              : 'bold',
+   'title.fill.fillColor'           : 'steelblue'
+   });
+   axis6.render();
+
+   var axis7 = new Axis({
+   'parent'                         : "#AxisArea7",
+   'id'                             : 'axis7',
+   'class'                          : 'axis7',
+   'csv'                            : csv,
+   'column'                         : 1,
+   'axis.orient'                    : 'left',
+   'axis.scale.type'                : 'ordinal',
+   'axis.scale.domain'              : ['A', 'E', 'I', 'O', 'U'],
+   'axis.scale.rangePoints'         : [0, 500],
+   'title.text'                     : 'Ordinal Axis',
+   'title.x'                        : -70,
+   'title.y'                        : 0,
+   'title.writingMode'              : 'tb',
+   'title.glyphOrientationVertical' : 0,
+   'title.font.wordSpacing'         : 0,
+   'title.font.letterSpacing'       : -5,
+   'title.font.size'                : 24,
+   'title.font.weight'              : 'bold',
+   'title.fill.fillColor'           : 'steelblue'
+   });
+   axis7.render();
+   **/
+</script>

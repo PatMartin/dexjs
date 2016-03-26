@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+
+.node rect {
+  cursor: move;
+  fill-opacity: .9;
+  shape-rendering: crispEdges;
+}
+ 
+.node text {
+  pointer-events: none;
+  text-shadow: 0 1px 0 #fff;
+}
+ 
+.link:hover {
+  stroke-opacity: .5;
+}
+</style>
+<body>
+<svg id="ChartArea" width="100%" height="100%"></svg>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+<script src="../../build/js/dex.js"></script>
+<script src="../../src/charts/d3/Sankey.js"></script>
+<script>
+
+var geography =
+{
+  "Kowno" : 1,
+  "Northern Campaign" : 2,
+  "Wilna" : 3,
+  "Smorgoni" : 4,
+  "Moloderno" : 5,
+  "Gloubokoe" : 6,
+  "Studienska" : 7,
+  "Poltrk" : 8,
+  "Botr" : 9,
+  "Witebsk" : 10,
+  "Orscha" : 11,
+  "Smolensk" : 12,
+  "Dorobogouge" : 13,
+  "Wirma" : 14,
+  "Chjat" : 15,
+  "Mojaisk" : 16,
+  "Malo-jarosewli" : 17,
+  "Tarantino" : 18,
+  "Moscou" : 19
+};
+
+var csv =
+{
+  'header' : [ "FROM", "TO", "DIRECTION", "TROOPS" ],
+  'data'   :
+  [
+    // Northern Split and Retreat
+    ["Kowno", "Northern Campaign", "ATTACK", 22000],
+    ["Northern Campaign", "Kowno", "RETREAT", 6000],
+    // Main attack
+    ["Kowno", "Wilna", "ATTACK", 400000],
+    ["Wilna", "Gloubokoe", "ATTACK", 60000],
+    ["Gloubokoe", "Poltrk", "ATTACK", 33000],
+    ["Poltrk", "Botr", "RETREAT", 30000],
+    ["Botr", "Studienska", "RETREAT", 50000],
+    ["Wilna", "Witebsk", "ATTACK", 175000],
+    ["Witebsk", "Smolensk", "ATTACK", 145000],
+    ["Smolensk", "Dorobogouge", "ATTACK", 145000],
+    ["Dorobogouge", "Chjat", "ATTACK", 127000],
+    ["Chjat", "Mojaisk", "ATTACK", 100000],
+    ["Mojaisk", "Moscou", "ATTACK", 100000],
+    ["Moscou", "Tarantino", "RETREAT", 100000],
+    ["Tarantino", "Malo-jarosewli", "RETREAT", 96000],
+    ["Malo-jarosewli", "Mojaisk", "RETREAT", 87000],
+    ["Mojaisk", "Wirma", "RETREAT", 55000],
+    ["Wirma", "Orscha", "RETREAT", 24000],
+    ["Orscha", "Botr", "RETREAT", 20000],
+    ["Studienska", "Moloderno", "RETREAT", 12000],
+    ["Moloderno", "Kowno", "RETREAT", 10000 ]
+  ]
+};
+
+// Configure a chart.
+var sankey = new dex.charts.d3.Sankey({
+  'parent'  : "#ChartArea",
+  'color'   : d3.scale.category20c(),
+  'xoffset' : 0,
+  'csv'     : csv,
+  'link.stroke.color' : function(d)
+    {
+       if (d.category == "RETREAT")
+       {
+         return "red";
+       }
+       else
+       {
+         return "green";
+       }
+    },
+  'link.stroke.opacity' : .2,
+  //'link.stroke.dasharray' : "20 5",
+  'relationships' :
+  [
+    {
+      'source' : 0,
+      'target' : 1,
+      'value' : function(csv, ri)
+      {
+         return csv.data[ri][3];
+      },
+      'category' : function(csv, ri)
+      {
+        return csv.data[ri][2];
+      },
+      'column' : function(csv, ri, ci)
+      {
+        dex.console.log("CSV[" + ri + "]=" + csv.data[ri][ci]);
+        //return ci;
+        return geography[csv.data[ri][ci]];
+      }
+    }
+  ],
+  'manualColumnLayout' : true
+});
+
+dex.console.log("CONFIG", sankey.attr());
+sankey.render();
+
+</script>

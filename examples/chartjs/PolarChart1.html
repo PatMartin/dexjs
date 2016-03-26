@@ -1,0 +1,67 @@
+<!doctype html>
+<style>
+  html,body{
+    height:100%;
+    min-height: 100%;
+    width="100%";
+    min-width="100%"
+  }
+</style>
+<html>
+<head>
+  <title>Bar Chart</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.min.js"></script>
+</head>
+<body>
+<div style="width: 50%">
+  <canvas id="canvas" height="100%" width="100%"></canvas>
+</div>
+
+
+<script>
+  var randomScalingFactor = function () {
+    return Math.round(Math.random() * 100)
+  };
+
+  var data = [
+    {
+      value     : 300,
+      color     : "#F7464A",
+      highlight : "#FF5A5E",
+      label     : "Red"
+    },
+    {
+      value     : 50,
+      color     : "#46BFBD",
+      highlight : "#5AD3D1",
+      label     : "Green"
+    },
+    {
+      value     : 100,
+      color     : "#FDB45C",
+      highlight : "#FFC870",
+      label     : "Yellow"
+    },
+    {
+      value     : 40,
+      color     : "#949FB1",
+      highlight : "#A8B3C5",
+      label     : "Grey"
+    },
+    {
+      value     : 120,
+      color     : "#4D5360",
+      highlight : "#616774",
+      label     : "Dark Grey"
+    }
+  ];
+  window.onload = function () {
+    var ctx = document.getElementById("canvas").getContext("2d");
+    window.chart = new Chart(ctx).PolarArea(data, {
+      responsive : true
+    });
+  }
+
+</script>
+</body>
+</html>

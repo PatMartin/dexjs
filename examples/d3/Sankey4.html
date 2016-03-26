@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+
+.node rect {
+  cursor: move;
+  fill-opacity: .9;
+  shape-rendering: crispEdges;
+}
+ 
+.node text {
+  pointer-events: none;
+  text-shadow: 0 1px 0 #fff;
+}
+ 
+.hideme.link {
+  fill: none;
+  stroke: #000000;
+  stroke-opacity: .2;
+}
+ 
+.link:hover {
+  stroke-opacity: .5;
+}
+</style>
+<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.css">
+<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.theme.min.css">
+
+<body>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+<script src="../../build/js/dex.js"></script>
+<script src="../../src/charts/d3/Sankey.js"></script>
+<script>
+
+var width = 1000;
+var height = 600;
+
+// Create an SVG for our chart.
+var svg = d3.select("body").append("svg")
+  .attr("id", "ChartArea")
+  .attr("width", width)
+  .attr("height", height);
+
+var csv =
+{
+  'header' : [ "FROM", "TO", "CATEGORY", "WEIGHT" ],
+  'data'   :
+  [
+    ["A", "B", "CATEGORY1", 2],
+    ["A", "C", "CATEGORY2", 2],
+    ["B", "C", "CATEGORY3", 1],
+    ["C", "A", "CATEGORY4", 1]
+  ]
+};
+
+var color = d3.scale.category10();
+
+// Configure a chart.
+var sankey = new dex.charts.d3.Sankey(
+{
+  'parent'  : "#ChartArea",
+  'color'   : d3.scale.category20c(),
+  'xoffset' : 0,
+  'csv'     : csv,
+  'width'   : width,
+  'height'  : height,
+  'link.stroke.color' : function(d)
+    {
+      dex.console.log("D",d.category, color(d.category));
+       return color(d.category);
+    },
+  'link.stroke.opacity' : .2,
+  //'link.stroke.dasharray' : "20 5",
+  'relationships' :
+  [
+    {
+      'source' : 0,
+      'target' : 1,
+      'value' : function(csv, ri)
+      {
+         return csv.data[ri][3];
+      },
+      'category' : function(csv, ri)
+      {
+        return csv.data[ri][2];
+      }
+    }
+  ]
+});
+
+dex.console.log("CONFIG", sankey.attr());
+sankey.render();
+
+</script>
