@@ -1,139 +1,52 @@
 # Introduction
 
-DexCharts is a library which provides powerful visualization capabilities within the browser.  DexCharts provides a general purpose interfaces which makes it possible to wire together very different technologies such as D3/SVG and ThreeJS/WebGL as well as many others.
+Dex.js is a javascript framework for visual components.
 
-DexCharts provides a mechanisms for defining, rendering and updating it's components as well as the ability to add event listeners so that one chart/component may respond to changes in another.  This makes the creation of dashboard solutions much easier.
+Dex.js wraps lots of useful visual components and provides a standard interface for their use.
+Additionally, the interface provides a mechanism by which visual components can communicate.
 
-Pardon the dust right now.  I am in the middle of a documentation and refactoring effort.
-
-## Live Examples
-
-There are many examples bundled with DexCharts.  Here are a few.
-
-
-| Chart Type                                          | Short Description | Long Description |
-|:--------------------------------------------------- |:----------------- |:-- |
-| [Bar Chart](#bar-chart)                             | [Basic Example](http://dexvis.com/dexcharts/dist/current/examples/BarChart1.html) | This example demonstrates the basic use of a bar chart. |
-| [Bar Chart](#bar-chart)                             | [High Resolution](http://dexvis.com/dexcharts/dist/current/examples/BarChart2.html) |  This chart looks like a line chart, however, in reality it is a fine grained bar chart. |
-| [Bar Chart](#bar-chart)                             | [Styling](http://dexvis.com/dexcharts/dist/current/examples/BarChart3.html) | This demonstrates some of the styling options associated with a bar chart. |
-| [Chord Chart](#chord-chart)                         | [Basic Example](http://dexvis.com/dexcharts/dist/current/examples/Chord1.html)| This is a basic example of a chord chart. |
-| [Chord Chart](#chord-chart)                         | [Styling](http://dexvis.com/dexcharts/dist/current/examples/Chord2.html) | This is a more complicated example demonstrating parallel coordinates chart dynamically creating a Chord Chart. |
-| [Dendrogram](#dendrogram)                           | [Basic Dendrogram](http://dexvis.com/dexcharts/dist/current/examples/Dendrogram1.html) |A simple sample dendrogram.|
-| [Dendrogram](#dendrogram)                           | [Skew This](http://dexvis.com/dexcharts/dist/current/examples/Dendrogram2.html) |An demonstration of per-node skew.|
-| [Dendrogram](#dendrogram)                           | [Orange/Blue](http://dexvis.com/dexcharts/dist/current/examples/Dendrogram3.html) |An orange and blue dendrogram.|
-| [Dendrogram](#dendrogram)                           | [Vertical Dendrogram](http://dexvis.com/dexcharts/dist/current/examples/Dendrogram3.html) |A dendrogram rendered vertically.|
-| [HeatMap](#heatmap)                                 | [HeatMap 1](http://dexvis.com/dexcharts/dist/current/examples/HeatMap1.html) |A basic heat map with a legend.|
-| [Legend](#legends)                                  | [Horizontal Legend 1](http://dexvis.com/dexcharts/dist/current/examples/HorizontalLegend1.html) |This demonstrates a basic horizontal legend.|
-| [Legend](#legends)                                  | [Legend 1](http://dexvis.com/dexcharts/dist/current/examples/Legends1.html) |This demonstrates a variety of legends.|
-| [Legend](#legends)                                  | [Vertical Legend 1](http://dexvis.com/dexcharts/dist/current/examples/VerticalLegend1.html)|A basic vertical legend example.|
-| [Line Chart](#line-charts)                          | [Line Chart 1](http://dexvis.com/dexcharts/dist/current/examples/LineChart1.html) |A basic line chart example.|
-| [Line Chart](#line-charts)                          | [Line Chart 2](http://dexvis.com/dexcharts/dist/current/examples/LineChart2.html) ||
-| [Line Chart](#line-charts)                          | [Line Chart 3](http://dexvis.com/dexcharts/dist/current/examples/LineChart3.html) ||
-| [Line Chart](#line-charts)                          | [Line Chart 4](http://dexvis.com/dexcharts/dist/current/examples/LineChart4.html) ||
-| [Parallel Coordinates](#parallel-coordinates)       | [Parallel Coordinates 1](http://dexvis.com/dexcharts/dist/current/examples/ParallelCoordinates1.html)||
-| [Parallel Coordinates](#parallel-coordinates)       | [Parallel Coordinates 2](http://dexvis.com/dexcharts/dist/current/examples/ParallelCoordinates2.html)||
-| [Parallel Coordinates](#parallel-coordinates)       | [Parallel Coordinates 3](http://dexvis.com/dexcharts/dist/current/examples/ParallelCoordinates3.html)||
-| [Parallel Coordinates](#parallel-coordinates)       | [Parallel Coordinates 4](http://dexvis.com/dexcharts/dist/current/examples/ParallelCoordinates4.html)||
-| [Pie Chart](#pie-chart)                             | [Pie Chart 1](http://dexvis.com/dexcharts/dist/current/examples/PieChart1.html) ||
-| [Pie Chart](#pie-chart)                             | [Pie Chart 2](http://dexvis.com/dexcharts/dist/current/examples/PieChart2.html) ||
-| [Pie Chart](#pie-chart)                             | [Pie Chart 3](http://dexvis.com/dexcharts/dist/current/examples/PieChart3.html)||
-| [Sankey](#sankey-diagram)                           | [Sankey 1](http://dexvis.com/dexcharts/dist/current/examples/Sankey1.html)||
-| [Sankey](#sankey-diagram)                           | [Sankey 2](http://dexvis.com/dexcharts/dist/current/examples/Sankey2.html)||
-| [Sankey](#sankey-diagram)                           | [Sankey 3](http://dexvis.com/dexcharts/dist/current/examples/Sankey3.html)||
-| [Sankey](#sankey-diagram)                           | [Sankey 4](http://dexvis.com/dexcharts/dist/current/examples/Sankey4.html)||
-| [Sankey](#sankey-diagram)                           | [Sankey 5](http://dexvis.com/dexcharts/dist/current/examples/Sankey5.html)||
-| [Sankey](#sankey-diagram)                           | [Sankey 6](http://dexvis.com/dexcharts/dist/current/examples/Sankey6.html)||
-| [Sankey](#sankey-diagram)                           | [Sankey 7](http://dexvis.com/dexcharts/dist/current/examples/Sankey7.html)||
-| [Sankey](#sankey-diagram)                           | [Sankey 8](http://dexvis.com/dexcharts/dist/current/examples/Sankey8.html)||
-| [Sankey](#sankey-diagram)                           | [Sankey 9](http://dexvis.com/dexcharts/dist/current/examples/Sankey9.html)||
-| [Scatter Plot](#scatter-plot)                       | [Scatter Plot 1](http://dexvis.com/dexcharts/dist/current/examples/ScatterPlot1.html)||
-| [Scatter Plot](#scatter-plot)                       | [Scatter Plot 2](http://dexvis.com/dexcharts/dist/current/examples/ScatterPlot2.html)||
-| [Scatter Plot Matrix](#scatter-plot)                | [Scatter Plot Matrix](http://dexvis.com/dexcharts/dist/current/examples/ScatterPlotMatrix1.html)||
-| [3D Scatter Plot](#scatterplot3d)                   | [3D Scatter Plot 1](http://dexvis.com/dexcharts/dist/current/examples/ScatterPlot3D1.html)||
-| [3D Scatter Plot](#scatterplot3d)                   | [3D Scatter Plot 2](http://dexvis.com/dexcharts/dist/current/examples/ScatterPlot3D2.html)||
-| [3D Scatter Plot](#scatterplot3d)                   | [3D Scatter Plot 3](http://dexvis.com/dexcharts/dist/current/examples/ScatterPlot3D3.html)||
-| [Map](#us-state-map)                                | [State Map 1](http://dexvis.com/dexcharts/dist/current/examples/StateMap1.html)||
-| [Map](#us-state-map)                                | [State Map 2](http://dexvis.com/dexcharts/dist/current/examples/StateMap2.html)||
-| [Map](#us-county-map)                               | [US County Map 1](http://dexvis.com/dexcharts/dist/current/examples/USCountyMap1.html)||
-| [Map](#world-country-map)                           | [World Country Map 1](http://dexvis.com/dexcharts/dist/current/examples/WorldCountryMap1.html)||
-| [UI Controls](#ui-controls)                         | [UI Controls 1](http://dexvis.com/dexcharts/dist/current/examples/UI1.html)||
-| [UI Controls](#ui-controls)                         | [UI Controls 2](http://dexvis.com/dexcharts/dist/current/examples/UI2.html)||
-| [UI Controls](#ui-controls)                         | [UI Controls 3](http://dexvis.com/dexcharts/dist/current/examples/UI3.html)||
-| [UI Controls](#ui-controls)                         | [UI Controls 4](http://dexvis.com/dexcharts/dist/current/examples/UI4.html)||
+This means that one chart can react to interactions and changes to other charts.
 
 ## Usage
 
-_**Step 1: Include D3**_
+Our examples will use a C3.js line chart as our example component.
 
-Make sure your HTML5 asset includes D3 like so:
+### Data
 
-```javascript
-<script src="http://d3js.org/d3.v3.js"></script>
-```
+All visual components work on tabular data much like a CSV file.
 
-_**Step 2: Include DexCharts core**_
+Here we create a simple csv instance consiting of three columns, X, Y and Z with 4 rows of data.
 
-Now include the core DexCharts Javascript like so:
+var csv = {
+  'header' : [ 'X', 'Y', 'Z' ],
+  'data'   : [
+    [ 0, 0, 0 ],
+    [ 1, 1, 1 ],
+    [ 2, 4, 8 ],
+    [ 3, 9, 27 ]
+    ]
+  };
 
-```javascript
-<script src="../dexmain.js"></script>
-```
+### Creating a Visual
 
-_**Step 3: Include the specific components you will need:**_
-
-Some components such as maps are quite large, so I decided that components should be required as needed instead of in one massive kitchen sink Javascript library.  Here, I am including a Bar Chart and a Horizontal Legend.
-
-```javascript
-<script src="../js/dex/component/d3/BarChartDir.js"></script>
-<script src="../js/dex/component/d3/HorizontalLegend.js"></script>
-```
-
-_**Step 4: Include D3**_
-
-Create one or more SVG containers for your charts::
-
-Via html:
-
-Or you can do it via html like this:
-
-```html
-<svg id="MyChart" width="1000" height="1000"></svg>
-```
-
-Or you can create the SVG in JavaScript code:
+Given the previous csv, we can create a C3 line chart via:
 
 ```javascript
-var svg = d3.select("body").append("svg")
-  .attr("id", "MyChart")
-  .attr("width", 1000)
-  .attr("height", 800)
-  .append("g")
-  .attr("transform", "translate(40,20)");
+var linechart = new dex.charts.c3.LineChart({
+  'parent' : '#ChartArea',
+  'csv'    : csv});
+  linechart.render();
 ```
 
-_**Step 5: Instantiate a chart**_
+### Rendering a Visual
 
-Next, we must configure and instantiate a chart.
-
-```javascript
-var mychart = new BarChart(
-  {
-    'parent' : '#MyChart',
-    'csv'    :
-    {
-      'header' : [ "SALESMAN", "AGE", "SALES"],
-      'data'   : [["BOB", 23, 1000], ["SUE", 32, 2000], ["PAT", 44, 3000]]
-    }
-  }
-);
-```
-
-_**Step 6:**_
-
-Render the chart.
+Given the previous csv, we can create a C3 line chart via:
 
 ```javascript
-mychart.render();
+var linechart = new dex.charts.c3.LineChart({
+  'parent' : '#ChartArea',
+  'csv'    : csv});
+  linechart.render();
 ```
 
 ### What else?
