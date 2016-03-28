@@ -16426,7 +16426,7 @@ var typestable = function (userConfig) {
     }
   };
 
-  var chart = new DexComponent(userConfig, defaults);
+  var chart = new dex.component(userConfig, defaults);
 
   chart.render = function () {
     chart.update();
