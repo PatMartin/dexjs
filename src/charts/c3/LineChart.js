@@ -1,3 +1,30 @@
+/**
+ *
+ * @name LineChart
+ * @constructor
+ * @classdesc This class constructs a c3 line chart.
+ * @memberOf dex.charts.c3
+ * @implements {dex/component}
+ *
+ * @example {@lang javascript}
+ * var areachart = new dex.charts.c3.AreaChart({
+ *   'parent' : "#AreaChart",
+ *   'id'     : "AreaChart"
+ *   'csv'    : { header : [ "X", "Y", "Z" ],
+ *                data   : [[ 1, 2, 3 ], [4, 5, 6], [7, 8, 9]]}
+ * });
+ *
+ * @param {object} userConfig - A user supplied configuration object which will override the defaults.
+ * @param {string} userConfig.parent - The parent node to which this Axis will be attached.  Ex: #MyParent
+ * will attach to a node with an id = "MyParent".
+ * @param {string} [userConfig.id=Axis] - The id of this axis.
+ * @param {string} [userConfig.class=Axis] - The class of this axis.
+ * @param {csv} userConfig.csv - The user's CSV data.
+ *
+ * @inherit module:dex/component
+ *
+ */
+
 var linechart = function (userConfig) {
     var chart;
 

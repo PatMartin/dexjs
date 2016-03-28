@@ -2,7 +2,9 @@
  *
  * This module provides routines for dealing with colors.
  *
- * @module color
+ * @module dex/color
+ * @name color
+ * @memberOf dex
  *
  */
 

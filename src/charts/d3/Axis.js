@@ -1,12 +1,13 @@
 /**
  *
  * @constructor
+ * @name Axis
  * @classdesc This class constructs a d3 Axis.
- * @memberOf dex
- * @implements {component}
+ * @memberOf dex.charts.d3
+ * @implements {dex/component}
  *
  * @example {@lang javascript}
- * var myAxis = new dex.charts.d3.Axis({
+ * var axis = dex.charts.d3.Axis({
  *   'parent' : "#MyAxisContainer",
  *   'id'     : "MyAxisId"
  *   'csv'    : { header : [ "X", "Y", "Z" ],
@@ -28,6 +29,7 @@
  * @param {integer} [userConfig.column=0] The column within the supplied CSV to use to generate the Axis.
  * @param {d3axis_spec} [userConfig.axis] - A D3 axis specification.
  * @param {d3text} [userConfig.title] - A D3 text specification for the title of this axis.
+ *
  * @inherit module:component
  *
  */

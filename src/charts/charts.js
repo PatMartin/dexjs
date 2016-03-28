@@ -1,3 +1,14 @@
+/**
+ *
+ * This module provides visualization components for charting
+ * out of a diverse set of base implementations ranging from
+ * D3 to three.js and WebGL.
+ *
+ * @module dex/charts
+ * @name charts
+ * @memberOf dex
+ *
+ */
 var charts = {};
 
 charts.c3 = require("./c3/c3");

@@ -174,7 +174,9 @@
  *
  * This module provides routines for dealing with arrays.
  *
- * @module array
+ * @module dex/array
+ * @name array
+ * @memberOf dex
  *
  */
 
@@ -384,6 +386,32 @@ module.exports.copy = function (array) {
     //return $.extend(true, {}, array);
 };
 },{}],3:[function(require,module,exports){
+/**
+ *
+ * @name AreaChart
+ * @constructor
+ * @classdesc This class constructs a c3 area chart.
+ * @memberOf dex.charts.c3
+ * @implements {dex/component}
+ *
+ * @example {@lang javascript}
+ * var areachart = new dex.charts.c3.AreaChart({
+ *   'parent' : "#AreaChart",
+ *   'id'     : "AreaChart"
+ *   'csv'    : { header : [ "X", "Y", "Z" ],
+ *                data   : [[ 1, 2, 3 ], [4, 5, 6], [7, 8, 9]]}
+ * });
+ *
+ * @param {object} userConfig - A user supplied configuration object which will override the defaults.
+ * @param {string} userConfig.parent - The parent node to which this Axis will be attached.  Ex: #MyParent
+ * will attach to a node with an id = "MyParent".
+ * @param {string} [userConfig.id=Axis] - The id of this axis.
+ * @param {string} [userConfig.class=Axis] - The class of this axis.
+ * @param {csv} userConfig.csv - The user's CSV data.
+ *
+ *  @inherit module:dex/component
+ *
+ */
 var areachart = function (userConfig) {
     var chart;
 
@@ -484,6 +512,32 @@ var areachart = function (userConfig) {
 module.exports = areachart;
 
 },{}],4:[function(require,module,exports){
+/**
+ *
+ * @constructor
+ * @name BarChart
+ * @classdesc This class constructs a c3 bar chart.
+ * @memberOf dex.charts.c3
+ * @implements {dex/component}
+ *
+ * @example {@lang javascript}
+ * var areachart = dex.charts.c3.BarChart({
+ *   'parent' : "#AreaChart",
+ *   'id'     : "AreaChart"
+ *   'csv'    : { header : [ "X", "Y", "Z" ],
+ *                data   : [[ 1, 2, 3 ], [4, 5, 6], [7, 8, 9]]}
+ * });
+ *
+ * @param {object} userConfig - A user supplied configuration object which will override the defaults.
+ * @param {string} userConfig.parent - The parent node to which this Axis will be attached.  Ex: #MyParent
+ * will attach to a node with an id = "MyParent".
+ * @param {string} [userConfig.id=Axis] - The id of this axis.
+ * @param {string} [userConfig.class=Axis] - The class of this axis.
+ * @param {csv} userConfig.csv - The user's CSV data.
+ *
+ * @inherit module:dex/component
+ *
+ */
 var barchart = function (userConfig) {
     var chart;
 
@@ -579,6 +633,33 @@ var barchart = function (userConfig) {
 
 module.exports = barchart;
 },{}],5:[function(require,module,exports){
+/**
+ *
+ * @name LineChart
+ * @constructor
+ * @classdesc This class constructs a c3 line chart.
+ * @memberOf dex.charts.c3
+ * @implements {dex/component}
+ *
+ * @example {@lang javascript}
+ * var areachart = new dex.charts.c3.AreaChart({
+ *   'parent' : "#AreaChart",
+ *   'id'     : "AreaChart"
+ *   'csv'    : { header : [ "X", "Y", "Z" ],
+ *                data   : [[ 1, 2, 3 ], [4, 5, 6], [7, 8, 9]]}
+ * });
+ *
+ * @param {object} userConfig - A user supplied configuration object which will override the defaults.
+ * @param {string} userConfig.parent - The parent node to which this Axis will be attached.  Ex: #MyParent
+ * will attach to a node with an id = "MyParent".
+ * @param {string} [userConfig.id=Axis] - The id of this axis.
+ * @param {string} [userConfig.class=Axis] - The class of this axis.
+ * @param {csv} userConfig.csv - The user's CSV data.
+ *
+ * @inherit module:dex/component
+ *
+ */
+
 var linechart = function (userConfig) {
     var chart;
 
@@ -705,6 +786,32 @@ var linechart = function (userConfig) {
 
 module.exports = linechart;
 },{}],6:[function(require,module,exports){
+/**
+ *
+ * @constructor
+ * @name StackedAreaChart
+ * @classdesc This class constructs a c3 stacked area chart.
+ * @memberOf dex.charts.c3
+ * @implements {dex/component}
+ *
+ * @example {@lang javascript}
+ * var areachart = dex.charts.c3.BarChart({
+ *   'parent' : "#AreaChart",
+ *   'id'     : "AreaChart"
+ *   'csv'    : { header : [ "X", "Y", "Z" ],
+ *                data   : [[ 1, 2, 3 ], [4, 5, 6], [7, 8, 9]]}
+ * });
+ *
+ * @param {object} userConfig - A user supplied configuration object which will override the defaults.
+ * @param {string} userConfig.parent - The parent node to which this Axis will be attached.  Ex: #MyParent
+ * will attach to a node with an id = "MyParent".
+ * @param {string} [userConfig.id=Axis] - The id of this axis.
+ * @param {string} [userConfig.class=Axis] - The class of this axis.
+ * @param {csv} userConfig.csv - The user's CSV data.
+ *
+ * @inherit module:dex/component
+ *
+ */
 var stackedareachart = function (userConfig) {
     var chart;
 
@@ -804,6 +911,32 @@ var stackedareachart = function (userConfig) {
 
 module.exports = stackedareachart;
 },{}],7:[function(require,module,exports){
+/**
+ *
+ * @constructor
+ * @name StackedBarChart
+ * @classdesc This class constructs a c3 stacked bar chart.
+ * @memberOf dex.charts.c3
+ * @implements {dex/component}
+ *
+ * @example {@lang javascript}
+ * var areachart = dex.charts.c3.BarChart({
+ *   'parent' : "#AreaChart",
+ *   'id'     : "AreaChart"
+ *   'csv'    : { header : [ "X", "Y", "Z" ],
+ *                data   : [[ 1, 2, 3 ], [4, 5, 6], [7, 8, 9]]}
+ * });
+ *
+ * @param {object} userConfig - A user supplied configuration object which will override the defaults.
+ * @param {string} userConfig.parent - The parent node to which this Axis will be attached.  Ex: #MyParent
+ * will attach to a node with an id = "MyParent".
+ * @param {string} [userConfig.id=Axis] - The id of this axis.
+ * @param {string} [userConfig.class=Axis] - The class of this axis.
+ * @param {csv} userConfig.csv - The user's CSV data.
+ *
+ * @inherit module:dex/component
+ *
+ */
 var stackedbarchart = function (userConfig) {
     var chart;
 
@@ -900,6 +1033,15 @@ var stackedbarchart = function (userConfig) {
 
 module.exports = stackedbarchart;
 },{}],8:[function(require,module,exports){
+/**
+ *
+ * This module provides C3 based visualization components.
+ *
+ * @module dex/charts/c3
+ * @name c3
+ * @memberOf dex.charts
+ *
+ */
 var c3 = {};
 
 c3.AreaChart = require("./AreaChart");
@@ -910,6 +1052,17 @@ c3.StackedBarChart = require("./StackedBarChart");
 
 module.exports = c3;
 },{"./AreaChart":3,"./BarChart":4,"./LineChart":5,"./StackedAreaChart":6,"./StackedBarChart":7}],9:[function(require,module,exports){
+/**
+ *
+ * This module provides visualization components for charting
+ * out of a diverse set of base implementations ranging from
+ * D3 to three.js and WebGL.
+ *
+ * @module dex/charts
+ * @name charts
+ * @memberOf dex
+ *
+ */
 var charts = {};
 
 charts.c3 = require("./c3/c3");
@@ -924,12 +1077,13 @@ module.exports = charts;
 /**
  *
  * @constructor
+ * @name Axis
  * @classdesc This class constructs a d3 Axis.
- * @memberOf dex
- * @implements {component}
+ * @memberOf dex.charts.d3
+ * @implements {dex/component}
  *
  * @example {@lang javascript}
- * var myAxis = new dex.charts.d3.Axis({
+ * var axis = dex.charts.d3.Axis({
  *   'parent' : "#MyAxisContainer",
  *   'id'     : "MyAxisId"
  *   'csv'    : { header : [ "X", "Y", "Z" ],
@@ -951,6 +1105,7 @@ module.exports = charts;
  * @param {integer} [userConfig.column=0] The column within the supplied CSV to use to generate the Axis.
  * @param {d3axis_spec} [userConfig.axis] - A D3 axis specification.
  * @param {d3text} [userConfig.title] - A D3 text specification for the title of this axis.
+ *
  * @inherit module:component
  *
  */
@@ -9463,8 +9618,24 @@ var verticallegend = function (userConfig) {
 
 module.exports = verticallegend;
 },{}],36:[function(require,module,exports){
+/**
+ *
+ * This module provides D3 based visualization components.
+ *
+ * @module dex/charts/d3
+ * @name d3
+ * @memberOf dex.charts
+ *
+ */
 var d3 = {};
 
+/**
+ *
+ * A class for drawing an axis.
+ *
+ * @name Axis
+ *
+ */
 d3.Axis = require("./Axis");
 d3.BarChart = require("./BarChart");
 d3.Chord = require("./Chord");
@@ -9602,6 +9773,15 @@ var network = function (userConfig) {
 
 module.exports = network;
 },{}],38:[function(require,module,exports){
+/**
+ *
+ * This module provides d3plus based visualizations.
+ *
+ * @module dex/charts/d3plus
+ * @name d3plus
+ * @memberOf dex.charts
+ *
+ */
 var d3plus = {};
 
 d3plus.Network = require("./Network");
@@ -9678,6 +9858,16 @@ var linechart = function (userConfig) {
 
 module.exports = linechart;
 },{}],40:[function(require,module,exports){
+/**
+ *
+ * This module provides a dygraphs linechart component.
+ *
+ * @module dex/charts/dygraphs
+ * @name dygraphs
+ * @memberOf dex.charts
+ *
+ */
+
 var dygraphs = {};
 
 dygraphs.LineChart = require("./LineChart");
@@ -10241,6 +10431,15 @@ var wordtree = function (userConfig) {
 
 module.exports = wordtree;
 },{}],46:[function(require,module,exports){
+/**
+ *
+ * This module provides routines for dealing with arrays.
+ *
+ * @module dex/charts/google
+ * @name google
+ * @memberOf dex.charts
+ *
+ */
 var google = {};
 
 google.DiffBarChart = require("./DiffBarChart");
@@ -10617,17 +10816,28 @@ var scatterplot = function (userConfig) {
 
 module.exports = scatterplot;
 },{}],48:[function(require,module,exports){
-var three = {};
+/**
+ *
+ * This module provides ThreeJS/WebGL based visualization components.
+ *
+ * @module dex/charts/threejs
+ * @name d3plus
+ * @memberOf dex.charts
+ *
+ */
+var threejs = {};
 
-three.ScatterPlot = require("./ScatterPlot");
+threejs.ScatterPlot = require("./ScatterPlot");
 
-module.exports = three;
+module.exports = threejs;
 },{"./ScatterPlot":47}],49:[function(require,module,exports){
 /**
  *
  * This module provides routines for dealing with colors.
  *
- * @module color
+ * @module dex/color
+ * @name color
+ * @memberOf dex
  *
  */
 
@@ -11403,7 +11613,9 @@ module.exports = function (userConfig, defaultConfig) {
 /**
  *
  * Config module.
- * @module config
+ * @module dex/config
+ * @name config
+ * @memberOf dex
  *
  */
 
@@ -12682,7 +12894,9 @@ exports.configureScale = function configureScale(scale, config) {
  *
  * This module provides console logging capabilities.
  *
- * @module console
+ * @module dex/console
+ * @name console
+ * @memberOf dex
  *
  */
 
@@ -12819,7 +13033,9 @@ exports.logLevels = function () {
  * This module provides support for dealing with csv structures.  This
  * is the core datatype on which dexjs components operate.
  *
- * @module csv
+ * @module dex/csv
+ * @name csv
+ * @memberOf dex
  *
  */
 
@@ -13672,7 +13888,9 @@ exports.getConnectionMap = function (csv) {
  *
  * This module provides support for creating various datasets.
  *
- * @module datagen
+ * @module dex/datagen
+ * @name datagen
+ * @memberOf dex
  *
  */
 
@@ -13808,6 +14026,8 @@ exports.identityHeader = function (spec) {
  * The main dexjs module.
  *
  * @module dex
+ * @name dex
+ *
  * @requires d3
  * @requires jquery
  * @requires jquery-ui
@@ -13815,11 +14035,6 @@ exports.identityHeader = function (spec) {
  *
  */
 var dex = {};
-
-//require("d3");
-//$ = require("jquery");
-//require("jquery-ui");
-//_ = require("underscore");
 
 /**
  *
@@ -13864,26 +14079,6 @@ dex.copy = function(obj) {
 
 /**
  *
- * A module for dealing with arrays.
- *
- * @name array
- * @type {module:array}
- *
- */
-dex.array = require('./array/array');
-
-/**
- *
- * A module for configuring things.
- *
- * @name config
- * @type {module:config}
- *
- */
-dex.config = require("./config/config");
-
-/**
- *
  * The pub/sub bus used by dex in order to publish and subscribe to events.
  *
  * @name bus
@@ -13895,55 +14090,49 @@ dex.bus = require("../lib/pubsub");
 
 /**
  *
- * A module for logging to the console.
+ * A module for dealing with arrays.
  *
- * @name console
- * @type {module:console}
+ * @name array
+ * @type {module:dex.array}
  *
  */
-dex.console = require("./console/console");
+dex.array = require('./array/array');
 
 /**
  * A module for dealing with colors.
  *
  * @name color
- * @type {module:color}
+ * @type {module:dex.color}
  *
  */
 dex.color = require("./color/color");
 
 /**
  *
- * A charting module.
+ * A module for configuring things.
  *
- * @name charts
- * @type {module:charts}
+ * @name config
+ * @type {module:dex.config}
  *
  */
-dex.charts = {'d3' : {'map' : {}},
-  'c3'   : {},
-  'dygraphs' : {},
-  'd3plus'   : {},
-  'google' : {},
-  'handlebars' : {},
-  'threejs' : {}};
+dex.config = require("./config/config");
 
 /**
  *
- * A charting module.
+ * A module for logging to the console.
  *
- * @name charts
- * @type {module:charts}
+ * @name console
+ * @type {module:dex.console}
  *
  */
-dex.ui = {'jqueryui' : {}};
+dex.console = require("./console/console");
 
 /**
  *
  * A module for handling CSV data structures.
  *
  * @name csv
- * @type {module:csv}
+ * @type {module:dex.csv}
  *
  */
 dex.csv = require("./csv/csv");
@@ -13953,7 +14142,7 @@ dex.csv = require("./csv/csv");
  * A module providing utilities for data generation.
  *
  * @name datagen
- * @type {module:datagen}
+ * @type {module:dex.datagen}
  *
  */
 dex.datagen = require("./datagen/datagen");
@@ -13963,7 +14152,7 @@ dex.datagen = require("./datagen/datagen");
  * A module for dealing with JSON data.
  *
  * @name json
- * @type {module:json}
+ * @type {module:dex.json}
  *
  */
 dex.json = require("./json/json");
@@ -13972,7 +14161,7 @@ dex.json = require("./json/json");
  * A module for dealing with matrices.
  *
  * @name matrix
- * @type {module:matrix}
+ * @type {module:dex.matrix}
  *
  */
 dex.matrix = require("./matrix/matrix");
@@ -13986,6 +14175,14 @@ dex.matrix = require("./matrix/matrix");
  */
 dex.object = require("./object/object");
 
+/**
+ *
+ * A module for creating ui components such as players and sliders.
+ *
+ * @name ui
+ * @type {module:ui}
+ *
+ */
 dex.ui = require("./ui/ui");
 
 /**
@@ -13998,6 +14195,14 @@ dex.ui = require("./ui/ui");
  */
 dex.component = require("./component/component");
 
+/**
+ *
+ * An overall charting module composed of many sub-modules.
+ *
+ * @name charts
+ * @type {module:charts}
+ *
+ */
 dex.charts = require("./charts/charts");
 
 module.exports = dex;
@@ -14006,7 +14211,9 @@ module.exports = dex;
  *
  * This module provides routines dealing with json data.
  *
- * @module json
+ * @module dex/json
+ * @name json
+ * @memberOf dex
  *
  */
 
@@ -14096,7 +14303,9 @@ exports.keys = function (json) {
  *
  * This module provides routines dealing with matrices.
  *
- * @module matrix
+ * @module dex/matrix
+ * @name matrix
+ * @memberOf dex
  *
  */
 
@@ -14430,7 +14639,9 @@ exports.min = function (matrix, columnNum) {
  *
  * This module provides routines dealing with javascript objects.
  *
- * @module object
+ * @module dex/object
+ * @name object
+ * @memberOf dex
  *
  */
 
@@ -14845,8 +15056,8 @@ module.exports = sqlquery;
  *
  * @constructor
  * @classdesc This class constructs an html table from the supplied CSV data.
- * @memberOf dex
- * @implements {component}
+ * @memberOf dex/ui
+ * @implements {dex/component}
  *
  * @example {@lang javascript}
  * var myTable = new dex.ui.Table({
@@ -15547,18 +15758,44 @@ var tabs = function (userConfig) {
 
 module.exports = tabs;
 },{}],67:[function(require,module,exports){
-var c3 = {};
+/**
+ *
+ * This module provides ui components based upon jquery-ui.
+ *
+ * @module dex/ui/jqueryui
+ * @name jqueryui
+ * @memberOf dex/ui
+ *
+ */
+var jqueryui = {};
 
-c3.ConfigurationBox = require("./ConfigurationBox");
-c3.Player = require("./Player");
-c3.Selectable = require("./Selectable");
-c3.Slider = require("./Slider");
-c3.Tabs = require("./Tabs");
+jqueryui.ConfigurationBox = require("./ConfigurationBox");
+jqueryui.Player = require("./Player");
+jqueryui.Selectable = require("./Selectable");
+jqueryui.Slider = require("./Slider");
+jqueryui.Tabs = require("./Tabs");
 
-module.exports = c3;
+module.exports = jqueryui;
 },{"./ConfigurationBox":62,"./Player":63,"./Selectable":64,"./Slider":65,"./Tabs":66}],68:[function(require,module,exports){
+/**
+ *
+ * This module provides ui components from a variety of sources.
+ *
+ * @module dex/ui
+ * @name ui
+ * @memberOf dex
+ *
+ */
 var ui = {};
 
+/**
+ *
+ * A module for creating ui components such as players and sliders.
+ *
+ * @name jqueryui
+ * @type {module:jqueryui}
+ *
+ */
 ui.jqueryui = require("./jqueryui/jqueryui");
 ui.SqlQuery = require("./SqlQuery");
 ui.Table = require("./Table");

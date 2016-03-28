@@ -2,8 +2,8 @@
  *
  * @constructor
  * @classdesc This class constructs an html table from the supplied CSV data.
- * @memberOf dex
- * @implements {component}
+ * @memberOf dex/ui
+ * @implements {dex/component}
  *
  * @example {@lang javascript}
  * var myTable = new dex.ui.Table({

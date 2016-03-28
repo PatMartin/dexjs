@@ -1,5 +1,21 @@
+/**
+ *
+ * This module provides D3 based visualization components.
+ *
+ * @module dex/charts/d3
+ * @name d3
+ * @memberOf dex.charts
+ *
+ */
 var d3 = {};
 
+/**
+ *
+ * A class for drawing an axis.
+ *
+ * @name Axis
+ *
+ */
 d3.Axis = require("./Axis");
 d3.BarChart = require("./BarChart");
 d3.Chord = require("./Chord");

@@ -3,6 +3,8 @@
  * The main dexjs module.
  *
  * @module dex
+ * @name dex
+ *
  * @requires d3
  * @requires jquery
  * @requires jquery-ui
@@ -10,11 +12,6 @@
  *
  */
 var dex = {};
-
-//require("d3");
-//$ = require("jquery");
-//require("jquery-ui");
-//_ = require("underscore");
 
 /**
  *
@@ -59,26 +56,6 @@ dex.copy = function(obj) {
 
 /**
  *
- * A module for dealing with arrays.
- *
- * @name array
- * @type {module:array}
- *
- */
-dex.array = require('./array/array');
-
-/**
- *
- * A module for configuring things.
- *
- * @name config
- * @type {module:config}
- *
- */
-dex.config = require("./config/config");
-
-/**
- *
  * The pub/sub bus used by dex in order to publish and subscribe to events.
  *
  * @name bus
@@ -90,55 +67,49 @@ dex.bus = require("../lib/pubsub");
 
 /**
  *
- * A module for logging to the console.
+ * A module for dealing with arrays.
  *
- * @name console
- * @type {module:console}
+ * @name array
+ * @type {module:dex.array}
  *
  */
-dex.console = require("./console/console");
+dex.array = require('./array/array');
 
 /**
  * A module for dealing with colors.
  *
  * @name color
- * @type {module:color}
+ * @type {module:dex.color}
  *
  */
 dex.color = require("./color/color");
 
 /**
  *
- * A charting module.
+ * A module for configuring things.
  *
- * @name charts
- * @type {module:charts}
+ * @name config
+ * @type {module:dex.config}
  *
  */
-dex.charts = {'d3' : {'map' : {}},
-  'c3'   : {},
-  'dygraphs' : {},
-  'd3plus'   : {},
-  'google' : {},
-  'handlebars' : {},
-  'threejs' : {}};
+dex.config = require("./config/config");
 
 /**
  *
- * A charting module.
+ * A module for logging to the console.
  *
- * @name charts
- * @type {module:charts}
+ * @name console
+ * @type {module:dex.console}
  *
  */
-dex.ui = {'jqueryui' : {}};
+dex.console = require("./console/console");
 
 /**
  *
  * A module for handling CSV data structures.
  *
  * @name csv
- * @type {module:csv}
+ * @type {module:dex.csv}
  *
  */
 dex.csv = require("./csv/csv");
@@ -148,7 +119,7 @@ dex.csv = require("./csv/csv");
  * A module providing utilities for data generation.
  *
  * @name datagen
- * @type {module:datagen}
+ * @type {module:dex.datagen}
  *
  */
 dex.datagen = require("./datagen/datagen");
@@ -158,7 +129,7 @@ dex.datagen = require("./datagen/datagen");
  * A module for dealing with JSON data.
  *
  * @name json
- * @type {module:json}
+ * @type {module:dex.json}
  *
  */
 dex.json = require("./json/json");
@@ -167,20 +138,24 @@ dex.json = require("./json/json");
  * A module for dealing with matrices.
  *
  * @name matrix
- * @type {module:matrix}
+ * @type {module:dex/matrix}
  *
  */
 dex.matrix = require("./matrix/matrix");
 
 /**
- * A module for dealing with javascript objects.
- *
- * @name object
- * @type {module:object}
- *
+ * @module dex/object
  */
 dex.object = require("./object/object");
 
+/**
+ *
+ * A module for creating ui components such as players and sliders.
+ *
+ * @name ui
+ * @type {module:ui}
+ *
+ */
 dex.ui = require("./ui/ui");
 
 /**
@@ -193,6 +168,14 @@ dex.ui = require("./ui/ui");
  */
 dex.component = require("./component/component");
 
+/**
+ *
+ * An overall charting module composed of many sub-modules.
+ *
+ * @name charts
+ * @type {module:charts}
+ *
+ */
 dex.charts = require("./charts/charts");
 
 module.exports = dex;

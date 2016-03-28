@@ -1,3 +1,12 @@
+/**
+ *
+ * This module provides C3 based visualization components.
+ *
+ * @module dex/charts/c3
+ * @name c3
+ * @memberOf dex.charts
+ *
+ */
 var c3 = {};
 
 c3.AreaChart = require("./AreaChart");

@@ -2,7 +2,9 @@
  *
  * This module provides support for creating various datasets.
  *
- * @module datagen
+ * @module dex/datagen
+ * @name datagen
+ * @memberOf dex
  *
  */
 

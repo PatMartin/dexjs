@@ -2,7 +2,9 @@
  *
  * This module provides routines for dealing with arrays.
  *
- * @module array
+ * @module dex/array
+ * @name array
+ * @memberOf dex
  *
  */
 

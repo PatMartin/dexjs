@@ -1,5 +1,14 @@
-var three = {};
+/**
+ *
+ * This module provides ThreeJS/WebGL based visualization components.
+ *
+ * @module dex/charts/threejs
+ * @name d3plus
+ * @memberOf dex.charts
+ *
+ */
+var threejs = {};
 
-three.ScatterPlot = require("./ScatterPlot");
+threejs.ScatterPlot = require("./ScatterPlot");
 
-module.exports = three;
+module.exports = threejs;

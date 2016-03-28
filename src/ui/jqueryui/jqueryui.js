@@ -1,9 +1,18 @@
-var c3 = {};
+/**
+ *
+ * This module provides ui components based upon jquery-ui.
+ *
+ * @module dex/ui/jqueryui
+ * @name jqueryui
+ * @memberOf dex.ui
+ *
+ */
+var jqueryui = {};
 
-c3.ConfigurationBox = require("./ConfigurationBox");
-c3.Player = require("./Player");
-c3.Selectable = require("./Selectable");
-c3.Slider = require("./Slider");
-c3.Tabs = require("./Tabs");
+jqueryui.ConfigurationBox = require("./ConfigurationBox");
+jqueryui.Player = require("./Player");
+jqueryui.Selectable = require("./Selectable");
+jqueryui.Slider = require("./Slider");
+jqueryui.Tabs = require("./Tabs");
 
-module.exports = c3;
+module.exports = jqueryui;

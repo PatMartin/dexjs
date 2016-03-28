@@ -2,7 +2,9 @@
  *
  * This module provides routines dealing with matrices.
  *
- * @module matrix
+ * @module dex/matrix
+ * @name matrix
+ * @memberOf dex
  *
  */
 

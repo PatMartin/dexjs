@@ -1,3 +1,12 @@
+/**
+ *
+ * This module provides routines for dealing with arrays.
+ *
+ * @module dex/charts/google
+ * @name google
+ * @memberOf dex.charts
+ *
+ */
 var google = {};
 
 google.DiffBarChart = require("./DiffBarChart");

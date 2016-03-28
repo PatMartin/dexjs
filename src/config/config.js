@@ -1,7 +1,9 @@
 /**
  *
  * Config module.
- * @module config
+ * @module dex/config
+ * @name config
+ * @memberOf dex
  *
  */
 

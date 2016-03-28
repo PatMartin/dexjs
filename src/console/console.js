@@ -2,7 +2,9 @@
  *
  * This module provides console logging capabilities.
  *
- * @module console
+ * @module dex/console
+ * @name console
+ * @memberOf dex
  *
  */
 

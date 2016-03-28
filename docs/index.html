@@ -1,0 +1,1978 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width">
+	<title>dex.js Index</title>
+
+	<!--[if lt IE 9]>
+	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+	<link type="text/css" rel="stylesheet" href="styles/sunlight.default.css">
+
+	<link type="text/css" rel="stylesheet" href="styles/site.readable.css">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-default navbar-fixed-top navbar-inverse">
+<div class="container">
+	<div class="navbar-header">
+		<a class="navbar-brand" href="index.html">dex.js</a>
+		<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#topNavigation">
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+        </button>
+	</div>
+	<div class="navbar-collapse collapse" id="topNavigation">
+		<ul class="nav navbar-nav">
+			
+			<li class="dropdown">
+				<a href="modules.list.html" class="dropdown-toggle" data-toggle="dropdown">Modules<b class="caret"></b></a>
+				<ul class="dropdown-menu inline">
+					<li><a href="dex.module_array.html">dex.array</a></li><li><a href="dex.charts.module_c3.html">dex.charts.c3</a></li><li><a href="dex.module_charts.html">dex.charts</a></li><li><a href="dex.charts.module_d3.html">dex.charts.d3</a></li><li><a href="dex.charts.module_d3plus.html">dex.charts.d3plus</a></li><li><a href="dex.charts.module_dygraphs.html">dex.charts.dygraphs</a></li><li><a href="dex.charts.module_google.html">dex.charts.google</a></li><li><a href="dex.module_color.html">dex.color</a></li><li><a href="dex.module_config.html">dex.config</a></li><li><a href="dex.module_console.html">dex.console</a></li><li><a href="dex.module_csv.html">dex.csv</a></li><li><a href="dex.module_datagen.html">dex.datagen</a></li><li><a href="module-dex.html">dex</a></li><li><a href="module-dex_object.html">dex/object</a></li><li><a href="dex.module_json.html">dex.json</a></li><li><a href="dex.module_matrix.html">dex.matrix</a></li><li><a href="dex.module_object.html">dex.object</a></li><li><a href="dex.ui.module_jqueryui.html">dex.ui.jqueryui</a></li><li><a href="dex.module_ui.html">dex.ui</a></li>
+				</ul>
+			</li>
+			
+			<li class="dropdown">
+				<a href="classes.list.html" class="dropdown-toggle" data-toggle="dropdown">Classes<b class="caret"></b></a>
+				<ul class="dropdown-menu inline">
+					<li><a href="dex.charts.c3.AreaChart.html">dex.charts.c3.AreaChart</a></li><li><a href="dex.charts.c3.BarChart.html">dex.charts.c3.BarChart</a></li><li><a href="dex.charts.c3.LineChart.html">dex.charts.c3.LineChart</a></li><li><a href="dex.charts.c3.StackedAreaChart.html">dex.charts.c3.StackedAreaChart</a></li><li><a href="dex.charts.c3.StackedBarChart.html">dex.charts.c3.StackedBarChart</a></li><li><a href="dex.charts.d3.Axis.html">dex.charts.d3.Axis</a></li><li><a href="dex.barchart.html">dex.barchart</a></li><li><a href="linechart.html">linechart</a></li><li><a href="piechart.html">piechart</a></li><li><a href="timeline.html">timeline</a></li><li><a href="wordtree.html">wordtree</a></li><li><a href="dex.component.html">dex.component</a></li><li><a href="dex.ui.SqlQuery.html">dex.ui.SqlQuery</a></li><li><a href="dex_ui.table.html">dex/ui.table</a></li>
+				</ul>
+			</li>
+			
+			<li class="dropdown">
+				<a href="global.html" class="dropdown-toggle" data-toggle="dropdown">Global<b class="caret"></b></a>
+				<ul class="dropdown-menu inline">
+					<li><a href="global.html#dexApp">dexApp</a></li>
+				</ul>
+			</li>
+			
+		</ul>
+		<div class="col-sm-3 col-md-3">
+            <form class="navbar-form" role="search">
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Search" name="q" id="search-input">
+                    <div class="input-group-btn">
+                        <button class="btn btn-default" id="search-submit"><i class="glyphicon glyphicon-search"></i></button>
+                    </div>
+                </div>
+            </form>
+        </div>
+	</div>
+
+</div>
+</div>
+
+
+<div class="container" id="toc-content">
+<div class="row">
+
+	
+	<div class="col-md-8">
+	
+		<div id="main">
+			
+
+	
+	
+
+
+
+
+
+
+
+
+
+
+
+	
+	
+
+
+
+
+
+    <section class="readme-section">
+        <article><h1>Introduction</h1><p>Dex.js is a javascript framework for visual components.</p>
+<p>Dex.js wraps lots of useful visual components and provides a standard interface for their use.
+Additionally, the interface provides a mechanism by which visual components can communicate.</p>
+<p>This means that one chart can react to interactions and changes to other charts.</p>
+<h2>Usage</h2><p>Our examples will use a C3.js line chart as our example component.</p>
+<h3>Data</h3><p>All visual components work on tabular data much like a CSV file.</p>
+<p>Here we create a simple csv instance consiting of three columns, X, Y and Z with 4 rows of data.</p>
+<p>var csv = {
+  'header' : [ 'X', 'Y', 'Z' ],
+  'data'   : [
+    [ 0, 0, 0 ],
+    [ 1, 1, 1 ],
+    [ 2, 4, 8 ],
+    [ 3, 9, 27 ]
+    ]
+  };</p>
+<h3>Creating a Visual</h3><p>Given the previous csv, we can create a C3 line chart via:</p>
+<pre class="prettyprint source lang-javascript"><code>var linechart = new dex.charts.c3.LineChart({
+  'parent' : '#ChartArea',
+  'csv'    : csv});
+  linechart.render();</code></pre><h3>Rendering a Visual</h3><p>Given the previous csv, we can create a C3 line chart via:</p>
+<pre class="prettyprint source lang-javascript"><code>var linechart = new dex.charts.c3.LineChart({
+  'parent' : '#ChartArea',
+  'csv'    : csv});
+  linechart.render();</code></pre><h3>What else?</h3><p><em><strong>We can reconfigure and update our chart in one line.</strong></em></p>
+<p>This will change the simple bar chart to a grouped bar chart which will have columns for both AGE and SALES.</p>
+<pre class="prettyprint source lang-javascript"><code>mychart.attr(&quot;yi&quot;, [1, 2]).update();</code></pre><p><em><strong>We can create new charts from old charts.</strong></em></p>
+<p>Here we create a new chart called myotherchart from mychart.  It will inherit all parameters from the original.  Of course, this makes no sense, so we change the x/y offsets to display at a different location on the screen.</p>
+<p>In two lines we are creating another permutation of a chart and rendering it!</p>
+<pre class="prettyprint source lang-javascript"><code>var myotherchart = new BarChart(mychart);
+myotherchart.attr(&quot;yoffset&quot;, 400).render();</code></pre><p><em><strong>We can combine charts and tell them to listen to other another.</strong></em></p>
+<p>Here, we're telling our parallel coordinates chart (pcChart), to listen to our USStateMap named &quot;map&quot; when it generates a &quot;selectState&quot; event.  Data is passed through an object called chartEvent.</p>
+<p>In this particular example, we're removing the old parallel lines chart, adding the selected state data to the data list, then updating the chart.  A live example of this visualization <a href="http://dexvis.com/vis/blog/2013/mar/reusable6/html/ParallelCoordinates3.html">US State Map wired to Parallel Coordinates</a>:</p>
+<pre class="prettyprint source lang-javascript"><code>map.addListener(&quot;selectState&quot;, pcChart, function(chartEvent)
+  {
+    if (stateMap[chartEvent.state] != null)
+      {
+        d3.selectAll(&quot;#ParChart&quot;).remove();
+        selectedStates[chartEvent.state] = true;
+
+        var pcData = []
+
+        for (var state in selectedStates)
+        {
+            pcData.push(stateMap[state]);
+        }
+      pcChart
+        .attr(&quot;normalize&quot;, pcData.length &lt;= 1)
+        .attr(&quot;csv.data&quot;, pcData)
+        .attr(&quot;height&quot;, 200)
+        .update();
+      }
+  });</code></pre><h1>Configuration</h1><p>Most configuration options can be configured with literals or dynamic functions.  DexCharts will figure out which is which and apply them appropriately. Most of the visuals include reusable configurable types such as:</p>
+<ul>
+<li>Text and Fonts</li>
+<li>Shapes such as lines, circles and rectangles.</li>
+<li>Strokes used to outline shapes</li>
+<li>Fills which are used to determine how things are shaded</li>
+<li>Scales used to map values in very specific ways.</li>
+<li>CSV, which is the universal input format for all Dex Charts.</li>
+</ul>
+<p>DexCharts has taken great pains to expose most of the capabilities found within D3 and SVG.</p>
+<h2>General</h2><h3>Fonts</h3><table>
+<thead>
+<tr>
+<th>Option</th>
+<th style="text-align:left">Default</th>
+<th style="text-align:right">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>family</td>
+<td style="text-align:left">sans-serif</td>
+<td style="text-align:right">Sets the basic font family.  Ex: 'Arial'.</td>
+</tr>
+<tr>
+<td>style</td>
+<td style="text-align:left">normal</td>
+<td style="text-align:right">Sets the style of the font. Ex: normal, italic, oblique</td>
+</tr>
+<tr>
+<td>variant</td>
+<td style="text-align:left">normal</td>
+<td style="text-align:right">Sets the font variant.  Ex: normal, small-caps</td>
+</tr>
+<tr>
+<td>weight</td>
+<td style="text-align:left">normal</td>
+<td style="text-align:right">Sets the weight of the font.  Ex: normal, bold, 100, 200, 300, 400, 500, 600, 700, 800, 900</td>
+</tr>
+<tr>
+<td>stretch</td>
+<td style="text-align:left"></td>
+<td style="text-align:right">This property indicates the desired amount of condensing or expansion in the glyphs used to render the text.</td>
+</tr>
+<tr>
+<td>size</td>
+<td style="text-align:left">18</td>
+<td style="text-align:right">Sets the size, in pixels, of the font.</td>
+</tr>
+<tr>
+<td>sizeAdjust</td>
+<td style="text-align:left"></td>
+<td style="text-align:right">Allows authors to specify an aspect value for an element that will preserve the x-height of the first choice font in a substitute font.</td>
+</tr>
+</tbody>
+</table>
+<h3>Strokes</h3><p>Strokes define the color of a line, text, or outline of an element.</p>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th style="text-align:left">Default</th>
+<th style="text-align:right">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>color</td>
+<td style="text-align:left">black</td>
+<td style="text-align:right">Sets the color of the stroke. Named colors and colors of the form #fff and #ffffff are accepted.</td>
+</tr>
+<tr>
+<td>dasharray</td>
+<td style="text-align:left">empty</td>
+<td style="text-align:right">Sets the pattern of the line to be drawn.  Ex: '1 1' would be a dashed line.</td>
+</tr>
+<tr>
+<td>opacity</td>
+<td style="text-align:left">1</td>
+<td style="text-align:right">Sets the opacity.  Values range from 0 to 1 with 0 representing a stroke which is fully tranparent and 1 representing a stroke which is fully opaque.</td>
+</tr>
+<tr>
+<td>width</td>
+<td style="text-align:left">1</td>
+<td style="text-align:right">Sets the width (in pixels) of the stroke.</td>
+</tr>
+</tbody>
+</table>
+<h3>Fills</h3><p>Fills specify how an element is filled or shaded.</p>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th style="text-align:left">Default</th>
+<th style="text-align:right">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>fill</td>
+<td style="text-align:left"></td>
+<td style="text-align:right">Sets the color of the entity to be filled.</td>
+</tr>
+<tr>
+<td>fillOpacity</td>
+<td style="text-align:left"></td>
+<td style="text-align:right">Sets the opacity of the filling.</td>
+</tr>
+</tbody>
+</table>
+<h3>Links</h3><p>Links are really just a composite of a stroke and a fill.</p>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th style="text-align:left">Default</th>
+<th style="text-align:right">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>stroke</td>
+<td style="text-align:left"><a href="#strokes">Stroke</a></td>
+<td style="text-align:right">See Strokes.</td>
+</tr>
+<tr>
+<td>fill</td>
+<td style="text-align:left"></td>
+<td style="text-align:right">Sets the color of the entity to be filled.</td>
+</tr>
+<tr>
+<td>fillOpacity</td>
+<td style="text-align:left"></td>
+<td style="text-align:right">Sets the opacity of the filling. </td>
+</tr>
+</tbody>
+</table>
+<h3>Text</h3><table>
+<thead>
+<tr>
+<th>Option</th>
+<th style="text-align:left">Default</th>
+<th style="text-align:right">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>x</td>
+<td style="text-align:left">0</td>
+<td style="text-align:right">Sets the x location of this label.</td>
+</tr>
+<tr>
+<td>y</td>
+<td style="text-align:left">0</td>
+<td style="text-align:right">Sets the y location of this label.</td>
+</tr>
+<tr>
+<td>transform</td>
+<td style="text-align:left">0</td>
+<td style="text-align:right">Applies a SVG transformation to this label.</td>
+</tr>
+<tr>
+<td>dy</td>
+<td style="text-align:left">.71em</td>
+<td style="text-align:right">Sets the number of minor ticks to display.</td>
+</tr>
+<tr>
+<td>font</td>
+<td style="text-align:left"><a href="#fonts">Font</a></td>
+<td style="text-align:right">Sets the font for this label.  See: Fonts.</td>
+</tr>
+<tr>
+<td>text</td>
+<td style="text-align:left">''</td>
+<td style="text-align:right">Sets the text value of this label.</td>
+</tr>
+<tr>
+<td>anchor</td>
+<td style="text-align:left">5</td>
+<td style="text-align:right">Sets the anchor of this label.  Ex: start, middle, end</td>
+</tr>
+<tr>
+<td>color</td>
+<td style="text-align:left">5</td>
+<td style="text-align:right">Sets the color of the label.</td>
+</tr>
+<tr>
+<td>textLength</td>
+<td style="text-align:left">',d'</td>
+<td style="text-align:right">Sets the length of the text.  The text will be adjusted to fit this length.</td>
+</tr>
+<tr>
+<td>lengthAdjust</td>
+<td style="text-align:left"></td>
+<td style="text-align:right">Configures the tick label.  See Label configuration options.</td>
+</tr>
+<tr>
+<td>writingMode</td>
+<td style="text-align:left"></td>
+<td style="text-align:right">Specifies whether the text is left to right, right to left, top to bottom, etc... Ex: lr-tb, rl-tb, tb-rl, lr, rl, tb, inherit</td>
+</tr>
+<tr>
+<td>glyphOrientationVertical</td>
+<td style="text-align:left"></td>
+<td style="text-align:right">The glyph orientation affects the amount that the current text position advances as each glyph is rendered.</td>
+</tr>
+<tr>
+<td>kerning</td>
+<td style="text-align:left"></td>
+<td style="text-align:right">Indicates whether the user agent should adjust inter-glyph spacing based on kerning tables that are included in the relevant font (i.e., enable auto-kerning) or instead disable auto-kerning and instead set inter-character spacing to a specific length (typically, zero).</td>
+</tr>
+<tr>
+<td>letterSpacing</td>
+<td style="text-align:left">normal</td>
+<td style="text-align:right">Sets the amount of space that will be added between text characters supplemental any spacing due to the kerning property.</td>
+</tr>
+<tr>
+<td>wordSpacing</td>
+<td style="text-align:left">'normal'</td>
+<td style="text-align:right">Sets an additional amount of space between words. Ex: normal, <length>, iherit</td>
+</tr>
+<tr>
+<td>decoration</td>
+<td style="text-align:left">none</td>
+<td style="text-align:right">Allows for added characteristics or decorations to be added to the text. Ex: (none, underline, overline, line-through, blink, inherit)</td>
+</tr>
+</tbody>
+</table>
+<h3>Scale</h3><p>Scales are used to map one values from an input domain into an output range.  There are many different types of scales available in DexCharts via D3.</p>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th style="text-align:left">Default</th>
+<th style="text-align:right">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>type</td>
+<td style="text-align:left">linear</td>
+<td style="text-align:right">Sets the base type of this scale.  Ex: linear, sqrt, pow, time, log, ordinal, quantile, quantize, identity</td>
+</tr>
+</tbody>
+</table>
+<h4>Linear Scale</h4><table>
+<thead>
+<tr>
+<th>Option</th>
+<th style="text-align:left">Default</th>
+<th style="text-align:right">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>domain</td>
+<td style="text-align:left">[0, 100]</td>
+<td style="text-align:right">If numbers is specified, sets the scale's input domain to the specified array of numbers. The array must contain two or more numbers. If the elements in the given array are not numbers, they will be coerced to numbers; this coercion happens similarly when the scale is called. Thus, a linear scale can be used to encode types such as date objects that can be converted to numbers; however, it is often more convenient to use d3.time.scale for dates. (You can implement your own convertible number objects using valueOf.) If numbers is not specified, returns the scale's current input domain.</td>
+</tr>
+<tr>
+<td>range</td>
+<td style="text-align:left">[0, 800]</td>
+<td style="text-align:right">If values is specified, sets the scale's output range to the specified array of values. The array must contain two or more values, to match the cardinality of the input domain, otherwise the longer of the two is truncated to match the other. The elements in the given array need not be numbers; any value that is supported by the underlying interpolator will work. However, numeric ranges are required for the invert operator. If values is not specified, returns the scale's current output range.</td>
+</tr>
+<tr>
+<td>rangeRound</td>
+<td style="text-align:left"></td>
+<td style="text-align:right">Sets the scale's output range to the specified array of values, while also setting the scale's interpolator to d3.interpolateRound. This is a convenience routine for when the values output by the scale should be exact integers, such as to avoid antialiasing artifacts. It is also possible to round the output values manually after the scale is applied.</td>
+</tr>
+<tr>
+<td>interpolate</td>
+<td style="text-align:left"></td>
+<td style="text-align:right">If factory is specified, sets the scale's output interpolator using the specified factory. The interpolator factory defaults to d3.interpolate, and is used to map the normalized domain parameter t in [0,1] to the corresponding value in the output range. The interpolator factory will be used to construct interpolators for each adjacent pair of values from the output range. If factory is not specified, returns the scale's interpolator factory.</td>
+</tr>
+<tr>
+<td>clamp</td>
+<td style="text-align:left"></td>
+<td style="text-align:right">If boolean is specified, enables or disables clamping accordingly. By default, clamping is disabled, such that if a value outside the input domain is passed to the scale, the scale may return a value outside the output range through linear extrapolation. For example, with the default domain and range of [0,1], an input value of 2 will return an output value of 2. If clamping is enabled, the normalized domain parameter t is clamped to the range [0,1], such that the return value of the scale is always within the scale's output range. If boolean is not specified, returns whether or not the scale currently clamps values to within the output range.</td>
+</tr>
+<tr>
+<td>nice</td>
+<td style="text-align:left"></td>
+<td style="text-align:right">Extends the domain so that it starts and ends on nice round values. This method typically modifies the scale's domain, and may only extend the bounds to the nearest round value. The precision of the round value is dependent on the extent of the domain dx according to the following formula: exp(round(log(dx)) - 1). Nicing is useful if the domain is computed from data and may be irregular. For example, for a domain of [0.20147987687960267, 0.996679553296417], the nice domain is [0.2, 1]. If the domain has more than two values, nicing the domain only affects the first and last value. The optional tick count argument allows greater control over the step size used to extend the bounds, guaranteeing that the returned ticks will exactly cover the domain.</td>
+</tr>
+</tbody>
+</table>
+<h4>Pow Scale</h4><p>Power scales are similar to linear scales, except there's an exponential transform that is applied to the input domain value before the output range value is computed. The mapping to the output range value y can be expressed as a function of the input domain value x: y = mx^k + b, where k is the exponent value. Power scales also support negative values, in which case the input value is multiplied by -1, and the resulting output value is also multiplied by -1.</p>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th style="text-align:left">Default</th>
+<th style="text-align:right">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>domain</td>
+<td style="text-align:left">[0, 100]</td>
+<td style="text-align:right">If numbers is specified, sets the scale's input domain to the specified array of numbers. The array must contain two or more numbers. If the elements in the given array are not numbers, they will be coerced to numbers; this coercion happens similarly when the scale is called. Thus, a power scale can be used to encode any type that can be converted to numbers. If numbers is not specified, returns the scale's current input domain.</td>
+</tr>
+<tr>
+<td>range</td>
+<td style="text-align:left">[0, 800]</td>
+<td style="text-align:right">If values is specified, sets the scale's output range to the specified array of values. The array must contain two or more values, to match the cardinality of the input domain, otherwise the longer of the two is truncated to match the other. The elements in the given array need not be numbers; any value that is supported by the underlying interpolator will work. However, numeric ranges are required for the invert operator. If values is not specified, returns the scale's current output range.</td>
+</tr>
+<tr>
+<td>rangeRound</td>
+<td style="text-align:left"></td>
+<td style="text-align:right">Sets the scale's output range to the specified array of values, while also setting the scale's interpolator to d3.interpolateRound. This is a convenience routine for when the values output by the scale should be exact integers, such as to avoid antialiasing artifacts. It is also possible to round the output values manually after the scale is applied.</td>
+</tr>
+<tr>
+<td>exponent</td>
+<td style="text-align:left"></td>
+<td style="text-align:right">If k is specified, sets the current exponent to the given numeric value. If k is not specified, returns the current exponent. The default value is 1.</td>
+</tr>
+<tr>
+<td>interpolate</td>
+<td style="text-align:left"></td>
+<td style="text-align:right">If k is specified, sets the current exponent to the given numeric value. If k is not specified, returns the current exponent. The default value is 1.</td>
+</tr>
+<tr>
+<td>clamp</td>
+<td style="text-align:left"></td>
+<td style="text-align:right">If boolean is specified, enables or disables clamping accordingly. By default, clamping is disabled, such that if a value outside the input domain is passed to the scale, the scale may return a value outside the output range through linear extrapolation. For example, with the default domain and range of [0,1], an input value of 2 will return an output value of 2. If clamping is enabled, the normalized domain parameter t is clamped to the range [0,1], such that the return value of the scale is always within the scale's output range. If boolean is not specified, returns whether or not the scale currently clamps values to within the output range.</td>
+</tr>
+<tr>
+<td>nice</td>
+<td style="text-align:left"></td>
+<td style="text-align:right">Extends the domain so that it starts and ends on nice round values. This method typically modifies the scale's domain, and may only extend the bounds to the nearest round value. The precision of the round value is dependent on the extent of the domain dx according to the following formula: exp(round(log(dx)) - 1). Nicing is useful if the domain is computed from data and may be irregular. For example, for a domain of [0.20147987687960267, 0.996679553296417], the nice domain is [0.2, 1]. If the domain has more than two values, nicing the domain only affects the first and last value. The optional m argument allows a tick count to be specified to control the step size used prior to extending the bounds.</td>
+</tr>
+</tbody>
+</table>
+<h4>Sqrt Scale</h4><p>A sqrt scale is essentially a power scale with a default domain of [0,1], default range of [0,1] and an exponential transformation of x^.5.</p>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th style="text-align:left">Default</th>
+<th style="text-align:right">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>domain</td>
+<td style="text-align:left">[0, 100]</td>
+<td style="text-align:right">If numbers is specified, sets the scale's input domain to the specified array of numbers. The array must contain two or more numbers. If the elements in the given array are not numbers, they will be coerced to numbers; this coercion happens similarly when the scale is called. Thus, a power scale can be used to encode any type that can be converted to numbers. If numbers is not specified, returns the scale's current input domain.</td>
+</tr>
+<tr>
+<td>range</td>
+<td style="text-align:left">[0, 800]</td>
+<td style="text-align:right">If values is specified, sets the scale's output range to the specified array of values. The array must contain two or more values, to match the cardinality of the input domain, otherwise the longer of the two is truncated to match the other. The elements in the given array need not be numbers; any value that is supported by the underlying interpolator will work. However, numeric ranges are required for the invert operator. If values is not specified, returns the scale's current output range.</td>
+</tr>
+<tr>
+<td>rangeRound</td>
+<td style="text-align:left"></td>
+<td style="text-align:right">Sets the scale's output range to the specified array of values, while also setting the scale's interpolator to d3.interpolateRound. This is a convenience routine for when the values output by the scale should be exact integers, such as to avoid antialiasing artifacts. It is also possible to round the output values manually after the scale is applied.</td>
+</tr>
+<tr>
+<td>exponent</td>
+<td style="text-align:left"></td>
+<td style="text-align:right">If k is specified, sets the current exponent to the given numeric value. If k is not specified, returns the current exponent. The default value is 0.5.</td>
+</tr>
+<tr>
+<td>interpolate</td>
+<td style="text-align:left"></td>
+<td style="text-align:right">If factory is specified, sets the scale's output interpolator using the specified factory. The interpolator factory defaults to d3.interpolate, and is used to map the normalized domain parameter t in [0,1] to the corresponding value in the output range. The interpolator factory will be used to construct interpolators for each adjacent pair of values from the output range. If factory is not specified, returns the scale's interpolator factory.</td>
+</tr>
+<tr>
+<td>clamp</td>
+<td style="text-align:left"></td>
+<td style="text-align:right">If boolean is specified, enables or disables clamping accordingly. By default, clamping is disabled, such that if a value outside the input domain is passed to the scale, the scale may return a value outside the output range through linear extrapolation. For example, with the default domain and range of [0,1], an input value of 2 will return an output value of 2. If clamping is enabled, the normalized domain parameter t is clamped to the range [0,1], such that the return value of the scale is always within the scale's output range. If boolean is not specified, returns whether or not the scale currently clamps values to within the output range.</td>
+</tr>
+<tr>
+<td>nice</td>
+<td style="text-align:left"></td>
+<td style="text-align:right">Extends the domain so that it starts and ends on nice round values. This method typically modifies the scale's domain, and may only extend the bounds to the nearest round value. The precision of the round value is dependent on the extent of the domain dx according to the following formula: exp(round(log(dx)) - 1). Nicing is useful if the domain is computed from data and may be irregular. For example, for a domain of [0.20147987687960267, 0.996679553296417], the nice domain is [0.2, 1]. If the domain has more than two values, nicing the domain only affects the first and last value. The optional m argument allows a tick count to be specified to control the step size used prior to extending the bounds.</td>
+</tr>
+</tbody>
+</table>
+<h4>Log Scale</h4><table>
+<thead>
+<tr>
+<th>Option</th>
+<th style="text-align:left">Default</th>
+<th style="text-align:right">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>domain</td>
+<td style="text-align:left">[0, 100]</td>
+<td style="text-align:right">If numbers is specified, sets the scale's input domain to the specified array of numbers. The array must contain two or more numbers. If the elements in the given array are not numbers, they will be coerced to numbers; this coercion happens similarly when the scale is called. Thus, a log scale can be used to encode any type that can be converted to numbers. If numbers is not specified, returns the scale's current input domain.</td>
+</tr>
+<tr>
+<td>range</td>
+<td style="text-align:left">[0, 800]</td>
+<td style="text-align:right">If values is specified, sets the scale's output range to the specified array of values. The array must contain two or more values, to match the cardinality of the input domain, otherwise the longer of the two is truncated to match the other. The elements in the given array need not be numbers; any value that is supported by the underlying interpolator will work. However, numeric ranges are required for the invert operator. If values is not specified, returns the scale's current output range.</td>
+</tr>
+<tr>
+<td>rangeRound</td>
+<td style="text-align:left"></td>
+<td style="text-align:right">Sets the scale's output range to the specified array of values, while also setting the scale's interpolator to d3.interpolateRound. This is a convenience routine for when the values output by the scale should be exact integers, such as to avoid antialiasing artifacts. It is also possible to round the output values manually after the scale is applied.</td>
+</tr>
+<tr>
+<td>base</td>
+<td style="text-align:left"></td>
+<td style="text-align:right">If base is specified, sets the base for this logarithmic scale. If base is not specified, returns the current base, which defaults to 10.</td>
+</tr>
+<tr>
+<td>interpolate</td>
+<td style="text-align:left"></td>
+<td style="text-align:right">If factory is specified, sets the scale's output interpolator using the specified factory. The interpolator factory defaults to d3.interpolate, and is used to map the normalized domain parameter t in [0,1] to the corresponding value in the output range. The interpolator factory will be used to construct interpolators for each adjacent pair of values from the output range. If factory is not specified, returns the scale's interpolator factory.</td>
+</tr>
+<tr>
+<td>clamp</td>
+<td style="text-align:left"></td>
+<td style="text-align:right">If boolean is specified, enables or disables clamping accordingly. By default, clamping is disabled, such that if a value outside the input domain is passed to the scale, the scale may return a value outside the output range through linear extrapolation. For example, with the default domain and range of [0,1], an input value of 2 will return an output value of 2. If clamping is enabled, the normalized domain parameter t is clamped to the range [0,1], such that the return value of the scale is always within the scale's output range. If boolean is not specified, returns whether or not the scale currently clamps values to within the output range.</td>
+</tr>
+<tr>
+<td>nice</td>
+<td style="text-align:left"></td>
+<td style="text-align:right">Extends the domain so that it starts and ends on nice round values. This method typically modifies the scale's domain, and may only extend the bounds to the nearest round value. The nearest round value is based on integer powers of the scale’s base, which defaults to 10. Nicing is useful if the domain is computed from data and may be irregular. For example, for a domain of [0.20147987687960267, 0.996679553296417], the nice domain is [0.1, 1]. If the domain has more than two values, nicing the domain only affects the first and last value.</td>
+</tr>
+</tbody>
+</table>
+<h4>Ordinal Scale</h4><p>Ordinal scales have a discrete domain, such as a set of names or categories.</p>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th style="text-align:left">Default</th>
+<th style="text-align:right">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>domain</td>
+<td style="text-align:left"></td>
+<td style="text-align:right">If values is specified, sets the input domain of the ordinal scale to the specified array of values. The first element in values will be mapped to the first element in the output range, the second domain value to the second range value, and so on. Domain values are stored internally in an associative array as a mapping from value to index; the resulting index is then used to retrieve a value from the output range. Thus, an ordinal scale's values must be coercible to a string, and the stringified version of the domain value uniquely identifies the corresponding range value. If values is not specified, this method returns the current domain.  Setting the domain on an ordinal scale is optional. If no domain is set, a range must be set explicitly. Then, each unique value that is passed to the scale function will be assigned a new value from the output range; in other words, the domain will be inferred implicitly from usage. Although domains may thus be constructed implicitly, it is still a good idea to assign the ordinal scale's domain explicitly to ensure deterministic behavior, as inferring the domain from usage will be dependent on ordering.</td>
+</tr>
+<tr>
+<td>range</td>
+<td style="text-align:left"></td>
+<td style="text-align:right">If values is specified, sets the output range of the ordinal scale to the specified array of values. The first element in the domain will be mapped to the first element in values, the second domain value to the second range value, and so on. If there are fewer elements in the range than in the domain, the scale will recycle values from the start of the range. If values is not specified, this method returns the current output range. This method is intended for when the set of discrete output values is computed explicitly, such as a set of categorical colors. In other cases, such as determining the layout of an ordinal scatterplot or bar chart, you may find the rangePoints or rangeBands operators more convenient.</td>
+</tr>
+<tr>
+<td>rangeRoundBands</td>
+<td style="text-align:left"></td>
+<td style="text-align:right">Like rangeBands, except guarantees that the band width and offset are integer values, so as to avoid antialiasing artifacts.</td>
+</tr>
+<tr>
+<td>rangePoints</td>
+<td style="text-align:left"></td>
+<td style="text-align:right">Sets the output range from the specified continuous interval. The array interval contains two elements representing the minimum and maximum numeric value. This interval is subdivided into n evenly-spaced points, where n is the number of (unique) values in the input domain. The first and last point may be offset from the edge of the interval according to the specified padding, which defaults to zero. The padding is expressed as a multiple of the spacing between points. A reasonable value is 1.0, such that the first and last point will be offset from the minimum and maximum value by half the distance between points.</td>
+</tr>
+<tr>
+<td>rangeBands</td>
+<td style="text-align:left"></td>
+<td style="text-align:right">Sets the output range from the specified continuous interval. The array interval contains two elements representing the minimum and maximum numeric value. This interval is subdivided into n evenly-spaced bands, where n is the number of (unique) values in the input domain. The bands may be offset from the edge of the interval and other bands according to the specified padding, which defaults to zero. The padding is typically in the range [0,1] and corresponds to the amount of space in the range interval to allocate to padding. A value of 0.5 means that the band width will be equal to the padding width. The outerPadding argument is for the entire group of bands; a value of 0 means there will be padding only between rangeBands.</td>
+</tr>
+</tbody>
+</table>
+<h4>Time Scale</h4><p>The time scale is an extension of d3.scale.linear that uses JavaScript Date objects as the domain representation. Thus, unlike the normal linear scale, domain values are coerced to dates rather than numbers; similarly, the invert function returns a date. Most conveniently, the time scale also provides suitable ticks based on time intervals, taking the pain out of generating axes for nearly any time-based domain.</p>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th style="text-align:left">Default</th>
+<th style="text-align:right">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>domain</td>
+<td style="text-align:left"></td>
+<td style="text-align:right">If dates is specified, sets the scale's input domain to the specified array of dates. The array must contain two or more dates. If the elements in the given array are not dates, they will be coerced to dates; this coercion happens similarly when the scale is called. If dates is not specified, returns the scale's current input domain. Although time scales typically have just two dates in their domain, you can specify more than two dates for a polylinear scale. In this case, there must be an equivalent number of values in the output range.</td>
+</tr>
+<tr>
+<td>nice</td>
+<td style="text-align:left"></td>
+<td style="text-align:right">Extends the domain so that it starts and ends on nice round values as determined by the specified time interval and optional step count. As an alternative to specifying an explicit time interval, a numeric count can be specified, and a time interval will be chosen automatically to be consistent with scale.ticks. If count is not specified, it defaults to 10. This method typically extends the scale's domain, and may only extend the bounds to the nearest round value. Nicing is useful if the domain is computed from data and may be irregular. For example, for a domain of [2009-07-13T00:02, 2009-07-13T23:48], the nice domain is [2009-07-13, 2009-07-14]. If the domain has more than two values, nicing the domain only affects the first and last value.</td>
+</tr>
+<tr>
+<td>range</td>
+<td style="text-align:left"></td>
+<td style="text-align:right">If values is specified, sets the scale's output range to the specified array of values. The array must contain two or more values, to match the cardinality of the input domain. The elements in the given array need not be numbers; any value that is supported by the underlying interpolator will work. However, numeric ranges are required for the invert operator. If values is not specified, returns the scale's current output range.</td>
+</tr>
+<tr>
+<td>rangeRound</td>
+<td style="text-align:left"></td>
+<td style="text-align:right">Sets the scale's output range to the specified array of values, while also setting the scale's interpolator to d3.interpolateRound. This is a convenience routine for when the values output by the scale should be exact integers, such as to avoid antialiasing artifacts. It is also possible to round the output values manually after the scale is applied.</td>
+</tr>
+<tr>
+<td>interpolate</td>
+<td style="text-align:left"></td>
+<td style="text-align:right">If factory is specified, sets the scale's output interpolator using the specified factory. The interpolator factory defaults to d3.interpolate, and is used to map the normalized domain parameter t in [0,1] to the corresponding value in the output range. The interpolator factory will be used to construct interpolators for each adjacent pair of values from the output range. If factory is not specified, returns the scale's interpolator factory.</td>
+</tr>
+<tr>
+<td>clamp</td>
+<td style="text-align:left"></td>
+<td style="text-align:right">If boolean is specified, enables or disables clamping accordingly. By default, clamping is disabled, such that if a value outside the input domain is passed to the scale, the scale may return a value outside the output range through linear extrapolation. For example, with the default domain and range of [0,1], an input value of 2 will return an output value of 2. If clamping is enabled, the normalized domain parameter t is clamped to the range [0,1], such that the return value of the scale is always within the scale's output range. If boolean is not specified, returns whether or not the scale currently clamps values to within the output range.</td>
+</tr>
+<tr>
+<td>ticks</td>
+<td style="text-align:left"></td>
+<td style="text-align:right"></td>
+</tr>
+<tr>
+<td>tickFormat</td>
+<td style="text-align:left"></td>
+</tr>
+</tbody>
+</table>
+<h4>Quantile Scale</h4><table>
+<thead>
+<tr>
+<th>Option</th>
+<th style="text-align:left">Default</th>
+<th style="text-align:right">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>domain</td>
+<td style="text-align:left"></td>
+<td style="text-align:right"></td>
+</tr>
+<tr>
+<td>range</td>
+<td style="text-align:left"></td>
+</tr>
+</tbody>
+</table>
+<h4>Quantize Scale</h4><p>Quantize scales are a variant of linear scales with a discrete rather than continuous range. The input domain is still continuous, and divided into uniform segments based on the number of values in (the cardinality of) the output range. The mapping is linear in that the output range value y can be expressed as a linear function of the input domain value x: y = mx + b. The input domain is typically a dimension of the data that you want to visualize, such as the height of students (measured in meters) in a sample population. The output range is typically a dimension of the desired output visualization, such as the height of bars (measured in pixels) in a histogram.</p>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th style="text-align:left">Default</th>
+<th style="text-align:right">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>domain</td>
+<td style="text-align:left"></td>
+<td style="text-align:right">If numbers is specified, sets the scale's input domain to the specified two-element array of numbers. If the array contains more than two numbers, only the first and last number are used. If the elements in the given array are not numbers, they will be coerced to numbers; this coercion happens similarly when the scale is called. Thus, a quantize scale can be used to encode any type that can be converted to numbers. If numbers is not specified, returns the scale's current input domain.</td>
+</tr>
+<tr>
+<td>range</td>
+<td style="text-align:left"></td>
+<td style="text-align:right">If values is specified, sets the scale's output range to the specified array of values. The array may contain any number of discrete values. The elements in the given array need not be numbers; any value or type will work. If values is not specified, returns the scale's current output range.</td>
+</tr>
+</tbody>
+</table>
+<h4>Identity Scale</h4><p>Identity scales are a special case of linear scales where the domain and range are identical; the scale and its invert method are both the identity function. These scales are occasionally useful when working with pixel coordinates, say in conjunction with the axis and brush components.</p>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th style="text-align:left">Default</th>
+<th style="text-align:right">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>domain</td>
+<td style="text-align:left"></td>
+<td style="text-align:right">If numbers is specified, sets the scale's input domain to the specified two-element array of numbers. If the array contains more than two numbers, only the first and last number are used. If the elements in the given array are not numbers, they will be coerced to numbers; this coercion happens similarly when the scale is called. Thus, a quantize scale can be used to encode any type that can be converted to numbers. If numbers is not specified, returns the scale's current input domain.</td>
+</tr>
+<tr>
+<td>range</td>
+<td style="text-align:left"></td>
+<td style="text-align:right">If values is specified, sets the scale's output range to the specified array of values. The array may contain any number of discrete values. The elements in the given array need not be numbers; any value or type will work. If values is not specified, returns the scale's current output range.</td>
+</tr>
+</tbody>
+</table>
+<h4>Threshold Scale</h4><table>
+<thead>
+<tr>
+<th>Option</th>
+<th style="text-align:left">Default</th>
+<th style="text-align:right">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>domain</td>
+<td style="text-align:left"></td>
+<td style="text-align:right"></td>
+</tr>
+<tr>
+<td>range</td>
+<td style="text-align:left"></td>
+</tr>
+</tbody>
+</table>
+<h3>Axis</h3><table>
+<thead>
+<tr>
+<th>Option</th>
+<th style="text-align:left">Default</th>
+<th style="text-align:right">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>scale</td>
+<td style="text-align:left">5</td>
+<td style="text-align:right">Set the scale of the axis.  Ex: d3.scale.linear(), d3.scale.ordinal()</td>
+</tr>
+<tr>
+<td>orient</td>
+<td style="text-align:left">3</td>
+<td style="text-align:right">Sets the orientation of the axis. Ex: top, bottom, left, right. This parameter also determines whether or not the axis runs vertically or horizontally.</td>
+</tr>
+<tr>
+<td>ticks</td>
+<td style="text-align:left"></td>
+<td style="text-align:right">A hint to suggest how many ticks to display.</td>
+</tr>
+<tr>
+<td>tickValues</td>
+<td style="text-align:left"></td>
+<td style="text-align:right">Specific values to display tick marks at.</td>
+</tr>
+<tr>
+<td>tickSize</td>
+<td style="text-align:left"></td>
+<td style="text-align:right">The size (in pixels) of a tick mark.</td>
+</tr>
+<tr>
+<td>innerTickSize</td>
+<td style="text-align:left"></td>
+<td style="text-align:right">The size (in pixels) of inner tick marks.</td>
+</tr>
+<tr>
+<td>outerTickSize</td>
+<td style="text-align:left"></td>
+<td style="text-align:right">The size (in pixels) of outer tick marks.</td>
+</tr>
+<tr>
+<td>tickPadding</td>
+<td style="text-align:left"></td>
+<td style="text-align:right">If padding is specified, sets the padding to the specified value in pixels and returns the axis. If padding is not specified, returns the current padding which defaults to 3 pixels.</td>
+</tr>
+<tr>
+<td>tickFormat</td>
+<td style="text-align:left"></td>
+<td style="text-align:right">If format is specified, sets the format to the specified function and returns the axis. If format is not specified, returns the current format function, which defaults to null. A null format indicates that the scale's default formatter should be used, which is generated by calling scale.tickFormat. In this case, the arguments specified by ticks are likewise passed to scale.tickFormat.</td>
+</tr>
+<tr>
+<td>tickSubdivide</td>
+<td style="text-align:left"></td>
+<td style="text-align:right">This specifies how many minor ticks to place between major ticks.</td>
+</tr>
+</tbody>
+</table>
+<h3>CSV</h3><table>
+<thead>
+<tr>
+<th>Option</th>
+<th style="text-align:left">Default</th>
+<th style="text-align:right">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>header</td>
+<td style="text-align:left"></td>
+<td style="text-align:right">An array containing the names of each column.  Ex: [ 'C1', 'C2' ]</td>
+</tr>
+<tr>
+<td>data</td>
+<td style="text-align:left"></td>
+<td style="text-align:right">An array of arrays.  Each row of the array represents a row of data.  Ex: [[1, 2],[3,4]]</td>
+</tr>
+</tbody>
+</table>
+<h3>Shapes</h3><h4>Points</h4><table>
+<thead>
+<tr>
+<th>Option</th>
+<th style="text-align:left">Default</th>
+<th style="text-align:right">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>x</td>
+<td style="text-align:left">0</td>
+<td style="text-align:right">The x coordinate of the point.</td>
+</tr>
+<tr>
+<td>y</td>
+<td style="text-align:left">0</td>
+<td style="text-align:right">The y coordinate of the point.</td>
+</tr>
+</tbody>
+</table>
+<h4>Rectangles</h4><table>
+<thead>
+<tr>
+<th>Option</th>
+<th style="text-align:left">Default</th>
+<th style="text-align:right">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>width</td>
+<td style="text-align:left">0</td>
+<td style="text-align:right">The width of the rectangle in pixels.</td>
+</tr>
+<tr>
+<td>height</td>
+<td style="text-align:left">0</td>
+<td style="text-align:right">The height of the rectangle in pixels.</td>
+</tr>
+<tr>
+<td>x</td>
+<td style="text-align:left">0</td>
+<td style="text-align:right">The x coordinate of the upper left vertex of the rectangle.</td>
+</tr>
+<tr>
+<td>y</td>
+<td style="text-align:left">0</td>
+<td style="text-align:right">The y coordinate of the upper left vertex of the rectangle.</td>
+</tr>
+<tr>
+<td>rx</td>
+<td style="text-align:left">0</td>
+<td style="text-align:right">The x radius of the edges of the rectangle.  Non-zero values will cause the rectangle to be rounded at the corners.</td>
+</tr>
+<tr>
+<td>ry</td>
+<td style="text-align:left">0</td>
+<td style="text-align:right">The y radius of the edges of the rectangle.  Non-zero values will cause the rectangle to be rounded at the corners.</td>
+</tr>
+<tr>
+<td>opacity</td>
+<td style="text-align:left">1</td>
+<td style="text-align:right">The opacity of the rectangle where 0 is transparent, 1 is opaque.</td>
+</tr>
+<tr>
+<td>color</td>
+<td style="text-align:left"></td>
+<td style="text-align:right">The color of the rectangle.</td>
+</tr>
+<tr>
+<td>stroke</td>
+<td style="text-align:left"><a href="#strokes">Stroke</a></td>
+<td style="text-align:right">See Strokes.</td>
+</tr>
+</tbody>
+</table>
+<h4>Circles</h4><table>
+<thead>
+<tr>
+<th>Option</th>
+<th style="text-align:left">Default</th>
+<th style="text-align:right">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>center</td>
+<td style="text-align:left"><a href="#points">Point</a></td>
+<td style="text-align:right">The center of the circle.  See Points.</td>
+</tr>
+<tr>
+<td>radius</td>
+<td style="text-align:left">0</td>
+<td style="text-align:right">The radius of the circle in pixels.</td>
+</tr>
+<tr>
+<td>style.stroke</td>
+<td style="text-align:left"><a href="#strokes">Stroke</a></td>
+<td style="text-align:right">See Strokes.</td>
+</tr>
+<tr>
+<td>style.color</td>
+<td style="text-align:left"></td>
+<td style="text-align:right">The color of the circle.</td>
+</tr>
+<tr>
+<td>style.opacity</td>
+<td style="text-align:left">1</td>
+<td style="text-align:right">The opacity of the circle.</td>
+</tr>
+</tbody>
+</table>
+<h2>Visual Components</h2><h3>Bar Chart</h3><p>A bar chart or bar graph is a chart with rectangular bars with lengths proportional to the values that they represent. The bars can be plotted vertically or horizontally. A vertical bar chart is sometimes called a column bar chart.  Ironically, this, the simplest of charts, has given me the most trouble.  I need to invest quite a bit more time into this component, however, it is currently usable at least.</p>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th style="text-align:left">Default</th>
+<th style="text-align:right">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>parent</td>
+<td style="text-align:left"></td>
+<td style="text-align:right">The path to this component's parent element.  Ex: #BarChartParent</td>
+</tr>
+<tr>
+<td>id</td>
+<td style="text-align:left">BarChart</td>
+<td style="text-align:right">The id of this component's container element.</td>
+</tr>
+<tr>
+<td>class</td>
+<td style="text-align:left">BarChart</td>
+<td style="text-align:right">The class of this component's container element.</td>
+</tr>
+<tr>
+<td>csv</td>
+<td style="text-align:left"></td>
+<td style="text-align:right">The data for this diagram.  See CSV.</td>
+</tr>
+<tr>
+<td>width</td>
+<td style="text-align:left">600</td>
+<td style="text-align:right">The width of this chart.</td>
+</tr>
+<tr>
+<td>height</td>
+<td style="text-align:left">400</td>
+<td style="text-align:right">The height of this chart.</td>
+</tr>
+<tr>
+<td>xi</td>
+<td style="text-align:left">0</td>
+<td style="text-align:right">The index of the column which will be used for the x axis.</td>
+</tr>
+<tr>
+<td>yi</td>
+<td style="text-align:left">[1]</td>
+<td style="text-align:right">An array of indices for the columns which will be used for the y axis values.</td>
+</tr>
+<tr>
+<td>xoffset</td>
+<td style="text-align:left">50</td>
+<td style="text-align:right">Move the chart left (negative values) or to the right (positive values).</td>
+</tr>
+<tr>
+<td>yoffset</td>
+<td style="text-align:left">10</td>
+<td style="text-align:right">Move the chart up (negative values) or down (positive values)</td>
+</tr>
+<tr>
+<td>color</td>
+<td style="text-align:left"></td>
+<td style="text-align:right">Determines the color for each group of bars.</td>
+</tr>
+<tr>
+<td>xmin</td>
+<td style="text-align:left">0</td>
+<td style="text-align:right">The minimum x value. Ex: if 0, will cause the x axis to begin at 0.</td>
+</tr>
+<tr>
+<td>ymin</td>
+<td style="text-align:left">0</td>
+<td style="text-align:right">The minimum y value. Ex: if 0, will cause the bars to start at minimum value 0.</td>
+</tr>
+<tr>
+<td>bars.mouseover</td>
+<td style="text-align:left"><a href="#rectangles">Rectangle</a></td>
+<td style="text-align:right">This controls the appearance of the bars when the mouse is over them.</td>
+</tr>
+<tr>
+<td>bars.mouseout</td>
+<td style="text-align:left"><a href="#rectangles">Rectangle</a></td>
+<td style="text-align:right">This controls the appearance of the bars when the mouse is not over them.</td>
+</tr>
+</tbody>
+</table>
+<h3>Chord Chart</h3><table>
+<thead>
+<tr>
+<th>Option</th>
+<th style="text-align:left">Default</th>
+<th style="text-align:right">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>parent</td>
+<td style="text-align:left"></td>
+<td style="text-align:right">The path to this component's parent element.  Ex: #ChordChartParent</td>
+</tr>
+<tr>
+<td>id</td>
+<td style="text-align:left">Chord</td>
+<td style="text-align:right">The id of this component's container element.</td>
+</tr>
+<tr>
+<td>class</td>
+<td style="text-align:left">Chord</td>
+<td style="text-align:right">The class of this component's container element.</td>
+</tr>
+<tr>
+<td>csv</td>
+<td style="text-align:left"></td>
+<td style="text-align:right">The data for this diagram.  See CSV.</td>
+</tr>
+<tr>
+<td>width</td>
+<td style="text-align:left">600</td>
+<td style="text-align:right">The width of this chart.</td>
+</tr>
+<tr>
+<td>height</td>
+<td style="text-align:left">400</td>
+<td style="text-align:right">The height of this chart.</td>
+</tr>
+<tr>
+<td>transform</td>
+<td style="text-align:left">50</td>
+<td style="text-align:right">Apply a SVG transform to the chart.</td>
+</tr>
+<tr>
+<td>padding</td>
+<td style="text-align:left">0.05</td>
+<td style="text-align:right">Controls the padding between chords.</td>
+</tr>
+<tr>
+<td>color</td>
+<td style="text-align:left"></td>
+<td style="text-align:right">Controls the color scheme of the chords and links.</td>
+</tr>
+<tr>
+<td>nodes.mouseover</td>
+<td style="text-align:left"><a href="#links">Link</a></td>
+<td style="text-align:right">Controls the appearance of nodes when the mouse is over them. See Links.</td>
+</tr>
+<tr>
+<td>links.mouseout</td>
+<td style="text-align:left"><a href="#links">Link</a></td>
+<td style="text-align:right">Controls the appearance of nodes when the mouse is not over them. See Links.</td>
+</tr>
+<tr>
+<td>links.mouseover</td>
+<td style="text-align:left"><a href="#links">Link</a></td>
+<td style="text-align:right">Controls the appearance of links when the mouse is over them. See Links.</td>
+</tr>
+<tr>
+<td>nodes.mouseout</td>
+<td style="text-align:left"><a href="#links">Link</a></td>
+<td style="text-align:right">Controls the appearance of links when the mouse is not over them. See Links.</td>
+</tr>
+<tr>
+<td>opacity</td>
+<td style="text-align:left">100</td>
+<td style="text-align:right">Controls the opacity of the chord links.</td>
+</tr>
+<tr>
+<td>chordOpacity</td>
+<td style="text-align:left">50</td>
+<td style="text-align:right">Controls the opacity of the chords.</td>
+</tr>
+<tr>
+<td>innerRadius</td>
+<td style="text-align:left">130</td>
+<td style="text-align:right">This controls the inner radius of the chord diagram.</td>
+</tr>
+<tr>
+<td>outerRadius</td>
+<td style="text-align:left">200</td>
+<td style="text-align:right">This controls the outer radius of the chord diagram.</td>
+</tr>
+<tr>
+<td>tick</td>
+<td style="text-align:left"><a href="#lines">Line</a></td>
+<td style="text-align:right">This controls the appearance of the tick.  See Lines.</td>
+</tr>
+<tr>
+<td>tick.length</td>
+<td style="text-align:left"></td>
+<td style="text-align:right">An additional field specifying the length of the tick.</td>
+</tr>
+<tr>
+<td>title</td>
+<td style="text-align:left"><a href="#labels">Label</a></td>
+<td style="text-align:right">This controls the appearance of the title.  See Labels.</td>
+</tr>
+<tr>
+<td>label</td>
+<td style="text-align:left"><a href="#labels">Label</a></td>
+<td style="text-align:right">This controls the appearance of the chord labels. See Labels.</td>
+</tr>
+</tbody>
+</table>
+<h3>Clustered Force</h3><table>
+<thead>
+<tr>
+<th>Option</th>
+<th style="text-align:left">Default</th>
+<th style="text-align:right">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>parent</td>
+<td style="text-align:left"></td>
+<td style="text-align:right">The path to this component's parent element.  Ex: #ClusteredForceParent</td>
+</tr>
+<tr>
+<td>id</td>
+<td style="text-align:left">ClusteredForce</td>
+<td style="text-align:right">The id of this component's container element.</td>
+</tr>
+<tr>
+<td>class</td>
+<td style="text-align:left">ClusteredForce</td>
+<td style="text-align:right">The class of this component's container element.</td>
+</tr>
+<tr>
+<td>csv</td>
+<td style="text-align:left"></td>
+<td style="text-align:right">The data for this diagram.  See CSV.</td>
+</tr>
+</tbody>
+</table>
+<h3>Dendrogram</h3><table>
+<thead>
+<tr>
+<th>Option</th>
+<th style="text-align:left">Default</th>
+<th style="text-align:right">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>parent</td>
+<td style="text-align:left"></td>
+<td style="text-align:right">The path to this component's parent element.  Ex: #DendrogramParent</td>
+</tr>
+<tr>
+<td>id</td>
+<td style="text-align:left">Dendrogram</td>
+<td style="text-align:right">The id of this component's container element.</td>
+</tr>
+<tr>
+<td>class</td>
+<td style="text-align:left">Dendrogram</td>
+<td style="text-align:right">The class of this component's container element.</td>
+</tr>
+<tr>
+<td>csv</td>
+<td style="text-align:left"></td>
+<td style="text-align:right">The data for this diagram.  See CSV.</td>
+</tr>
+</tbody>
+</table>
+<h3>HeatMap</h3><table>
+<thead>
+<tr>
+<th>Option</th>
+<th style="text-align:left">Default</th>
+<th style="text-align:right">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>parent</td>
+<td style="text-align:left"></td>
+<td style="text-align:right">The path to this component's parent element.  Ex: #HeatMapParent</td>
+</tr>
+<tr>
+<td>id</td>
+<td style="text-align:left">HeatMap</td>
+<td style="text-align:right">The id of this component's container element.</td>
+</tr>
+<tr>
+<td>class</td>
+<td style="text-align:left">HeatMap</td>
+<td style="text-align:right">The class of this component's container element.</td>
+</tr>
+<tr>
+<td>csv</td>
+<td style="text-align:left"></td>
+<td style="text-align:right">The data for this diagram.  See CSV.</td>
+</tr>
+</tbody>
+</table>
+<h3>Line Charts</h3><table>
+<thead>
+<tr>
+<th>Option</th>
+<th style="text-align:left">Default</th>
+<th style="text-align:right">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>parent</td>
+<td style="text-align:left"></td>
+<td style="text-align:right">The path to this component's parent element.  Ex: #LineChartParent</td>
+</tr>
+<tr>
+<td>id</td>
+<td style="text-align:left">LineChart</td>
+<td style="text-align:right">The id of this component's container element.</td>
+</tr>
+<tr>
+<td>class</td>
+<td style="text-align:left">LineChart</td>
+<td style="text-align:right">The class of this component's container element.</td>
+</tr>
+<tr>
+<td>csv</td>
+<td style="text-align:left"></td>
+<td style="text-align:right">The data for this diagram.  See CSV.</td>
+</tr>
+</tbody>
+</table>
+<h3>Parallel Coordinates</h3><table>
+<thead>
+<tr>
+<th>Option</th>
+<th style="text-align:left">Default</th>
+<th style="text-align:right">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>parent</td>
+<td style="text-align:left"></td>
+<td style="text-align:right">The path to this component's parent element.  Ex: #ParCoordParent</td>
+</tr>
+<tr>
+<td>id</td>
+<td style="text-align:left">ParCoord</td>
+<td style="text-align:right">The id of this component's container element.</td>
+</tr>
+<tr>
+<td>class</td>
+<td style="text-align:left">ParCoord</td>
+<td style="text-align:right">The class of this component's container element.</td>
+</tr>
+<tr>
+<td>csv</td>
+<td style="text-align:left"></td>
+<td style="text-align:right">The data for this diagram.  See CSV.</td>
+</tr>
+</tbody>
+</table>
+<h3>Pie Chart</h3><table>
+<thead>
+<tr>
+<th>Option</th>
+<th style="text-align:left">Default</th>
+<th style="text-align:right">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>parent</td>
+<td style="text-align:left"></td>
+<td style="text-align:right">The path to this component's parent element.  Ex: #PieChartParent</td>
+</tr>
+<tr>
+<td>id</td>
+<td style="text-align:left">PieChart</td>
+<td style="text-align:right">The id of this component's container element.</td>
+</tr>
+<tr>
+<td>class</td>
+<td style="text-align:left">PieChart</td>
+<td style="text-align:right">The class of this component's container element.</td>
+</tr>
+<tr>
+<td>csv</td>
+<td style="text-align:left"></td>
+<td style="text-align:right">The data for this diagram.  See CSV.</td>
+</tr>
+</tbody>
+</table>
+<h3>Sankey Diagram</h3><table>
+<thead>
+<tr>
+<th>Option</th>
+<th style="text-align:left">Default</th>
+<th style="text-align:right">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>parent</td>
+<td style="text-align:left"></td>
+<td style="text-align:right">The path to this component's parent element.  Ex: #SankeyParent</td>
+</tr>
+<tr>
+<td>id</td>
+<td style="text-align:left">Sankey</td>
+<td style="text-align:right">The id of this component's container element.</td>
+</tr>
+<tr>
+<td>class</td>
+<td style="text-align:left">Sankey</td>
+<td style="text-align:right">The class of this component's container element.</td>
+</tr>
+<tr>
+<td>csv</td>
+<td style="text-align:left"></td>
+<td style="text-align:right">The data for this diagram.  See CSV.</td>
+</tr>
+<tr>
+<td>relationships</td>
+<td style="text-align:left"></td>
+<td style="text-align:right">The relationship data for this diagram, whose format is described in greater detail later in this section.</td>
+</tr>
+<tr>
+<td>height</td>
+<td style="text-align:left">100%</td>
+<td style="text-align:right">The height of the sankey diagram in either pixels or a percentage of available bounding box size.</td>
+</tr>
+<tr>
+<td>width</td>
+<td style="text-align:left">100%</td>
+<td style="text-align:right">The width of the sankey diagram in either pixels or a percentage of available bounding box size.</td>
+</tr>
+<tr>
+<td>transform</td>
+<td style="text-align:left"></td>
+<td style="text-align:right">The SVG transformation(s) to apply.</td>
+</tr>
+<tr>
+<td>layoutIterations</td>
+<td style="text-align:left">32</td>
+<td style="text-align:right">The number of iterations to expend when attempting to optimize node and link layout.</td>
+</tr>
+<tr>
+<td>columnTitle</td>
+<td style="text-align:left"><a href="#labels">Label</a></td>
+<td style="text-align:right">The label for each column. See Labels.</td>
+</tr>
+<tr>
+<td>label</td>
+<td style="text-align:left"><a href="#labels">Label</a></td>
+<td style="text-align:right">The label for each node.  See Labels.</td>
+</tr>
+<tr>
+<td>link.stroke</td>
+<td style="text-align:left"><a href="#strokes">Stroke</a></td>
+<td style="text-align:right">The stroke for each link.  See Strokes.</td>
+</tr>
+<tr>
+<td>link.fill</td>
+<td style="text-align:left">none</td>
+<td style="text-align:right">The fill for each link.</td>
+</tr>
+<tr>
+<td>link.fillOpacity</td>
+<td style="text-align:left"></td>
+<td style="text-align:right">The fillOpacity for each link.</td>
+</tr>
+<tr>
+<td>link.curvature</td>
+<td style="text-align:left">0.5</td>
+<td style="text-align:right">Radians of curvature.</td>
+</tr>
+<tr>
+<td>mouseover.link.stroke</td>
+<td style="text-align:left"><a href="#strokes">Stroke</a></td>
+<td style="text-align:right">The stroke of a link when the mouse is moved over it.</td>
+</tr>
+<tr>
+<td>mouseover.link.fill</td>
+<td style="text-align:left">none</td>
+<td style="text-align:right">The fill of the link when the mouse is over it.</td>
+</tr>
+<tr>
+<td>mouseover.link.fillOpacity</td>
+<td style="text-align:left">0.8</td>
+<td style="text-align:right">The fill opacity of the link when the mouse is over it.</td>
+</tr>
+<tr>
+<td>mouseover.node.stroke</td>
+<td style="text-align:left"><a href="#strokes">Stroke</a></td>
+<td style="text-align:right">Tne stroke of all of the incoming and outgoing links from this node when the mouse is moved over it.  See Strokes.</td>
+</tr>
+<tr>
+<td>mouseover.node.fill</td>
+<td style="text-align:left">none</td>
+<td style="text-align:right">The fill of all the incoming and outgoing links from this node when the mouse is moved over it.</td>
+</tr>
+<tr>
+<td>mouseover.node.fillOpacity</td>
+<td style="text-align:left">.8</td>
+<td style="text-align:right">The fill opacity of all the incoming and outgoing links from this node when the mouse is moved over it.</td>
+</tr>
+<tr>
+<td>node.padding</td>
+<td style="text-align:left">4</td>
+<td style="text-align:right">The padding around each node segregating labels and other nodes.</td>
+</tr>
+<tr>
+<td>node.rectangle</td>
+<td style="text-align:left">RECTANGLE</td>
+<td style="text-align:right">This controls the appearance of each node.  See Rectangles.</td>
+</tr>
+<tr>
+<td>manualColumnLayout</td>
+<td style="text-align:left">false</td>
+<td style="text-align:right">If false, Sankey will attempt to lay the nodes out in an optimized fashion.  However, if true, then the system will assume that each column of data represesents a column of nodes and will align columnar nodes on top of one another.  The first column will be leftmost in the layout.  Manual layout is much faster automated layout.</td>
+</tr>
+</tbody>
+</table>
+<h3>Scatter Plot</h3><p>Is it one word or two?  This is a mystery which has haunted engineers throughout time.  Either way, scatterplots are a very useful way to quickly understand a numeric or even ordinal distributions.</p>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th style="text-align:left">Default</th>
+<th style="text-align:right">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>parent</td>
+<td style="text-align:left"></td>
+<td style="text-align:right">The path to this component's parent element.  Ex: #ScatterPlotParent</td>
+</tr>
+<tr>
+<td>id</td>
+<td style="text-align:left">ScatterPlot</td>
+<td style="text-align:right">The id of this component's container element.</td>
+</tr>
+<tr>
+<td>class</td>
+<td style="text-align:left">ScatterPlot</td>
+<td style="text-align:right">The class of this component's container element.</td>
+</tr>
+<tr>
+<td>csv</td>
+<td style="text-align:left"></td>
+<td style="text-align:right">The data for this diagram.  See CSV.</td>
+</tr>
+</tbody>
+</table>
+<h3>UI Controls</h3><p>This section contains controls which can be dropped into a Dex Chart.</p>
+<h4>Configuration Box</h4><table>
+<thead>
+<tr>
+<th>Option</th>
+<th style="text-align:left">Default</th>
+<th style="text-align:right">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>parent</td>
+<td style="text-align:left"></td>
+<td style="text-align:right">The path to this component's parent element.  Ex: #ConfigBoxParent</td>
+</tr>
+<tr>
+<td>id</td>
+<td style="text-align:left">ConfigBox</td>
+<td style="text-align:right">The id of this component's container element.</td>
+</tr>
+<tr>
+<td>class</td>
+<td style="text-align:left">ConfigBox</td>
+<td style="text-align:right">The class of this component's container element.</td>
+</tr>
+<tr>
+<td>csv</td>
+<td style="text-align:left"></td>
+<td style="text-align:right">The data for this diagram.  See CSV.</td>
+</tr>
+</tbody>
+</table>
+<h4>Selectable</h4><table>
+<thead>
+<tr>
+<th>Option</th>
+<th style="text-align:left">Default</th>
+<th style="text-align:right">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>parent</td>
+<td style="text-align:left"></td>
+<td style="text-align:right">The path to this component's parent element.  Ex: #SelectableParent</td>
+</tr>
+<tr>
+<td>id</td>
+<td style="text-align:left">Selectable</td>
+<td style="text-align:right">The id of this component's container element.</td>
+</tr>
+<tr>
+<td>class</td>
+<td style="text-align:left">Selectable</td>
+<td style="text-align:right">The class of this component's container element.</td>
+</tr>
+<tr>
+<td>csv</td>
+<td style="text-align:left"></td>
+<td style="text-align:right">The data for this diagram.  See CSV.</td>
+</tr>
+</tbody>
+</table>
+<h4>Slider</h4><table>
+<thead>
+<tr>
+<th>Option</th>
+<th style="text-align:left">Default</th>
+<th style="text-align:right">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>parent</td>
+<td style="text-align:left"></td>
+<td style="text-align:right">The path to this component's parent element.  Ex: #SliderParent</td>
+</tr>
+<tr>
+<td>id</td>
+<td style="text-align:left">Slider</td>
+<td style="text-align:right">The id of this component's container element.</td>
+</tr>
+<tr>
+<td>class</td>
+<td style="text-align:left">Slider</td>
+<td style="text-align:right">The class of this component's container element.</td>
+</tr>
+<tr>
+<td>csv</td>
+<td style="text-align:left"></td>
+<td style="text-align:right">The data for this diagram.  See CSV.</td>
+</tr>
+</tbody>
+</table>
+<h4>Tabs</h4><table>
+<thead>
+<tr>
+<th>Option</th>
+<th style="text-align:left">Default</th>
+<th style="text-align:right">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>parent</td>
+<td style="text-align:left"></td>
+<td style="text-align:right">The path to this component's parent element.  Ex: #TabsParent</td>
+</tr>
+<tr>
+<td>id</td>
+<td style="text-align:left">Tabs</td>
+<td style="text-align:right">The id of this component's container element.</td>
+</tr>
+<tr>
+<td>class</td>
+<td style="text-align:left">Tabs</td>
+<td style="text-align:right">The class of this component's container element.</td>
+</tr>
+<tr>
+<td>csv</td>
+<td style="text-align:left"></td>
+<td style="text-align:right">The data for this diagram.  See CSV.</td>
+</tr>
+</tbody>
+</table>
+<h3>ThreeJS</h3><p>These are WebGL components based primarily up on the excellent work of mrdoob.  They will not currently render on IOS devices.</p>
+<h4>ScatterPlot3D</h4><table>
+<thead>
+<tr>
+<th>Option</th>
+<th style="text-align:left">Default</th>
+<th style="text-align:right">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>parent</td>
+<td style="text-align:left"></td>
+<td style="text-align:right">The path to this component's parent element.  Ex: #ScatterPlot3DParent</td>
+</tr>
+<tr>
+<td>id</td>
+<td style="text-align:left">ScatterPlot3D</td>
+<td style="text-align:right">The id of this component's container element.</td>
+</tr>
+<tr>
+<td>class</td>
+<td style="text-align:left">ScatterPlot3D</td>
+<td style="text-align:right">The class of this component's container element.</td>
+</tr>
+<tr>
+<td>csv</td>
+<td style="text-align:left"></td>
+<td style="text-align:right">The data for this diagram.  See CSV.</td>
+</tr>
+</tbody>
+</table>
+<h3>Legends</h3><h4>Horizontal Legends</h4><table>
+<thead>
+<tr>
+<th>Option</th>
+<th style="text-align:left">Default</th>
+<th style="text-align:right">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>parent</td>
+<td style="text-align:left"></td>
+<td style="text-align:right">The path to this component's parent element.  Ex: #HorizontalLegendParent</td>
+</tr>
+<tr>
+<td>id</td>
+<td style="text-align:left">HorizontalLegend</td>
+<td style="text-align:right">The id of this component's container element.</td>
+</tr>
+<tr>
+<td>class</td>
+<td style="text-align:left">HorizontalLegend</td>
+<td style="text-align:right">The class of this component's container element.</td>
+</tr>
+<tr>
+<td>csv</td>
+<td style="text-align:left"></td>
+<td style="text-align:right">The data for this diagram.  See CSV.</td>
+</tr>
+</tbody>
+</table>
+<h4>Vertical Legend</h4><table>
+<thead>
+<tr>
+<th>Option</th>
+<th style="text-align:left">Default</th>
+<th style="text-align:right">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>parent</td>
+<td style="text-align:left"></td>
+<td style="text-align:right">The path to this component's parent element.  Ex: #VerticalLegendParent</td>
+</tr>
+<tr>
+<td>id</td>
+<td style="text-align:left">VerticalLegend</td>
+<td style="text-align:right">The id of this component's container element.</td>
+</tr>
+<tr>
+<td>class</td>
+<td style="text-align:left">VerticalLegend</td>
+<td style="text-align:right">The class of this component's container element.</td>
+</tr>
+<tr>
+<td>csv</td>
+<td style="text-align:left"></td>
+<td style="text-align:right">The data for this diagram.  See CSV.</td>
+</tr>
+</tbody>
+</table>
+<h3>Maps</h3><h4>US County Map</h4><table>
+<thead>
+<tr>
+<th>Option</th>
+<th style="text-align:left">Default</th>
+<th style="text-align:right">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>parent</td>
+<td style="text-align:left"></td>
+<td style="text-align:right">The path to this component's parent element.  Ex: #USCountyMapParent</td>
+</tr>
+<tr>
+<td>id</td>
+<td style="text-align:left">USCountyMap</td>
+<td style="text-align:right">The id of this component's container element.</td>
+</tr>
+<tr>
+<td>class</td>
+<td style="text-align:left">USCountyMap</td>
+<td style="text-align:right">The class of this component's container element.</td>
+</tr>
+<tr>
+<td>csv</td>
+<td style="text-align:left"></td>
+<td style="text-align:right">The data for this diagram.  See CSV.</td>
+</tr>
+</tbody>
+</table>
+<h4>US State Map</h4><table>
+<thead>
+<tr>
+<th>Option</th>
+<th style="text-align:left">Default</th>
+<th style="text-align:right">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>parent</td>
+<td style="text-align:left"></td>
+<td style="text-align:right">The path to this component's parent element.  Ex: #USStateMapParent</td>
+</tr>
+<tr>
+<td>id</td>
+<td style="text-align:left">USStateMap</td>
+<td style="text-align:right">The id of this component's container element.</td>
+</tr>
+<tr>
+<td>class</td>
+<td style="text-align:left">USStateMap</td>
+<td style="text-align:right">The class of this component's container element.</td>
+</tr>
+<tr>
+<td>csv</td>
+<td style="text-align:left"></td>
+<td style="text-align:right">The data for this diagram.  See CSV.</td>
+</tr>
+</tbody>
+</table>
+<h4>World Country Map</h4><table>
+<thead>
+<tr>
+<th>Option</th>
+<th style="text-align:left">Default</th>
+<th style="text-align:right">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>parent</td>
+<td style="text-align:left"></td>
+<td style="text-align:right">The path to this component's parent element.  Ex: #WorldMapParent</td>
+</tr>
+<tr>
+<td>id</td>
+<td style="text-align:left">WorldMap</td>
+<td style="text-align:right">The id of this component's container element.</td>
+</tr>
+<tr>
+<td>class</td>
+<td style="text-align:left">WorldMap</td>
+<td style="text-align:right">The class of this component's container element.</td>
+</tr>
+<tr>
+<td>csv</td>
+<td style="text-align:left"></td>
+<td style="text-align:right">The data for this diagram.  See CSV.</td>
+</tr>
+</tbody>
+</table></article>
+    </section>
+
+
+
+
+
+
+
+		</div>
+	</div>
+
+	<div class="clearfix"></div>
+
+	
+		<div class="col-md-3">
+			<div id="toc" class="col-md-3 hidden-xs hidden-sm hidden-md"></div>
+		</div>
+	
+
+</div>
+</div>
+
+<div class="modal fade" id="searchResults">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Search results</h4>
+      </div>
+      <div class="modal-body"></div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div>
+
+<footer>
+
+	dex.labs
+
+
+<span class="jsdoc-message">
+	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a>
+	
+		on Monday, March 28th 2016, 7:40:49 pm
+	
+	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
+</span>
+</footer>
+
+<script src="scripts/docstrap.lib.js"></script>
+<script src="scripts/toc.js"></script>
+<script type="text/javascript" src="scripts/fulltext-search-ui.js"></script>
+
+<script>
+$( function () {
+	$( "[id*='$']" ).each( function () {
+		var $this = $( this );
+
+		$this.attr( "id", $this.attr( "id" ).replace( "$", "__" ) );
+	} );
+
+	$( ".tutorial-section pre, .readme-section pre" ).each( function () {
+		var $this = $( this );
+
+		var example = $this.find( "code" );
+		exampleText = example.html();
+		var lang = /{@lang (.*?)}/.exec( exampleText );
+		if ( lang && lang[1] ) {
+			exampleText = exampleText.replace( lang[0], "" );
+			example.html( exampleText );
+			lang = lang[1];
+		} else {
+			var langClassMatch = example.parent()[0].className.match(/lang\-(\S+)/);
+			lang = langClassMatch ? langClassMatch[1] : "javascript";
+		}
+
+		if ( lang ) {
+
+			$this
+			.addClass( "sunlight-highlight-" + lang )
+			.addClass( "linenums" )
+			.html( example.html() );
+
+		}
+	} );
+
+	Sunlight.highlightAll( {
+		lineNumbers : true,
+		showMenu : true,
+		enableDoclinks : true
+	} );
+
+	$.catchAnchorLinks( {
+        navbarOffset: 10
+	} );
+	$( "#toc" ).toc( {
+		anchorName  : function ( i, heading, prefix ) {
+			var id = $( heading ).attr( "id" );
+			return id && id.replace(/\~/g, '-inner-').replace(/\./g, '-static-') || ( prefix + i );
+		},
+		selectors   : "#toc-content h1,#toc-content h2,#toc-content h3,#toc-content h4",
+		showAndHide : false,
+		smoothScrolling: true
+	} );
+
+	$( "#main span[id^='toc']" ).addClass( "toc-shim" );
+	$( '.dropdown-toggle' ).dropdown();
+
+    $( "table" ).each( function () {
+      var $this = $( this );
+      $this.addClass('table');
+    } );
+
+} );
+</script>
+
+
+
+<!--Navigation and Symbol Display-->
+
+<script>
+	$( function () {
+		$( '#main' ).localScroll( {
+			offset : { top : 60 } //offset by the height of your header (give or take a few px, see what works for you)
+		} );
+		$( "dt.name" ).each( function () {
+			var $this = $( this ).find("h4");
+			var icon = $( "<i/>" ).addClass( "icon-plus-sign" ).addClass( "pull-right" ).addClass( "icon-white" );
+			var dt = $(this);
+			var children = dt.next( "dd" );
+
+			dt.prepend( icon ).css( {cursor : "pointer"} );
+			dt.addClass( "member-collapsed" ).addClass( "member" );
+
+
+			children.hide();
+
+			dt.children().on( "click", function () {
+				children = dt.next( "dd" );
+				children.slideToggle( "fast", function () {
+
+					if ( children.is( ":visible" ) ) {
+						icon.addClass( "icon-minus-sign" ).removeClass( "icon-plus-sign" ).removeClass( "icon-white" );
+						dt.addClass( "member-open" ).animate( "member-collapsed" );
+					} else {
+						icon.addClass( "icon-plus-sign" ).removeClass( "icon-minus-sign" ).addClass( "icon-white" );
+						dt.addClass( "member-collapsed" ).removeClass( "member-open" );
+					}
+				} );
+			} );
+
+		} );
+	} );
+</script>
+
+
+<!--Google Analytics-->
+
+
+<script type="text/javascript">
+	$(document).ready(function() {
+		SearcherDisplay.init();
+	});
+</script>
+
+</body>
+</html>

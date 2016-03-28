@@ -3,7 +3,9 @@
  * This module provides support for dealing with csv structures.  This
  * is the core datatype on which dexjs components operate.
  *
- * @module csv
+ * @module dex/csv
+ * @name csv
+ * @memberOf dex
  *
  */
 

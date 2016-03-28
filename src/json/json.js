@@ -2,7 +2,9 @@
  *
  * This module provides routines dealing with json data.
  *
- * @module json
+ * @module dex/json
+ * @name json
+ * @memberOf dex
  *
  */
 

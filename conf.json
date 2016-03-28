@@ -1,0 +1,33 @@
+{
+  "opts": {
+    "encoding": "utf8",               // same as -e utf8
+    "destination": "./docs",          // same as -d ./out/
+    "recurse": true                  // same as -r
+  },
+  "tags": {
+    "allowUnknownTags": true,
+    "dictionaries": ["jsdoc","closure"]
+  },
+  "source": {
+    "include" : "src",
+    "includePattern": ".+\\.js(doc)?$",
+    "excludePattern": "((^|\\/|\\\\)_|^dex.maps.js$)"
+  },
+  "plugins": [],
+  "templates": {
+    "systemName"            : "dex.js",
+    "footer"                : "dex.labs",
+    "copyright"             :  "",
+    "includeDate"           : "true",
+    "navType"               : "inline",
+    "theme"                 : "readable",
+    "linenums"              : "true",
+    "collapseSymbols"       : "true",
+    "inverseNav"            : "false",
+    "outputSourceFiles"     : "true" ,
+    "outputSourcePath"      : "true",
+    "dateFormat"            : "dddd, MMMM Do YYYY, h:mm:ss a",
+    "syntaxTheme"           : "default",
+    "sort"                  : "true"
+  }
+}
