@@ -1,4 +1,4 @@
-dex.charts.d3.Dendrogram = function Dendrogram(userConfig) {
+var dendrogram = function Dendrogram(userConfig) {
   var defaults =
   {
     // The parent container of this chart.
@@ -322,4 +322,6 @@ dex.charts.d3.Dendrogram = function Dendrogram(userConfig) {
   });
 
   return chart;
-}
+};
+
+module.exports = dendrogram;

@@ -1,4 +1,4 @@
-dex.charts.d3.Sunburst = function (userConfig) {
+var sunburst = function (userConfig) {
   var chart;
 
   var defaults =
@@ -179,6 +179,6 @@ dex.charts.d3.Sunburst = function (userConfig) {
   });
 
   return chart;
-}
+};
 
-
+module.exports = sunburst;

@@ -1,4 +1,4 @@
-dex.charts.d3.PieChart = function (userConfig) {
+var piechart = function (userConfig) {
   var chart = new dex.component(userConfig,
     {
       'parent'      : "#PieChart",
@@ -116,4 +116,6 @@ dex.charts.d3.PieChart = function (userConfig) {
   });
 
   return chart;
-}
+};
+
+module.exports = piechart;

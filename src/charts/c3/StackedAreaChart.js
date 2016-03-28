@@ -1,4 +1,4 @@
-dex.charts.c3.StackedAreaChart = function (userConfig) {
+var stackedareachart = function (userConfig) {
     var chart;
 
     var defaults =
@@ -93,6 +93,6 @@ dex.charts.c3.StackedAreaChart = function (userConfig) {
     });
 
     return chart;
-}
+};
 
-
+module.exports = stackedareachart;

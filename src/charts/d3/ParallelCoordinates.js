@@ -1,4 +1,4 @@
-dex.charts.d3.ParallelCoordinates = function (userConfig) {
+var parallelcoordinates = function (userConfig) {
   var chart;
 
   defaults =
@@ -567,6 +567,6 @@ dex.charts.d3.ParallelCoordinates = function (userConfig) {
   });
 
   return chart;
-}
-;
+};
 
+module.exports = parallelcoordinates;

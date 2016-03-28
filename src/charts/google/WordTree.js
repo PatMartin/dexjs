@@ -5,7 +5,7 @@
  * @constructor
  *
  */
-dex.charts.google.WordTree = function (userConfig) {
+var wordtree = function (userConfig) {
 
   var defaults = {
     // The parent container of this chart.
@@ -89,4 +89,6 @@ dex.charts.google.WordTree = function (userConfig) {
   });
 
   return chart;
-}
+};
+
+module.exports = wordtree;

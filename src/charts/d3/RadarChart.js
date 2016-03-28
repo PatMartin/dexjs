@@ -1,4 +1,4 @@
-dex.charts.d3.RadarChart = function (userConfig) {
+var radarchart = function (userConfig) {
     var chart;
 
     var defaults =
@@ -407,6 +407,6 @@ dex.charts.d3.RadarChart = function (userConfig) {
     });
 
     return chart;
-}
+};
 
-
+module.exports = radarchart;

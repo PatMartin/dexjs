@@ -1,4 +1,4 @@
-dex.charts.d3.SankeyParticles = function (userConfig) {
+var sankeyparticles = function (userConfig) {
   var chart;
 
   var defaults =
@@ -544,6 +544,6 @@ dex.charts.d3.SankeyParticles = function (userConfig) {
   });
 
   return chart;
-}
+};
 
-
+module.exports = sankeyparticles;

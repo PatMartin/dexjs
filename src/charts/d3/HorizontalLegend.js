@@ -1,4 +1,4 @@
-dex.charts.d3.HorizontalLegend = function (userConfig) {
+var horizontallegend = function (userConfig) {
   var defaults = {
     'parent'     : null,
     'labels'     : ["A", "B", "C"],
@@ -102,4 +102,6 @@ dex.charts.d3.HorizontalLegend = function (userConfig) {
   });
 
   return chart;
-}
+};
+
+module.exports = horizontallegend;

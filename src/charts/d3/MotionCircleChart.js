@@ -1,4 +1,4 @@
-dex.charts.d3.MotionCircleChart = function (userConfig) {
+var motioncirclechart = function (userConfig) {
   var defaultColor = d3.scale.category10();
 
   var csv = {
@@ -440,4 +440,6 @@ dex.charts.d3.MotionCircleChart = function (userConfig) {
   });
 
   return chart;
-}
+};
+
+module.exports = motioncirclechart;

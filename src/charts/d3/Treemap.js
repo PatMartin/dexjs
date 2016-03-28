@@ -1,4 +1,4 @@
-dex.charts.d3.Treemap = function (userConfig) {
+var treemap = function (userConfig) {
     var chart;
 
     var defaults =
@@ -194,6 +194,6 @@ dex.charts.d3.Treemap = function (userConfig) {
     });
 
     return chart;
-}
+};
 
-
+module.exports = treemap;

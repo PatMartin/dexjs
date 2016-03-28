@@ -1,4 +1,4 @@
-dex.charts.threejs.ScatterPlot = function (userConfig) {
+var scatterplot = function (userConfig) {
   var defaults = {
     // The parent container of this chart.
     'parent'  : null,
@@ -361,3 +361,5 @@ dex.charts.threejs.ScatterPlot = function (userConfig) {
 
   return chart;
 };
+
+module.exports = scatterplot;

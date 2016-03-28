@@ -5,7 +5,7 @@
  * @constructor
  *
  */
-dex.charts.dygraphs.LineChart = function (userConfig) {
+var linechart = function (userConfig) {
   var defaults =
   {
     'parent'    : null,
@@ -64,4 +64,6 @@ dex.charts.dygraphs.LineChart = function (userConfig) {
   });
 
   return chart;
-}
+};
+
+module.exports = linechart;

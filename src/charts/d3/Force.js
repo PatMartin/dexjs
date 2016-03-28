@@ -1,4 +1,4 @@
-dex.charts.d3.Force = function (userConfig) {
+var force = function (userConfig) {
   var chart;
 
   var defaults =
@@ -156,6 +156,6 @@ dex.charts.d3.Force = function (userConfig) {
   });
 
   return chart;
-}
+};
 
-
+module.exports = force;

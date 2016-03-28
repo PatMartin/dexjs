@@ -1,4 +1,4 @@
-dex.charts.d3.Sankey = function (userConfig) {
+var sankey = function (userConfig) {
     var defaultColor = d3.scale.category20c();
 
     var defaults =
@@ -925,3 +925,5 @@ d3.sankey = function () {
 
     return sankey;
 };
+
+module.exports = sankey;

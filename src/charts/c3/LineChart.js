@@ -1,4 +1,4 @@
-dex.charts.c3.LineChart = function (userConfig) {
+var linechart = function (userConfig) {
     var chart;
 
     var defaults =
@@ -120,6 +120,6 @@ dex.charts.c3.LineChart = function (userConfig) {
     });
 
     return chart;
-}
+};
 
-
+module.exports = linechart;

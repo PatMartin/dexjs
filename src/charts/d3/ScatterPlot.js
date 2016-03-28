@@ -1,4 +1,4 @@
-dex.charts.d3.ScatterPlot = function (userConfig) {
+var scatterplot = function (userConfig) {
   var chart = new dex.component(userConfig,
     {
       'parent'           : "#ScatterPlot",
@@ -201,4 +201,6 @@ dex.charts.d3.ScatterPlot = function (userConfig) {
   });
 
   return chart;
-}
+};
+
+module.exports = scatterplot;

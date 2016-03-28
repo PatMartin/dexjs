@@ -5,7 +5,7 @@
  * @constructor
  *
  */
-dex.charts.google.PieChart = function (userConfig) {
+var piechart = function (userConfig) {
 
   // Todo: Mouseover events to communicate with other charting components.
   var defaults = {
@@ -87,4 +87,6 @@ dex.charts.google.PieChart = function (userConfig) {
   });
 
   return chart;
-}
+};
+
+module.exports = piechart;

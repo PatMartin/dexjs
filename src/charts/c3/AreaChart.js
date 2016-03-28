@@ -1,4 +1,4 @@
-dex.charts.c3.AreaChart = function (userConfig) {
+var areachart = function (userConfig) {
     var chart;
 
     var defaults =
@@ -93,6 +93,6 @@ dex.charts.c3.AreaChart = function (userConfig) {
     });
 
     return chart;
-}
+};
 
-
+module.exports = areachart;

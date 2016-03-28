@@ -1,4 +1,4 @@
-dex.charts.d3.LineChart = function (userConfig) {
+var linechart = function (userConfig) {
   var defaults =
   {
     'parent'      : null,
@@ -275,4 +275,6 @@ dex.charts.d3.LineChart = function (userConfig) {
   });
 
   return chart;
-}
+};
+
+module.exports = linechart;

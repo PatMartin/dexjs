@@ -31,7 +31,7 @@
  * @inherit module:component
  *
  */
-dex.charts.d3.Axis = function (userConfig) {
+var axis = function (userConfig) {
   var defaults =
   {
     // The parent container of this chart.
@@ -171,3 +171,5 @@ dex.charts.d3.Axis = function (userConfig) {
 
   return chart;
 };
+
+module.exports = axis;

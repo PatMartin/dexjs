@@ -1,4 +1,4 @@
-dex.charts.c3.BarChart = function (userConfig) {
+var barchart = function (userConfig) {
     var chart;
 
     var defaults =
@@ -89,6 +89,6 @@ dex.charts.c3.BarChart = function (userConfig) {
     });
 
     return chart;
-}
+};
 
-
+module.exports = barchart;

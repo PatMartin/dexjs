@@ -1,4 +1,4 @@
-dex.charts.d3.HorizonChart = function (userConfig) {
+var horizonchart = function (userConfig) {
 
   var defaults =
   {
@@ -317,3 +317,5 @@ dex.charts.d3.HorizonChart = function (userConfig) {
     };
   }
 })();
+
+module.exports = horizonchart;

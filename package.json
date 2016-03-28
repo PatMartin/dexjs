@@ -1,21 +1,39 @@
 {
-  "name": "dex-js",
-  "description": "dex-js : Dex explorer js",
+  "name": "dexjs",
+  "description": "dexjs : dexvis javascript visualization component library.",
   "version": "0.1.0",
-  "keywords" : [ "chart", "charting", "visualization", "d3" ],
-  "homepage" : "http://dexvis.com",
-  "email" : "patrick145@msn.com",
-  "url" : "http://dexvis.wordpress.com/",
-  "files" : [ "src/dex.js" ],
-  "main": "src/dex.js",
+  "license": "Apache-2.0",
+  "keywords": [
+    "chart",
+    "charting",
+    "dataviz",
+    "visualization",
+    "c3",
+    "d3"
+  ],
+  "homepage": "http://dexvis.com",
+  "email"   : "patrick145@msn.com",
+  "url"     : "http://dexvis.wordpress.com",
+  "files": [
+    "src/dex.js"
+  ],
+  "main": "dex",
+  "repository": {
+    "type": "git",
+    "url": "https://www.github.com/PatMartin/dexjs.git"
+  },
   "dependencies": {
-    "jquery": "2.1.3",
-    "underscore": "1.8.3"
+    "jquery": "latest",
+    "underscore": "latest"
   },
   "devDependencies": {
-    "gulp": "*",
-    "gulp-rename": "*",
-    "gulp-uglify": "*",
-    "gulp-clean": "*"
+    "jshint": "latest",
+    "jasmine": "latest",
+    "browserify": "latest"
+  },
+  "scripts": {
+    "lint": "jshint src/**.js",
+    "build": "browserify src/dex.js --standalone dex > dist/dex.js && browserify src/dex.js --standalone dex | uglifyjs > dist/dex.min.js",
+    "test": "jasmine SpecRunner.html"
   }
 }

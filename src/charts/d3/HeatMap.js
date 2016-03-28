@@ -1,4 +1,4 @@
-dex.charts.d3.HeatMap = function(userConfig) {
+var heatmap = function(userConfig) {
   var defaults =
   {
     // The parent container of this chart.
@@ -175,4 +175,6 @@ dex.charts.d3.HeatMap = function(userConfig) {
   });
 
   return chart;
-}
+};
+
+module.exports = heatmap;

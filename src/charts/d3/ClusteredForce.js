@@ -1,4 +1,4 @@
-dex.charts.d3.ClusteredForce = function (userConfig) {
+var clusteredforce = function (userConfig) {
 
   var defaults =
   {
@@ -255,4 +255,6 @@ dex.charts.d3.ClusteredForce = function (userConfig) {
   });
 
   return chart;
-}
+};
+
+module.exports = clusteredforce;

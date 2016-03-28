@@ -1,4 +1,4 @@
-dex.charts.d3.MotionLineChart = function (userConfig) {
+var motionlinechart = function (userConfig) {
   var defaultColor = d3.scale.category10();
 
   var csv = {
@@ -495,4 +495,6 @@ dex.charts.d3.MotionLineChart = function (userConfig) {
   });
 
   return chart;
-}
+};
+
+module.exports = motionlinechart;

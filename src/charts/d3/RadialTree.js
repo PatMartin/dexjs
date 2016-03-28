@@ -1,4 +1,4 @@
-dex.charts.d3.RadialTree = function (userConfig) {
+var radialtree = function (userConfig) {
   var chart;
 
   var defaults =
@@ -214,6 +214,7 @@ dex.charts.d3.RadialTree = function (userConfig) {
   });
 
   return chart;
-}
+};
 
+module.exports = radialtree;
 

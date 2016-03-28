@@ -1,4 +1,4 @@
-dex.charts.google.DiffPieChart = function (userConfig) {
+var diffpiechart = function (userConfig) {
 
   var defaults = {
     // The parent container of this chart.
@@ -117,4 +117,6 @@ dex.charts.google.DiffPieChart = function (userConfig) {
   });
 
   return chart;
-}
+};
+
+module.exports = diffpiechart;

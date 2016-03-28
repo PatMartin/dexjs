@@ -29,7 +29,7 @@
  * @param {d3text_spec} [userConfig.title] - A D3 text specification for the title of this axis.
  *
  */
-dex.charts.d3.BarChart = function (userConfig) {
+var barchart = function (userConfig) {
   var config;
 
   var defaults =
@@ -209,3 +209,5 @@ dex.charts.d3.BarChart = function (userConfig) {
 
   return chart;
 };
+
+module.exports = barchart;

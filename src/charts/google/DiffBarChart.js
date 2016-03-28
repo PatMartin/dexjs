@@ -1,4 +1,4 @@
-dex.charts.google.DiffBarChart = function (userConfig) {
+var diffbarchart = function (userConfig) {
 
   var defaults = {
     // The parent container of this chart.
@@ -133,4 +133,6 @@ dex.charts.google.DiffBarChart = function (userConfig) {
   });
 
   return chart;
-}
+};
+
+module.exports = diffbarchart;

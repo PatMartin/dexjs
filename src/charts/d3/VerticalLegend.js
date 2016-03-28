@@ -1,4 +1,4 @@
-dex.charts.d3.VerticalLegend = function (userConfig) {
+var verticallegend = function (userConfig) {
 
   var defaults = {
     'labels'          : ["A", "B", "C"],
@@ -213,4 +213,6 @@ dex.charts.d3.VerticalLegend = function (userConfig) {
   });
 
   return chart;
-}
+};
+
+module.exports = verticallegend;

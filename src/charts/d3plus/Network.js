@@ -1,4 +1,4 @@
-dex.charts.d3plus.Network = function (userConfig) {
+var network = function (userConfig) {
     var chart;
 
     var defaults =
@@ -99,6 +99,6 @@ dex.charts.d3plus.Network = function (userConfig) {
     });
 
     return chart;
-}
+};
 
-
+module.exports = network;

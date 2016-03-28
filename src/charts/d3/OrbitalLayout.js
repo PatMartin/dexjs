@@ -1,4 +1,4 @@
-dex.charts.d3.OrbitalLayout = function (userConfig) {
+var orbitallayout = function (userConfig) {
   var chart;
 
   var defaults =
@@ -343,6 +343,6 @@ dex.charts.d3.OrbitalLayout = function (userConfig) {
   });
 
   return chart;
-}
+};
 
-
+module.exports = orbitallayout;

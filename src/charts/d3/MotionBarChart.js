@@ -1,4 +1,4 @@
-dex.charts.d3.MotionBarChart = function (userConfig) {
+var motionbarchart = function (userConfig) {
   var defaultColor = d3.scale.category10();
 
   var csv = {
@@ -441,4 +441,6 @@ dex.charts.d3.MotionBarChart = function (userConfig) {
   });
 
   return chart;
-}
+};
+
+module.exports = motionbarchart;

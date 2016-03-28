@@ -1,4 +1,4 @@
-dex.charts.d3.Chord = function (userConfig) {
+var chord = function (userConfig) {
   var chart;
 
   var defaults =
@@ -284,4 +284,4 @@ dex.charts.d3.Chord = function (userConfig) {
   return chart;
 }
 
-
+module.exports = chord;

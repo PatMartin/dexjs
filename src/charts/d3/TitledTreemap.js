@@ -1,4 +1,4 @@
-dex.charts.d3.TitledTreemap = function (userConfig) {
+var titledtreemap = function (userConfig) {
   var chart;
 
   var defaults =
@@ -363,6 +363,6 @@ dex.charts.d3.TitledTreemap = function (userConfig) {
   });
 
   return chart;
-}
+};
 
-
+module.exports = titledtreemap;

@@ -1,4 +1,4 @@
-dex.charts.c3.StackedBarChart = function (userConfig) {
+var stackedbarchart = function (userConfig) {
     var chart;
 
     var defaults =
@@ -92,4 +92,4 @@ dex.charts.c3.StackedBarChart = function (userConfig) {
     return chart;
 }
 
-
+module.exports = stackedbarchart;

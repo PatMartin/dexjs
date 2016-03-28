@@ -191,4 +191,6 @@ dex.object = require("./object/object");
  */
 dex.component = require("./component/component");
 
+dex.charts = require("./charts/charts");
+
 module.exports = dex;
