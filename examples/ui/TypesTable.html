@@ -11,8 +11,7 @@
 <body>
 <div id="TypesTableArea" height="100%" width="100%"></div>
 <script src="http://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
-<script src="../../dex.js"></script>
-<script src="../../src/dex/component/TypesTable.js"></script>
+<script src="../../dist/dex.js"></script>
 <script>
   csv =
   {
@@ -25,7 +24,7 @@
   };
 
   // Configure a chart.
-  var table = new TypesTable({
+  var table = new dex.ui.TypesTable({
     'parent' : '#TypesTableArea',
     'csv'    : csv
   });

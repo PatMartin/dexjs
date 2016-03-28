@@ -11,8 +11,7 @@
 <body>
 <div id="TableArea" height="100%" width="100%"></div>
 <script src="http://cdnjs.cloudflare.com/ajax/libs/d3/3.3.9/d3.min.js"></script>
-<script src="../../dex.js"></script>
-<script src="../../src/dex/component/Table.js"></script>
+<script src="../../dist/dex.js"></script>
 <script>
 csv =
 {
@@ -67,7 +66,7 @@ csv =
 };
 
 // Configure a chart.
-var table = new Table({
+var table = new dex.ui.Table({
   'parent'       : '#TableArea',
   'csv'          : csv
 });
