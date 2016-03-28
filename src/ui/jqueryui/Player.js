@@ -1,4 +1,4 @@
-dex.ui.jqueryui.Player = function (userConfig) {
+var player = function (userConfig) {
 
   var defaults = {
     // The parent container of this chart.
@@ -140,4 +140,6 @@ dex.ui.jqueryui.Player = function (userConfig) {
   });
 
   return chart;
-}
+};
+
+module.exports = player;

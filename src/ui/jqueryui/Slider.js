@@ -1,4 +1,4 @@
-dex.ui.jqueryui.Slider = function (userConfig) {
+var slider = function (userConfig) {
 
   var defaults = {
     // The parent container of this chart.
@@ -86,4 +86,6 @@ dex.ui.jqueryui.Slider = function (userConfig) {
   };
 
   return chart;
-}
+};
+
+module.exports = slider;

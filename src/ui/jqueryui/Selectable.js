@@ -1,4 +1,4 @@
-dex.ui.jqueryui.Selectable = function (userConfig) {
+var selectable = function (userConfig) {
 
   var defaults =
   {
@@ -91,4 +91,6 @@ dex.ui.jqueryui.Selectable = function (userConfig) {
   };
 
   return chart;
-}
+};
+
+module.exports = selectable;
