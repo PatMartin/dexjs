@@ -1,4 +1,4 @@
-dex.charts.d3.map.USStateMap = function (userConfig) {
+var usstatemap = function (userConfig) {
   var defaults = {
     'parent'        : "#USStateMap",
     'id'            : 'USStateMap',
@@ -82,4 +82,6 @@ dex.charts.d3.map.USStateMap = function (userConfig) {
   });
 
   return chart;
-}
+};
+
+module.exports = usstatemap;

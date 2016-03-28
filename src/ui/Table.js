@@ -20,7 +20,7 @@
  * @param {csv} userConfig.csv - The user's CSV data.
  *
  */
-dex.ui.Table = function (userConfig) {
+var table = function (userConfig) {
 
   var defaults =
   {
@@ -96,4 +96,4 @@ dex.ui.Table = function (userConfig) {
   return chart;
 };
 
-
+module.exports = table;

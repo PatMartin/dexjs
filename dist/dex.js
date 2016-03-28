@@ -9492,6 +9492,9 @@ d3.TitledTreemap = require("./TitledTreemap");
 d3.Treemap = require("./Treemap");
 d3.VerticalLegend = require("./VerticalLegend");
 
+// Too large, need optional config
+//d3.map = require("./map/map");
+
 module.exports = d3;
 },{"./Axis":10,"./BarChart":11,"./Chord":12,"./ClusteredForce":13,"./Dendrogram":14,"./Force":15,"./HeatMap":16,"./HorizonChart":17,"./HorizontalLegend":18,"./LineChart":19,"./MotionBarChart":20,"./MotionChart":21,"./MotionCircleChart":22,"./MotionLineChart":23,"./OrbitalLayout":24,"./ParallelCoordinates":25,"./PieChart":26,"./RadarChart":27,"./RadialTree":28,"./Sankey":29,"./SankeyParticles":30,"./ScatterPlot":31,"./Sunburst":32,"./TitledTreemap":33,"./Treemap":34,"./VerticalLegend":35}],37:[function(require,module,exports){
 var network = function (userConfig) {
@@ -9601,7 +9604,7 @@ module.exports = network;
 },{}],38:[function(require,module,exports){
 var d3plus = {};
 
-c3.Network = require("./Network");
+d3plus.Network = require("./Network");
 
 module.exports = d3plus;
 },{"./Network":37}],39:[function(require,module,exports){
@@ -13983,6 +13986,8 @@ dex.matrix = require("./matrix/matrix");
  */
 dex.object = require("./object/object");
 
+dex.ui = require("./ui/ui");
+
 /**
  *
  * A module for dealing dex components.
@@ -13996,7 +14001,7 @@ dex.component = require("./component/component");
 dex.charts = require("./charts/charts");
 
 module.exports = dex;
-},{"../lib/pubsub":1,"./array/array":2,"./charts/charts":9,"./color/color":49,"./component/component":50,"./config/config":51,"./console/console":52,"./csv/csv":53,"./datagen/datagen":54,"./json/json":56,"./matrix/matrix":57,"./object/object":58}],56:[function(require,module,exports){
+},{"../lib/pubsub":1,"./array/array":2,"./charts/charts":9,"./color/color":49,"./component/component":50,"./config/config":51,"./console/console":52,"./csv/csv":53,"./datagen/datagen":54,"./json/json":56,"./matrix/matrix":57,"./object/object":58,"./ui/ui":68}],56:[function(require,module,exports){
 /**
  *
  * This module provides routines dealing with json data.
@@ -14736,5 +14741,829 @@ exports.setHierarchical = function (hierarchy, name, value, delimiter) {
   return hierarchy;
 };
 
-},{}]},{},[55])(55)
+},{}],59:[function(require,module,exports){
+/**
+ *
+ * This class creates and attaches a SqlQuery user interface onto the
+ * parent node.
+ *
+ * @name dex.ui.SqlQuery
+ * @param userConfig The following configuration options are available for configuring the
+ * behavior of the SqlQuery component.<br><br>
+ *
+ * 'parent' : The default
+ *
+ * @returns {SqlQuery}
+ *
+ * @constructor
+ *
+ */
+var sqlquery = function (userConfig) {
+
+  var defaults =
+  {
+    'parent' : '#SqlQuery', // The parent container of this chart.
+    // Set these when you need to CSS style components independently.
+    'id'     : 'SqlQuery',
+    'class'  : 'SqlQuery',
+    'query'  : 'select * from dex;',
+    // Our data...
+    'csv'    : {
+      // Give folks without data something to look at anyhow.
+      'header' : ["X", "Y", "Z"],
+      'data'   : [
+        [0, 0, 0],
+        [1, 1, 1],
+        [2, 2, 2]
+      ]
+    }
+  };
+
+  var chart = new dex.component(userConfig, defaults);
+  var config = config;
+
+  var sql = window.SQL;
+  var db = new sql.Database();
+
+  chart.render = function () {
+    // Create the table only at render time.
+    var createStr = "create table dex(" + csv.header.map(function (h, i) {
+        var colName = h.trim();
+        return "'" + colName + "' " + ((dex.csv.isColumnNumeric(csv, i)) ? "float" : "text");
+      }).join(",") + ")";
+    console.log("CREATESTR: " + createStr);
+    db.exec("drop table if exists dex;");
+    db.exec(createStr);
+
+    var populateSql = "BEGIN;" + csv.data.map(function (row) {
+        var insertStr =
+          "insert into dex values(" + row.map(function (col) {
+            return "'" + col.replace("'", "") + "'";
+          }).join(",") + ");";
+        //console.log(insertStr);
+        //db.exec(insertStr);
+        return insertStr;
+      }).join("") + "COMMIT;";
+    console.log(populateSql);
+    db.exec(populateSql);
+    chart.update();
+  };
+
+  chart.query = function (query) {
+    var csv = [];
+    var myQuery = chart.attr("query");
+    if (query && query.length > 0) {
+      myQuery = query;
+    }
+    console.log("QUERY: " + myQuery);
+
+    csv.header = [];
+    csv.data = [];
+
+    var rs = db.exec(myQuery);
+
+    console.log("RS:");
+    console.dir(rs);
+    csv.header = rs[0].columns.map(function (s) {
+      return s.trim();
+    });
+    csv.data = rs[0].values;
+
+    console.log(csv);
+    return csv;
+  }
+
+  chart.update = function () {
+  };
+
+  return chart;
+};
+
+module.exports = sqlquery;
+},{}],60:[function(require,module,exports){
+/**
+ *
+ * @constructor
+ * @classdesc This class constructs an html table from the supplied CSV data.
+ * @memberOf dex
+ * @implements {component}
+ *
+ * @example {@lang javascript}
+ * var myTable = new dex.ui.Table({
+ *   'parent' : "#MyTableContainer",
+ *   'id'     : "MyTableId"
+ *   'csv'    : { header : [ "X", "Y", "Z" ],
+ *                data   : [[ 1, 2, 3 ], [4, 5, 6], [7, 8, 9]]}
+ * });
+ * @param {object} userConfig - A user supplied configuration object which will override the defaults.
+ * @param {string} [userConfig.parent=#Table] - The parent node to which this component will be attached.
+ * Ex: #MyParent will attach to a node with an id = "MyParent".
+ * @param {string} [userConfig.id=Table] - The id of this component.
+ * @param {string} [userConfig.class=Table] - The class of this component.
+ * @param {csv} userConfig.csv - The user's CSV data.
+ *
+ */
+var table = function (userConfig) {
+
+  var defaults =
+  {
+    // The parent container of this chart.
+    'parent' : '#Table',
+    // Set these when you need to CSS style components independently.
+    'id'     : 'Table',
+    'class'  : 'Table',
+    // Our data...
+    'csv'    : {
+      // Give folks without data something to look at anyhow.
+      'header' : ["X", "Y", "Z"],
+      'data'   : [
+        [0, 0, 0],
+        [1, 1, 1],
+        [2, 2, 2]
+      ]
+    }
+  };
+
+  var chart = new dex.component(userConfig, defaults);
+  var config = chart.config;
+
+  chart.render = function () {
+    chart.update();
+  };
+
+  chart.update = function () {
+    var chart = this;
+    var config = chart.config;
+    var csv = config.csv;
+
+    d3.selectAll("#" + config.id).remove();
+
+    var table = d3.select(config.parent)
+      .append("table")
+      .attr("height", "100%")
+      .attr("width", "100%")
+      .attr("border", 1)
+      .attr("class", config["class"])
+      .attr("id", config["id"]);
+
+    var thead = table.append("thead");
+    var tbody = table.append("tbody");
+
+    thead.append("tr")
+      .selectAll("th")
+      .data(csv.header)
+      .enter()
+      .append("th")
+      .text(function (column) {
+        return column;
+      });
+
+    var rows = tbody.selectAll("tr")
+      .data(csv.data)
+      .enter()
+      .append("tr");
+
+    var cells = rows.selectAll("td")
+      .data(function (row) {
+        return csv.header.map(function (column, i) {
+          return {column : i, value : row[i]};
+        });
+      })
+      .enter()
+      .append("td")
+      .html(function (d) {
+        return d.value;
+      });
+  };
+
+  return chart;
+};
+
+module.exports = table;
+},{}],61:[function(require,module,exports){
+var typestable = function (userConfig) {
+
+  var defaults =
+  {
+    // The parent container of this chart.
+    'parent' : '#Table',
+    // Set these when you need to CSS style components independently.
+    'id'     : 'Table',
+    'class'  : 'Table',
+    // Our data...
+    'csv'    : {
+      // Give folks without data something to look at anyhow.
+      'header' : ["X", "Y", "Z"],
+      'data'   : [
+        [0, 0, 0],
+        [1, 1, 1],
+        [2, 2, 2]
+      ]
+    }
+  };
+
+  var chart = new DexComponent(userConfig, defaults);
+
+  chart.render = function () {
+    chart.update();
+  };
+
+  chart.update = function () {
+    var chart = this;
+    var config = chart.config;
+    var types = dex.csv.guessTypes(config.csv);
+    var csv = dex.csv.copy(config.csv);
+
+    d3.selectAll("#" + config.id).remove();
+
+    var table = d3.select(config.parent)
+      .append("table")
+      .attr("height", "100%")
+      .attr("width", "100%")
+      .attr("border", 1)
+      .attr("class", config["class"])
+      .attr("id", config["id"]);
+
+    var thead = table.append("thead");
+    var tbody = table.append("tbody");
+
+    thead.append("tr")
+      .selectAll("th")
+      .data(csv.header)
+      .enter()
+      .append("th")
+      .text(function (column, i) {
+        return column + " (" + types[i] + ")";
+      });
+
+    var rows = tbody.selectAll("tr")
+      .data(csv.data)
+      .enter()
+      .append("tr");
+
+    var cells = rows.selectAll("td")
+      .data(function (row) {
+        return csv.header.map(function (column, i) {
+          return {
+            column : i,
+            value  : row[i]
+          };
+        });
+      })
+      .enter()
+      .append("td")
+      .html(function (d) {
+        return d.value;
+      });
+  };
+
+  return chart;
+};
+
+module.exports = typestable;
+},{}],62:[function(require,module,exports){
+var configurationbox = function (userConfig) {
+
+  var defaults =
+  {
+    // The parent container of this chart.
+    'parent'     : 'body',
+    // Set these when you need to CSS style components independently.
+    'id'         : 'ConfigurationBox',
+    'class'      : 'ui-widget-content',
+    'width'      : 600,
+    'height'     : 100,
+    'xoffset'    : 10,
+    'yoffset'    : 10,
+    'title'      : "Options",
+    'components' : [],
+    'resizable' : true,
+    'draggable'  : true
+  };
+
+  var chart = new dex.component(userConfig, defaults);
+
+  chart.render = function () {
+    var chart = this;
+    var config = chart.config;
+    var i;
+
+    var chartContainer = $(config.parent);
+
+    chart.main =
+      jQuery('<div/>',
+        {
+          'id'    : config['id'],
+          'class' : config['class']
+        }).appendTo(chartContainer);
+
+    for (i = 0; i < config.components.length; i++) {
+      config.components[i].attr('parent', chart.main);
+      config.components[i].render();
+    }
+    chart.main.css('width', config.width);
+    chart.main.css('height', config.height);
+    //chart.main.css('top', '-400px');
+    chart.update();
+  };
+
+  chart.update = function () {
+    var chart = this,
+      config = chart.config,
+      ri, ci;
+
+    jQuery('<h3/>',
+      {
+        'class' : 'ui-widget-header',
+        'text'  : config.title
+      }).appendTo(chart.main);
+
+    for (ci = 0; ci < config.components.length; ci += 1) {
+      config.components[ci].update();
+      //dex.console.log("CMP", config.components[ci], "DOM", config.components[ci].dom());
+      config.components[ci].dom().appendTo(chart.main);
+    }
+
+    config.resizable && $("#" + config.id).resizable();
+    config.draggable && $("#" + config.id).draggable();
+  };
+
+  chart.dom = function () {
+    return chart.main;
+  };
+
+  chart.add = function (components) {
+    var chart = this,
+      config = chart.config,
+      i;
+
+    for (i = 0; i < arguments.length; i += 1) {
+      config.components.push(arguments[i]);
+    }
+    return chart;
+  };
+
+  return chart;
+};
+
+module.exports = configurationbox;
+},{}],63:[function(require,module,exports){
+var player = function (userConfig) {
+
+  var defaults = {
+    // The parent container of this chart.
+    'parent': null,
+    // Set these when you need to CSS style components independently.
+    'id': 'Player',
+    'class': 'ui-widget-content',
+    'width': 600,
+    'height': 100,
+    'delay': 1000,
+    'frameIndex': 0,
+    'csv': {
+      header : ['C1', 'C2', 'C3' ],
+      data : [
+        [1, 2, 3],
+        [2, 3, 4],
+        [3, 4, 5]
+      ]
+    }
+  };
+
+  var chart = new dex.component(userConfig, defaults);
+  var config = chart.config;
+  var frames = dex.csv.getFramesByIndex(config.csv, config.frameIndex);
+  var frameNum = 0;
+  chart.attr("frames", frames);
+
+  chart.render = function () {
+    var timer;
+    var state = "stopped";
+    frames = dex.csv.getFramesByIndex(config.csv, config.frameIndex);
+    dex.console.log(frames);
+    chart.attr("frames", frames);
+
+    dex.console.log("FRAMES:", frames);
+
+    $(function () {
+      $("#beginning").button({
+        text: false,
+        icons: {
+          primary: "ui-icon-seek-start"
+        }
+      }).click(function () {
+        gotoFrame(0);
+      });
+      $("#previous").button({
+        text: false,
+        icons: {
+          primary: "ui-icon-seek-prev"
+        }
+      }).click(function () {
+        previous();
+      });
+      $("#play").button({
+          text: false,
+          icons: {
+            primary: "ui-icon-play"
+          }
+        })
+        .click(function () {
+          var options;
+          if ($(this).text() === "play") {
+            options = {
+              label: "pause",
+              icons: {
+                primary: "ui-icon-pause"
+              }
+            };
+            play();
+          } else {
+            options = {
+              label: "play",
+              icons: {
+                primary: "ui-icon-play"
+              }
+            };
+
+            clearTimeout(timer);
+          }
+          $(this).button("option", options);
+        });
+      $("#next").button({
+        text: false,
+        icons: {
+          primary: "ui-icon-seek-next"
+        }
+      }).click(function () {
+        next();
+      });
+      $("#end").button({
+        text: false,
+        icons: {
+          primary: "ui-icon-seek-end"
+        }
+      }).click(function () {
+        gotoFrame(frames.frames.length-1);
+      });
+    });
+
+    function play() {
+      frameNum++;
+      gotoFrame((frameNum >= frames.frameIndices.length) ? 0 : frameNum);
+
+      // Set a timer for playing the next frame.
+      timer = setTimeout(play, config.delay);
+    }
+
+    gotoFrame(0);
+  };
+
+  chart.update = function () {
+    frames = dex.csv.getFramesByIndex(config.csv, config.frameIndex);
+    chart.attr("frames", frames);
+    gotoFrame(0);
+  };
+
+  function previous() {
+    gotoFrame(frameNum > 0 ? (frameNum-1) : 0)
+  }
+
+  function next() {
+    gotoFrame((frameNum + 1) % frames.frameIndices.length);
+  }
+
+  function gotoFrame(frameIndex) {
+    frameNum = frameIndex;
+    chart.publish({
+      "type"  : "new-frame",
+      "data"  : frames.frames[frameNum],
+      "name"  : frames.frameIndices[frameNum],
+      "frameBy" : csv.header[config.frameIndex] }
+    );
+    dex.console.log("Displaying frame: " + frameNum);
+  }
+
+  $(document).ready(function () {
+    // Make the entire chart draggable.
+    //$(chart.config.parent).draggable();
+  });
+
+  return chart;
+};
+
+module.exports = player;
+},{}],64:[function(require,module,exports){
+var selectable = function (userConfig) {
+
+  var defaults =
+  {
+    // The parent container of this chart.
+    'parent'    : null,
+    // Set these when you need to CSS style components independently.
+    'id'        : 'Selectable',
+    'class'     : 'Selectable',
+    'width'     : 200,
+    'height'    : 100,
+    'xoffset'   : 10,
+    'yoffset'   : 10,
+    'label'     : "",
+    'selection' : ["X", "Y"],
+    'mode'      : "SINGLE",
+    'options'   : {}
+  };
+
+  var chart = new dex.component(userConfig, defaults);
+  var config = chart.config;
+
+  chart.render = function () {
+    var chart = this,
+      config = chart.config,
+      i;
+
+    dex.console.debug("RENDERING: " + config.id);
+
+    if (config.mode == "SINGLE") {
+      chart.attr('options.stop',
+        function (event, ui) {
+          $(event.target).children('.ui-selected').not(':first').removeClass('ui-selected');
+        }
+      );
+    }
+
+    chart.attr('options.selected',
+      function (event, ui) {
+        chart.publish({'type' : 'selected', 'id' : ui.selected.id});
+      });
+
+    chart.attr('options.unselected',
+      function (event, ui) {
+        chart.publish({'type' : 'unselected', 'id' : ui.unselected.id});
+      });
+
+    // Create the main container.
+    chart.main = jQuery('<div/>',
+      {
+        'id'    : config['id'],
+        'class' : config['class']
+      }).appendTo(config['parent']);
+
+    // Create the main container.
+    var label = jQuery('<div/>',
+      {
+        'id'   : config['id'] + '-label',
+        'text' : config['label']
+      }).appendTo(chart.main);
+
+    // Create the main container.
+    var orderedList = jQuery('<ol/>',
+      {
+        'id' : config['id'] + '-ol'
+      }).appendTo(chart.main);
+
+    orderedList.css('overflow', "scroll");
+    orderedList.css('border', "1px solid black");
+    orderedList.css('height', config.height + "px");
+    orderedList.css('width', config.width + "px");
+
+    for (i = 0; i < config.selection.length; i++) {
+      var selectable = jQuery('<li/>',
+        {
+          'id'    : i,
+          'class' : 'ui-widget-content',
+          'text'  : config.selection[i]
+        }).appendTo(orderedList);
+    }
+
+    $('#' + config['id'] + '-ol').children().first().addClass('ui-selected');
+    $('#' + config['id'] + '-ol').selectable(config.options);
+  };
+
+  chart.update = function () {
+  };
+
+  chart.dom = function () {
+    return chart.main;
+  };
+
+  return chart;
+};
+
+module.exports = selectable;
+},{}],65:[function(require,module,exports){
+var slider = function (userConfig) {
+
+  var defaults = {
+    // The parent container of this chart.
+    'parent'  : null,
+    // Set these when you need to CSS style components independently.
+    'id'      : 'Slider',
+    'class'   : 'ui-widget-content',
+    'width'   : 600,
+    'height'  : 100,
+    'xoffset' : 10,
+    'yoffset' : 10,
+    'label'   : "",
+    'options' : {
+      'range' : 'max',
+      'min'   : 1,
+      'max'   : 10,
+      'value' : 5,
+      'slide' : null
+    }
+  };
+
+  var chart = new dex.component(userConfig, defaults);
+  var config = chart.config;
+
+  chart.render = function () {
+    var chart = this,
+      config = chart.config,
+      ri, ci;
+
+    var chart = this;
+    chart.attr('options.slide',
+      function (event, ui) {
+        //dex.console.log("EVENT", event, "UI", ui);
+        $('#' + config['id'] + '-input').val(ui.value);
+        chart.publish("slider-change", {'type' : 'slider-change', 'value' : ui.value});
+      });
+
+    // Create the main container.
+    chart.main = jQuery('<div/>',
+      {
+        'id'    : config['id'],
+        'class' : config['class']
+      }).appendTo(config['parent']);
+
+    // Create the main container.
+    var label = jQuery('<label/>',
+      {
+        'id'    : config['id' + '-label'],
+        'class' : 'SliderLabel',
+        'text'  : config['label'],
+      }).appendTo(chart.main);
+
+    var input = jQuery('<input/>',
+      {
+        'type'  : 'text',
+        'id'    : config['id'] + '-input',
+        'class' : 'SliderInput',
+        'value' : config.options.value
+      }).appendTo(chart.main);
+
+    /*
+     <div>
+     <label for="ticklength">Tick Length:</label>
+     <input type="text" id="ticklength-input" size="5" />
+     <div id="ticklength-slider"/>
+     </div>
+     */
+    // Create the main container.
+    var slider = jQuery('<div/>',
+      {
+        'id'    : config['id'] + '-slider',
+        'class' : config['class']
+      }).appendTo(chart.main);
+
+    //config.parent.appendChild(main);
+
+    $('#' + config['id'] + '-slider').slider(config.options);
+  };
+
+  chart.update = function () {
+  };
+
+  chart.dom = function () {
+    return chart.main;
+  };
+
+  return chart;
+};
+
+module.exports = slider;
+},{}],66:[function(require,module,exports){
+var tabs = function (userConfig) {
+  var defaults = {
+    // The parent container of this chart.
+    'parent'     : null,
+    // Set these when you need to CSS style components independently.
+    'id'         : 'Tabs',
+    'class'      : 'ui-widget-content',
+    'width'      : 600,
+    'height'     : 100,
+    'xoffset'    : 10,
+    'yoffset'    : 10,
+    'title'      : "Options",
+    'components' : [],
+    'resizeable' : true,
+    'draggable'  : true
+  };
+
+  var chart = new dex.component(userConfig, defaults);
+  var config = chart.config;
+
+  chart.tabs = [];
+
+  chart.render = function () {
+    var chart = this,
+      config = chart.config,
+      tabs = chart.tabs,
+      ri, ci,
+      i, j,
+      tab,
+      tabName;
+
+    // Create the main container.
+    if (config.parent === null) {
+      config.parent = document.body;
+    }
+
+    chart.main =
+      jQuery('<div/>',
+        {
+          'id'    : config['id'],
+          'class' : config['class']
+        }).appendTo(config.parent);
+
+    var tabNames = jQuery('<ul/>').appendTo(chart.main);
+
+    for (i = 0; i < tabs.length; i += 1) {
+      jQuery('<li><a href="#' + config.id + '-' + (i + 1) + '">' + tabs[i].name + '</a></li>')
+        .appendTo(tabNames);
+    }
+    //dex.console.log(tabs);
+    for (i = 0; i < tabs.length; i += 1) {
+      var tabBody = jQuery('<div id="' + config.id + '-' + (i + 1) + '"/>').appendTo(chart.main);
+
+      for (j = 0; j < tabs[i].children.length; j++) {
+        tabs[i].children[j].attr('parent', tabBody);
+        tabs[i].children[j].render();
+        tabs[i].children[j].dom().appendTo(tabBody);
+      }
+    }
+
+    chart.main.tabs();
+  };
+
+  chart.update = function () {
+  };
+
+  chart.dom = function () {
+    return chart.main;
+  };
+
+  chart.add = function (tabName, components) {
+    var chart = this,
+      config = chart.config,
+      tabs = chart.tabs,
+      i, ti, tab;
+
+    if (typeof tabName === 'undefined') {
+      return;
+    }
+
+    dex.console.debug("TABS", chart);
+    // REM: Replaced implementation w/o testing.
+    ti = _.findIndex(tabs, {id : tabName});
+
+    if (ti >= 0) {
+      tab = tabs[ti];
+    }
+    else {
+      tab = {'name' : tabName, 'children' : []};
+      tabs.push(tab);
+    }
+
+    for (i = 1; i < arguments.length; i += 1) {
+      tab.children.push(arguments[i]);
+    }
+    dex.console.debug("ATABS", tabs, tab);
+    return chart;
+  };
+
+  return chart;
+};
+
+module.exports = tabs;
+},{}],67:[function(require,module,exports){
+var c3 = {};
+
+c3.ConfigurationBox = require("./ConfigurationBox");
+c3.Player = require("./Player");
+c3.Selectable = require("./Selectable");
+c3.Slider = require("./Slider");
+c3.Tabs = require("./Tabs");
+
+module.exports = c3;
+},{"./ConfigurationBox":62,"./Player":63,"./Selectable":64,"./Slider":65,"./Tabs":66}],68:[function(require,module,exports){
+var ui = {};
+
+ui.jqueryui = require("./jqueryui/jqueryui");
+ui.SqlQuery = require("./SqlQuery");
+ui.Table = require("./Table");
+ui.TypesTable = require("./TypesTable");
+
+module.exports = ui;
+},{"./SqlQuery":59,"./Table":60,"./TypesTable":61,"./jqueryui/jqueryui":67}]},{},[55])(55)
 });

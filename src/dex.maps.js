@@ -195,4 +195,6 @@ dex.component = require("./component/component");
 
 dex.charts = require("./charts/charts");
 
+dex.charts.d3.map = require("./charts/d3/map/map");
+
 module.exports = dex;

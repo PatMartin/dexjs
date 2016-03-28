@@ -1,4 +1,4 @@
-dex.ui.TypesTable = function (userConfig) {
+var typestable = function (userConfig) {
 
   var defaults =
   {
@@ -77,4 +77,4 @@ dex.ui.TypesTable = function (userConfig) {
   return chart;
 };
 
-
+module.exports = typestable;

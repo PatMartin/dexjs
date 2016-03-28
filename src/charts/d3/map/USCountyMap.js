@@ -1,4 +1,4 @@
-dex.charts.d3.map.USCountyMap = function (userConfig)
+var uscountymap = function (userConfig)
 {
   var defaults =
   {
@@ -62,4 +62,6 @@ dex.charts.d3.map.USCountyMap = function (userConfig)
       });
 };
 	  return chart;
-}
+};
+
+module.exports = uscountymap;

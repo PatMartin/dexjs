@@ -1,9 +1,7 @@
-var c3 = {};
+var map = {};
 
-c3.AreaChart = require("./AreaChart");
-c3.BarChart = require("./BarChart");
-c3.LineChart = require("./LineChart");
-c3.StackedAreaChart = require("./StackedAreaChart");
-c3.StackedBarChart = require("./StackedBarChart");
+map.USCountyMap = require("./USCountyMap");
+map.USStateMap = require("./USStateMap");
+map.WorldCountryMap = require("./WorldCountryMap");
 
-module.exports = c3;
+module.exports = map;

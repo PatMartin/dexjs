@@ -1,4 +1,4 @@
-dex.ui.jqueryui.Tabs = function (userConfig) {
+var tabs = function (userConfig) {
   var defaults = {
     // The parent container of this chart.
     'parent'     : null,
@@ -98,4 +98,6 @@ dex.ui.jqueryui.Tabs = function (userConfig) {
   };
 
   return chart;
-}
+};
+
+module.exports = tabs;

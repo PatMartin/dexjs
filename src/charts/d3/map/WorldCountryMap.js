@@ -1,4 +1,4 @@
-dex.charts.d3.map.WorldCountryMap = function (userConfig)
+var worldcountrymap = function (userConfig)
 {
   var defaults =
   {
@@ -1292,4 +1292,6 @@ dex.charts.d3.map.WorldCountryMap = function (userConfig)
   };
 
   return chart;
-}
+};
+
+module.exports = worldcountrymap;

@@ -27,4 +27,7 @@ d3.TitledTreemap = require("./TitledTreemap");
 d3.Treemap = require("./Treemap");
 d3.VerticalLegend = require("./VerticalLegend");
 
+// Too large, need optional config
+//d3.map = require("./map/map");
+
 module.exports = d3;

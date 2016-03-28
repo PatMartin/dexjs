@@ -14,7 +14,7 @@
  * @constructor
  *
  */
-dex.ui.SqlQuery = function (userConfig) {
+var sqlquery = function (userConfig) {
 
   var defaults =
   {
@@ -95,4 +95,4 @@ dex.ui.SqlQuery = function (userConfig) {
   return chart;
 };
 
-
+module.exports = sqlquery;

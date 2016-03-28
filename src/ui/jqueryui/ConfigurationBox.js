@@ -1,4 +1,4 @@
-dex.ui.jqueryui.ConfigurationBox = function (userConfig) {
+var configurationbox = function (userConfig) {
 
   var defaults =
   {
@@ -80,4 +80,6 @@ dex.ui.jqueryui.ConfigurationBox = function (userConfig) {
   };
 
   return chart;
-}
+};
+
+module.exports = configurationbox;
