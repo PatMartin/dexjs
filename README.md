@@ -17,6 +17,7 @@ All visual components work on tabular data much like a CSV file.
 
 Here we create a simple csv instance consiting of three columns, X, Y and Z with 4 rows of data.
 
+```javascript
 var csv = {
   'header' : [ 'X', 'Y', 'Z' ],
   'data'   : [
@@ -25,7 +26,8 @@ var csv = {
     [ 2, 4, 8 ],
     [ 3, 9, 27 ]
     ]
-  };
+};
+```
 
 ### Creating a Visual
 
