@@ -1,3 +1,5 @@
+// Allow user to override, but define this by default:
+
 /**
  *
  * The main dexjs module.
@@ -7,7 +9,7 @@
  *
  * @requires d3
  * @requires jquery
- * @requires jquery-ui
+ * @requires jqueryui
  * @requires underscore
  *
  */
@@ -21,7 +23,7 @@ var dex = {};
  * @type {string}
  *
  */
-dex.version = "0.7";
+dex.version = "0.8.0.8";
 
 /**
  * This routine will return an array [ start, ..., start + len ] using an increment of 1.
@@ -73,7 +75,7 @@ dex.bus = require("../lib/pubsub");
  * @type {module:dex.array}
  *
  */
-dex.array = require('./array/array');
+dex.array = require('./array/array')(dex);
 
 /**
  * A module for dealing with colors.
@@ -82,7 +84,7 @@ dex.array = require('./array/array');
  * @type {module:dex.color}
  *
  */
-dex.color = require("./color/color");
+dex.color = require("./color/color")(dex);
 
 /**
  *
@@ -92,7 +94,7 @@ dex.color = require("./color/color");
  * @type {module:dex.config}
  *
  */
-dex.config = require("./config/config");
+dex.config = require("./config/config")(dex);
 
 /**
  *
@@ -102,7 +104,7 @@ dex.config = require("./config/config");
  * @type {module:dex.console}
  *
  */
-dex.console = require("./console/console");
+dex.console = require("./console/console")(dex);
 
 /**
  *
@@ -112,7 +114,7 @@ dex.console = require("./console/console");
  * @type {module:dex.csv}
  *
  */
-dex.csv = require("./csv/csv");
+dex.csv = require("./csv/csv")(dex);
 
 /**
  *
@@ -122,7 +124,7 @@ dex.csv = require("./csv/csv");
  * @type {module:dex.datagen}
  *
  */
-dex.datagen = require("./datagen/datagen");
+dex.datagen = require("./datagen/datagen")(dex);
 
 /**
  *
@@ -132,7 +134,7 @@ dex.datagen = require("./datagen/datagen");
  * @type {module:dex.json}
  *
  */
-dex.json = require("./json/json");
+dex.json = require("./json/json")(dex);
 
 /**
  * A module for dealing with matrices.
@@ -141,12 +143,12 @@ dex.json = require("./json/json");
  * @type {module:dex/matrix}
  *
  */
-dex.matrix = require("./matrix/matrix");
+dex.matrix = require("./matrix/matrix")(dex);
 
 /**
  * @module dex/object
  */
-dex.object = require("./object/object");
+dex.object = require("./object/object")(dex);
 
 /**
  *
@@ -156,7 +158,7 @@ dex.object = require("./object/object");
  * @type {module:ui}
  *
  */
-dex.ui = require("./ui/ui");
+dex.ui = require("./ui/ui")(dex);
 
 /**
  *
@@ -166,7 +168,7 @@ dex.ui = require("./ui/ui");
  * @type {module:component}
  *
  */
-dex.component = require("./component/component");
+dex.component = require("./component/component")(dex);
 
 /**
  *
@@ -176,6 +178,6 @@ dex.component = require("./component/component");
  * @type {module:charts}
  *
  */
-dex.charts = require("./charts/charts");
+dex.charts = require("./charts/charts")(dex);
 
 module.exports = dex;

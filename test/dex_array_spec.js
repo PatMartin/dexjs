@@ -1,3 +1,5 @@
+require('jasmine');
+
 describe("dex.array", function () {
   it("slice", function () {
     var array = dex.range(1, 10);

@@ -1,4 +1,4 @@
-describe("dex.array", function () {
+describe("dex", function () {
   it("dex", function () {
     expect(dex).toBeDefined();
     expect(dex.array).toBeDefined();

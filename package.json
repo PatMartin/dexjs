@@ -12,8 +12,8 @@
     "d3"
   ],
   "homepage": "http://dexvis.com",
-  "email"   : "patrick145@msn.com",
-  "url"     : "http://dexvis.wordpress.com",
+  "email": "patrick145@msn.com",
+  "url": "http://dexvis.wordpress.com",
   "files": [
     "src/dex.js"
   ],
@@ -23,18 +23,22 @@
     "url": "https://www.github.com/PatMartin/dexjs.git"
   },
   "dependencies": {
-    "jquery": "latest",
-    "underscore": "latest"
+    "jquery"    : "latest",
+    "underscore": "latest",
+    "jqueryui"  : "latest"
   },
   "devDependencies": {
-    "jshint": "latest",
-    "jasmine": "latest",
-    "browserify": "latest"
+    "browserify" : "latest",
+    "jasmine"    : "latest",
+    "jshint"     : "latest",
+    "watch"      : "latest",
+    "jslint"     : "latest"
   },
   "scripts": {
-    "lint": "jshint src/**.js",
-    "docs": "npm run jsdoc src/dexjs.js",
+    "lint": "jslint src/*.js src/*/*.js src/*/*/*.js src/*/*/*/*.js",
+    "docs": "jsdoc -d docs -r src/dex.js",
     "build": "browserify src/dex.js --standalone dex > dist/dex.js && browserify src/dex.js --standalone dex | uglifyjs > dist/dex.min.js && browserify src/dex.maps.js --standalone dex > dist/dex.maps.js && browserify src/dex.maps.js --standalone dex | uglifyjs > dist/dex.maps.min.js",
-    "test": "jasmine SpecRunner.html"
+    "build:js": "browserify src/dex.js --standalone dex > dist/dex.js",
+    "watch": "watch \"npm run build:js\" src"
   }
 }

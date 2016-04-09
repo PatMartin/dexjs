@@ -7,12 +7,13 @@
  * @memberOf dex.ui
  *
  */
-var jqueryui = {};
 
-jqueryui.ConfigurationBox = require("./ConfigurationBox");
-jqueryui.Player = require("./Player");
-jqueryui.Selectable = require("./Selectable");
-jqueryui.Slider = require("./Slider");
-jqueryui.Tabs = require("./Tabs");
-
-module.exports = jqueryui;
+module.exports = function jqueryui(dex) {
+  return {
+    'ConfigurationBox': require("./ConfigurationBox"),
+    'Player': require("./Player"),
+    'Selectable': require("./Selectable"),
+    'Slider': require("./Slider"),
+    'Tabs': require("./Tabs")
+  };
+};

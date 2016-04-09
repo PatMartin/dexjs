@@ -19,13 +19,19 @@
 <script src="http://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
 <script src="../../dist/dex.js"></script>
 <script>
-  var csv = dex.datagen.identityCsv({rows : 5, columns : 5});
-
+  var csv = dex.datagen.identityCsv({rows : 15, columns : 6});
+  dex.console.log("Log Level: ", dex.logLevel);
   // Configure a chart.
   var dendrogram = new dex.charts.d3.Dendrogram({
     'parent'    : "#ChartArea",
     'csv'       : csv,
-    'root.name' : 'Identity Matrix'
+    'root.name' : 'Identity Matrix',
+    'resizable' : true,
+    //'connectionType' : 'elbow',
+    'link.stroke.color' : 'grey',
+    'link.stroke.width' : 1,
+    'link.stroke.opacity' : 1,
+    'link.stroke.dasharray' : ''
   });
 
   dendrogram.render();

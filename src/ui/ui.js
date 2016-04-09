@@ -7,7 +7,6 @@
  * @memberOf dex
  *
  */
-var ui = {};
 
 /**
  *
@@ -17,9 +16,12 @@ var ui = {};
  * @type {module:jqueryui}
  *
  */
-ui.jqueryui = require("./jqueryui/jqueryui");
-ui.SqlQuery = require("./SqlQuery");
-ui.Table = require("./Table");
-ui.TypesTable = require("./TypesTable");
+module.exports = function ui(dex) {
 
-module.exports = ui;
+  return {
+    'jqueryui'  : require("./jqueryui/jqueryui")(dex),
+    'SqlQuery'  : require("./SqlQuery"),
+    'Table'     : require("./Table"),
+    'TypesTable': require("./TypesTable")
+  };
+};

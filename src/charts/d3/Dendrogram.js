@@ -2,10 +2,13 @@ var dendrogram = function Dendrogram(userConfig) {
   var defaults =
   {
     // The parent container of this chart.
-    'parent'     : null,
-    // Set these when you need to CSS style components independently.
-    'id'         : 'Dendrogram',
-    'class'      : 'Dendrogram',
+    'parent'      : null,
+    // Set these  when you need to CSS style components independently.
+    'id'          : 'Dendrogram',
+    'class'       : 'Dendrogram',
+    'resizable'   : true,
+    // diagonal, elbow
+    'connectionType' : 'diagonal',
     // Our data...
     'csv'        : {
       // Give folks without data something to look at anyhow.
@@ -92,14 +95,21 @@ var dendrogram = function Dendrogram(userConfig) {
 
   chart.resize = function resize() {
     dex.console.log("PARENT: '" + chart.config.parent + "'");
-    var width = $("" + chart.config.parent).width();
-    var height = $( "" + chart.config.parent).height();
-    dex.console.log("RESIZE: " + width + "x" + height);
-    chart.attr("width", width)
+    if (chart.config.resizable) {
+      var width = $("" + chart.config.parent).width();
+      var height = $("" + chart.config.parent).height();
+      dex.console.log("RESIZE: " + width + "x" + height);
+      chart.attr("width", width)
         .attr("height", height)
-        .attr("connection.length", width / chart.config.csv.header.length -
-        (chart.config.csv.header.length * chart.config.node.expanded.label.font.size))
+        //.attr("connection.length", width / chart.config.csv.header.length -
+        //  ((chart.config.csv.header.length) * chart.config.node.expanded.label.font.size))
+        //.attr("connection.length", 200)
         .update();
+    }
+    else
+    {
+      chart.update();
+    }
   };
 
   chart.update = function update() {
@@ -121,16 +131,46 @@ var dendrogram = function Dendrogram(userConfig) {
     var tree = d3.layout.tree()
         .size([config.height, config.width]);
 
-    var diagonal = d3.svg.diagonal()
+    var connectionType;
+
+    if (config.connectionType == "elbow")
+    {
+      connectionType = function elbow(d, i) {
+        return "M" + d.source.y + "," + d.source.x
+          + "V" + d.target.x + "H" + d.target.y;
+      }
+    }
+    else {
+      connectionType = d3.svg.diagonal()
         .projection(function (d) {
           return [d.y, d.x];
         });
+    }
 
     var chartContainer = d3.select(config.parent)
         .append("g")
         .attr("id", config["id"])
         .attr("class", config["class"])
         .attr("transform", config.transform);
+
+    var gradient = chartContainer.append("defs")
+      .append("linearGradient")
+      .attr("id", "gradient")
+      .attr("x1", "0%")
+      .attr("y1", "0%")
+      .attr("x2", "100%")
+      .attr("y2", "100%")
+      .attr("spreadMethod", "pad");
+
+    gradient.append("stop")
+      .attr("offset", "0%")
+      .attr("stop-color", "#0c0")
+      .attr("stop-opacity", 1);
+
+    gradient.append("stop")
+      .attr("offset", "100%")
+      .attr("stop-color", "#c00")
+      .attr("stop-opacity", 1);
 
     json =
     {
@@ -276,23 +316,24 @@ var dendrogram = function Dendrogram(userConfig) {
         //.style("fill-opacity", config.link.fillOpacity)
           .attr("d", function (d) {
             var o = {x : source.x0, y : source.y0};
-            return diagonal({source : o, target : o});
+            return connectionType({source : o, target : o});
           })
           .transition()
           .duration(duration)
-          .attr("d", diagonal);
+          .attr("d", connectionType)
+        ;
 
       // Transition links to their new position.
       link.transition()
           .duration(duration)
-          .attr("d", diagonal);
+          .attr("d", connectionType);
 
       // Transition exiting nodes to the parent's new position.
       link.exit().transition()
           .duration(duration)
           .attr("d", function (d) {
             var o = {x : source.x, y : source.y};
-            return diagonal({source : o, target : o});
+            return connectionType({source : o, target : o});
           })
           .remove();
 
