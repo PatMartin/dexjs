@@ -1077,7 +1077,7 @@ module.exports = function charts() {
     'threejs' : require("./threejs/threejs")
   };
 };
-},{"./c3/c3":8,"./d3/d3":36,"./d3plus/d3plus":42,"./dygraphs/dygraphs":44,"./google/google":50,"./threejs/threejs":52}],10:[function(require,module,exports){
+},{"./c3/c3":8,"./d3/d3":37,"./d3plus/d3plus":43,"./dygraphs/dygraphs":45,"./google/google":51,"./threejs/threejs":53}],10:[function(require,module,exports){
 /**
  *
  * @constructor
@@ -2023,18 +2023,24 @@ var dendrogram = function Dendrogram(userConfig) {
   var defaults =
   {
     // The parent container of this chart.
-    'parent'      : null,
+    'parent': null,
     // Set these  when you need to CSS style components independently.
-    'id'          : 'Dendrogram',
-    'class'       : 'Dendrogram',
-    'resizable'   : true,
+    'id': 'Dendrogram',
+    'class': 'Dendrogram',
+    'resizable': true,
+    'margin': {
+      'top': 10,
+      'bottom': 10,
+      'left': 10,
+      'right': 10
+    },
     // diagonal, elbow
-    'connectionType' : 'rounded-elbow',
+    'connectionType': 'diagonal',
     // Our data...
-    'csv'        : {
+    'csv': {
       // Give folks without data something to look at anyhow.
-      'header' : ["X", "Y"],
-      'data'   : [
+      'header': ["X", "Y"],
+      'data': [
         [0, 0],
         [1, 1],
         [2, 4],
@@ -2043,65 +2049,65 @@ var dendrogram = function Dendrogram(userConfig) {
       ]
     },
     // width and height of our chart.
-    'width'      : "100%",
-    'height'     : "100%",
-    'connection' : {
-      'length' : 180,
-      'style'  : {
-        'stroke' : dex.config.stroke()
+    'width': "100%",
+    'height': "100%",
+    'connection': {
+      'length': 180,
+      'style': {
+        'stroke': dex.config.stroke()
       }
     },
-    'transform'  : 'translate(20,0)',
-    'root'       : {
-      'name'     : "ROOT",
-      'category' : "ROOT"
+    //'transform': 'translate(20,0)',
+    'root': {
+      'name': "ROOT",
+      'category': "ROOT"
     },
-    'color'      : d3.scale.category20(),
-    'node'       : {
-      'expanded'  : {
-        'label'  : dex.config.text({
-          'x'              : 8,
-          'y'              : 4,
-          'font.weight'    : 'bold',
-          'fill.fillColor' : 'black',
-          'text'           : function (d) {
+    'color': d3.scale.category20(),
+    'node': {
+      'expanded': {
+        'label': dex.config.text({
+          'x': 8,
+          'y': 4,
+          'font.weight': 'bold',
+          'fill.fillColor': 'black',
+          'text': function (d) {
             return (d.name) ? d.name : d.category;
           }
         }),
-        'circle' : dex.config.circle({
-          'r'    : 4,
-          'fill' : {
-            'fillColor' : 'steelblue'
+        'circle': dex.config.circle({
+          'r': 4,
+          'fill': {
+            'fillColor': 'steelblue'
           }
         })
       },
-      'collapsed' : {
-        'label'  : dex.config.text({
-          'x'           : 8,
-          'y'           : 4,
-          'font.weight' : 'bold',
-          'text'        : function (d) {
+      'collapsed': {
+        'label': dex.config.text({
+          'x': 8,
+          'y': 4,
+          'font.weight': 'bold',
+          'text': function (d) {
             return (d.name) ? d.name : d.category;
           }
         }),
-        'circle' : dex.config.circle({
-          'r'    : 5,
-          'fill' : {
-            'fillColor'   : 'green',
-            'fillOpacity' : .8
+        'circle': dex.config.circle({
+          'r': 5,
+          'fill': {
+            'fillColor': 'green',
+            'fillOpacity': .8
           }
         })
       }
     },
-    'link'       : dex.config.link({
-      'fill'   : {
-        'fillColor' : 'none'
+    'link': dex.config.link({
+      'fill': {
+        'fillColor': 'none'
       },
-      'stroke' : dex.config.stroke({
-        'color'     : 'green',
-        'width'     : 1,
-        'opacity'   : .3,
-        'dasharray' : "5 5"
+      'stroke': dex.config.stroke({
+        'color': 'green',
+        'width': 1,
+        'opacity': .3,
+        'dasharray': "5 5"
       })
     })
   };
@@ -2127,8 +2133,7 @@ var dendrogram = function Dendrogram(userConfig) {
         //.attr("connection.length", 200)
         .update();
     }
-    else
-    {
+    else {
       chart.update();
     }
   };
@@ -2149,23 +2154,28 @@ var dendrogram = function Dendrogram(userConfig) {
 
     var i = 0, root;
 
+    var width = config.width - config.margin.left - config.margin.right;
+    var height = config.height - config.margin.top - config.margin.bottom;
+
     var tree = d3.layout.tree()
-        .size([config.height, config.width]);
+      .size([height, width]);
+
+    var cluster = d3.layout.cluster()
+      .size([height, width]);
+
+    var layout = tree;
 
     var connectionType;
 
-    if (config.connectionType == "elbow")
-    {
-      connectionType = function elbow(d, i) {
+    if (config.connectionType == "extended-elbow") {
+      connectionType = function extendedElbow(d, i) {
         return "M" + d.source.y + "," + d.source.x
+          + "H" + (d.source.y + 50)
           + "V" + d.target.x + "H" + d.target.y;
       }
     }
-    else if (config.connectionType == "rounded-elbow")
-    {
+    else if (config.connectionType == "elbow") {
       connectionType = function elbow(d, i) {
-        dex.console.log("rounded-elbow M" + d.source.y + "," + d.source.x
-          + "V" + d.target.x + "H" + d.target.y);
         return "M" + d.source.y + "," + d.source.x
           + "V" + d.target.x + "H" + d.target.y;
       }
@@ -2178,10 +2188,13 @@ var dendrogram = function Dendrogram(userConfig) {
     }
 
     var chartContainer = d3.select(config.parent)
-        .append("g")
-        .attr("id", config["id"])
-        .attr("class", config["class"])
-        .attr("transform", config.transform);
+      .append("g")
+      .attr("transform", "translate(" + config.margin.left +
+        ", " + config.margin.right + ")")
+      .append("g")
+      .attr("id", config["id"])
+      .attr("class", config["class"])
+      .attr("transform", config.transform);
 
     var gradient = chartContainer.append("defs")
       .append("linearGradient")
@@ -2204,13 +2217,13 @@ var dendrogram = function Dendrogram(userConfig) {
 
     json =
     {
-      "name"     : config.root.name,
-      "category" : config.root.category,
-      "children" : dex.csv.toHierarchicalJson(csv)
+      "name": config.root.name,
+      "category": config.root.category,
+      "children": dex.csv.toHierarchicalJson(csv)
     };
 
     root = json;
-    root.x0 = config.height / 2;
+    root.x0 = height / 2;
     root.y0 = 0;
 
     function toggleAll(d) {
@@ -2235,137 +2248,166 @@ var dendrogram = function Dendrogram(userConfig) {
       var depthY = new Array();
 
       // Compute the new tree layout.
-      var nodes = tree.nodes(root).reverse();
+      var nodes = layout.nodes(root).reverse();
 
       // Allow manually set lengths to be used instead of fixed length connectors
       var fixedLength = true;
-      if (String(config.connection.length).indexOf(",") > -1)
-      {
+      if (String(config.connection.length).indexOf(",") > -1) {
         fixedLength = false;
         depthY = String(config.connection.length).split(",")
+      }
+      else if (String(config.connection.length) === "fit-text") {
+        //dex.console.log("COMPACT");
+        var preText = d3.select(config.parent + " g").append("text");
+        //var charWidth = charText.node().getBBox().width;
+
+        //charText.call(dex.config.configureText);
+        fixedLength = false;
+        var depthMap = {};
+        nodes.forEach(function (d) {
+          preText.text(d.name);
+          // Find start for each connection.
+          var textLen = preText.node().getBBox().width;
+          //dex.console.log("D", d, textLen);
+          if (depthMap[d.depth]) {
+            if (depthMap[d.depth] < textLen) {
+              depthMap[d.depth] = textLen;
+            }
+          }
+          else {
+            depthMap[d.depth] = textLen;
+          }
+        });
+        //dex.console.log("LENGTHS", depthMap);
+        depthY = [0];
+        var textPadding = 40;
+        var textOffset = textPadding;
+        for (i = 0; depthMap[i]; i++) {
+          depthY.push(depthMap[i] + textOffset);
+          textOffset += depthMap[i] + textPadding;
+        }
+        preText.remove();
       }
 
       // Set y offsets based on single fixed length or manual settings
       nodes.forEach(function (d) {
-        if (fixedLength)
-        {
+        if (fixedLength) {
           d.y = d.depth * config.connection.length;
         }
-        else
-        {
+        else {
           d.y = +depthY[d.depth];
         }
       });
 
       // Update the nodes…
       var node = chartContainer.selectAll("g.node")
-          .data(nodes, function (d) {
-            return d.id || (d.id = ++i);
-          });
+        .data(nodes, function (d) {
+          return d.id || (d.id = ++i);
+        });
 
       // Enter any new nodes at the parent's previous position.
       var nodeEnter = node.enter().append("svg:g")
-          .attr("class", "node")
-          .attr("transform", function (d) {
-            return "translate(" + source.y0 + "," + source.x0 + ")";
-          })
-          .on("click", function (d) {
-            toggle(d);
-            update(d);
-          });
+        .attr("class", "node")
+        .attr("transform", function (d) {
+          return "translate(" + source.y0 + "," + source.x0 + ")";
+        })
+        .on("click", function (d) {
+          toggle(d);
+          update(d);
+        });
 
       // Come back here...
       nodeEnter.append("svg:circle")
-          .each(function (d) {
-            //dex.console.log("CALLING", this, d, i);
-            var nodeConfig = (d._children) ?
-                config.node.collapsed.circle : config.node.expanded.circle;
-            d3.select(this).call(dex.config.configureCircle, nodeConfig);
-          })
-          .attr("r", 1e-6);
+        .each(function (d) {
+          //dex.console.log("CALLING", this, d, i);
+          var nodeConfig = (d._children) ?
+            config.node.collapsed.circle : config.node.expanded.circle;
+          d3.select(this).call(dex.config.configureCircle, nodeConfig);
+        })
+        .attr("r", 1e-6);
 
       // Add text nodes configured like we want them.
       nodeEnter.append("text")
-          .each(function (d) {
-            var nodeConfig = (d._children) ?
-                config.node.collapsed.label : config.node.expanded.label;
-            d3.select(this).call(dex.config.configureText, nodeConfig);
-          })
+        .each(function (d) {
+          var nodeConfig = (d._children) ?
+            config.node.collapsed.label : config.node.expanded.label;
+          d3.select(this).call(dex.config.configureText, nodeConfig);
+        })
         //.text(function(d) { return (d.name) ? d.name : d.category;})
-          .style("fill-opacity", 1e-6);
+        .style("fill-opacity", 1e-6);
 
       // Transition nodes to their new position.
       var nodeUpdate = node.transition()
-          .duration(duration)
-          .attr("transform", function (d) {
-            return "translate(" + d.y + "," + d.x + ")";
-          });
+        .duration(duration)
+        .attr("transform", function (d) {
+          return "translate(" + d.y + "," + d.x + ")";
+        });
 
       nodeUpdate.selectAll("circle")
-          .each(
+        .each(
           function (d) {
             var nodeConfig = (d._children) ?
-                config.node.collapsed.circle : config.node.expanded.circle;
+              config.node.collapsed.circle : config.node.expanded.circle;
             d3.select(this).transition().call(dex.config.configureCircle, nodeConfig);
           });
 
       nodeUpdate.select("text")
-          .each(
+        .each(
           function (d) {
             var nodeConfig = (d._children) ?
-                config.node.collapsed.label : config.node.expanded.label;
+              config.node.collapsed.label : config.node.expanded.label;
             d3.select(this).call(dex.config.configureText, nodeConfig);
           })
-          .style("fill-opacity", 1);
+        .style("fill-opacity", 1);
 
       // Transition exiting nodes to the parent's new position.
       var nodeExit = node.exit().transition()
-          .duration(duration)
-          .attr("transform", function (d) {
-            return "translate(" + (source.y) + "," + (source.x) + ")";
-          })
-          .remove();
+        .duration(duration)
+        .attr("transform", function (d) {
+          return "translate(" + (source.y) + "," + (source.x) + ")";
+        })
+        .remove();
 
       nodeExit.select("circle")
-          .attr("r", 1e-6);
+        .attr("r", 1e-6);
 
       nodeExit.select("text")
-          .style("fill-opacity", 1e-6);
+        .style("fill-opacity", 1e-6);
 
       // Update the links…
       var link = chartContainer.selectAll("path.link")
-          .data(tree.links(nodes), function (d) {
-            return d.target.id;
-          });
+        .data(layout.links(nodes), function (d) {
+          return d.target.id;
+        });
 
       // Enter any new links at the parent's previous position.
       link.enter().insert("svg:path", "g")
-          .attr("class", "link")
-          .call(dex.config.configureLink, config.link)
+        .attr("class", "link")
+        .call(dex.config.configureLink, config.link)
         //.style("fill", config.link.fill)
         //.style("fill-opacity", config.link.fillOpacity)
-          .attr("d", function (d) {
-            var o = {x : source.x0, y : source.y0};
-            return connectionType({source : o, target : o});
-          })
-          .transition()
-          .duration(duration)
-          .attr("d", connectionType)
-        ;
+        .attr("d", function (d) {
+          var o = {x: source.x0, y: source.y0};
+          return connectionType({source: o, target: o});
+        })
+        .transition()
+        .duration(duration)
+        .attr("d", connectionType)
+      ;
 
       // Transition links to their new position.
       link.transition()
-          .duration(duration)
-          .attr("d", connectionType);
+        .duration(duration)
+        .attr("d", connectionType);
 
       // Transition exiting nodes to the parent's new position.
       link.exit().transition()
-          .duration(duration)
-          .attr("d", function (d) {
-            var o = {x : source.x, y : source.y};
-            return connectionType({source : o, target : o});
-          })
-          .remove();
+        .duration(duration)
+        .attr("d", function (d) {
+          var o = {x: source.x, y: source.y};
+          return connectionType({source: o, target: o});
+        })
+        .remove();
 
       // Stash the old positions for transition.
       nodes.forEach(function (d) {
@@ -2383,13 +2425,22 @@ var dendrogram = function Dendrogram(userConfig) {
       else {
         d.children = d._children;
         d._children = null;
+        d.children.forEach(function (child) { collapse(child);});
+        //dex.console.log(d.children);
+      }
+    }
+
+    function collapse(d) {
+      if (d.children) {
+        d._children = d.children;
+        d.children = null;
       }
     }
   };
 
   $(document).ready(function () {
     // Make the entire chart draggable.
-    $(chart.config.parent).draggable();
+    //$(chart.config.parent).draggable();
   });
 
   return chart;
@@ -5683,6 +5734,185 @@ module.exports = orbitallayout;
 var parallelcoordinates = function (userConfig) {
   var chart;
 
+  defaults = {
+    'id': "ParallelCoordinates",
+    'class': "ParallelCoordinates",
+    'parent': null,
+    'width': "100%",
+    'height': "100%",
+    'resizable': true,
+    'color': d3.scale.category20(),
+    'title': 'Parallel Coordinates',
+    'csv': {
+      'header': ["X", "Y"],
+      'data': [
+        [0, 0],
+        [1, 1],
+        [2, 4],
+        [3, 9],
+        [4, 16]
+      ]
+    },
+    'margin': {'top': 35, 'bottom': 30, 'left': 10, 'right': 0},
+    'brush': {
+      'mode': '1D-axes'
+    },
+    'bundlingStrength': .5,
+    'smoothness': .1,
+    'alphaOnBrushed': .75,
+    'alpha': 1,
+    'mode': 'queue',
+    'foregroundQueueRate': 50,
+    'brushedQueueRate': 50,
+    'heading.label': dex.config.text({
+      'anchor': 'middle',
+      'font.size': 22,
+      'fill.fillColor' : 'steelblue',
+      'dy': "-4",
+    }),
+    'axis.label': dex.config.text({
+      'anchor': 'end',
+      'font.size': 12,
+      'fill.fillColor' : 'black',
+      'dy': ".35em",
+    }),
+    'firstAxis.label': dex.config.text({
+      'anchor': 'end',
+      'font.size': 12,
+      'fill.fillColor' : 'black',
+      'dy': ".35em",
+    }),
+    'lastAxis.label': dex.config.text({
+      'anchor': 'start',
+      'font.size': 12,
+      'fill.fillColor' : 'black',
+      'dy': ".35em",
+      'dx' : 16
+    })
+  };
+
+  var iChart;
+  chart = new dex.component(userConfig, defaults);
+
+  chart.render = function render() {
+    var chart = this;
+    var config = chart.config;
+    var csv = config.csv;
+    var i;
+    d3.selectAll("#" + chart.config.id).remove();
+
+    window.onresize = this.resize;
+
+    var jsonData = dex.csv.toJson(csv);
+
+    iChart = dex.pc.create()(config.parent)
+      .data(jsonData)
+      //.hideAxis(["name"])
+      .color(function (d, i) {
+        return config.color(d[csv.header[0]]);
+      })
+      .alpha(config.alpha)
+      .alphaOnBrushed(config.alphaOnBrushed)
+      .composite("darken")
+      .margin(config.margin)
+      .mode(config.mode)
+      .bundlingStrength(config.bundlingStrength)
+      .smoothness(config.smoothness)
+      .foregroundQueueRate(config.foregroundQueueRate)
+      .brushedQueueRate(config.brushedQueueRate)
+      .reorderable()
+      .interactive()
+      .shadows()
+      .bundleDimension(csv.header[0])
+      .render()
+      .brushMode(config.brush.mode);
+
+    iChart.on("brush", function (selected) {
+      // Convert json data of form: [{h1:r1c1, h2:r1c2, ...},
+      // {h1:r2c1, h2:r2c2, ... } ]
+      // to csv form.
+      chart.publish({
+        "type": "select",
+        "selected": dex.csv.json2Csv(selected)
+      });
+    });
+
+    iChart.on("resize", function() {
+      iChart.autoscale();
+    });
+
+    //parcoords.svg.selectAll("text")
+    //  .style("font", "12px sans-serif");
+
+    // Apply some window dressing:
+    var axis = d3.selectAll(config.parent + " svg g g.dimension g.axis");
+    dex.console.log("AXIS", axis);
+
+    if (config.axis.label) {
+      axis.selectAll(".tick text")
+        .call(dex.config.configureText, config.axis.label);
+    }
+
+    if (config.firstAxis.label) {
+      axis.first().selectAll(".tick text")
+        .call(dex.config.configureText, config.firstAxis.label);
+    }
+
+    if (config.lastAxis.label) {
+      axis.last().selectAll(".tick text")
+        .call(dex.config.configureText, config.lastAxis.label);
+    }
+
+    if (config.heading.label) {
+      axis.selectAll(".label")
+        .call(dex.config.configureText, config.heading.label);
+    }
+  };
+
+  chart.resize = function resize() {
+    if (chart.config.resizable) {
+      /*
+      var width = d3.select(chart.config.parent).property("clientWidth");
+      var height = d3.select(chart.config.parent).property("clientHeight");
+      chart
+        .attr("width", width - chart.config.margin.left - chart.config.margin.right)
+        .attr("height", height - chart.config.margin.top - chart.config.margin.bottom)
+        .attr("transform", "translate(" + chart.config.margin.left + "," +
+          chart.config.margin.top + ")");
+      */
+      iChart.autoscale();
+    }
+  };
+
+  chart.update = function update() {
+    var chart = this;
+    var config = chart.config;
+    var csv = config.csv;
+
+    var jsonData = dex.csv.toJson(csv);
+  };
+
+
+  $(document).ready(function () {
+    /*
+     $(document).tooltip({
+     items: "path",
+     content: function () {
+     return $(this).find("tooltip-content").text();
+     },
+     track: true
+     });
+     */
+  });
+
+  return chart;
+};
+
+module.exports = parallelcoordinates;
+},{}],26:[function(require,module,exports){
+var parallelcoordinates2 = function (userConfig) {
+  var chart;
+
   defaults =
   {
     'id': "ParallelCoordinates",
@@ -5877,8 +6107,6 @@ var parallelcoordinates = function (userConfig) {
     // Holds selected paths.
     var foreground;
     // Will hold our column names.
-
-
 
     var numericColumns =
       dex.csv.getNumericColumnNames(csv);
@@ -6136,33 +6364,33 @@ var parallelcoordinates = function (userConfig) {
     d3.selectAll("g .brush").remove();
 
     dimensions.append("g")
-     .attr("class", "axis")
-     .each(function (d, i) {
+      .attr("class", "axis")
+      .each(function (d, i) {
 
-     var axisScale = dex.config.createScale(dex.config.scale(config.axis.scale));
-     var axis = d3.svg.axis()
-     .scale(axisScale);
+        var axisScale = dex.config.createScale(dex.config.scale(config.axis.scale));
+        var axis = d3.svg.axis()
+          .scale(axisScale);
 
-     var myConfig = dex.object.clone(config.axis);
-     // If the last label, turn it to the right.
-     if (i == config.csv.header.length - 1) {
-     myConfig.orient = 'right';
-     myConfig.label.dx = function (d, i) {
-     return Math.max(chart.config.axis.label.font.size(d, i) / 2, 8);
-     }
-     }
-     // Configure and apply the axis.
-     dex.config.configureAxis(axis, myConfig, i);
-     d3.select(this).call(axis.scale(y[d]));
+        var myConfig = dex.object.clone(config.axis);
+        // If the last label, turn it to the right.
+        if (i == config.csv.header.length - 1) {
+          myConfig.orient = 'right';
+          myConfig.label.dx = function (d, i) {
+            return Math.max(chart.config.axis.label.font.size(d, i) / 2, 8);
+          }
+        }
+        // Configure and apply the axis.
+        dex.config.configureAxis(axis, myConfig, i);
+        d3.select(this).call(axis.scale(y[d]));
 
-     // Now that the axis has rendered, adjust the tick labels based on our spec.
-     var tickLabels = d3.select(this)
-     .selectAll('.tick')
-     .selectAll("text")
-     .call(dex.config.configureText, myConfig.label, i);
-     })
-     .append("text")
-     .call(dex.config.configureText, config.verticalLabel);
+        // Now that the axis has rendered, adjust the tick labels based on our spec.
+        var tickLabels = d3.select(this)
+          .selectAll('.tick')
+          .selectAll("text")
+          .call(dex.config.configureText, myConfig.label, i);
+      })
+      .append("text")
+      .call(dex.config.configureText, config.verticalLabel);
 
     // Add and store a brush for each axis.
     dimensions.append("g")
@@ -6232,7 +6460,8 @@ var parallelcoordinates = function (userConfig) {
       //dex.console.log("Selected: ", dex.json.toCsv(activeData, dimensions));
       chart.publish({
         "type": "select",
-        "selected": dex.json.toCsv(activeData, dimensions)});
+        "selected": dex.json.toCsv(activeData, dimensions)
+      });
     }
 
   };
@@ -6251,8 +6480,8 @@ var parallelcoordinates = function (userConfig) {
   return chart;
 };
 
-module.exports = parallelcoordinates;
-},{}],26:[function(require,module,exports){
+module.exports = parallelcoordinates2;
+},{}],27:[function(require,module,exports){
 var piechart = function (userConfig) {
   var chart = new dex.component(userConfig,
     {
@@ -6374,7 +6603,7 @@ var piechart = function (userConfig) {
 };
 
 module.exports = piechart;
-},{}],27:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 var radarchart = function (userConfig) {
     var chart;
 
@@ -6788,7 +7017,7 @@ var radarchart = function (userConfig) {
 
 module.exports = radarchart;
 
-},{}],28:[function(require,module,exports){
+},{}],29:[function(require,module,exports){
 var radialtree = function (userConfig) {
   var chart;
 
@@ -7010,7 +7239,7 @@ var radialtree = function (userConfig) {
 module.exports = radialtree;
 
 
-},{}],29:[function(require,module,exports){
+},{}],30:[function(require,module,exports){
 var sankey = function (userConfig) {
     var defaultColor = d3.scale.category20c();
 
@@ -7940,7 +8169,7 @@ d3.sankey = function () {
 };
 
 module.exports = sankey;
-},{}],30:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 var sankeyparticles = function (userConfig) {
   var chart;
 
@@ -8490,7 +8719,7 @@ var sankeyparticles = function (userConfig) {
 };
 
 module.exports = sankeyparticles;
-},{}],31:[function(require,module,exports){
+},{}],32:[function(require,module,exports){
 var scatterplot = function (userConfig) {
   var chart = new dex.component(userConfig,
     {
@@ -8697,7 +8926,7 @@ var scatterplot = function (userConfig) {
 };
 
 module.exports = scatterplot;
-},{}],32:[function(require,module,exports){
+},{}],33:[function(require,module,exports){
 var sunburst = function (userConfig) {
   var chart;
 
@@ -8882,7 +9111,7 @@ var sunburst = function (userConfig) {
 };
 
 module.exports = sunburst;
-},{}],33:[function(require,module,exports){
+},{}],34:[function(require,module,exports){
 var titledtreemap = function (userConfig) {
   var chart;
 
@@ -9252,7 +9481,7 @@ var titledtreemap = function (userConfig) {
 
 module.exports = titledtreemap;
 
-},{}],34:[function(require,module,exports){
+},{}],35:[function(require,module,exports){
 var treemap = function (userConfig) {
     var chart;
 
@@ -9452,7 +9681,7 @@ var treemap = function (userConfig) {
 };
 
 module.exports = treemap;
-},{}],35:[function(require,module,exports){
+},{}],36:[function(require,module,exports){
 var verticallegend = function (userConfig) {
 
   var defaults = {
@@ -9671,7 +9900,7 @@ var verticallegend = function (userConfig) {
 };
 
 module.exports = verticallegend;
-},{}],36:[function(require,module,exports){
+},{}],37:[function(require,module,exports){
 /**
  *
  * This module provides D3 based visualization components.
@@ -9706,6 +9935,7 @@ d3.MotionCircleChart = require("./MotionCircleChart");
 d3.MotionLineChart = require("./MotionLineChart");
 d3.OrbitalLayout = require("./OrbitalLayout");
 d3.ParallelCoordinates = require("./ParallelCoordinates");
+d3.ParallelCoordinates2 = require("./ParallelCoordinates2");
 d3.PieChart = require("./PieChart");
 d3.RadarChart = require("./RadarChart");
 d3.RadialTree = require("./RadialTree");
@@ -9721,7 +9951,7 @@ d3.VerticalLegend = require("./VerticalLegend");
 //d3.map = require("./map/map");
 
 module.exports = d3;
-},{"./Axis":10,"./BarChart":11,"./Chord":12,"./ClusteredForce":13,"./Dendrogram":14,"./Force":15,"./HeatMap":16,"./HorizonChart":17,"./HorizontalLegend":18,"./LineChart":19,"./MotionBarChart":20,"./MotionChart":21,"./MotionCircleChart":22,"./MotionLineChart":23,"./OrbitalLayout":24,"./ParallelCoordinates":25,"./PieChart":26,"./RadarChart":27,"./RadialTree":28,"./Sankey":29,"./SankeyParticles":30,"./ScatterPlot":31,"./Sunburst":32,"./TitledTreemap":33,"./Treemap":34,"./VerticalLegend":35}],37:[function(require,module,exports){
+},{"./Axis":10,"./BarChart":11,"./Chord":12,"./ClusteredForce":13,"./Dendrogram":14,"./Force":15,"./HeatMap":16,"./HorizonChart":17,"./HorizontalLegend":18,"./LineChart":19,"./MotionBarChart":20,"./MotionChart":21,"./MotionCircleChart":22,"./MotionLineChart":23,"./OrbitalLayout":24,"./ParallelCoordinates":25,"./ParallelCoordinates2":26,"./PieChart":27,"./RadarChart":28,"./RadialTree":29,"./Sankey":30,"./SankeyParticles":31,"./ScatterPlot":32,"./Sunburst":33,"./TitledTreemap":34,"./Treemap":35,"./VerticalLegend":36}],38:[function(require,module,exports){
 var uscountymap = function (userConfig)
 {
   var defaults =
@@ -9789,7 +10019,7 @@ var uscountymap = function (userConfig)
 };
 
 module.exports = uscountymap;
-},{}],38:[function(require,module,exports){
+},{}],39:[function(require,module,exports){
 var usstatemap = function (userConfig) {
   var defaults = {
     'parent'        : "#USStateMap",
@@ -9877,7 +10107,7 @@ var usstatemap = function (userConfig) {
 };
 
 module.exports = usstatemap;
-},{}],39:[function(require,module,exports){
+},{}],40:[function(require,module,exports){
 var worldcountrymap = function (userConfig)
 {
   var defaults =
@@ -11175,7 +11405,7 @@ var worldcountrymap = function (userConfig)
 };
 
 module.exports = worldcountrymap;
-},{}],40:[function(require,module,exports){
+},{}],41:[function(require,module,exports){
 var map = {};
 
 map.USCountyMap = require("./USCountyMap");
@@ -11183,112 +11413,112 @@ map.USStateMap = require("./USStateMap");
 map.WorldCountryMap = require("./WorldCountryMap");
 
 module.exports = map;
-},{"./USCountyMap":37,"./USStateMap":38,"./WorldCountryMap":39}],41:[function(require,module,exports){
+},{"./USCountyMap":38,"./USStateMap":39,"./WorldCountryMap":40}],42:[function(require,module,exports){
 var network = function (userConfig) {
-    var chart;
+  var chart;
 
-    var defaults =
-    {
-        // The parent container of this chart.
-        'parent': '#RingNetwork',
-        // Set these when you need to CSS style components independently.
-        'id': 'RingNetwork',
-        'class': 'RingNetwork',
-        'resizable': true,
-        // Our data...
-        'csv': {
-            // Give folks without data something to look at anyhow.
-            'header': ["NAME", "GENDER", "VEHICLE"],
-            'data': [
-                ["JIM", "M", "CAR"],
-                ["JOE", "M", "CAR"],
-                ["PAT", "M", "TRUCK"],
-                ["SALLY", "F", "TRUCK"]
-            ]
-        },
-        'connect': 'first',
-        'type' : 'rings',
-        //'connect' : 'all',
-        'width': "100%",
-        'height': "100%",
-        'transform': "translate(0 0)",
-    };
+  var defaults =
+  {
+    // The parent container of this chart.
+    'parent': '#RingNetwork',
+    // Set these when you need to CSS style components independently.
+    'id': 'RingNetwork',
+    'class': 'RingNetwork',
+    'resizable': true,
+    // Our data...
+    'csv': {
+      // Give folks without data something to look at anyhow.
+      'header': ["NAME", "GENDER", "VEHICLE"],
+      'data': [
+        ["JIM", "M", "CAR"],
+        ["JOE", "M", "CAR"],
+        ["PAT", "M", "TRUCK"],
+        ["SALLY", "F", "TRUCK"]
+      ]
+    },
+    'connect': 'last',
+    'type': 'rings',
+    //'connect' : 'all',
+    'width': "100%",
+    'height': "100%",
+    'transform': "translate(0 0)",
+  };
 
-    var chart = new dex.component(userConfig, defaults);
+  var chart = new dex.component(userConfig, defaults);
 
-    chart.render = function render() {
-        window.onresize = this.resize;
-        chart.resize();
-    };
+  chart.render = function render() {
+    window.onresize = this.resize;
+    chart.resize();
+  };
 
-    chart.resize = function resize() {
-        if (chart.config.resizable) {
-            var width = d3.select(chart.config.parent).property("clientWidth");
-            var height = d3.select(chart.config.parent).property("clientHeight");
-            dex.console.log(chart.config.id + ": resize(" + width + "," + height + ")");
-            chart.attr("width", width).attr("height", height).update();
+  chart.resize = function resize() {
+    if (chart.config.resizable) {
+      var width = d3.select(chart.config.parent).property("clientWidth");
+      var height = d3.select(chart.config.parent).property("clientHeight");
+      dex.console.log(chart.config.id + ": resize(" + width + "," + height + ")");
+      chart.attr("width", width).attr("height", height).update();
+    }
+    else {
+      chart.update();
+    }
+  };
+
+  chart.update = function () {
+    var chart = this;
+    var config = chart.config;
+    var csv = config.csv;
+
+    var connections = [];
+
+    var rootMap = {};
+    var cmap = {};
+
+    // Connect everything in the row to the first column.
+    //if (config.connect == 'first') {
+    // TODO: Support other connection models here.
+    for (var ri = 0; ri < csv.data.length; ri++) {
+      if (_.isUndefined(rootMap[csv.data[ri][0]])) {
+        connections.push({'source': csv.header[0], 'target': csv.data[ri][0]});
+        rootMap[csv.data[ri][0]] = 1;
+      }
+
+      for (var ci = 1; ci < csv.header.length; ci++) {
+        var src = csv.data[ri][0];
+        var dest = csv.data[ri][ci];
+
+        if (_.isUndefined(cmap[src + " -> " + dest])) {
+          connections.push({'source': src, 'target': dest});
+          cmap[src + " -> " + dest] = 1;
         }
-        else {
-            chart.update();
-        }
-    };
+      }
+    }
 
-    chart.update = function () {
-        var chart = this;
-        var config = chart.config;
-        var csv = config.csv;
+    //dex.console.log("Connections", connections);
 
-        var connections = [];
+    // instantiate d3plus
+    var viz = d3plus.viz()
+      .container(config.parent)
+      .type(config.type)
+      .edges(connections)
+      .focus(csv.header[0]);
 
-        // Connect everything in the row to the first column.
-        if (config.connect == 'first') {
-            for (var ri = 0; ri < csv.data.length; ri++) {
-                for (var ci = 1; ci < csv.header.length; ci++) {
-                    connections.push({'source': csv.data[ri][0], 'target': csv.data[ri][ci]});
-                }
-            }
-        }
-        // Connect everything in the row to everything else in the row.
-        else {
-            for (var ri = 0; ri < csv.data.length; ri++) {
-                for (var ci = 1; ci < csv.header.length; ci++) {
-                    connections.push({'source': csv.data[ri][ci - 1], 'target': csv.data[ri][ci]});
-                }
-                connections.push({'source': csv.data[ri][csv.header.length - 1], 'target': csv.data[ri][0]});
-            }
-        }
+    if (config.edges) {
+      viz.edges(config.edges);
+    }
 
-        //dex.console.log("Connections", connections);
+    viz.draw();
+  };
 
-        // instantiate d3plus
-        var viz = d3plus.viz()
-            .container(config.parent)
-            .type(config.type)
-            .edges(connections);
+  $(document).ready(function () {
+    // Make the entire chart draggable.
+    //$(chart.config.parent).draggable();
+  });
 
-        if (config.edges)
-        {
-            viz.edges(config.edges);
-        }
-
-        if (config.focus)
-        {
-            viz.focus(config.focus);
-        }
-
-        viz.draw();             // finally, draw the visualization!
-    };
-
-    $(document).ready(function () {
-        // Make the entire chart draggable.
-        //$(chart.config.parent).draggable();
-    });
-
-    return chart;
+  return chart;
 };
 
 module.exports = network;
-},{}],42:[function(require,module,exports){
+},{}],43:[function(require,module,exports){
 /**
  *
  * This module provides d3plus based visualizations.
@@ -11303,7 +11533,7 @@ var d3plus = {};
 d3plus.Network = require("./Network");
 
 module.exports = d3plus;
-},{"./Network":41}],43:[function(require,module,exports){
+},{"./Network":42}],44:[function(require,module,exports){
 /**
  * This will construct a new DygraphsLineChart with the user supplied userConfig applied.
  * @param userConfig - A user supplied configuration of the form:
@@ -11373,7 +11603,7 @@ var linechart = function (userConfig) {
 };
 
 module.exports = linechart;
-},{}],44:[function(require,module,exports){
+},{}],45:[function(require,module,exports){
 /**
  *
  * This module provides a dygraphs linechart component.
@@ -11389,7 +11619,7 @@ var dygraphs = {};
 dygraphs.LineChart = require("./LineChart");
 
 module.exports = dygraphs;
-},{"./LineChart":43}],45:[function(require,module,exports){
+},{"./LineChart":44}],46:[function(require,module,exports){
 var diffbarchart = function (userConfig) {
 
   var defaults = {
@@ -11528,7 +11758,7 @@ var diffbarchart = function (userConfig) {
 };
 
 module.exports = diffbarchart;
-},{}],46:[function(require,module,exports){
+},{}],47:[function(require,module,exports){
 var diffpiechart = function (userConfig) {
 
   var defaults = {
@@ -11651,7 +11881,7 @@ var diffpiechart = function (userConfig) {
 };
 
 module.exports = diffpiechart;
-},{}],47:[function(require,module,exports){
+},{}],48:[function(require,module,exports){
 /**
  *
  * @param userConfig A user supplied configuration object which will override the defaults.
@@ -11744,7 +11974,7 @@ var piechart = function (userConfig) {
 };
 
 module.exports = piechart;
-},{}],48:[function(require,module,exports){
+},{}],49:[function(require,module,exports){
 /**
  *
  * @param userConfig A user supplied configuration object which will override the defaults.
@@ -11851,7 +12081,7 @@ var timeline = function (userConfig) {
 };
 
 module.exports = timeline;
-},{}],49:[function(require,module,exports){
+},{}],50:[function(require,module,exports){
 /**
  *
  * @param userConfig A user supplied configuration object which will override the defaults.
@@ -11946,7 +12176,7 @@ var wordtree = function (userConfig) {
 };
 
 module.exports = wordtree;
-},{}],50:[function(require,module,exports){
+},{}],51:[function(require,module,exports){
 /**
  *
  * This module provides routines for dealing with arrays.
@@ -11965,7 +12195,7 @@ google.Timeline = require("./Timeline");
 google.WordTree = require("./WordTree");
 
 module.exports = google;
-},{"./DiffBarChart":45,"./DiffPieChart":46,"./PieChart":47,"./Timeline":48,"./WordTree":49}],51:[function(require,module,exports){
+},{"./DiffBarChart":46,"./DiffPieChart":47,"./PieChart":48,"./Timeline":49,"./WordTree":50}],52:[function(require,module,exports){
 var scatterplot = function (userConfig) {
   var defaults = {
     // The parent container of this chart.
@@ -12331,7 +12561,7 @@ var scatterplot = function (userConfig) {
 };
 
 module.exports = scatterplot;
-},{}],52:[function(require,module,exports){
+},{}],53:[function(require,module,exports){
 /**
  *
  * This module provides ThreeJS/WebGL based visualization components.
@@ -12346,7 +12576,7 @@ var threejs = {};
 threejs.ScatterPlot = require("./ScatterPlot");
 
 module.exports = threejs;
-},{"./ScatterPlot":51}],53:[function(require,module,exports){
+},{"./ScatterPlot":52}],54:[function(require,module,exports){
 "use strict";
 
 /**
@@ -12605,7 +12835,7 @@ module.exports = function color(dex) {
   };
 };
 
-},{}],54:[function(require,module,exports){
+},{}],55:[function(require,module,exports){
 /**
  *
  * This module provides base capabilities which are available to all dex components.
@@ -12951,188 +13181,220 @@ module.exports = function color(dex) {
  * @param defaultConfig A map containing the default configuration for this component.
  *
  */
-module.exports = function (userConfig, defaultConfig) {
-  userConfig = userConfig || {};
-  defaultConfig = defaultConfig || {};
+module.exports = function (dex) {
+  return function (userConfig, defaultConfig) {
+    userConfig = userConfig || {};
+    defaultConfig = defaultConfig || {};
 
-  this.debug = false;
+    this.debug = false;
 
-  // Allows component construction from other components.
-  if (userConfig.hasOwnProperty('config')) {
-    this.config = dex.config.expandAndOverlay(userConfig.config, defaultConfig);
-  }
-  // Else, we have a configuration.
-  else {
-    this.config = dex.config.expandAndOverlay(userConfig, defaultConfig);
-  }
-
-  dex.console.log("dex.component Configuration", this.config);
-
-  if (!this.config.channel) {
-    this.config.channel = (this.config.parent || "#parent") + "/" +
-    (this.config.id || "unknown-id");
-  }
-
-  /**
-   * This method provides getter/setter access for the configuration of a
-   * DexComponent.
-   *
-   * Names can express hierarchy.  An attribute named 'a' may have a
-   * child attribute named 'b'.  In this case, the name of attribute
-   * 'a' is simply 'a'.  The name of attribute 'b' would be 'a.b'.
-   *
-   * attr(name) Retrieve retrieve the current value of the attribute with
-   * matching name.
-   *
-   * attr(name, value) Set the attribute with the matching name to the
-   * specified value.
-   *
-   * @method dex.component.attr
-   *
-   * @param name The name of the attribute.
-   * @param value The value of the attribute.
-   *
-   * @example {@lang javascript}
-   * // Set an attribute named "foo" to "bar"
-   * myComponent.attr("foo", "bar");
-   *
-   * // Returns "bar"
-   * myComponent.attr("foo");
-   *
-   * // Set an attribute named "foo" which belongs to an object named
-   * // nested which in turn belongs to myComponent.
-   * myComponent.attr("nested.foo", "bar");
-   *
-   * // Returns "bar"
-   * myComponent.attr("nested.foo");
-   *
-   * // Does nothing, returns myComponent
-   * myComponent.attr();
-   *
-   * @returns {string|component} If only name is provided, attr will return the value of
-   * the requested attribute.  If both name and value are provided, then
-   * the attribute corresponding to the name will be set to the supplied
-   * value and the component itself will be returned.
-   */
-  this.attr = function (name, value) {
-    if (arguments.length == 0) {
-      return this.config;
+    // Allows component construction from other components.
+    if (userConfig.hasOwnProperty('config')) {
+      this.config = dex.config.expandAndOverlay(userConfig.config, defaultConfig);
     }
-    else if (arguments.length == 1) {
-      // REM: Need to getHierarchical
-      return this.config[name];
+    // Else, we have a configuration.
+    else {
+      this.config = dex.config.expandAndOverlay(userConfig, defaultConfig);
     }
-    else if (arguments.length == 2) {
-      //console.log("Setting Hieararchical: " + name + "=" + value);
-      //console.dir(this.config);
 
-      // This will handle the setting of a single attribute
-      dex.object.setHierarchical(this.config, name, value, '.');
+    dex.console.log("dex.component Configuration", this.config);
+
+    if (!this.config.channel) {
+      this.config.channel = (this.config.parent || "#parent") + "/" +
+        (this.config.id || "unknown-id");
     }
-    return this;
-  };
 
-  /**
-   * Subscribe this component to the events of type eventTYpe
-   * generated by the source this.  When events are received,
-   * invoke the callback.
-   *
-   * @method dex.this.subscribe
-   *
-   * @param {component} source - The source component
-   * @param {string} eventType - The name of the event we are subscribing to.
-   * @param callback - The function to be invoked when this event is
-   * received.
-   *
-   * @returns {handle|false} False if function is called incorrectly.
-   * Otherwise, the function returns a handle which can later be used
-   * to unsubscribe to the events.
-   *
-   */
-  this.subscribe = function (source, eventType, callback) {
-    if (arguments.length == 3) {
-      var channel = source.config.channel + '/' + eventType;
+    /**
+     * This method provides getter/setter access for the configuration of a
+     * DexComponent.
+     *
+     * Names can express hierarchy.  An attribute named 'a' may have a
+     * child attribute named 'b'.  In this case, the name of attribute
+     * 'a' is simply 'a'.  The name of attribute 'b' would be 'a.b'.
+     *
+     * attr(name) Retrieve retrieve the current value of the attribute with
+     * matching name.
+     *
+     * attr(name, value) Set the attribute with the matching name to the
+     * specified value.
+     *
+     * @method dex.component.attr
+     *
+     * @param name The name of the attribute.
+     * @param value The value of the attribute.
+     *
+     * @example {@lang javascript}
+     * // Set an attribute named "foo" to "bar"
+     * myComponent.attr("foo", "bar");
+     *
+     * // Returns "bar"
+     * myComponent.attr("foo");
+     *
+     * // Set an attribute named "foo" which belongs to an object named
+     * // nested which in turn belongs to myComponent.
+     * myComponent.attr("nested.foo", "bar");
+     *
+     * // Returns "bar"
+     * myComponent.attr("nested.foo");
+     *
+     * // Does nothing, returns myComponent
+     * myComponent.attr();
+     *
+     * @returns {string|component} If only name is provided, attr will return the value of
+     * the requested attribute.  If both name and value are provided, then
+     * the attribute corresponding to the name will be set to the supplied
+     * value and the component itself will be returned.
+     */
+    this.attr = function (name, value) {
+      if (arguments.length == 0) {
+        return this.config;
+      }
+      else if (arguments.length == 1) {
+        // REM: Need to getHierarchical
+        return this.config[name];
+      }
+      else if (arguments.length == 2) {
+        //console.log("Setting Hieararchical: " + name + "=" + value);
+        //console.dir(this.config);
 
-      dex.console.log("subscribe to " + channel);
-      if (arguments.length < 3) {
-        dex.console.log("failed");
+        // This will handle the setting of a single attribute
+        dex.object.setHierarchical(this.config, name, value, '.');
+      }
+      return this;
+    };
+
+    /**
+     * Subscribe this component to the events of type eventTYpe
+     * generated by the source this.  When events are received,
+     * invoke the callback.
+     *
+     * @method dex.this.subscribe
+     *
+     * @param {component} source - The source component
+     * @param {string} eventType - The name of the event we are subscribing to.
+     * @param callback - The function to be invoked when this event is
+     * received.
+     *
+     * @returns {handle|false} False if function is called incorrectly.
+     * Otherwise, the function returns a handle which can later be used
+     * to unsubscribe to the events.
+     *
+     */
+    this.subscribe = function (source, eventType, callback) {
+      if (arguments.length == 3) {
+        var channel = source.config.channel + '/' + eventType;
+
+        dex.console.log("subscribe to " + channel);
+        if (arguments.length < 3) {
+          dex.console.log("failed");
+          return false;
+        }
+        return dex.bus.subscribe(channel, callback);
+      }
+      else {
         return false;
       }
-      return dex.bus.subscribe(channel, callback);
-    }
-    else {
-      return false;
-    }
-  };
+    };
 
-  /**
-   *
-   * Unsubscribe this component.
-   *
-   * @method dex.component.unsubscribe
-   *
-   * @param handle - The handle attained via subscribe.
-   *
-   */
-  this.unsubscribe = function (handle) {
-    dex.bus.unsubscribe(handle);
-  };
+    /**
+     *
+     * Unsubscribe this component.
+     *
+     * @method dex.component.unsubscribe
+     *
+     * @param handle - The handle attained via subscribe.
+     *
+     */
+    this.unsubscribe = function (handle) {
+      dex.bus.unsubscribe(handle);
+    };
 
-  /**
-   *
-   * Publish an event to the component's subscribers.
-   *
-   * @method dex.component.publish
-   *
-   * @param event - The event to publish.  An event can be any object, however,
-   * it must define a property named "type".
-   * @param event.type - The type of the event we are publishing.
-   *
-   */
-  this.publish = function (event) {
-    var channel;
+    /**
+     *
+     * Publish an event to the component's subscribers.
+     *
+     * @method dex.component.publish
+     *
+     * @param event - The event to publish.  An event can be any object, however,
+     * it must define a property named "type".
+     * @param event.type - The type of the event we are publishing.
+     *
+     */
+    this.publish = function (event) {
+      var channel;
 
-    if (!event || !event.type) {
-      dex.console.warn("publish of event to " + this.channel + " failed.");
-      dex.bus.publish("error", {
-        type          : "error",
-        "description" : "Error publishing event: '" + event + "' to '" + this.channel + "'"
+      if (!event || !event.type) {
+        dex.console.warn("publish of event to " + this.channel + " failed.");
+        dex.bus.publish("error", {
+          type: "error",
+          "description": "Error publishing event: '" + event + "' to '" + this.channel + "'"
+        });
+      }
+      else {
+        channel = this.config.channel + '/' + event.type;
+        dex.console.log("publish to " + channel);
+        dex.bus.publish(channel, event);
+      }
+    };
+
+    /**
+     *
+     * A default no-op implementation of render.  Subclasses should
+     * override this method with one which provides an initial rendering
+     * of their specific component.  This is a great place to put
+     * one-time only initialization logic.
+     *
+     * @method dex.component.render
+     *
+     */
+    this.render = function () {
+      console.log("Unimplemented routine: render()");
+    };
+
+    /**
+     *
+     * A default no-op implementation of update.  This will update the
+     * current component relative to any new setting or data changes.
+     *
+     * @method dex.component.update
+     *
+     */
+    this.update = function () {
+      console.log("Unimplemented routine: update()");
+      return this;
+    };
+
+    this.configure = function (config) {
+      dex.console.log("Configuration", "new", config, "current", this.config);
+      this.config = dex.config.expandAndOverlay(config, this.config);
+      dex.console.log("New Configuration", this.config);
+      return this;
+    };
+
+    this.load = function (location) {
+      var config = {};
+
+      $(location + " div").each(function (i) {
+        dex.console.log("Loading Setting: '" + $(this).attr('id') + "'='" +
+          $(this).attr('value') + "'");
+        config[$(this).attr('id')] = $(this).attr('value');
       });
-    }
-    else {
-      channel = this.config.channel + '/' + event.type;
-      dex.console.log("publish to " + channel);
-      dex.bus.publish(channel, event);
-    }
-  };
 
-  /**
-   *
-   * A default no-op implementation of render.  Subclasses should
-   * override this method with one which provides an initial rendering
-   * of their specific component.  This is a great place to put
-   * one-time only initialization logic.
-   *
-   * @method dex.component.render
-   *
-   */
-  this.render = function () {
-    console.log("Unimplemented routine: render()");
-  };
+      dex.console.log("Loaded Configuration:", config);
+      return this.configure(config);
+    };
 
-  /**
-   *
-   * A default no-op implementation of update.  This will update the
-   * current component relative to any new setting or data changes.
-   *
-   * @method dex.component.update
-   *
-   */
-  this.update = function () {
-    console.log("Unimplemented routine: update()");
+    this.save = function (location, config) {
+      dex.console.log("Saving Configuration To: " + location, config);
+      $(location).children().remove();
+      _.keys(config).forEach(function (key) {
+        $(location).append("<div id='" + key + "' value='" + config[key] + "'></div>");
+      });
+      return this;
+    };
   };
 };
-},{}],55:[function(require,module,exports){
+},{}],56:[function(require,module,exports){
 /**
  *
  * Config module.
@@ -13741,11 +14003,11 @@ module.exports = function config(dex) {
 
       //dex.console.debug(callerStr + ": setEventHandler(node=" + node + ", eventType=" + eventType + ", eventHandler=" + eventHandler);
       if (!node) {
-        dex.console.warn(callerStr + ": dex.config.setEventHandler(eventType='" + eventType + "eventHandler=" + eventHandler + ") : node is null.");
+        dex.console.debug(callerStr + ": dex.config.setEventHandler(eventType='" + eventType + "eventHandler=" + eventHandler + ") : node is null.");
         return node;
       }
       if (!dex.object.isFunction(node.on)) {
-        dex.console.warn(callerStr + ": dex.config.setEventHandler(eventType='" + eventType + "', eventHandler='" + eventHandler +
+        dex.console.debug(callerStr + ": dex.config.setEventHandler(eventType='" + eventType + "', eventHandler='" + eventHandler +
           "') : target node is missing function: node.on(eventType,eventHandler).  Node dump:", node);
         return node;
       }
@@ -13762,11 +14024,11 @@ module.exports = function config(dex) {
     'setAttr': function setAttr(node, name, value, i) {
       var callerStr = dex.config.getCallerString(arguments.callee.caller);
       if (!node) {
-        dex.console.warn(callerStr + ": dex.config.setAttr(name='" + name + "value=" + value + ") : node is null.");
+        dex.console.debug(callerStr + ": dex.config.setAttr(name='" + name + "value=" + value + ") : node is null.");
         return node;
       }
       if (!dex.object.isFunction(node.attr)) {
-        dex.console.warn(callerStr + ": dex.config.setAttr(name='" + name + "', value='" + value +
+        dex.console.debug(callerStr + ": dex.config.setAttr(name='" + name + "', value='" + value +
           "') : target node is missing function: node.attr.  Node dump:", node);
         return node;
       }
@@ -13787,7 +14049,7 @@ module.exports = function config(dex) {
         return node;
       }
       if (!dex.object.isFunction(node.style)) {
-        dex.console.warn(callerStr + ": dex.config.setStyle(name='" + name + "', value='" + value +
+        dex.console.debug(callerStr + ": dex.config.setStyle(name='" + name + "', value='" + value +
           "') : target node is missing function: node.style.  Node Dump:", node);
         return node;
       }
@@ -14416,7 +14678,7 @@ module.exports = function config(dex) {
     }
   };
 };
-},{}],56:[function(require,module,exports){
+},{}],57:[function(require,module,exports){
 /**
  *
  * This module provides console logging capabilities.
@@ -14427,7 +14689,7 @@ module.exports = function config(dex) {
  *
  */
 
-module.exports = function config(dex) {
+module.exports = function (dex) {
 
   /**
    *
@@ -14467,7 +14729,7 @@ module.exports = function config(dex) {
 //  console.log(msgLevel);
 //  console.dir(msg);
 
-      if (dex.console.logLevel() >= msgLevel) {
+      if (dex.logLevel >= msgLevel) {
         for (i = 0; i < msg.length; i++) {
           if (typeof msg[i] == 'object') {
             console.dir(msg[i]);
@@ -14488,7 +14750,7 @@ module.exports = function config(dex) {
      * @returns {dex.console|*}
      */
     'trace': function () {
-      return dex.console.logWithLevel(logLevels.TRACE, arguments)
+      return dex.console.logWithLevel(dex.logLevels.TRACE, arguments)
     },
 
     /**
@@ -14499,7 +14761,7 @@ module.exports = function config(dex) {
      * @returns {dex.console|*}
      */
     'debug': function () {
-      return dex.console.logWithLevel(logLevels.DEBUG, arguments)
+      return dex.console.logWithLevel(dex.logLevels.DEBUG, arguments)
     },
 
     /**
@@ -14512,7 +14774,7 @@ module.exports = function config(dex) {
      */
     'log': function () {
       //console.log("caller is " + arguments.callee.caller.toString());
-      return dex.console.logWithLevel(logLevels.NORMAL, arguments)
+      return dex.console.logWithLevel(dex.logLevels.NORMAL, arguments)
     },
 
     /**
@@ -14524,7 +14786,7 @@ module.exports = function config(dex) {
      *
      */
     'warn': function () {
-      return dex.console.logWithLevel(logLevels.WARN, arguments)
+      return dex.console.logWithLevel(dex.logLevels.WARN, arguments)
     },
 
     /**
@@ -14535,7 +14797,7 @@ module.exports = function config(dex) {
      * @returns {dex.console|*}
      */
     'fatal': function () {
-      return dex.console.logWithLevel(logLevels.FATAL, arguments)
+      return dex.console.logWithLevel(dex.logLevels.FATAL, arguments)
     },
 
     /**
@@ -14545,17 +14807,17 @@ module.exports = function config(dex) {
      *
      */
     'logLevel': function (_) {
-      if (!arguments.length) return logLevel;
-      logLevel = logLevels[_];
-      return logLevel;
+      if (!arguments.length) return dex.logLevel;
+      dex.logLevel = dex.logLevels[_];
+      return dex.logLevel;
     },
 
     'logLevels': function () {
-      return logLevels;
+      return dex.logLevels;
     }
   };
 };
-},{}],57:[function(require,module,exports){
+},{}],58:[function(require,module,exports){
 /**
  *
  * This module provides support for dealing with csv structures.  This
@@ -14683,6 +14945,23 @@ module.exports = function csv(dex) {
         }
       }
       return map;
+    },
+
+    'json2Csv' : function(json) {
+      var csv = { 'header' : [], 'data' : [] };
+      if (_.isUndefined(json) || json.length <= 0) {
+        return csv;
+      }
+      csv.header = _.keys(json[0]);
+      json.forEach(function(jsonRow) {
+        var row = [];
+        csv.header.forEach(function (columnName) {
+          row.push(jsonRow[columnName]);
+        });
+        csv.data.push(row);
+      });
+
+      return csv;
     },
 
     /**
@@ -15411,7 +15690,7 @@ module.exports = function csv(dex) {
     }
   };
 };
-},{}],58:[function(require,module,exports){
+},{}],59:[function(require,module,exports){
 /**
  *
  * This module provides support for creating various datasets.
@@ -15553,7 +15832,7 @@ module.exports = function datagen(dex) {
   };
 };
 
-},{}],59:[function(require,module,exports){
+},{}],60:[function(require,module,exports){
 /**
  *
  * The main dexjs module.
@@ -15754,7 +16033,7 @@ dex.charts = require("./charts/charts");
 dex.charts.d3.map = require("./charts/d3/map/map");
 
 module.exports = dex;
-},{"../lib/pubsub":1,"./array/array":2,"./charts/charts":9,"./charts/d3/map/map":40,"./color/color":53,"./component/component":54,"./config/config":55,"./console/console":56,"./csv/csv":57,"./datagen/datagen":58,"./json/json":60,"./matrix/matrix":61,"./object/object":62,"./ui/ui":72}],60:[function(require,module,exports){
+},{"../lib/pubsub":1,"./array/array":2,"./charts/charts":9,"./charts/d3/map/map":41,"./color/color":54,"./component/component":55,"./config/config":56,"./console/console":57,"./csv/csv":58,"./datagen/datagen":59,"./json/json":61,"./matrix/matrix":62,"./object/object":63,"./ui/ui":73}],61:[function(require,module,exports){
 /**
  *
  * This module provides routines dealing with json data.
@@ -15851,7 +16130,7 @@ module.exports = function json(dex) {
   };
 };
 
-},{}],61:[function(require,module,exports){
+},{}],62:[function(require,module,exports){
 /**
  *
  * This module provides routines dealing with matrices.
@@ -16192,7 +16471,7 @@ module.exports = function matrix(dex) {
   };
 };
 
-},{}],62:[function(require,module,exports){
+},{}],63:[function(require,module,exports){
 /**
  *
  * This module provides routines dealing with javascript objects.
@@ -16446,7 +16725,7 @@ module.exports = function object(dex) {
      * @returns {exports}
      */
     'connect': function connect(map, values) {
-      dex.console.log("map:", map, "values:", values);
+      //dex.console.log("map:", map, "values:", values);
 
       if (!values || values.length <= 0) {
         return this;
@@ -16516,7 +16795,7 @@ module.exports = function object(dex) {
 };
 
 
-},{}],63:[function(require,module,exports){
+},{}],64:[function(require,module,exports){
 /**
  *
  * This class creates and attaches a SqlQuery user interface onto the
@@ -16615,7 +16894,7 @@ var sqlquery = function (userConfig) {
 };
 
 module.exports = sqlquery;
-},{}],64:[function(require,module,exports){
+},{}],65:[function(require,module,exports){
 /**
  *
  * @constructor
@@ -16715,7 +16994,7 @@ var table = function (userConfig) {
 };
 
 module.exports = table;
-},{}],65:[function(require,module,exports){
+},{}],66:[function(require,module,exports){
 var typestable = function (userConfig) {
 
   var defaults =
@@ -16796,7 +17075,7 @@ var typestable = function (userConfig) {
 };
 
 module.exports = typestable;
-},{}],66:[function(require,module,exports){
+},{}],67:[function(require,module,exports){
 var configurationbox = function (userConfig) {
 
   var defaults =
@@ -16882,7 +17161,7 @@ var configurationbox = function (userConfig) {
 };
 
 module.exports = configurationbox;
-},{}],67:[function(require,module,exports){
+},{}],68:[function(require,module,exports){
 var player = function (userConfig) {
 
   var defaults = {
@@ -17028,7 +17307,7 @@ var player = function (userConfig) {
 };
 
 module.exports = player;
-},{}],68:[function(require,module,exports){
+},{}],69:[function(require,module,exports){
 var selectable = function (userConfig) {
 
   var defaults =
@@ -17125,7 +17404,7 @@ var selectable = function (userConfig) {
 };
 
 module.exports = selectable;
-},{}],69:[function(require,module,exports){
+},{}],70:[function(require,module,exports){
 var slider = function (userConfig) {
 
   var defaults = {
@@ -17217,7 +17496,7 @@ var slider = function (userConfig) {
 };
 
 module.exports = slider;
-},{}],70:[function(require,module,exports){
+},{}],71:[function(require,module,exports){
 var tabs = function (userConfig) {
   var defaults = {
     // The parent container of this chart.
@@ -17321,7 +17600,7 @@ var tabs = function (userConfig) {
 };
 
 module.exports = tabs;
-},{}],71:[function(require,module,exports){
+},{}],72:[function(require,module,exports){
 /**
  *
  * This module provides ui components based upon jquery-ui.
@@ -17341,7 +17620,7 @@ module.exports = function jqueryui(dex) {
     'Tabs': require("./Tabs")
   };
 };
-},{"./ConfigurationBox":66,"./Player":67,"./Selectable":68,"./Slider":69,"./Tabs":70}],72:[function(require,module,exports){
+},{"./ConfigurationBox":67,"./Player":68,"./Selectable":69,"./Slider":70,"./Tabs":71}],73:[function(require,module,exports){
 /**
  *
  * This module provides ui components from a variety of sources.
@@ -17363,11 +17642,11 @@ module.exports = function jqueryui(dex) {
 module.exports = function ui(dex) {
 
   return {
-    'jqueryui'  : require("./jqueryui/jqueryui"),
+    'jqueryui'  : require("./jqueryui/jqueryui")(dex),
     'SqlQuery'  : require("./SqlQuery"),
     'Table'     : require("./Table"),
     'TypesTable': require("./TypesTable")
   };
 };
-},{"./SqlQuery":63,"./Table":64,"./TypesTable":65,"./jqueryui/jqueryui":71}]},{},[59])(59)
+},{"./SqlQuery":64,"./Table":65,"./TypesTable":66,"./jqueryui/jqueryui":72}]},{},[60])(60)
 });
