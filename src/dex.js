@@ -67,6 +67,12 @@ dex.copy = function(obj) {
  */
 dex.bus = require("../lib/pubsub");
 
+require('../lib/d3.svg.multibrush');
+require('../lib/d3.selection');
+
+dex.pc = require('../lib/d3.parcoords');
+dex.util = require('./util/util')(dex);
+
 /**
  *
  * A module for dealing with arrays.
