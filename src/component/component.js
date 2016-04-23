@@ -523,6 +523,36 @@ module.exports = function (dex) {
      */
     this.update = function () {
       console.log("Unimplemented routine: update()");
+      return this;
+    };
+
+    this.configure = function (config) {
+      dex.console.log("Configuration", "new", config, "current", this.config);
+      this.config = dex.config.expandAndOverlay(config, this.config);
+      dex.console.log("New Configuration", this.config);
+      return this;
+    };
+
+    this.load = function (location) {
+      var config = {};
+
+      $(location + " div").each(function (i) {
+        dex.console.log("Loading Setting: '" + $(this).attr('id') + "'='" +
+          $(this).attr('value') + "'");
+        config[$(this).attr('id')] = $(this).attr('value');
+      });
+
+      dex.console.log("Loaded Configuration:", config);
+      return this.configure(config);
+    };
+
+    this.save = function (location, config) {
+      dex.console.log("Saving Configuration To: " + location, config);
+      $(location).children().remove();
+      _.keys(config).forEach(function (key) {
+        $(location).append("<div id='" + key + "' value='" + config[key] + "'></div>");
+      });
+      return this;
     };
   };
 };
