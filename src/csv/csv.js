@@ -127,6 +127,23 @@ module.exports = function csv(dex) {
       return map;
     },
 
+    'json2Csv' : function(json) {
+      var csv = { 'header' : [], 'data' : [] };
+      if (_.isUndefined(json) || json.length <= 0) {
+        return csv;
+      }
+      csv.header = _.keys(json[0]);
+      json.forEach(function(jsonRow) {
+        var row = [];
+        csv.header.forEach(function (columnName) {
+          row.push(jsonRow[columnName]);
+        });
+        csv.data.push(row);
+      });
+
+      return csv;
+    },
+
     /**
      *
      * @param csv
