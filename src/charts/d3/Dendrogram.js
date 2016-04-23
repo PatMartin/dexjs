@@ -2,18 +2,24 @@ var dendrogram = function Dendrogram(userConfig) {
   var defaults =
   {
     // The parent container of this chart.
-    'parent'      : null,
+    'parent': null,
     // Set these  when you need to CSS style components independently.
-    'id'          : 'Dendrogram',
-    'class'       : 'Dendrogram',
-    'resizable'   : true,
+    'id': 'Dendrogram',
+    'class': 'Dendrogram',
+    'resizable': true,
+    'margin': {
+      'top': 10,
+      'bottom': 10,
+      'left': 10,
+      'right': 10
+    },
     // diagonal, elbow
-    'connectionType' : 'diagonal',
+    'connectionType': 'diagonal',
     // Our data...
-    'csv'        : {
+    'csv': {
       // Give folks without data something to look at anyhow.
-      'header' : ["X", "Y"],
-      'data'   : [
+      'header': ["X", "Y"],
+      'data': [
         [0, 0],
         [1, 1],
         [2, 4],
@@ -22,65 +28,65 @@ var dendrogram = function Dendrogram(userConfig) {
       ]
     },
     // width and height of our chart.
-    'width'      : "100%",
-    'height'     : "100%",
-    'connection' : {
-      'length' : 180,
-      'style'  : {
-        'stroke' : dex.config.stroke()
+    'width': "100%",
+    'height': "100%",
+    'connection': {
+      'length': 180,
+      'style': {
+        'stroke': dex.config.stroke()
       }
     },
-    'transform'  : 'translate(20,0)',
-    'root'       : {
-      'name'     : "ROOT",
-      'category' : "ROOT"
+    //'transform': 'translate(20,0)',
+    'root': {
+      'name': "ROOT",
+      'category': "ROOT"
     },
-    'color'      : d3.scale.category20(),
-    'node'       : {
-      'expanded'  : {
-        'label'  : dex.config.text({
-          'x'              : 8,
-          'y'              : 4,
-          'font.weight'    : 'bold',
-          'fill.fillColor' : 'black',
-          'text'           : function (d) {
+    'color': d3.scale.category20(),
+    'node': {
+      'expanded': {
+        'label': dex.config.text({
+          'x': 8,
+          'y': 4,
+          'font.weight': 'bold',
+          'fill.fillColor': 'black',
+          'text': function (d) {
             return (d.name) ? d.name : d.category;
           }
         }),
-        'circle' : dex.config.circle({
-          'r'    : 4,
-          'fill' : {
-            'fillColor' : 'steelblue'
+        'circle': dex.config.circle({
+          'r': 4,
+          'fill': {
+            'fillColor': 'steelblue'
           }
         })
       },
-      'collapsed' : {
-        'label'  : dex.config.text({
-          'x'           : 8,
-          'y'           : 4,
-          'font.weight' : 'bold',
-          'text'        : function (d) {
+      'collapsed': {
+        'label': dex.config.text({
+          'x': 8,
+          'y': 4,
+          'font.weight': 'bold',
+          'text': function (d) {
             return (d.name) ? d.name : d.category;
           }
         }),
-        'circle' : dex.config.circle({
-          'r'    : 5,
-          'fill' : {
-            'fillColor'   : 'green',
-            'fillOpacity' : .8
+        'circle': dex.config.circle({
+          'r': 5,
+          'fill': {
+            'fillColor': 'green',
+            'fillOpacity': .8
           }
         })
       }
     },
-    'link'       : dex.config.link({
-      'fill'   : {
-        'fillColor' : 'none'
+    'link': dex.config.link({
+      'fill': {
+        'fillColor': 'none'
       },
-      'stroke' : dex.config.stroke({
-        'color'     : 'green',
-        'width'     : 1,
-        'opacity'   : .3,
-        'dasharray' : "5 5"
+      'stroke': dex.config.stroke({
+        'color': 'green',
+        'width': 1,
+        'opacity': .3,
+        'dasharray': "5 5"
       })
     })
   };
@@ -106,8 +112,7 @@ var dendrogram = function Dendrogram(userConfig) {
         //.attr("connection.length", 200)
         .update();
     }
-    else
-    {
+    else {
       chart.update();
     }
   };
@@ -128,13 +133,27 @@ var dendrogram = function Dendrogram(userConfig) {
 
     var i = 0, root;
 
+    var width = config.width - config.margin.left - config.margin.right;
+    var height = config.height - config.margin.top - config.margin.bottom;
+
     var tree = d3.layout.tree()
-        .size([config.height, config.width]);
+      .size([height, width]);
+
+    var cluster = d3.layout.cluster()
+      .size([height, width]);
+
+    var layout = tree;
 
     var connectionType;
 
-    if (config.connectionType == "elbow")
-    {
+    if (config.connectionType == "extended-elbow") {
+      connectionType = function extendedElbow(d, i) {
+        return "M" + d.source.y + "," + d.source.x
+          + "H" + (d.source.y + 50)
+          + "V" + d.target.x + "H" + d.target.y;
+      }
+    }
+    else if (config.connectionType == "elbow") {
       connectionType = function elbow(d, i) {
         return "M" + d.source.y + "," + d.source.x
           + "V" + d.target.x + "H" + d.target.y;
@@ -148,10 +167,13 @@ var dendrogram = function Dendrogram(userConfig) {
     }
 
     var chartContainer = d3.select(config.parent)
-        .append("g")
-        .attr("id", config["id"])
-        .attr("class", config["class"])
-        .attr("transform", config.transform);
+      .append("g")
+      .attr("transform", "translate(" + config.margin.left +
+        ", " + config.margin.right + ")")
+      .append("g")
+      .attr("id", config["id"])
+      .attr("class", config["class"])
+      .attr("transform", config.transform);
 
     var gradient = chartContainer.append("defs")
       .append("linearGradient")
@@ -174,13 +196,13 @@ var dendrogram = function Dendrogram(userConfig) {
 
     json =
     {
-      "name"     : config.root.name,
-      "category" : config.root.category,
-      "children" : dex.csv.toHierarchicalJson(csv)
+      "name": config.root.name,
+      "category": config.root.category,
+      "children": dex.csv.toHierarchicalJson(csv)
     };
 
     root = json;
-    root.x0 = config.height / 2;
+    root.x0 = height / 2;
     root.y0 = 0;
 
     function toggleAll(d) {
@@ -205,137 +227,166 @@ var dendrogram = function Dendrogram(userConfig) {
       var depthY = new Array();
 
       // Compute the new tree layout.
-      var nodes = tree.nodes(root).reverse();
+      var nodes = layout.nodes(root).reverse();
 
       // Allow manually set lengths to be used instead of fixed length connectors
       var fixedLength = true;
-      if (String(config.connection.length).indexOf(",") > -1)
-      {
+      if (String(config.connection.length).indexOf(",") > -1) {
         fixedLength = false;
         depthY = String(config.connection.length).split(",")
+      }
+      else if (String(config.connection.length) === "fit-text") {
+        //dex.console.log("COMPACT");
+        var preText = d3.select(config.parent + " g").append("text");
+        //var charWidth = charText.node().getBBox().width;
+
+        //charText.call(dex.config.configureText);
+        fixedLength = false;
+        var depthMap = {};
+        nodes.forEach(function (d) {
+          preText.text(d.name);
+          // Find start for each connection.
+          var textLen = preText.node().getBBox().width;
+          //dex.console.log("D", d, textLen);
+          if (depthMap[d.depth]) {
+            if (depthMap[d.depth] < textLen) {
+              depthMap[d.depth] = textLen;
+            }
+          }
+          else {
+            depthMap[d.depth] = textLen;
+          }
+        });
+        //dex.console.log("LENGTHS", depthMap);
+        depthY = [0];
+        var textPadding = 40;
+        var textOffset = textPadding;
+        for (i = 0; depthMap[i]; i++) {
+          depthY.push(depthMap[i] + textOffset);
+          textOffset += depthMap[i] + textPadding;
+        }
+        preText.remove();
       }
 
       // Set y offsets based on single fixed length or manual settings
       nodes.forEach(function (d) {
-        if (fixedLength)
-        {
+        if (fixedLength) {
           d.y = d.depth * config.connection.length;
         }
-        else
-        {
+        else {
           d.y = +depthY[d.depth];
         }
       });
 
       // Update the nodes…
       var node = chartContainer.selectAll("g.node")
-          .data(nodes, function (d) {
-            return d.id || (d.id = ++i);
-          });
+        .data(nodes, function (d) {
+          return d.id || (d.id = ++i);
+        });
 
       // Enter any new nodes at the parent's previous position.
       var nodeEnter = node.enter().append("svg:g")
-          .attr("class", "node")
-          .attr("transform", function (d) {
-            return "translate(" + source.y0 + "," + source.x0 + ")";
-          })
-          .on("click", function (d) {
-            toggle(d);
-            update(d);
-          });
+        .attr("class", "node")
+        .attr("transform", function (d) {
+          return "translate(" + source.y0 + "," + source.x0 + ")";
+        })
+        .on("click", function (d) {
+          toggle(d);
+          update(d);
+        });
 
       // Come back here...
       nodeEnter.append("svg:circle")
-          .each(function (d) {
-            //dex.console.log("CALLING", this, d, i);
-            var nodeConfig = (d._children) ?
-                config.node.collapsed.circle : config.node.expanded.circle;
-            d3.select(this).call(dex.config.configureCircle, nodeConfig);
-          })
-          .attr("r", 1e-6);
+        .each(function (d) {
+          //dex.console.log("CALLING", this, d, i);
+          var nodeConfig = (d._children) ?
+            config.node.collapsed.circle : config.node.expanded.circle;
+          d3.select(this).call(dex.config.configureCircle, nodeConfig);
+        })
+        .attr("r", 1e-6);
 
       // Add text nodes configured like we want them.
       nodeEnter.append("text")
-          .each(function (d) {
-            var nodeConfig = (d._children) ?
-                config.node.collapsed.label : config.node.expanded.label;
-            d3.select(this).call(dex.config.configureText, nodeConfig);
-          })
+        .each(function (d) {
+          var nodeConfig = (d._children) ?
+            config.node.collapsed.label : config.node.expanded.label;
+          d3.select(this).call(dex.config.configureText, nodeConfig);
+        })
         //.text(function(d) { return (d.name) ? d.name : d.category;})
-          .style("fill-opacity", 1e-6);
+        .style("fill-opacity", 1e-6);
 
       // Transition nodes to their new position.
       var nodeUpdate = node.transition()
-          .duration(duration)
-          .attr("transform", function (d) {
-            return "translate(" + d.y + "," + d.x + ")";
-          });
+        .duration(duration)
+        .attr("transform", function (d) {
+          return "translate(" + d.y + "," + d.x + ")";
+        });
 
       nodeUpdate.selectAll("circle")
-          .each(
+        .each(
           function (d) {
             var nodeConfig = (d._children) ?
-                config.node.collapsed.circle : config.node.expanded.circle;
+              config.node.collapsed.circle : config.node.expanded.circle;
             d3.select(this).transition().call(dex.config.configureCircle, nodeConfig);
           });
 
       nodeUpdate.select("text")
-          .each(
+        .each(
           function (d) {
             var nodeConfig = (d._children) ?
-                config.node.collapsed.label : config.node.expanded.label;
+              config.node.collapsed.label : config.node.expanded.label;
             d3.select(this).call(dex.config.configureText, nodeConfig);
           })
-          .style("fill-opacity", 1);
+        .style("fill-opacity", 1);
 
       // Transition exiting nodes to the parent's new position.
       var nodeExit = node.exit().transition()
-          .duration(duration)
-          .attr("transform", function (d) {
-            return "translate(" + (source.y) + "," + (source.x) + ")";
-          })
-          .remove();
+        .duration(duration)
+        .attr("transform", function (d) {
+          return "translate(" + (source.y) + "," + (source.x) + ")";
+        })
+        .remove();
 
       nodeExit.select("circle")
-          .attr("r", 1e-6);
+        .attr("r", 1e-6);
 
       nodeExit.select("text")
-          .style("fill-opacity", 1e-6);
+        .style("fill-opacity", 1e-6);
 
       // Update the links…
       var link = chartContainer.selectAll("path.link")
-          .data(tree.links(nodes), function (d) {
-            return d.target.id;
-          });
+        .data(layout.links(nodes), function (d) {
+          return d.target.id;
+        });
 
       // Enter any new links at the parent's previous position.
       link.enter().insert("svg:path", "g")
-          .attr("class", "link")
-          .call(dex.config.configureLink, config.link)
+        .attr("class", "link")
+        .call(dex.config.configureLink, config.link)
         //.style("fill", config.link.fill)
         //.style("fill-opacity", config.link.fillOpacity)
-          .attr("d", function (d) {
-            var o = {x : source.x0, y : source.y0};
-            return connectionType({source : o, target : o});
-          })
-          .transition()
-          .duration(duration)
-          .attr("d", connectionType)
-        ;
+        .attr("d", function (d) {
+          var o = {x: source.x0, y: source.y0};
+          return connectionType({source: o, target: o});
+        })
+        .transition()
+        .duration(duration)
+        .attr("d", connectionType)
+      ;
 
       // Transition links to their new position.
       link.transition()
-          .duration(duration)
-          .attr("d", connectionType);
+        .duration(duration)
+        .attr("d", connectionType);
 
       // Transition exiting nodes to the parent's new position.
       link.exit().transition()
-          .duration(duration)
-          .attr("d", function (d) {
-            var o = {x : source.x, y : source.y};
-            return connectionType({source : o, target : o});
-          })
-          .remove();
+        .duration(duration)
+        .attr("d", function (d) {
+          var o = {x: source.x, y: source.y};
+          return connectionType({source: o, target: o});
+        })
+        .remove();
 
       // Stash the old positions for transition.
       nodes.forEach(function (d) {
@@ -353,13 +404,22 @@ var dendrogram = function Dendrogram(userConfig) {
       else {
         d.children = d._children;
         d._children = null;
+        d.children.forEach(function (child) { collapse(child);});
+        //dex.console.log(d.children);
+      }
+    }
+
+    function collapse(d) {
+      if (d.children) {
+        d._children = d.children;
+        d.children = null;
       }
     }
   };
 
   $(document).ready(function () {
     // Make the entire chart draggable.
-    $(chart.config.parent).draggable();
+    //$(chart.config.parent).draggable();
   });
 
   return chart;
