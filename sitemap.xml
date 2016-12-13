@@ -1,23 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
-<loc>/Eternal-Lorem-Ipsum/</loc>
+<loc>http://patmartin.github.io/dexjs/Eternal-Lorem-Ipsum/</loc>
 <lastmod>2016-03-08T00:00:00-05:00</lastmod>
 </url>
 <url>
-<loc>/Eternal-Lorem-Ipsum/</loc>
+<loc>http://patmartin.github.io/dexjs/Eternal-Lorem-Ipsum/</loc>
 <lastmod>2016-03-06T00:00:00-05:00</lastmod>
 </url>
 <url>
-<loc>/404/</loc>
+<loc>http://patmartin.github.io/dexjs/404/</loc>
 </url>
 <url>
-<loc>/about/</loc>
+<loc>http://patmartin.github.io/dexjs/about/</loc>
 </url>
 <url>
-<loc>/</loc>
+<loc>http://patmartin.github.io/dexjs/</loc>
 </url>
 <url>
-<loc>/projects/</loc>
+<loc>http://patmartin.github.io/dexjs/projects/</loc>
 </url>
 </urlset>
