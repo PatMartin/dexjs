@@ -69,6 +69,11 @@ var linechart = function (userConfig) {
         {
             selectedColumns.unshift(0);
         }
+        else if (gtypes[0] == "date")
+        {
+            selectedColumns.unshift(0);
+        }
+
         var ncsv = dex.csv.columnSlice(csv, selectedColumns);
 
         var columns = dex.csv.transpose(ncsv);
@@ -100,6 +105,8 @@ var linechart = function (userConfig) {
             groups: config.groups
         };
 
+        //dex.console.log("TYPES:", gtypes);
+
         if (gtypes[0] == "string")
         {
             c3config["axis"] = {
@@ -110,6 +117,20 @@ var linechart = function (userConfig) {
                 }
             }
         }
+        else if (gtypes[0] == "date")
+        {
+            //dex.console.log("DEALING WITH A DATE...");
+            c3config["axis"] = {
+                "x": {
+                    "type": "timeseries",
+                    "tick": {
+                        format: '%Y-%m-%d'
+                    }
+                }
+            }
+        }
+
+        //dex.console.log("RENDER C3CONFIG", c3config);
 
         //dex.console.log("CATEGORIES", c3config);
         internalChart = c3.generate(c3config);
@@ -136,6 +157,8 @@ var linechart = function (userConfig) {
         var c3config = {
             'columns' : columns.data
         };
+
+        //dex.console.log("C3CONFIG", c3config);
 
         //internalChart.groups(config.groups);
         internalChart.load(c3config);
