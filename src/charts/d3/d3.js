@@ -17,7 +17,6 @@ var d3 = {};
  *
  */
 d3.Axis = require("./Axis");
-d3.BarChart = require("./BarChart");
 d3.Chord = require("./Chord");
 d3.ClusteredForce = require("./ClusteredForce");
 d3.Dendrogram = require("./Dendrogram");
