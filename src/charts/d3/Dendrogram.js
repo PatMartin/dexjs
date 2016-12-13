@@ -169,7 +169,7 @@ var dendrogram = function Dendrogram(userConfig) {
     var chartContainer = d3.select(config.parent)
       .append("g")
       .attr("transform", "translate(" + config.margin.left +
-        ", " + config.margin.right + ")")
+        ", " + config.margin.top + ")")
       .append("g")
       .attr("id", config["id"])
       .attr("class", config["class"])
