@@ -708,6 +708,11 @@ var linechart = function (userConfig) {
         {
             selectedColumns.unshift(0);
         }
+        else if (gtypes[0] == "date")
+        {
+            selectedColumns.unshift(0);
+        }
+
         var ncsv = dex.csv.columnSlice(csv, selectedColumns);
 
         var columns = dex.csv.transpose(ncsv);
@@ -739,6 +744,8 @@ var linechart = function (userConfig) {
             groups: config.groups
         };
 
+        //dex.console.log("TYPES:", gtypes);
+
         if (gtypes[0] == "string")
         {
             c3config["axis"] = {
@@ -749,6 +756,20 @@ var linechart = function (userConfig) {
                 }
             }
         }
+        else if (gtypes[0] == "date")
+        {
+            //dex.console.log("DEALING WITH A DATE...");
+            c3config["axis"] = {
+                "x": {
+                    "type": "timeseries",
+                    "tick": {
+                        format: '%Y-%m-%d'
+                    }
+                }
+            }
+        }
+
+        //dex.console.log("RENDER C3CONFIG", c3config);
 
         //dex.console.log("CATEGORIES", c3config);
         internalChart = c3.generate(c3config);
@@ -775,6 +796,8 @@ var linechart = function (userConfig) {
         var c3config = {
             'columns' : columns.data
         };
+
+        //dex.console.log("C3CONFIG", c3config);
 
         //internalChart.groups(config.groups);
         internalChart.load(c3config);
@@ -1256,220 +1279,6 @@ var axis = function (userConfig) {
 
 module.exports = axis;
 },{}],11:[function(require,module,exports){
-/**
- *
- * @constructor
- * @classdesc This class constructs a d3 Axis.
- * @memberOf dex
- *
- * @example {@lang javascript}
- * var myAxis = new dex.charts.d3.Axis({
- *   'parent' : "#MyAxisContainer",
- *   'id'     : "MyAxisId"
- *   'csv'    : { header : [ "X", "Y", "Z" ],
- *                data   : [[ 1, 2, 3 ], [4, 5, 6], [7, 8, 9]]}
- * });
- * @param {object} userConfig - A user supplied configuration object which will override the defaults.
- * @param {string} userConfig.parent - The parent node to which this Axis will be attached.  Ex: #MyParent
- * will attach to a node with an id = "MyParent".
- * @param {string} [userConfig.id=Axis] - The id of this axis.
- * @param {string} [userConfig.class=Axis] - The class of this axis.
- * @param {csv} userConfig.csv - The user's CSV data.
- * @param {margin} userConfig.margin - The margin data.
- * @param {integer} [userConfig.margin.left=25] - The number of pixels to allocate to the left margin.
- * @param {integer} [userConfig.margin.right=25] - The number of pixels to allocate to the right margin.
- * @param {integer} [userConfig.margin.top=0] - The number of pixels to allocate the top margin.
- * @param {integer} [userConfig.margin.bottom=0] - The number of pixels to allocate the bottom margin.
- * @param {string}  [userConfig.transform=translate(0,2)] - A SVG transform string.  More information can be found
- * in the {@link http://www.w3.org/TR/SVG/coords.html#TransformAttribute|W3C SVG 1.1 Specification}.
- * @param {integer} [userConfig.column=0] The column within the supplied CSV to use to generate the Axis.
- * @param {d3axis_spec} [userConfig.axis] - A D3 axis specification.
- * @param {d3text_spec} [userConfig.title] - A D3 text specification for the title of this axis.
- *
- */
-var barchart = function (userConfig) {
-  var config;
-
-  var defaults =
-  {
-    // The parent container of this chart.
-    'parent'     : null,
-    // Set these when you need to CSS style components independently.
-    'id'         : 'BarChart',
-    'class'      : 'BarChart',
-    'resizeable' : true,
-    // Our data...
-    'csv'        : {
-      // Give folks without data something to look at anyhow.
-      'header' : ["X", "Y"],
-      'data'   : [
-        [0, 0],
-        [1, 1],
-        [2, 4],
-        [3, 9],
-        [4, 16]
-      ]
-    },
-    'ymin'       : 0,
-    'xmin'       : 0,
-    'xaxis'      : dex.config.axis({
-      'type'   : 'linear',
-      'orient' : 'bottom',
-      'label'  : dex.config.text()
-    }),
-    'yaxis'      : dex.config.axis({
-      'type'   : 'linear',
-      'orient' : 'left',
-      'label'  : dex.config.text()
-    }),
-    // width and height of our bar chart.
-    'width'      : "100%",
-    'height'     : "100%",
-    // The x an y indexes to chart.
-    'xi'         : 0,
-    'yi'         : [1],
-    'transform'  : 'translate(100 100)',
-    'color'      : d3.scale.category20(),
-    'bars'       : {
-      'mouseover' : dex.config.rectangle({
-        'stroke' : {'width' : 2, 'color' : "red"},
-        'color'  : function (d) {
-          return config.color(d[3]);
-        }
-      }),
-      'mouseout'  : dex.config.rectangle({
-          'color' : function (d) {
-            return config.color(d[3]);
-          }
-        }
-      )
-    }
-  };
-
-  // Things defined in terms of the defaults:
-  var chart = new dex.component(userConfig, defaults);
-  var config = chart.config;
-
-  // Replace the scale configuration with a real scale.
-  var xscale = dex.config.createScale(dex.config.scale(config.xaxis.scale));
-  config.xaxis.scale = xscale;
-  // Replace the scale configuration with a real scale.
-  var yscale = dex.config.createScale(dex.config.scale(config.yaxis.scale));
-  config.yaxis.scale = yscale;
-
-  config.bars.mouseover.height = config.bars.mouseout.height =
-    function (d) {
-      return config.height - yscale(d[1]);
-    };
-
-  config.bars.mouseout.width = config.bars.mouseover.width =
-    xscale(config.csv.data[1][config.xi]) - xscale(config.csv.data[0][config.xi]);
-
-  config.bars.mouseout.x = config.bars.mouseover.x = function (d) {
-    return xscale(d[0])
-  };
-
-  config.bars.mouseout.y = config.bars.mouseover.y = function (d) {
-    return yscale(d[1])
-  };
-
-  var data = config.csv.data;
-
-  // Translate all of the y data columns to numerics.
-  data.forEach(function (d) {
-    config.yi.forEach(function (c) {
-      d[c] = +d[c];
-    });
-  });
-
-  var yextent = dex.matrix.extent(data, config.yi);
-
-  if (config.ymin != null) {
-    yextent[0] = config.ymin;
-  }
-  if (config.ymax != null) {
-    yextent[1] = config.ymax;
-  }
-
-  config.yaxis.scale.domain(yextent);
-
-  chart.render = function render() {
-    window.onresize = this.resize;
-    chart.resize();
-  };
-
-  chart.resize = function resize() {
-    if (config.resizeable) {
-      var width = d3.select(config.parent).property("clientWidth");
-      var height = d3.select(config.parent).property("clientHeight");
-      chart.attr("width", width).attr("height", height).update();
-    }
-    else {
-      chart.update();
-    }
-  };
-
-  chart.update = function update() {
-
-    d3.selectAll("#" + config.id).remove();
-
-    var xaxis = dex.config.createAxis(config.xaxis);
-
-    var yaxis = dex.config.createAxis(config.yaxis);
-    //dex.config.configureAxis(yaxis, config.yaxis);
-
-    var chartContainer = d3.select(config.parent).append("g")
-      .attr("id", config["id"])
-      .attr("class", config["class"])
-      .attr("transform", config.transform);
-
-    // X Axis
-    chartContainer.append("g")
-      .attr("class", "xaxis")
-      .attr("transform", "translate(0," + config.height + ")")
-      .call(xaxis);
-
-    // Add the label
-    chartContainer.select(".xaxis").append("text")
-      .call(dex.config.configureText, config.xaxis.label);
-
-    // Y Axis
-    chartContainer.append("g")
-      .attr("class", "yaxis")
-      .call(yaxis);
-
-    chartContainer.select(".yaxis").append("text")
-      .call(dex.config.configureText, config.yaxis.label);
-
-    var barData = dex.matrix.combine(
-      dex.matrix.slice(data, [config.xi]),
-      dex.matrix.slice(data, config.yi)
-    );
-
-    //dex.console.log("CSV DATA", csv);
-    //dex.console.log("BAR DATA", barData);
-    chartContainer.selectAll(".bar")
-      .data(barData)
-      .enter().append("rect")
-      .call(dex.config.configureRectangle, config.bars.mouseout)
-      .on("mouseover", function () {
-        d3.select(this).call(dex.config.configureRectangle, config.bars.mouseover);
-      })
-      .on("mouseout", function () {
-        d3.select(this).call(dex.config.configureRectangle, config.bars.mouseout);
-      });
-  };
-
-  $(document).ready(function () {
-    // Make the entire chart draggable.
-    //$(chart.config.parent).draggable();
-  });
-
-  return chart;
-};
-
-module.exports = barchart;
-},{}],12:[function(require,module,exports){
 var chord = function (userConfig) {
   var chart;
 
@@ -1757,7 +1566,7 @@ var chord = function (userConfig) {
 }
 
 module.exports = chord;
-},{}],13:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 var clusteredforce = function (userConfig) {
 
   var defaults =
@@ -2018,7 +1827,7 @@ var clusteredforce = function (userConfig) {
 };
 
 module.exports = clusteredforce;
-},{}],14:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 var dendrogram = function Dendrogram(userConfig) {
   var defaults =
   {
@@ -2190,7 +1999,7 @@ var dendrogram = function Dendrogram(userConfig) {
     var chartContainer = d3.select(config.parent)
       .append("g")
       .attr("transform", "translate(" + config.margin.left +
-        ", " + config.margin.right + ")")
+        ", " + config.margin.top + ")")
       .append("g")
       .attr("id", config["id"])
       .attr("class", config["class"])
@@ -2447,7 +2256,7 @@ var dendrogram = function Dendrogram(userConfig) {
 };
 
 module.exports = dendrogram;
-},{}],15:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 var force = function (userConfig) {
   var chart;
 
@@ -2610,7 +2419,7 @@ var force = function (userConfig) {
 
 module.exports = force;
 
-},{}],16:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 var heatmap = function(userConfig) {
   var defaults =
   {
@@ -2792,7 +2601,7 @@ var heatmap = function(userConfig) {
 
 module.exports = heatmap;
 
-},{}],17:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 var horizonchart = function (userConfig) {
 
   var defaults =
@@ -3114,7 +2923,7 @@ var horizonchart = function (userConfig) {
 })();
 
 module.exports = horizonchart;
-},{}],18:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 var horizontallegend = function (userConfig) {
   var defaults = {
     'parent'     : null,
@@ -3222,7 +3031,7 @@ var horizontallegend = function (userConfig) {
 };
 
 module.exports = horizontallegend;
-},{}],19:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 var linechart = function (userConfig) {
   var defaults =
   {
@@ -3503,20 +3312,20 @@ var linechart = function (userConfig) {
 };
 
 module.exports = linechart;
-},{}],20:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 var motionbarchart = function (userConfig) {
   var defaultColor = d3.scale.category10();
 
   var csv = {
-    'header' : ['name', 'color', 'time', 'x', 'y', 'size'],
-    'data'   : []
+    'header': ['name', 'color', 'time', 'x', 'y', 'size'],
+    'data': []
   }
 
   var i = 0;
   for (var time = 1800; time < 1810; time += 1) {
     for (var color = 1; color < 4; color++) {
       csv.data.push(["name-" + color, color, time,
-                     i * color, i * i * color, i * i * i * color]);
+        i * color, i * i * color, i * i * i * color]);
     }
     i += 1;
   }
@@ -3526,43 +3335,43 @@ var motionbarchart = function (userConfig) {
   var defaults =
   {
     // The parent container of this chart.
-    'parent' : null,
+    'parent': null,
     // Set these when you need to CSS style components independently.
-    'id'     : 'MotionBarhart',
-    'class'  : 'MotionBarChart',
+    'id': 'MotionBarhart',
+    'class': 'MotionBarChart',
     // Our data...
-    'csv'    : csv,
+    'csv': csv,
 
     // Tells us which columns represent what.
-    'index'  : {
-      'name'  : 0,
-      'color' : 0,
-      'time'  : 1,
-      'y'     : 2
+    'index': {
+      'name': 0,
+      'color': 0,
+      'time': 1,
+      'y': 2
     },
     // Chart dimensions.
-    'width'  : 600,
-    'height' : 400,
-    'margin' : {
-      top    : 20,
-      right  : 100,
-      bottom : 100,
-      left   : 100
+    'width': 600,
+    'height': 400,
+    'margin': {
+      top: 20,
+      right: 120,
+      bottom: 80,
+      left: 50
     },
 
-    'bar' : dex.config.rectangle({
-        'color'        : function (d, i) {
+    'bar': dex.config.rectangle({
+        'color': function (d, i) {
           return color(i);
         },
-        'stroke.width' : 1,
-        'stroke.color' : 'black',
-        'events'       : {
-          'mouseover' : function () {
+        'stroke.width': 1,
+        'stroke.color': 'black',
+        'events': {
+          'mouseover': function () {
             d3.select(this)
               .style("stroke", 'red')
               .style("stroke-width", 2);
           },
-          'mouseout'  : function () {
+          'mouseout': function () {
             d3.select(this)
               .style("stroke", chart.config.bar.stroke.color)
               .style("stroke-width", chart.config.bar.stroke.width);
@@ -3572,64 +3381,50 @@ var motionbarchart = function (userConfig) {
     ),
 
     // Main label configuration
-    'label.font.size'        : 64,
-    'label.fill.fillColor'   : 'steelblue',
-    'label.fill.fillOpacity' : 0.4,
-    'label.y'                : function (d) {
-      return 0;
+    'label.font.size': 64,
+    'label.fill.fillColor': 'steelblue',
+    'label.fill.fillOpacity': 0.4,
+    'label.y': function (d) {
+      return chart.config.margin.top;
     },
-    'label.x'                : function (d) {
-      return chart.config.width * .5;
+    'label.dy' : '.50em',
+    'label.x': function (d) {
+      return chart.config.margin.left + (chart.config.width / 2);
     },
 
-    'transform' : 'translate(0,0)',
-    'duration'  : 10000,
+    'transform': '',
+    'duration': 5000,
 
-    'xaxis' : dex.config.axis({
-      'scale.type'                : 'linear',
-      'orient'                    : 'bottom',
-      'label'                     : dex.config.text({
-        'x'      : function (d) {
-          return (chart.config.width - chart.config.margin.right) / 2;
-        },
-        'y'      : function (d) {
-          return chart.config.height - chart.config.margin.bottom + 20;
-        },
-        'anchor' : 'end'
+    'xaxis': dex.config.axis({
+      'scale.type': 'linear',
+      'orient': 'bottom',
+      'label': dex.config.text({
+        'anchor': 'start',
+        'writingMode' : 'tb',
+        'dx' : function(d) { return chart.config.bar.width - (chart.config.xaxis.label.font.size / 2); },
+        'dy' : '.5em'
       }),
-      'tick.stroke.color'         : 'black',
-      'tick.stroke.width'         : 1,
-      'tick.fill.fillColor'       : 'none',
-      'axisLine.stroke.color'     : 'black',
-      'axisLine.stroke.width'     : 1,
-      'axisLine.stroke.dasharray' : "10 10",
-      'axisLine.fill.fillColor'   : 'none'
+      'tick.stroke.color': 'black',
+      'tick.stroke.width': 1,
+      'tick.fill.fillColor': 'none',
+      'axisLine.stroke.color': 'black',
+      'axisLine.stroke.width': 1,
+      'axisLine.stroke.dasharray': "0",
+      'axisLine.fill.fillColor': 'none'
     }),
-    'yaxis' : dex.config.axis({
-      'scale.type'                : 'linear',
-      'orient'                    : 'left',
-      'label'                     : dex.config.text({
-        'x'         : function (d) {
-          //return chart.config.width - chart.config.margin.right;
-          //return chart.config.margin.top;
-          return 0;
-        },
-        'y'         : function (d) {
-          //return chart.config.height - chart.config.margin.top
-          //  - chart.config.margin.bottom - chart.config.xaxis.label.font.size;
-          //return -chart.config.margin.left/2;
-          return 10;
-        },
-        'anchor'    : 'end',
-        'dy'        : '.75em',
-        'transform' : 'rotate(-90)'
+    'yaxis': dex.config.axis({
+      'scale.type': 'linear',
+      'orient': 'left',
+      'label': dex.config.text({
+        'anchor': 'start',
+        'dx' : function(d) { return chart.config.margin.left; },
       }),
-      'tick.stroke.width'         : 1,
-      'tick.fill.fillColor'       : 'none',
-      'axisLine.stroke.color'     : 'black',
-      'axisLine.stroke.width'     : 1,
-      'axisLine.stroke.dasharray' : "10 10",
-      'axisLine.fill.fillColor'   : 'none'
+      'tick.stroke.width': 1,
+      'tick.fill.fillColor': 'none',
+      'axisLine.stroke.color': 'black',
+      'axisLine.stroke.width': 2,
+      'axisLine.stroke.dasharray': "10 10",
+      'axisLine.fill.fillColor': 'none'
     })
   };
 
@@ -3645,8 +3440,8 @@ var motionbarchart = function (userConfig) {
     var width = d3.select(chart.config.parent).property("clientWidth");
     var height = d3.select(chart.config.parent).property("clientHeight");
     chart
-      .attr("width", width)
-      .attr("height", height)
+      .attr("width", width - chart.config.margin.left - chart.config.margin.right)
+      .attr("height", height - chart.config.margin.top - chart.config.margin.bottom)
       .update();
   };
 
@@ -3670,11 +3465,11 @@ var motionbarchart = function (userConfig) {
 
       if (!keyMap[curName]) {
         keyMap[curName] = {
-          'name'  : curName,
-          'color' : curColor,
-          'time'  : curTime,
-          'y'     : [[curTime, curY]],
-          'size'  : [[curTime, curSize]]
+          'name': curName,
+          'color': curColor,
+          'time': curTime,
+          'y': [[curTime, curY]],
+          'size': [[curTime, curSize]]
         };
       }
       else {
@@ -3689,19 +3484,16 @@ var motionbarchart = function (userConfig) {
     //var xExtents = [0, uniques[config.index.name].length-1];
     var yExtents = dex.matrix.extent(csv.data, [config.index.y]);
 
-    dex.console.log("EXTENTS: Y", yExtents, "UNIQUES", uniques[config.index.name]);
-
-    var width = config.width - config.margin.right;
-    var height = config.height - config.margin.top - config.margin.bottom;
+    //dex.console.log("EXTENTS: Y", yExtents, "UNIQUES", uniques[config.index.name]);
 
     // Various scales. These domains make assumptions of data, naturally.
     var xScale = d3.scale.ordinal()
-      .domain(uniques[config.index.name])
-      .rangePoints([0, width]);
+      .domain(uniques[config.index.name].sort())
+      .rangePoints([0, config.width]);
 
     //  d3.scale.linear().domain(xExtents).range([0, width - 60]);
     var yScale = dex.config.createScale(config.yaxis.scale)
-      .domain([0, yExtents[1]]).range([height, 0]);
+      .domain([0, yExtents[1]]).range([config.height, 0]);
 
     // The x & y axes.
     var xAxis = dex.config.createAxis(config.xaxis)
@@ -3714,12 +3506,15 @@ var motionbarchart = function (userConfig) {
       .append("g")
       .attr("id", config["id"])
       .attr("class", config["class"])
-      .attr("transform", config.transform);
+      .attr("height", config.height)
+      .attr("width", config.width)
+      .attr("transform", "translate(" + config.margin.left +
+        ", " + config.margin.top + ")")
 
     // Add the x-axis.
     svg.append("g")
       .attr("class", "xaxis")
-      .attr("transform", "translate(0," + height + ")")
+      .attr("transform", "translate(0," + config.height + ")")
       .call(xAxis);
 
     // Add the y-axis.
@@ -3747,14 +3542,16 @@ var motionbarchart = function (userConfig) {
       .call(dex.config.configureStroke, config.yaxis.axisLine.stroke)
       .call(dex.config.configureFill, config.yaxis.axisLine.fill);
 
-    var xTickLabels = xticks.selectAll("text")
-      .style("text-anchor", "start");
+    //var xTickLabels = xticks
+    //  .append("text")
+    //  .text("P" + config.csv.header[config.index.name]);
 
-    // Add an x-axis label.
-    svg.append("text")
-      .attr("class", "xLabel")
-      .call(dex.config.configureText, config.xaxis.label)
-      .text(config.csv.header[config.index.name]);
+    //dex.console.log("XTICK-LABELS", xTickLabels);
+    xticks.selectAll("text")
+      .call(dex.config.configureText, config.xaxis.label);
+
+    //xticks.selectAll("text")
+    //  .call(dex.config.configureText, config.xaxis.label);
 
     // Add a y-axis label.
     svg.append("text")
@@ -3777,7 +3574,7 @@ var motionbarchart = function (userConfig) {
       return d[0];
     });
 
-    // Add a dot per nation. Initialize the data at min year value, and set the colors.
+    // Add a bar per nation. Initialize the data at min year value, and set the colors.
     var bars = svg.append("g")
       .attr("class", "bars")
       .selectAll(".bar")
@@ -3792,10 +3589,10 @@ var motionbarchart = function (userConfig) {
     bars
       .append("tooltip-content")
       .text(function (d, i) {
-        //dex.console.log("DTITLE", d);
         return "<table>" +
           "<tr><td>Name:</td><td>" + d.name + "</td></tr>" +
           "<tr><td>Category:</td><td>" + d.color + "</td></tr>" +
+          "<tr><td>Value:</td><td>" + d.y + "</td></tr>" +
           "</table>";
       });
 
@@ -3822,7 +3619,7 @@ var motionbarchart = function (userConfig) {
 
     // Positions the dots based on data.
     function position(bar) {
-      var barWidth = Math.floor((config.width - config.margin.left - config.margin.right) / bar.size());
+      var barWidth = Math.floor(config.width / bar.size() - 8);
 
       bar
         .attr("x", function (d, i) {
@@ -3835,14 +3632,12 @@ var motionbarchart = function (userConfig) {
           return barWidth;
         })
         .attr("height", function (d) {
-          return yScale(0) - yScale(d.y);
+          //console.log(d.name + ": yScale(0)=" + yScale(0) + " - yScale(" + d.y + ")=" + yScale(d.y));
+          // Some values were going negative...I might be sweeping a bug under the rug
+          // but this at least filters these values.
+          return Math.max(yScale(0) - yScale(d.y), 0);
         });
     }
-
-    // Defines a sort order so that the smallest dots are drawn on top.
-    //function order(a, b) {
-    //  return b.y - a.y;
-    // }
 
     // After the transition finishes, you can mouseover to change the year.
     function enableInteraction() {
@@ -3885,9 +3680,11 @@ var motionbarchart = function (userConfig) {
 
     // Updates the display to show the specified year.
     function displayYear(year) {
-      //dex.console.log("key='" + key + "', interpolateData(" + year + ")=",
+      //dex.console.log("interpolateData(" + year + ")=",
       //  interpolateData(year));
       bars.data(interpolateData(year), function (d) {
+        //dex.console.log("'" + d.name + "', interpolateData(" + year + ")=",
+        //  interpolateData(year));
         return d.name;
       }).call(position);//.sort(order);
       label.text(Math.round(year));
@@ -3904,11 +3701,11 @@ var motionbarchart = function (userConfig) {
 
           //dex.console.log("ENTRY-DATA", entry);
           timeData.push({
-            time  : year,
-            name  : entry.name,
-            color : entry.color,
-            y     : interpolateValues(entry.y, year),
-            size  : interpolateValues(entry.size, year)
+            time: year,
+            name: entry.name,
+            color: entry.color,
+            y: interpolateValues(entry.y, year),
+            size: interpolateValues(entry.size, year)
           });
         }
       }
@@ -3934,11 +3731,11 @@ var motionbarchart = function (userConfig) {
 
     // Add tooltips
     $(chart.config.parent).tooltip({
-      items   : "rect",
-      content : function () {
+      items: "rect",
+      content: function () {
         return $(this).find("tooltip-content").text();
       },
-      track   : true
+      track: true
     });
 
     // Make the entire chart draggable.
@@ -3950,7 +3747,7 @@ var motionbarchart = function (userConfig) {
 };
 
 module.exports = motionbarchart;
-},{}],21:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 var motionchart = function (userConfig) {
   var defaultColor = d3.scale.category10();
 
@@ -3981,10 +3778,10 @@ var motionchart = function (userConfig) {
     // Tells us which columns represent what.
     'index'  : {
       'name'  : 0,
-      'time'  : 1,
-      'x'     : 2,
-      'y'     : 3,
-      'color' : 4,
+      'color' : 1,
+      'time'  : 2,
+      'x'     : 3,
+      'y'     : 4,
       'size'  : 5
     },
     // Chart dimensions.
@@ -4434,7 +4231,7 @@ var motionchart = function (userConfig) {
 };
 
 module.exports = motionchart;
-},{}],22:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 var motioncirclechart = function (userConfig) {
   var defaultColor = d3.scale.category10();
 
@@ -4469,7 +4266,7 @@ var motioncirclechart = function (userConfig) {
       'name'  : 0,
       'color' : 1,
       'time'  : 2,
-      'y'     : 4
+      'y'     : 3
     },
     // Chart dimensions.
     'width'  : 600,
@@ -4880,7 +4677,7 @@ var motioncirclechart = function (userConfig) {
 };
 
 module.exports = motioncirclechart;
-},{}],23:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 var motionlinechart = function (userConfig) {
   var defaultColor = d3.scale.category10();
 
@@ -5381,7 +5178,7 @@ var motionlinechart = function (userConfig) {
 };
 
 module.exports = motionlinechart;
-},{}],24:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 var orbitallayout = function (userConfig) {
   var chart;
 
@@ -5730,7 +5527,7 @@ var orbitallayout = function (userConfig) {
 };
 
 module.exports = orbitallayout;
-},{}],25:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 var parallelcoordinates = function (userConfig) {
   var chart;
 
@@ -5909,7 +5706,7 @@ var parallelcoordinates = function (userConfig) {
 };
 
 module.exports = parallelcoordinates;
-},{}],26:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 var parallelcoordinates2 = function (userConfig) {
   var chart;
 
@@ -6481,7 +6278,7 @@ var parallelcoordinates2 = function (userConfig) {
 };
 
 module.exports = parallelcoordinates2;
-},{}],27:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 var piechart = function (userConfig) {
   var chart = new dex.component(userConfig,
     {
@@ -6603,7 +6400,7 @@ var piechart = function (userConfig) {
 };
 
 module.exports = piechart;
-},{}],28:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 var radarchart = function (userConfig) {
     var chart;
 
@@ -7017,7 +6814,7 @@ var radarchart = function (userConfig) {
 
 module.exports = radarchart;
 
-},{}],29:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 var radialtree = function (userConfig) {
   var chart;
 
@@ -7239,7 +7036,7 @@ var radialtree = function (userConfig) {
 module.exports = radialtree;
 
 
-},{}],30:[function(require,module,exports){
+},{}],29:[function(require,module,exports){
 var sankey = function (userConfig) {
     var defaultColor = d3.scale.category20c();
 
@@ -8169,7 +7966,7 @@ d3.sankey = function () {
 };
 
 module.exports = sankey;
-},{}],31:[function(require,module,exports){
+},{}],30:[function(require,module,exports){
 var sankeyparticles = function (userConfig) {
   var chart;
 
@@ -8719,7 +8516,7 @@ var sankeyparticles = function (userConfig) {
 };
 
 module.exports = sankeyparticles;
-},{}],32:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 var scatterplot = function (userConfig) {
   var chart = new dex.component(userConfig,
     {
@@ -8926,7 +8723,7 @@ var scatterplot = function (userConfig) {
 };
 
 module.exports = scatterplot;
-},{}],33:[function(require,module,exports){
+},{}],32:[function(require,module,exports){
 var sunburst = function (userConfig) {
   var chart;
 
@@ -9111,7 +8908,7 @@ var sunburst = function (userConfig) {
 };
 
 module.exports = sunburst;
-},{}],34:[function(require,module,exports){
+},{}],33:[function(require,module,exports){
 var titledtreemap = function (userConfig) {
   var chart;
 
@@ -9481,17 +9278,17 @@ var titledtreemap = function (userConfig) {
 
 module.exports = titledtreemap;
 
-},{}],35:[function(require,module,exports){
+},{}],34:[function(require,module,exports){
 var treemap = function (userConfig) {
     var chart;
 
     var defaults =
     {
         // The parent container of this chart.
-        'parent': '#Treemap',
+        'parent': '#TreemapBarchart',
         // Set these when you need to CSS style components independently.
-        'id': 'Treemap',
-        'class': 'Treemap',
+        'id': 'TreemapBarchart',
+        'class': 'TreemapBarchart',
         'resizable': true,
         // Our data...
         'csv': {
@@ -9559,18 +9356,6 @@ var treemap = function (userConfig) {
 
         var data = dex.csv.toNestedJson(dex.csv.copy(csv));
         dex.console.log("DATA", csv, data);
-
-        /*
-        var svg = d3.select("#body").append("div")
-            .attr("class", "chart")
-            .style("width", w + "px")
-            .style("height", h + "px")
-            .append("svg:svg")
-            .attr("width", w)
-            .attr("height", h)
-            .append("svg:g")
-            .attr("transform", "translate(.5,.5)");
-*/
 
         node = root = data;
 
@@ -9669,6 +9454,275 @@ var treemap = function (userConfig) {
             node = d;
             d3.event.stopPropagation();
         }
+
+    };
+
+    $(document).ready(function () {
+        // Make the entire chart draggable.
+        //$(chart.config.parent).draggable();
+    });
+
+    return chart;
+};
+
+module.exports = treemap;
+},{}],35:[function(require,module,exports){
+var treemap = function (userConfig) {
+    var chart;
+
+    var defaults =
+    {
+        // The parent container of this chart.
+        'parent': '#TreemapBarchart',
+        // Set these when you need to CSS style components independently.
+        'id': 'TreemapBarchart',
+        'class': 'TreemapBarchart',
+        'resizable': true,
+        // Our data...
+        'csv': {
+            // Give folks without data something to look at anyhow.
+            'header': ["NAME", "PACAGE", "SIZE"],
+            'data': [
+                ["name1", "package1", 100],
+                ["name2", "package2", 50],
+                ["name3", "package3", 25]
+            ]
+        },
+        'width': "100%",
+        'height': "100%",
+        'transform': "translate(0 0)",
+        'title': dex.config.text(),
+        'label': dex.config.text()
+    };
+
+    var chart = new dex.component(userConfig, defaults);
+
+    chart.render = function render() {
+        window.onresize = this.resize;
+        chart.resize();
+    };
+
+    chart.resize = function resize() {
+        if (chart.config.resizable) {
+            var width = d3.select(chart.config.parent).property("clientWidth");
+            var height = d3.select(chart.config.parent).property("clientHeight");
+            dex.console.log(chart.config.id + ": resize(" + width + "," + height + ")");
+            chart.attr("width", width).attr("height", height).update();
+        }
+        else {
+            chart.update();
+        }
+    };
+
+    chart.update = function () {
+        var chart = this;
+        var config = chart.config;
+        var csv = config.csv;
+
+        d3.selectAll("#" + config.id).remove();
+
+        var chartContainer = d3.select(config.parent).append("g")
+            .attr("class", config["id"])
+            .attr("id", config["id"])
+            .attr("transform", config.transform);
+
+      var margin = { top: 15, right: 15, bottom: 40, left: 60 }
+      var width = 960 - margin.left - margin.right
+      var height = 500 - margin.top - margin.bottom
+
+      var orderedContinents = ['Asia', 'North America', 'Europe', 'South America', 'Africa', 'Australia']
+      var color = d3.scaleOrdinal()
+        .domain(orderedContinents)
+        .range(['#66c2a5', '#fc8d62', '#8da0cb', '#e78ac3', '#a6d854', '#ffd92f'])
+
+      var dollarFormat = d3.format('$,')
+      var tickFormat = function (n) {
+        return n === 0 ? '$0'
+          : n < 1000000 ? dollarFormat(n / 1000) + ' billion'
+          : dollarFormat(n / 1000000) + ' trillion'
+      }
+
+      d3.json('data.json', initialize)
+
+      function initialize(error, data) {
+        if (error) { throw error }
+
+        var root = d3.hierarchy(data)
+
+        root.children.sort(function (a, b) { return a.data.year - b.data.year })
+
+        var svg = d3.select('body')
+          .append('svg')
+          .attr('width', width + margin.left + margin.right)
+          .attr('height', height + margin.top + margin.bottom)
+          .append('g')
+          .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
+
+        var x0 = d3.scaleBand()
+          .range([0, width])
+          .padding(0.15)
+
+        var x1 = d3.scaleBand()
+          .domain(['Imports', 'Exports'])
+          .paddingInner(0.1)
+
+        var y = d3.scaleLinear()
+          .range([0, height])
+
+        var x0Axis = d3.axisBottom()
+          .scale(x0)
+          .tickSize(0)
+
+        var x1Axis = d3.axisBottom()
+          .scale(x1)
+
+        var yAxis = d3.axisLeft()
+          .tickSize(-width)
+          .tickFormat(tickFormat)
+
+        var gx0 = svg.append('g')
+          .attr('class', 'x0 axis')
+          .attr('transform', 'translate(0,' + (height + 22) + ')')
+
+        var gy = svg.append('g')
+          .attr('class', 'y axis')
+
+        d3.select('#inflation-adjusted').on('change', function () {
+          update(this.checked ? 'adj_value' : 'value')
+        })
+
+        update('adj_value')
+
+        function update(key) {
+          root.sum(function (d) { return d[key] })
+
+          var yearData = root.children
+          var typeData = d3.merge(yearData.map(function (d) { return d.children }))
+
+          x0.domain(yearData.map(function (d) { return d.data.year }).sort())
+          x1.rangeRound([0, x0.bandwidth()])
+          y.domain([0, d3.max(typeData.map(function (d) { return d.value }))]).nice()
+
+          // We use a copied Y scale to invert the range for display purposes
+          yAxis.scale(y.copy().range([height, 0]))
+
+          gx0.call(x0Axis)
+          gy.call(yAxis)
+
+          var t = d3.transition()
+
+          var years = svg.selectAll('.year')
+            .data(root.children, function (d) { return d.data.year })
+
+          var enterYears = years.enter().append('g')
+            .attr('class', 'year')
+
+          enterYears.append('g')
+            .attr('class', 'x1 axis')
+            .attr('transform', 'translate(0,' + height + ')')
+            .call(x1Axis)
+
+          years = years.merge(enterYears)
+            .attr('transform', function (d) {
+              return 'translate(' + x0(d.data.year) + ',0)'
+            })
+
+          var types = years.selectAll('.type')
+            .data(function (d) { return d.children },
+              function (d) { return d.data.type })
+            .each(function (d) {
+              // UPDATE
+              // The copied branches are orphaned from the larger hierarchy, and must be
+              // updated separately (see note at L152).
+              d.treemapRoot.sum(function (d) { return d[key] })
+              d.treemapRoot.children.forEach(function (d) {
+                d.sort(function (a, b) { return b.value - a.value })
+              })
+            })
+
+          types = types.enter().append('g')
+            .attr('class', 'type')
+            .attr('transform', function (d) {
+              return 'translate(' + x1(d.data.type) + ',' + height + ')'
+            })
+            .each(function (d) {
+              // ENTER
+              // Note that we can use .each on selections as a way to perform operations
+              // at a given depth of the hierarchy tree.
+              d.children.sort(function (a, b) {
+                return orderedContinents.indexOf(b.data.continent) -
+                  orderedContinents.indexOf(a.data.continent)
+              })
+              d.children.forEach(function (d) {
+                d.sort(function (a, b) { return b.value - a.value })
+              })
+              d.treemap = d3.treemap().tile(d3.treemapResquarify)
+
+              // The treemap layout must be given a root node, so we make a copy of our
+              // child node, which creates a new tree from the branch.
+              d.treemapRoot = d.copy()
+            })
+            .merge(types)
+            .each(function (d) {
+              // UPDATE + ENTER
+              d.treemap.size([x1.bandwidth(), y(d.value)])(d.treemapRoot)
+            })
+
+          // d3.hierarchy gives us a convenient way to access the parent datum. This line
+          // adds an index property to each node that we'll use for the transition delay.
+          root.each(function (d) { d.index = d.parent ? d.parent.children.indexOf(d) : 0 })
+
+          types.transition(t)
+            .delay(function (d, i) { return d.parent.index * 150 + i * 50 })
+            .attr('transform', function (d) {
+              return 'translate(' + x1(d.data.type) + ',' + (height - y(d.value)) + ')'
+            })
+
+          var continents = types.selectAll('.continent')
+            // Note that we're using our copied branch.
+            .data(function (d) { return d.treemapRoot.children },
+              function (d) { return d.data.continent })
+
+          continents = continents.enter().append('g')
+            .attr('class', 'continent')
+            .merge(continents)
+
+          var countries = continents.selectAll('.country')
+            .data(function (d) { return d.children },
+              function (d) { return d.data.country })
+
+          var enterCountries = countries.enter().append('rect')
+            .attr('class', 'country')
+            .attr('x', function (d) { return d.x0 })
+            .attr('width', function (d) { return d.x1 - d.x0 })
+            .attr('y', 0)
+            .attr('height', 0)
+            .style('fill', function (d) { return color(d.parent.data.continent) })
+
+          countries = countries.merge(enterCountries)
+
+          enterCountries
+            .on('mouseover', function (d) {
+              svg.classed('hover-active', true)
+              countries.classed('hover', function (e) {
+                return e.data.country === d.data.country
+              })
+            })
+            .on('mouseout', function () {
+              svg.classed('hover-active', false)
+              countries.classed('hover', false)
+            })
+            .append('title')
+            .text(function (d) { return d.data.country })
+
+          countries
+            .transition(t)
+            .attr('x', function (d) { return d.x0 })
+            .attr('width', function (d) { return d.x1 - d.x0 })
+            .attr('y', function (d) { return d.y0 })
+            .attr('height', function (d) { return d.y1 - d.y0 })
+        }
+      }
 
     };
 
@@ -9920,7 +9974,6 @@ var d3 = {};
  *
  */
 d3.Axis = require("./Axis");
-d3.BarChart = require("./BarChart");
 d3.Chord = require("./Chord");
 d3.ClusteredForce = require("./ClusteredForce");
 d3.Dendrogram = require("./Dendrogram");
@@ -9945,13 +9998,14 @@ d3.ScatterPlot = require("./ScatterPlot");
 d3.Sunburst = require("./Sunburst");
 d3.TitledTreemap = require("./TitledTreemap");
 d3.Treemap = require("./Treemap");
+d3.TreemapBarchart = require("./TreemapBarchart");
 d3.VerticalLegend = require("./VerticalLegend");
 
 // Too large, need optional config
 //d3.map = require("./map/map");
 
 module.exports = d3;
-},{"./Axis":10,"./BarChart":11,"./Chord":12,"./ClusteredForce":13,"./Dendrogram":14,"./Force":15,"./HeatMap":16,"./HorizonChart":17,"./HorizontalLegend":18,"./LineChart":19,"./MotionBarChart":20,"./MotionChart":21,"./MotionCircleChart":22,"./MotionLineChart":23,"./OrbitalLayout":24,"./ParallelCoordinates":25,"./ParallelCoordinates2":26,"./PieChart":27,"./RadarChart":28,"./RadialTree":29,"./Sankey":30,"./SankeyParticles":31,"./ScatterPlot":32,"./Sunburst":33,"./TitledTreemap":34,"./Treemap":35,"./VerticalLegend":36}],38:[function(require,module,exports){
+},{"./Axis":10,"./Chord":11,"./ClusteredForce":12,"./Dendrogram":13,"./Force":14,"./HeatMap":15,"./HorizonChart":16,"./HorizontalLegend":17,"./LineChart":18,"./MotionBarChart":19,"./MotionChart":20,"./MotionCircleChart":21,"./MotionLineChart":22,"./OrbitalLayout":23,"./ParallelCoordinates":24,"./ParallelCoordinates2":25,"./PieChart":26,"./RadarChart":27,"./RadialTree":28,"./Sankey":29,"./SankeyParticles":30,"./ScatterPlot":31,"./Sunburst":32,"./TitledTreemap":33,"./Treemap":34,"./TreemapBarchart":35,"./VerticalLegend":36}],38:[function(require,module,exports){
 var uscountymap = function (userConfig)
 {
   var defaults =

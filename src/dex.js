@@ -67,6 +67,8 @@ dex.copy = function(obj) {
  */
 dex.bus = require("../lib/pubsub");
 
+// Kai's parallel coordinates needs this, but seems to break
+// in D4
 require('../lib/d3.svg.multibrush');
 require('../lib/d3.selection');
 
