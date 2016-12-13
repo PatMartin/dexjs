@@ -32,7 +32,7 @@ var motioncirclechart = function (userConfig) {
       'name'  : 0,
       'color' : 1,
       'time'  : 2,
-      'y'     : 4
+      'y'     : 3
     },
     // Chart dimensions.
     'width'  : 600,
