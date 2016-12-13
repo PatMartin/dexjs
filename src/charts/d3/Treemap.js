@@ -4,10 +4,10 @@ var treemap = function (userConfig) {
     var defaults =
     {
         // The parent container of this chart.
-        'parent': '#Treemap',
+        'parent': '#TreemapBarchart',
         // Set these when you need to CSS style components independently.
-        'id': 'Treemap',
-        'class': 'Treemap',
+        'id': 'TreemapBarchart',
+        'class': 'TreemapBarchart',
         'resizable': true,
         // Our data...
         'csv': {
@@ -75,18 +75,6 @@ var treemap = function (userConfig) {
 
         var data = dex.csv.toNestedJson(dex.csv.copy(csv));
         dex.console.log("DATA", csv, data);
-
-        /*
-        var svg = d3.select("#body").append("div")
-            .attr("class", "chart")
-            .style("width", w + "px")
-            .style("height", h + "px")
-            .append("svg:svg")
-            .attr("width", w)
-            .attr("height", h)
-            .append("svg:g")
-            .attr("transform", "translate(.5,.5)");
-*/
 
         node = root = data;
 
