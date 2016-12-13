@@ -1,6 +1,0 @@
-{
-  "name": "Dexjs",
-  "tagline": "A reusable component framework for visualization and data manipulation.",
-  "body": "### dexjs\r\ndexjs is a Javascript visualization library which wraps a wide variety of different visualization technologies into a single consistent and easy to use API.\r\n",
-  "note": "Don't delete this file! It's used internally to help with page regeneration."
-}
