@@ -28,10 +28,10 @@ var motionchart = function (userConfig) {
     // Tells us which columns represent what.
     'index'  : {
       'name'  : 0,
-      'time'  : 1,
-      'x'     : 2,
-      'y'     : 3,
-      'color' : 4,
+      'color' : 1,
+      'time'  : 2,
+      'x'     : 3,
+      'y'     : 4,
       'size'  : 5
     },
     // Chart dimensions.
