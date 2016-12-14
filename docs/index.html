@@ -33,30 +33,6 @@
         min-width: 90%;
     }
 
-    .reveal.slide .slides > section, .reveal.slide .slides > section > section {
-        min-height: 100% !important;
-        display: flex !important;
-        flex-direction: column !important;
-        justify-content: center !important;
-        position: absolute !important;
-        top: 0 !important;
-        align-items: center !important;
-    }
-
-    section > h1, section > h2 {
-        position: absolute !important;
-        top: 0 !important;
-        margin-left: auto !important;
-        margin-right: auto !important;
-        left: 0 !important;
-        right: 0 !important;
-        text-align: center !important;
-    }
-
-    .print-pdf .reveal.slide .slides > section, .print-pdf .reveal.slide .slides > section > section {
-        min-height: 770px !important;
-        position: relative !important;
-    }
 
     .reveal h1 { font-size: 1.8em; }
 </style>
@@ -164,7 +140,7 @@ sankey.render();
             </section>
             <section>
                 <h1>C3 Line Chart</h1>
-                <div id="C3LineChart" class="Chart"></div>
+                <svg id="C3LineChart" width="900" height="320"></svg>
                 <pre><code class="hljs" style="word-wrap: break-word;">// Instantiate the line chart given dataset ncsv
 var linechart = new dex.charts.c3.LineChart({
   'parent': '#C3LineChart', // The node this chart will attach to.
@@ -266,6 +242,9 @@ stackedarea.render();</code></pre>
         };
         var linechart = new dex.charts.c3.LineChart({
                     'parent': '#C3LineChart',
+            'height' : 320,
+            'width' : 900,
+            'resizeable' : false,
                     'csv': ncsv
                 }
         );
@@ -305,8 +284,8 @@ stackedarea.render();</code></pre>
             width: '1024',
             center: false,
             rollingLinks: true,
-            touch : true,
-            //transition: 'default',
+            touch : false,
+            transition: 'convex',
             controls: true,
             history: true,
             dependencies: [
