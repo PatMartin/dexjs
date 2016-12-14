@@ -1,1 +1,258 @@
-This is the default index.html
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>reveal.js – The HTML Presentation Framework</title>
+
+    <meta name="description" content="A framework for easily creating beautiful presentations using HTML">
+    <meta name="author" content="Hakim El Hattab">
+
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+    <meta name="viewport"
+          content="width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.3.0/css/reveal.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.3.0/css/theme/white.min.css"
+          id="theme">
+    <!--Add support for earlier versions of Internet Explorer -->
+    <!--[if lt IE 9]>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <![endif]-->
+</head>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.10/c3.min.css"/>
+<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.css">
+<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.theme.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.3.0/lib/css/zenburn.min.css">
+<style>
+    Chart {
+        height: 100%;
+        min-height: 100%;
+        width: 90%;
+        min-width: 90%;
+    }
+
+    .side-by-side {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+
+        display: inline-block;
+        *display: inline;
+        zoom: 1
+    }
+
+    .reveal.slide .slides > section, .reveal.slide .slides > section > section {
+        min-height: 100% !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: center !important;
+        position: absolute !important;
+        top: 0 !important;
+        align-items: center !important;
+    }
+
+    section > h1, section > h2 {
+        position: absolute !important;
+        top: 0 !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+        left: 0 !important;
+        right: 0 !important;
+        text-align: center !important;
+    }
+
+    .print-pdf .reveal.slide .slides > section, .print-pdf .reveal.slide .slides > section > section {
+        min-height: 770px !important;
+        position: relative !important;
+    }
+</style>
+<body>
+<!-- Wrap the entire slide show in a div using the "reveal" class. -->
+<div class="reveal">
+    <!-- Wrap all slides in a single "slides" class -->
+    <div class="slides">
+        <!-- ALL SLIDES GO HERE -->
+        <!-- Each section element contains an individual slide -->
+        <section>
+            <h1>dex.js</h1>
+            <img border="0" src="images/dexjs.png">
+            <p>dex.js is a javascript framework for visualizing data.</p>
+        </section>
+
+        <section>
+            <section>
+                <h1>Available Charts</h1>
+                <ul>
+                    <li>Area Charts</li>
+                    <li>Stacked Area Charts</li>
+                    <li>Line Charts</li>
+                    <li>Bar Charts</li>
+                </ul>
+                <ul>
+                    <li>Stacked Bar Charts</li>
+                    <li>Pie Charts</li>
+                    <li>Donut Charts</li>
+                    <li>Scatterplots</li>
+                </ul>
+                <p>Go down for live examples or right to continue</p>
+            </section>
+            <section>
+                <h1>C3 Line Chart</h1>
+                <div id="C3LineChart" class="Chart"></div>
+                <pre><code class="hljs" style="word-wrap: break-word;">// Instantiate the line chart given dataset ncsv
+var linechart = new dex.charts.c3.LineChart({
+  'parent': '#C3LineChart', // The node this chart will attach to.
+  'csv': ncsv // The data
+});
+// Render the chart
+linechart.render();</code></pre>
+            </section>
+            <section>
+                <h1>C3 Bar Chart</h1>
+                <div id="C3BarChart" class="Chart"></div>
+                <pre><code class="hljs" style="word-wrap: break-word;">// Instantiate the bar chart given dataset ncsv
+var barchart = new dex.charts.c3.BarChart({
+  'parent': '#C3BarChart', // The node this chart will attach to.
+  'csv': ncsv // The data
+});
+// Render the chart
+barchart.render();</code></pre>
+            </section>
+            <section>
+                <h1>C3 Area Chart</h1>
+                <div id="C3AreaChart" class="Chart"></div>
+                <pre><code class="hljs" style="word-wrap: break-word;">// Instantiate the area chart given dataset ncsv
+var areachart = new dex.charts.c3.AreaChart({
+  'parent': '#C3AreaChart', // The node this chart will attach to.
+  'csv': ncsv // The data
+});
+// Render the chart
+areachart.render();</code></pre>
+            </section>
+            <section>
+                <h1>C3 StackedBar Chart</h1>
+                <div id="C3StackedBarChart" class="Chart"></div>
+                <pre><code class="hljs" style="word-wrap: break-word;">// Instantiate the bar chart given dataset ncsv
+var stackedbar = new dex.charts.c3.StackedBarChart({
+  'parent': '#C3StackedBarChart', // The node this chart will attach to.
+  'csv': ncsv // The data
+});
+// Render the chart
+stackedbar.render();</code></pre>
+            </section>
+            <section>
+                <h1>C3 StackedArea Chart</h1>
+                <div id="C3StackedAreaChart" class="Chart"></div>
+                <pre><code class="hljs" style="word-wrap: break-word;">// Instantiate the area chart given dataset ncsv
+var stackedarea = new dex.charts.c3.StackedAreaChart({
+  'parent': '#C3StackedAreaChart', // The node this chart will attach to.
+  'csv': ncsv // The data
+});
+// Render the chart
+stackedarea.render();</code></pre>
+            </section>
+        </section>
+
+        <section>
+            <h1>THE END</h1>
+        </section>
+
+    </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.3.0/lib/js/head.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.3.0/js/reveal.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/impress.js/0.5.3/impress.min.js"></script>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.10/c3.min.js"></script>
+<script src="../dist/dex.js"></script>
+
+<script>
+    $(document).ready(function () {
+        var ncsv = {
+            'header': ["SAMPLE", "A", "B", "C"],
+            'data': dex.datagen.randomIndexedMatrix({rows: 50, columns: 4, min: 0, max: 100})
+        };
+        var ncsv2 = {
+            'header': ["A", "B", "C"],
+            'data': dex.datagen.randomMatrix({rows: 50, columns: 3, min: 0, max: 100})
+        };
+        var linechart = new dex.charts.c3.LineChart({
+                    'parent': '#C3LineChart',
+                    'csv': ncsv
+                }
+        );
+        linechart.render();
+
+        var barchart = new dex.charts.c3.BarChart({
+                    'parent': '#C3BarChart',
+                    'csv': ncsv2
+                }
+        );
+        barchart.render();
+
+        var areachart = new dex.charts.c3.AreaChart({
+                    'parent': '#C3AreaChart',
+                    'csv': ncsv2
+                }
+        );
+        areachart.render();
+
+        var stackedbar = new dex.charts.c3.StackedBarChart({
+                    'parent': '#C3StackedBarChart',
+                    'csv': ncsv2
+                }
+        );
+        stackedbar.render();
+
+        var stackedarea = new dex.charts.c3.StackedAreaChart({
+                    'parent': '#C3StackedAreaChart',
+                    'csv': ncsv2
+                }
+        );
+        stackedarea.render();
+
+        // Required, even if empty.
+        Reveal.initialize({
+            height: '100%',
+            width: '100%',
+            center: false,
+            dependencies: [
+                {
+                    src: 'https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.3.0/lib/js/classList.min.js',
+                    condition: function () {
+                        return !document.body.classList;
+                    }
+                },
+                {
+                    src: 'https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.3.0/plugin/markdown/marked.min.js',
+                    condition: function () {
+                        return !!document.querySelector('[data-markdown]');
+                    }
+                },
+                {
+                    src: 'https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.3.0/plugin/markdown/markdown.min.js',
+                    condition: function () {
+                        return !!document.querySelector('[data-markdown]');
+                    }
+                },
+                {
+                    src: 'https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.3.0/plugin/highlight/highlight.min.js',
+                    async: true,
+                    callback: function () {
+                        hljs.initHighlightingOnLoad();
+                    }
+                },
+                {src: 'https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.3.0/plugin/zoom-js/zoom.min.js', async: true},
+                {src: 'https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.3.0/plugin/notes/notes.min.js', async: true}
+            ]
+        });
+    });
+</script>
+
+</body>
+</html>

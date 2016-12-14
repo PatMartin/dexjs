@@ -1100,7 +1100,7 @@ module.exports = function charts() {
     'threejs' : require("./threejs/threejs")
   };
 };
-},{"./c3/c3":8,"./d3/d3":37,"./d3plus/d3plus":43,"./dygraphs/dygraphs":45,"./google/google":51,"./threejs/threejs":53}],10:[function(require,module,exports){
+},{"./c3/c3":8,"./d3/d3":36,"./d3plus/d3plus":42,"./dygraphs/dygraphs":44,"./google/google":50,"./threejs/threejs":52}],10:[function(require,module,exports){
 /**
  *
  * @constructor
@@ -9467,275 +9467,6 @@ var treemap = function (userConfig) {
 
 module.exports = treemap;
 },{}],35:[function(require,module,exports){
-var treemap = function (userConfig) {
-    var chart;
-
-    var defaults =
-    {
-        // The parent container of this chart.
-        'parent': '#TreemapBarchart',
-        // Set these when you need to CSS style components independently.
-        'id': 'TreemapBarchart',
-        'class': 'TreemapBarchart',
-        'resizable': true,
-        // Our data...
-        'csv': {
-            // Give folks without data something to look at anyhow.
-            'header': ["NAME", "PACAGE", "SIZE"],
-            'data': [
-                ["name1", "package1", 100],
-                ["name2", "package2", 50],
-                ["name3", "package3", 25]
-            ]
-        },
-        'width': "100%",
-        'height': "100%",
-        'transform': "translate(0 0)",
-        'title': dex.config.text(),
-        'label': dex.config.text()
-    };
-
-    var chart = new dex.component(userConfig, defaults);
-
-    chart.render = function render() {
-        window.onresize = this.resize;
-        chart.resize();
-    };
-
-    chart.resize = function resize() {
-        if (chart.config.resizable) {
-            var width = d3.select(chart.config.parent).property("clientWidth");
-            var height = d3.select(chart.config.parent).property("clientHeight");
-            dex.console.log(chart.config.id + ": resize(" + width + "," + height + ")");
-            chart.attr("width", width).attr("height", height).update();
-        }
-        else {
-            chart.update();
-        }
-    };
-
-    chart.update = function () {
-        var chart = this;
-        var config = chart.config;
-        var csv = config.csv;
-
-        d3.selectAll("#" + config.id).remove();
-
-        var chartContainer = d3.select(config.parent).append("g")
-            .attr("class", config["id"])
-            .attr("id", config["id"])
-            .attr("transform", config.transform);
-
-      var margin = { top: 15, right: 15, bottom: 40, left: 60 }
-      var width = 960 - margin.left - margin.right
-      var height = 500 - margin.top - margin.bottom
-
-      var orderedContinents = ['Asia', 'North America', 'Europe', 'South America', 'Africa', 'Australia']
-      var color = d3.scaleOrdinal()
-        .domain(orderedContinents)
-        .range(['#66c2a5', '#fc8d62', '#8da0cb', '#e78ac3', '#a6d854', '#ffd92f'])
-
-      var dollarFormat = d3.format('$,')
-      var tickFormat = function (n) {
-        return n === 0 ? '$0'
-          : n < 1000000 ? dollarFormat(n / 1000) + ' billion'
-          : dollarFormat(n / 1000000) + ' trillion'
-      }
-
-      d3.json('data.json', initialize)
-
-      function initialize(error, data) {
-        if (error) { throw error }
-
-        var root = d3.hierarchy(data)
-
-        root.children.sort(function (a, b) { return a.data.year - b.data.year })
-
-        var svg = d3.select('body')
-          .append('svg')
-          .attr('width', width + margin.left + margin.right)
-          .attr('height', height + margin.top + margin.bottom)
-          .append('g')
-          .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
-
-        var x0 = d3.scaleBand()
-          .range([0, width])
-          .padding(0.15)
-
-        var x1 = d3.scaleBand()
-          .domain(['Imports', 'Exports'])
-          .paddingInner(0.1)
-
-        var y = d3.scaleLinear()
-          .range([0, height])
-
-        var x0Axis = d3.axisBottom()
-          .scale(x0)
-          .tickSize(0)
-
-        var x1Axis = d3.axisBottom()
-          .scale(x1)
-
-        var yAxis = d3.axisLeft()
-          .tickSize(-width)
-          .tickFormat(tickFormat)
-
-        var gx0 = svg.append('g')
-          .attr('class', 'x0 axis')
-          .attr('transform', 'translate(0,' + (height + 22) + ')')
-
-        var gy = svg.append('g')
-          .attr('class', 'y axis')
-
-        d3.select('#inflation-adjusted').on('change', function () {
-          update(this.checked ? 'adj_value' : 'value')
-        })
-
-        update('adj_value')
-
-        function update(key) {
-          root.sum(function (d) { return d[key] })
-
-          var yearData = root.children
-          var typeData = d3.merge(yearData.map(function (d) { return d.children }))
-
-          x0.domain(yearData.map(function (d) { return d.data.year }).sort())
-          x1.rangeRound([0, x0.bandwidth()])
-          y.domain([0, d3.max(typeData.map(function (d) { return d.value }))]).nice()
-
-          // We use a copied Y scale to invert the range for display purposes
-          yAxis.scale(y.copy().range([height, 0]))
-
-          gx0.call(x0Axis)
-          gy.call(yAxis)
-
-          var t = d3.transition()
-
-          var years = svg.selectAll('.year')
-            .data(root.children, function (d) { return d.data.year })
-
-          var enterYears = years.enter().append('g')
-            .attr('class', 'year')
-
-          enterYears.append('g')
-            .attr('class', 'x1 axis')
-            .attr('transform', 'translate(0,' + height + ')')
-            .call(x1Axis)
-
-          years = years.merge(enterYears)
-            .attr('transform', function (d) {
-              return 'translate(' + x0(d.data.year) + ',0)'
-            })
-
-          var types = years.selectAll('.type')
-            .data(function (d) { return d.children },
-              function (d) { return d.data.type })
-            .each(function (d) {
-              // UPDATE
-              // The copied branches are orphaned from the larger hierarchy, and must be
-              // updated separately (see note at L152).
-              d.treemapRoot.sum(function (d) { return d[key] })
-              d.treemapRoot.children.forEach(function (d) {
-                d.sort(function (a, b) { return b.value - a.value })
-              })
-            })
-
-          types = types.enter().append('g')
-            .attr('class', 'type')
-            .attr('transform', function (d) {
-              return 'translate(' + x1(d.data.type) + ',' + height + ')'
-            })
-            .each(function (d) {
-              // ENTER
-              // Note that we can use .each on selections as a way to perform operations
-              // at a given depth of the hierarchy tree.
-              d.children.sort(function (a, b) {
-                return orderedContinents.indexOf(b.data.continent) -
-                  orderedContinents.indexOf(a.data.continent)
-              })
-              d.children.forEach(function (d) {
-                d.sort(function (a, b) { return b.value - a.value })
-              })
-              d.treemap = d3.treemap().tile(d3.treemapResquarify)
-
-              // The treemap layout must be given a root node, so we make a copy of our
-              // child node, which creates a new tree from the branch.
-              d.treemapRoot = d.copy()
-            })
-            .merge(types)
-            .each(function (d) {
-              // UPDATE + ENTER
-              d.treemap.size([x1.bandwidth(), y(d.value)])(d.treemapRoot)
-            })
-
-          // d3.hierarchy gives us a convenient way to access the parent datum. This line
-          // adds an index property to each node that we'll use for the transition delay.
-          root.each(function (d) { d.index = d.parent ? d.parent.children.indexOf(d) : 0 })
-
-          types.transition(t)
-            .delay(function (d, i) { return d.parent.index * 150 + i * 50 })
-            .attr('transform', function (d) {
-              return 'translate(' + x1(d.data.type) + ',' + (height - y(d.value)) + ')'
-            })
-
-          var continents = types.selectAll('.continent')
-            // Note that we're using our copied branch.
-            .data(function (d) { return d.treemapRoot.children },
-              function (d) { return d.data.continent })
-
-          continents = continents.enter().append('g')
-            .attr('class', 'continent')
-            .merge(continents)
-
-          var countries = continents.selectAll('.country')
-            .data(function (d) { return d.children },
-              function (d) { return d.data.country })
-
-          var enterCountries = countries.enter().append('rect')
-            .attr('class', 'country')
-            .attr('x', function (d) { return d.x0 })
-            .attr('width', function (d) { return d.x1 - d.x0 })
-            .attr('y', 0)
-            .attr('height', 0)
-            .style('fill', function (d) { return color(d.parent.data.continent) })
-
-          countries = countries.merge(enterCountries)
-
-          enterCountries
-            .on('mouseover', function (d) {
-              svg.classed('hover-active', true)
-              countries.classed('hover', function (e) {
-                return e.data.country === d.data.country
-              })
-            })
-            .on('mouseout', function () {
-              svg.classed('hover-active', false)
-              countries.classed('hover', false)
-            })
-            .append('title')
-            .text(function (d) { return d.data.country })
-
-          countries
-            .transition(t)
-            .attr('x', function (d) { return d.x0 })
-            .attr('width', function (d) { return d.x1 - d.x0 })
-            .attr('y', function (d) { return d.y0 })
-            .attr('height', function (d) { return d.y1 - d.y0 })
-        }
-      }
-
-    };
-
-    $(document).ready(function () {
-        // Make the entire chart draggable.
-        //$(chart.config.parent).draggable();
-    });
-
-    return chart;
-};
-
-module.exports = treemap;
-},{}],36:[function(require,module,exports){
 var verticallegend = function (userConfig) {
 
   var defaults = {
@@ -9954,7 +9685,7 @@ var verticallegend = function (userConfig) {
 };
 
 module.exports = verticallegend;
-},{}],37:[function(require,module,exports){
+},{}],36:[function(require,module,exports){
 /**
  *
  * This module provides D3 based visualization components.
@@ -9998,14 +9729,13 @@ d3.ScatterPlot = require("./ScatterPlot");
 d3.Sunburst = require("./Sunburst");
 d3.TitledTreemap = require("./TitledTreemap");
 d3.Treemap = require("./Treemap");
-d3.TreemapBarchart = require("./TreemapBarchart");
 d3.VerticalLegend = require("./VerticalLegend");
 
 // Too large, need optional config
 //d3.map = require("./map/map");
 
 module.exports = d3;
-},{"./Axis":10,"./Chord":11,"./ClusteredForce":12,"./Dendrogram":13,"./Force":14,"./HeatMap":15,"./HorizonChart":16,"./HorizontalLegend":17,"./LineChart":18,"./MotionBarChart":19,"./MotionChart":20,"./MotionCircleChart":21,"./MotionLineChart":22,"./OrbitalLayout":23,"./ParallelCoordinates":24,"./ParallelCoordinates2":25,"./PieChart":26,"./RadarChart":27,"./RadialTree":28,"./Sankey":29,"./SankeyParticles":30,"./ScatterPlot":31,"./Sunburst":32,"./TitledTreemap":33,"./Treemap":34,"./TreemapBarchart":35,"./VerticalLegend":36}],38:[function(require,module,exports){
+},{"./Axis":10,"./Chord":11,"./ClusteredForce":12,"./Dendrogram":13,"./Force":14,"./HeatMap":15,"./HorizonChart":16,"./HorizontalLegend":17,"./LineChart":18,"./MotionBarChart":19,"./MotionChart":20,"./MotionCircleChart":21,"./MotionLineChart":22,"./OrbitalLayout":23,"./ParallelCoordinates":24,"./ParallelCoordinates2":25,"./PieChart":26,"./RadarChart":27,"./RadialTree":28,"./Sankey":29,"./SankeyParticles":30,"./ScatterPlot":31,"./Sunburst":32,"./TitledTreemap":33,"./Treemap":34,"./VerticalLegend":35}],37:[function(require,module,exports){
 var uscountymap = function (userConfig)
 {
   var defaults =
@@ -10073,7 +9803,7 @@ var uscountymap = function (userConfig)
 };
 
 module.exports = uscountymap;
-},{}],39:[function(require,module,exports){
+},{}],38:[function(require,module,exports){
 var usstatemap = function (userConfig) {
   var defaults = {
     'parent'        : "#USStateMap",
@@ -10161,7 +9891,7 @@ var usstatemap = function (userConfig) {
 };
 
 module.exports = usstatemap;
-},{}],40:[function(require,module,exports){
+},{}],39:[function(require,module,exports){
 var worldcountrymap = function (userConfig)
 {
   var defaults =
@@ -11459,7 +11189,7 @@ var worldcountrymap = function (userConfig)
 };
 
 module.exports = worldcountrymap;
-},{}],41:[function(require,module,exports){
+},{}],40:[function(require,module,exports){
 var map = {};
 
 map.USCountyMap = require("./USCountyMap");
@@ -11467,7 +11197,7 @@ map.USStateMap = require("./USStateMap");
 map.WorldCountryMap = require("./WorldCountryMap");
 
 module.exports = map;
-},{"./USCountyMap":38,"./USStateMap":39,"./WorldCountryMap":40}],42:[function(require,module,exports){
+},{"./USCountyMap":37,"./USStateMap":38,"./WorldCountryMap":39}],41:[function(require,module,exports){
 var network = function (userConfig) {
   var chart;
 
@@ -11572,7 +11302,7 @@ var network = function (userConfig) {
 };
 
 module.exports = network;
-},{}],43:[function(require,module,exports){
+},{}],42:[function(require,module,exports){
 /**
  *
  * This module provides d3plus based visualizations.
@@ -11587,7 +11317,7 @@ var d3plus = {};
 d3plus.Network = require("./Network");
 
 module.exports = d3plus;
-},{"./Network":42}],44:[function(require,module,exports){
+},{"./Network":41}],43:[function(require,module,exports){
 /**
  * This will construct a new DygraphsLineChart with the user supplied userConfig applied.
  * @param userConfig - A user supplied configuration of the form:
@@ -11657,7 +11387,7 @@ var linechart = function (userConfig) {
 };
 
 module.exports = linechart;
-},{}],45:[function(require,module,exports){
+},{}],44:[function(require,module,exports){
 /**
  *
  * This module provides a dygraphs linechart component.
@@ -11673,7 +11403,7 @@ var dygraphs = {};
 dygraphs.LineChart = require("./LineChart");
 
 module.exports = dygraphs;
-},{"./LineChart":44}],46:[function(require,module,exports){
+},{"./LineChart":43}],45:[function(require,module,exports){
 var diffbarchart = function (userConfig) {
 
   var defaults = {
@@ -11812,7 +11542,7 @@ var diffbarchart = function (userConfig) {
 };
 
 module.exports = diffbarchart;
-},{}],47:[function(require,module,exports){
+},{}],46:[function(require,module,exports){
 var diffpiechart = function (userConfig) {
 
   var defaults = {
@@ -11935,7 +11665,7 @@ var diffpiechart = function (userConfig) {
 };
 
 module.exports = diffpiechart;
-},{}],48:[function(require,module,exports){
+},{}],47:[function(require,module,exports){
 /**
  *
  * @param userConfig A user supplied configuration object which will override the defaults.
@@ -12028,7 +11758,7 @@ var piechart = function (userConfig) {
 };
 
 module.exports = piechart;
-},{}],49:[function(require,module,exports){
+},{}],48:[function(require,module,exports){
 /**
  *
  * @param userConfig A user supplied configuration object which will override the defaults.
@@ -12135,7 +11865,7 @@ var timeline = function (userConfig) {
 };
 
 module.exports = timeline;
-},{}],50:[function(require,module,exports){
+},{}],49:[function(require,module,exports){
 /**
  *
  * @param userConfig A user supplied configuration object which will override the defaults.
@@ -12230,7 +11960,7 @@ var wordtree = function (userConfig) {
 };
 
 module.exports = wordtree;
-},{}],51:[function(require,module,exports){
+},{}],50:[function(require,module,exports){
 /**
  *
  * This module provides routines for dealing with arrays.
@@ -12249,7 +11979,7 @@ google.Timeline = require("./Timeline");
 google.WordTree = require("./WordTree");
 
 module.exports = google;
-},{"./DiffBarChart":46,"./DiffPieChart":47,"./PieChart":48,"./Timeline":49,"./WordTree":50}],52:[function(require,module,exports){
+},{"./DiffBarChart":45,"./DiffPieChart":46,"./PieChart":47,"./Timeline":48,"./WordTree":49}],51:[function(require,module,exports){
 var scatterplot = function (userConfig) {
   var defaults = {
     // The parent container of this chart.
@@ -12615,7 +12345,7 @@ var scatterplot = function (userConfig) {
 };
 
 module.exports = scatterplot;
-},{}],53:[function(require,module,exports){
+},{}],52:[function(require,module,exports){
 /**
  *
  * This module provides ThreeJS/WebGL based visualization components.
@@ -12630,7 +12360,7 @@ var threejs = {};
 threejs.ScatterPlot = require("./ScatterPlot");
 
 module.exports = threejs;
-},{"./ScatterPlot":52}],54:[function(require,module,exports){
+},{"./ScatterPlot":51}],53:[function(require,module,exports){
 "use strict";
 
 /**
@@ -12889,7 +12619,7 @@ module.exports = function color(dex) {
   };
 };
 
-},{}],55:[function(require,module,exports){
+},{}],54:[function(require,module,exports){
 /**
  *
  * This module provides base capabilities which are available to all dex components.
@@ -13448,7 +13178,7 @@ module.exports = function (dex) {
     };
   };
 };
-},{}],56:[function(require,module,exports){
+},{}],55:[function(require,module,exports){
 /**
  *
  * Config module.
@@ -14732,7 +14462,7 @@ module.exports = function config(dex) {
     }
   };
 };
-},{}],57:[function(require,module,exports){
+},{}],56:[function(require,module,exports){
 /**
  *
  * This module provides console logging capabilities.
@@ -14871,7 +14601,7 @@ module.exports = function (dex) {
     }
   };
 };
-},{}],58:[function(require,module,exports){
+},{}],57:[function(require,module,exports){
 /**
  *
  * This module provides support for dealing with csv structures.  This
@@ -15744,7 +15474,7 @@ module.exports = function csv(dex) {
     }
   };
 };
-},{}],59:[function(require,module,exports){
+},{}],58:[function(require,module,exports){
 /**
  *
  * This module provides support for creating various datasets.
@@ -15886,7 +15616,7 @@ module.exports = function datagen(dex) {
   };
 };
 
-},{}],60:[function(require,module,exports){
+},{}],59:[function(require,module,exports){
 /**
  *
  * The main dexjs module.
@@ -16087,7 +15817,7 @@ dex.charts = require("./charts/charts");
 dex.charts.d3.map = require("./charts/d3/map/map");
 
 module.exports = dex;
-},{"../lib/pubsub":1,"./array/array":2,"./charts/charts":9,"./charts/d3/map/map":41,"./color/color":54,"./component/component":55,"./config/config":56,"./console/console":57,"./csv/csv":58,"./datagen/datagen":59,"./json/json":61,"./matrix/matrix":62,"./object/object":63,"./ui/ui":73}],61:[function(require,module,exports){
+},{"../lib/pubsub":1,"./array/array":2,"./charts/charts":9,"./charts/d3/map/map":40,"./color/color":53,"./component/component":54,"./config/config":55,"./console/console":56,"./csv/csv":57,"./datagen/datagen":58,"./json/json":60,"./matrix/matrix":61,"./object/object":62,"./ui/ui":72}],60:[function(require,module,exports){
 /**
  *
  * This module provides routines dealing with json data.
@@ -16184,7 +15914,7 @@ module.exports = function json(dex) {
   };
 };
 
-},{}],62:[function(require,module,exports){
+},{}],61:[function(require,module,exports){
 /**
  *
  * This module provides routines dealing with matrices.
@@ -16525,7 +16255,7 @@ module.exports = function matrix(dex) {
   };
 };
 
-},{}],63:[function(require,module,exports){
+},{}],62:[function(require,module,exports){
 /**
  *
  * This module provides routines dealing with javascript objects.
@@ -16849,7 +16579,7 @@ module.exports = function object(dex) {
 };
 
 
-},{}],64:[function(require,module,exports){
+},{}],63:[function(require,module,exports){
 /**
  *
  * This class creates and attaches a SqlQuery user interface onto the
@@ -16948,7 +16678,7 @@ var sqlquery = function (userConfig) {
 };
 
 module.exports = sqlquery;
-},{}],65:[function(require,module,exports){
+},{}],64:[function(require,module,exports){
 /**
  *
  * @constructor
@@ -17048,7 +16778,7 @@ var table = function (userConfig) {
 };
 
 module.exports = table;
-},{}],66:[function(require,module,exports){
+},{}],65:[function(require,module,exports){
 var typestable = function (userConfig) {
 
   var defaults =
@@ -17129,7 +16859,7 @@ var typestable = function (userConfig) {
 };
 
 module.exports = typestable;
-},{}],67:[function(require,module,exports){
+},{}],66:[function(require,module,exports){
 var configurationbox = function (userConfig) {
 
   var defaults =
@@ -17215,7 +16945,7 @@ var configurationbox = function (userConfig) {
 };
 
 module.exports = configurationbox;
-},{}],68:[function(require,module,exports){
+},{}],67:[function(require,module,exports){
 var player = function (userConfig) {
 
   var defaults = {
@@ -17361,7 +17091,7 @@ var player = function (userConfig) {
 };
 
 module.exports = player;
-},{}],69:[function(require,module,exports){
+},{}],68:[function(require,module,exports){
 var selectable = function (userConfig) {
 
   var defaults =
@@ -17458,7 +17188,7 @@ var selectable = function (userConfig) {
 };
 
 module.exports = selectable;
-},{}],70:[function(require,module,exports){
+},{}],69:[function(require,module,exports){
 var slider = function (userConfig) {
 
   var defaults = {
@@ -17550,7 +17280,7 @@ var slider = function (userConfig) {
 };
 
 module.exports = slider;
-},{}],71:[function(require,module,exports){
+},{}],70:[function(require,module,exports){
 var tabs = function (userConfig) {
   var defaults = {
     // The parent container of this chart.
@@ -17654,7 +17384,7 @@ var tabs = function (userConfig) {
 };
 
 module.exports = tabs;
-},{}],72:[function(require,module,exports){
+},{}],71:[function(require,module,exports){
 /**
  *
  * This module provides ui components based upon jquery-ui.
@@ -17674,7 +17404,7 @@ module.exports = function jqueryui(dex) {
     'Tabs': require("./Tabs")
   };
 };
-},{"./ConfigurationBox":67,"./Player":68,"./Selectable":69,"./Slider":70,"./Tabs":71}],73:[function(require,module,exports){
+},{"./ConfigurationBox":66,"./Player":67,"./Selectable":68,"./Slider":69,"./Tabs":70}],72:[function(require,module,exports){
 /**
  *
  * This module provides ui components from a variety of sources.
@@ -17702,5 +17432,5 @@ module.exports = function ui(dex) {
     'TypesTable': require("./TypesTable")
   };
 };
-},{"./SqlQuery":64,"./Table":65,"./TypesTable":66,"./jqueryui/jqueryui":72}]},{},[60])(60)
+},{"./SqlQuery":63,"./Table":64,"./TypesTable":65,"./jqueryui/jqueryui":71}]},{},[59])(59)
 });
