@@ -26,47 +26,45 @@
 <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.theme.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.3.0/lib/css/zenburn.min.css">
 <style>
-    Chart {
+    .Chart {
         height: 100%;
         min-height: 100%;
         width: 90%;
         min-width: 90%;
     }
 
-
-    .reveal h1 { font-size: 1.8em; }
+    .reveal h1 {
+        font-size: 1.8em;
+    }
 </style>
 <body>
 <!-- Wrap the entire slide show in a div using the "reveal" class. -->
 <div class="reveal">
-    <!-- Wrap all slides in a single "slides" class -->
     <div class="slides">
-        <!-- ALL SLIDES GO HERE -->
-        <!-- Each section element contains an individual slide -->
         <section>
             <h1>dex.js</h1>
             <img border="0" src="images/dexjs.png">
             <p>dex.js is a javascript framework for visualizing data.</p>
         </section>
-
         <section>
-            <section>
-                <h1>dex.js design</h1>
-                <ul>
-                    <li>Data Consistency</li>
-                    <li>Component Consistency</li>
-                    <li>Configurability</li>
-                    <li>Simplicity</li>
-                    <li>Framework Unification</li>
-                    <li>Reusability</li>
-                    <li>Embeddable</li>
-                </ul>
-                <p>Navigate down for more information on this topic.</p>
+            <section data-markdown>
+                ### dex.js design tenants</h1>
+
+                | TENANT | DESCRIPTION |
+                |---------------|-------------|
+                | Consistent | All data is stored consistently in CSV form and all components follow the same API patterns. |
+                | Simple | General use is made as simple as possible. |
+                | Configurable | Underlying capabilities are exposed though attributes. |
+                | Reusable | Components are designed for reuse. |
+                | Interoperable | Components are design to interoperate with other components and other tools. |
+
             </section>
-            <section>
-                <h1>Data Consistency</h1>
-                <p>Everything is a csv. Here is an example:</p>
-                <pre><code class="hljs" style="word-wrap: break-word;">var nameCsv =
+            <section data-markdown>
+                <script type="text/template">
+                    ### Data Consistency
+                    Everything is a csv. Here is an example:
+
+                    <pre><code class="hljs" style="word-wrap: break-word;">var nameCsv =
 {
   header : [ 'Name', 'Age', 'Gender' },
   data   : [
@@ -75,20 +73,23 @@
              [ 'Susan Storm', 35, 'F' ]
            ]
 };</code></pre>
-                <ul>
-                    <li>CSV is simple</li>
-                    <li>Most folks already understand CSV.</li>
-                    <li>Less repetition than JSON therefore it has a smaller footprint.</li>
-                    <li>Easily transformed internally</li>
-                </ul>
+                    * CSV is simple
+                    * Most folks already understand CSV.
+                    * CSV has little repetition unlike JSON.
+                    * Smaller footprint
+                    * CSV easily transformed
+                </script>
             </section>
-            <section>
-                <h1>Component Consistency</h1>
-                <p>No matter what the component, it is used consistently within dex.js.
+            <section data-markdown>
+                <script type="text/template">
+                    ### Component Consistency
+
+                    No matter what the component, it is used consistently within dex.js.
                     For example, the Sankey diagram from D3 is quite different than the
                     Scatterplot component from WebGL. However, their usage is the same
-                    within dex.js</p>
-                <pre><code class="hljs" style="word-wrap: break-word;">var scatterplot = dex.charts.threejs.ScatterPlot(
+                    within dex.js
+                    <pre>
+                    <code class="hljs" style="word-wrap: break-word;">var scatterplot = dex.charts.threejs.ScatterPlot(
   'parent' : '#ScatterPlot',
   'csv'    : csv,
 });
@@ -97,28 +98,45 @@ var sankey = new dex.charts.d3.Sankey({
   'csv'    : csv
 });
 scatterplot.render();
-sankey.render();
-</code></pre>
+sankey.render();</code></pre>
+                </script>
             </section>
-            <section>
-                <h1>Configurability</h1>
-                <p>While general usage is simple, the underlying mechanics of the SVG
-                    are exposed via attributes. Here are a few examples:</p>
-                <ul>
-                    <li><a href="http://dexvis.net/vis/blog/2013/oct/dexcharts2/examples/Sankey7.html">Sankey</a></li>
-                    <li><a href="http://dexvis.net/vis/blog/2013/oct/dexcharts2/examples/Sankey6.html">Another
-                        Sankey</a></li>
-                    <li><a href="https://dexvis.wordpress.com/2013/04/07/dexcharts-trees-with-style/">Trees with
-                        Style</a></li>
-                </ul>
+            <section data-markdown>
+                ### Configurability
+
+                While general usage is simple, the underlying mechanics of the SVG
+                are exposed via attributes. Here are a few examples:</p>
+
+                * [Sankey](http://dexvis.net/vis/blog/2013/oct/dexcharts2/examples/Sankey7.html)
+                * [Another Sankey](http://dexvis.net/vis/blog/2013/oct/dexcharts2/examples/Sankey6.html)
+                * [Trees with style](https://dexvis.wordpress.com/2013/04/07/dexcharts-trees-with-style/)
             </section>
-            <section>
-                <h1>Simplicity</h1>
-                <p>The consistency of data and component models make life simple.
+            <section data-markdown>
+                <script type="text/template">
+                    ### Simplicity
+                    The consistency of data and component models make life simple.
                     Here is a 1 liner which charts and renders a dataset called csv. It also assumes the existence of
-                    a dom element named 'LineChart'.</p>
-                <pre><code class="hljs" style="word-wrap: break-word;">var linechart = new dex.charts.c3.LineChart({'csv' : csv }).render();</code></pre>
-                Also note the method chaining of the constructor and the render method.
+                    a dom element named 'LineChart'.
+                    <pre><code class="hljs" style="word-wrap: break-word;">var linechart = new dex.charts.c3.LineChart({'csv' : csv }).render();</code></pre>
+                    Also note the method chaining of the constructor and the render method.
+                </script>
+            </section>
+            <section data-markdown>
+                <script type="text/template">
+                    ### Framework Unification
+
+                    dex.js currently unifies selected components from the following
+                    visualization packages:
+
+                    |          |               |          |
+                    |----------|---------------|----------|
+                    | D3       | DyGraphs      | D3Plus   |
+                    | C3       | Google Charts | JQueryUI |
+                    | Three.js |               |          |
+
+                    When components are integrated into dex.js, they gain the ability to communicate with one
+                    another via a publish/subscribe method.
+                </script>
             </section>
         </section>
         <section>
@@ -140,7 +158,7 @@ sankey.render();
             </section>
             <section>
                 <h1>C3 Line Chart</h1>
-                <svg id="C3LineChart" width="900" height="320"></svg>
+                <div id="C3LineChart"></div>
                 <pre><code class="hljs" style="word-wrap: break-word;">// Instantiate the line chart given dataset ncsv
 var linechart = new dex.charts.c3.LineChart({
   'parent': '#C3LineChart', // The node this chart will attach to.
@@ -212,6 +230,17 @@ stackedarea.render();</code></pre>
                 </ul>
                 <p>Go down for live examples or right to continue</p>
             </section>
+            <section data-state="chord">
+                <h3>D3 Chord Diagram</h3>
+                <svg id="D3ChordDiagram" class="Chart"></svg>
+                <pre><code class="hljs" style="word-wrap: break-word;">// Instantiate the chord diagram dataset presidents
+var chord = new dex.charts.d3.Chord({
+  'parent': '#D3ChordDiagram',
+  'csv': people
+});
+// Render the chart
+chord.render();</code></pre>
+            </section>
         </section>
 
         <section>
@@ -240,11 +269,19 @@ stackedarea.render();</code></pre>
             'header': ["A", "B", "C"],
             'data': dex.datagen.randomMatrix({rows: 50, columns: 3, min: 0, max: 100})
         };
+
+        var people =
+        {
+            'header' : ["Name", "Party"],
+            'data'   : [
+                ["Mary", "F" ],
+                ["Jim", "M"],
+                ["John", "M" ]
+            ]
+        };
+
         var linechart = new dex.charts.c3.LineChart({
                     'parent': '#C3LineChart',
-            'height' : 320,
-            'width' : 900,
-            'resizeable' : false,
                     'csv': ncsv
                 }
         );
@@ -278,13 +315,20 @@ stackedarea.render();</code></pre>
         );
         stackedarea.render();
 
+        var chord = new dex.charts.d3.Chord({
+                    'parent'      : '#D3ChordDiagram',
+                    'csv'         : people
+                }
+        );
+        chord.render();
+
         // Required, even if empty.
         Reveal.initialize({
             height: '768',
             width: '1024',
             center: false,
             rollingLinks: true,
-            touch : false,
+            touch: false,
             transition: 'convex',
             controls: true,
             history: true,
@@ -318,6 +362,10 @@ stackedarea.render();</code></pre>
                 {src: 'https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.3.0/plugin/notes/notes.min.js', async: true}
             ]
         });
+
+        Reveal.addEventListener( 'chord', function() {
+            chord.resize();
+        } );
     });
 </script>
 
