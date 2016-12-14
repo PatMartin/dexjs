@@ -33,16 +33,6 @@
         min-width: 90%;
     }
 
-    .side-by-side {
-        list-style-type: none;
-        margin: 0;
-        padding: 0;
-
-        display: inline-block;
-        *display: inline;
-        zoom: 1
-    }
-
     .reveal.slide .slides > section, .reveal.slide .slides > section > section {
         min-height: 100% !important;
         display: flex !important;
@@ -83,7 +73,79 @@
 
         <section>
             <section>
-                <h1>Available Charts</h1>
+                <h1>dex.js design</h1>
+                <ul>
+                    <li>Data Consistency</li>
+                    <li>Component Consistency</li>
+                    <li>Configurability</li>
+                    <li>Simplicity</li>
+                    <li>Framework Unification</li>
+                    <li>Reusability</li>
+                    <li>Embeddable</li>
+                </ul>
+                <p>Navigate down for more information on this topic.</p>
+            </section>
+            <section>
+                <h1>Data Consistency</h1>
+                <p>Everything is a csv. Here is an example:</p>
+                <pre><code class="hljs" style="word-wrap: break-word;">var nameCsv =
+{
+  header : [ 'Name', 'Age', 'Gender' },
+  data   : [
+             [ 'Douglas Adams', 42, 'M' ],
+             [ 'Bob Barker', 77, 'M' ],
+             [ 'Susan Storm', 35, 'F' ]
+           ]
+};</code></pre>
+                <ul>
+                    <li>CSV is simple</li>
+                    <li>Most folks already understand CSV.</li>
+                    <li>Less repetition than JSON therefore it has a smaller footprint.</li>
+                    <li>Easily transformed internally</li>
+                </ul>
+            </section>
+            <section>
+                <h1>Component Consistency</h1>
+                <p>No matter what the component, it is used consistently within dex.js.
+                    For example, the Sankey diagram from D3 is quite different than the
+                    Scatterplot component from WebGL. However, their usage is the same
+                    within dex.js</p>
+                <pre><code class="hljs" style="word-wrap: break-word;">var scatterplot = dex.charts.threejs.ScatterPlot(
+  'parent' : '#ScatterPlot',
+  'csv'    : csv,
+});
+var sankey = new dex.charts.d3.Sankey({
+  'parent' : "#Sankey",
+  'csv'    : csv
+});
+scatterplot.render();
+sankey.render();
+</code></pre>
+            </section>
+            <section>
+                <h1>Configurability</h1>
+                <p>While general usage is simple, the underlying mechanics of the SVG
+                    are exposed via attributes. Here are a few examples:</p>
+                <ul>
+                    <li><a href="http://dexvis.net/vis/blog/2013/oct/dexcharts2/examples/Sankey7.html">Sankey</a></li>
+                    <li><a href="http://dexvis.net/vis/blog/2013/oct/dexcharts2/examples/Sankey6.html">Another
+                        Sankey</a></li>
+                    <li><a href="https://dexvis.wordpress.com/2013/04/07/dexcharts-trees-with-style/">Trees with
+                        Style</a></li>
+                </ul>
+            </section>
+            <section>
+                <h1>Simplicity</h1>
+                <p>The consistency of data and component models make life simple.
+                    Here is a 1 liner which charts and renders a dataset called csv. It also assumes the existence of
+                    a dom element named 'LineChart'.</p>
+                <pre><code class="hljs" style="word-wrap: break-word;">var linechart = new dex.charts.c3.LineChart({'csv' : csv }).render();</code></pre>
+                Also note the method chaining of the constructor and the render method.
+            </section>
+        </section>
+        <section>
+            <section>
+                <h1>C3 Chart Components</h1>
                 <ul>
                     <li>Area Charts</li>
                     <li>Stacked Area Charts</li>
@@ -156,6 +218,25 @@ stackedarea.render();</code></pre>
         </section>
 
         <section>
+            <section>
+                <h1>D3 Chart Components</h1>
+                <ul>
+                    <li>Chord Diagrams</li>
+                    <li>Clustered Force</li>
+                    <li>Parallel Coordinates</li>
+                    <li>Dendrograms</li>
+                </ul>
+                <ul>
+                    <li>Force Diagrams</li>
+                    <li>Linecharts</li>
+                    <li>Motion Charts</li>
+                    <li>Orbital Layout</li>
+                </ul>
+                <p>Go down for live examples or right to continue</p>
+            </section>
+        </section>
+
+        <section>
             <h1>THE END</h1>
         </section>
 
@@ -221,6 +302,10 @@ stackedarea.render();</code></pre>
             height: '100%',
             width: '100%',
             center: false,
+            rollingLinks: true,
+            //transition: 'default',
+            controls: true,
+            history: true,
             dependencies: [
                 {
                     src: 'https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.3.0/lib/js/classList.min.js',
