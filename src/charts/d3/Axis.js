@@ -127,7 +127,7 @@ var axis = function (userConfig) {
     // Create an axis based upon our dimensions and margins.  Regenerated every
     // time because of resize events.
     config.axis.scale.range = [config.margin.left, config.width - config.margin.right];
-    config.axis.scale.domain = dex.matrix.extent(config.csv.data, [config.column - 1]);
+    config.axis.scale.domain = dex.matrix.extent(config.csv.data, [config.column]);
     console.log(config.id + ":" + config.width + "x" + config.height + ", domain: " +
     config.axis.scale.domain + ", range: " + config.axis.scale.range);
     var axisScale = dex.config.createScale(config.axis.scale);

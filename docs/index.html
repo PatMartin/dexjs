@@ -48,9 +48,9 @@
         </section>
         <section>
             <section data-markdown>
-                ### dex.js design tenants</h1>
+                ### dex.js design goals</h1>
 
-                | TENANT | DESCRIPTION |
+                | GOAL | DESCRIPTION |
                 |---------------|-------------|
                 | Consistent | All data is stored consistently in CSV form and all components follow the same API patterns. |
                 | Simple | General use is made as simple as possible. |
@@ -114,7 +114,7 @@ sankey.render();</code></pre>
             <section data-markdown>
                 <script type="text/template">
                     ### Simplicity
-                    The consistency of data and component models make life simple.
+                    The consistency of data representation and component behavior make life easier.
                     Here is a 1 liner which charts and renders a dataset called csv. It also assumes the existence of
                     a dom element named 'LineChart'.
                     <pre><code class="hljs" style="word-wrap: break-word;">var linechart = new dex.charts.c3.LineChart({'csv' : csv }).render();</code></pre>
@@ -140,21 +140,20 @@ sankey.render();</code></pre>
             </section>
         </section>
         <section>
-            <section>
-                <h1>C3 Chart Components</h1>
-                <ul>
-                    <li>Area Charts</li>
-                    <li>Stacked Area Charts</li>
-                    <li>Line Charts</li>
-                    <li>Bar Charts</li>
-                </ul>
-                <ul>
-                    <li>Stacked Bar Charts</li>
-                    <li>Pie Charts</li>
-                    <li>Donut Charts</li>
-                    <li>Scatterplots</li>
-                </ul>
-                <p>Go down for live examples or right to continue</p>
+            <section data-markdown>
+                <script type="text/template">
+                    ### C3 Chart Components
+
+                    Using the awesome C3 framework, dex.js provides the following components:
+
+                    |          |               |
+                    |----------|---------------|
+                    | <a href="#/2/3">Area Chart</a>         | <a href="#/2/2">Bar Chart</a> |
+                    | <a href="#/2/5">Stacked Area Chart</a> | <a href="#/2/4">Stacked Bar Chart</a> |
+                    | <a href="#/2/1">Line Chart</a>         |  |
+                    ---
+                    **Navigate down for concrete examples**
+                </script>
             </section>
             <section>
                 <h1>C3 Line Chart</h1>
@@ -190,7 +189,7 @@ var areachart = new dex.charts.c3.AreaChart({
 areachart.render();</code></pre>
             </section>
             <section>
-                <h1>C3 StackedBar Chart</h1>
+                <h1>C3 Stacked Bar Chart</h1>
                 <div id="C3StackedBarChart" class="Chart"></div>
                 <pre><code class="hljs" style="word-wrap: break-word;">// Instantiate the bar chart given dataset ncsv
 var stackedbar = new dex.charts.c3.StackedBarChart({
@@ -201,7 +200,7 @@ var stackedbar = new dex.charts.c3.StackedBarChart({
 stackedbar.render();</code></pre>
             </section>
             <section>
-                <h1>C3 StackedArea Chart</h1>
+                <h1>C3 Stacked Area Chart</h1>
                 <div id="C3StackedAreaChart" class="Chart"></div>
                 <pre><code class="hljs" style="word-wrap: break-word;">// Instantiate the area chart given dataset ncsv
 var stackedarea = new dex.charts.c3.StackedAreaChart({
@@ -214,21 +213,36 @@ stackedarea.render();</code></pre>
         </section>
 
         <section>
-            <section>
-                <h1>D3 Chart Components</h1>
-                <ul>
-                    <li>Chord Diagrams</li>
-                    <li>Clustered Force</li>
-                    <li>Parallel Coordinates</li>
-                    <li>Dendrograms</li>
-                </ul>
-                <ul>
-                    <li>Force Diagrams</li>
-                    <li>Linecharts</li>
-                    <li>Motion Charts</li>
-                    <li>Orbital Layout</li>
-                </ul>
-                <p>Go down for live examples or right to continue</p>
+            <section data-markdown>
+                <script type="text/template">
+                    ### D3 Chart Components
+
+                    D3 provides the underpinnings of a vast majority of charts.
+
+                    |          |               |              |
+                    |----------|---------------|--------------|
+                    | <a href="#/3/1">Axis</a>         | <a href="#/3/2">Chord Diagrams</a> | <a href="#/3/3">Clustered Force</a> |
+                    | <a href="#/3/4">Dendrograms</a>         | <a href="#/3/5">Force</a> | <a href="#/3/6">Heatmap</a> |
+                    | <a href="#/3/7">Horizon Chart</a>         | <a href="#/3/8">Legends</a> | <a href="#/3/9">Linecharts</a> |
+                    | <a href="#/3/10">Motion Bar Chart</a>         | <a href="#/3/11">Motion Chart</a> | <a href="#/3/12">Motion Line Charts</a> |
+                    |  <a href="#/3/13">Orbital Layout</a> | <a href="#/3/14">Parallel Coordinates</a> | <a href="#/3/15">Pie Chart</a> |
+                    | <a href="#/3/16">Radar Chart</a>         | <a href="#/3/17">Radial Tree</a> | <a href="#/3/18">Sankey</a> |
+                    | <a href="#/3/19">Sankey Particles</a> | <a href="#/3/20">Scatter Plot</a> | <a href="#/3/21">Sunburst</a> |
+                    | <a href="#/3/22">Titled Treemap</a>         | <a href="#/3/23">Treemap</a> | |
+                    ---
+                    <a href="#/3/1">Navigate down for concrete examples</a>
+                </script>
+            </section>
+            <section data-state="axis">
+                <h1>Axis</h1>
+                <svg id="D3Axis1" class="Chart"></svg>
+                <pre><code class="hljs" style="word-wrap: break-word;" data-trim>
+var axis = dex.charts.d3.Axis({
+  'parent'     : "#D3Axis",
+  'csv'        : axisData
+});
+axis.render();
+                </code></pre>
             </section>
             <section data-state="chord">
                 <h3>D3 Chord Diagram</h3>
@@ -241,8 +255,38 @@ var chord = new dex.charts.d3.Chord({
 // Render the chart
 chord.render();</code></pre>
             </section>
-        </section>
 
+            <section data-state="cforce">
+                <h3>D3 Clustered Force</h3>
+                <svg id="D3ClusteredForce" class="Chart"></svg>
+                <pre><code class="hljs" style="word-wrap: break-word;" data-trim>
+var cforce = new dex.charts.d3.ClusteredForce({
+  'parent': '#D3ClusteredForce',
+  'csv': ncsv
+});
+cforce.render();</code></pre>
+            </section>
+            <section data-state="dendrogram">
+                <h3>D3 Dendrogram</h3>
+                <svg id="D3Dendrogram" class="Chart"></svg>
+                <pre><code class="hljs" style="word-wrap: break-word;" data-trim>
+var cforce = new dex.charts.d3.Dendrogram({
+  'parent': '#D3Dendrogram',
+  'csv': orgData
+});
+cforce.render();</code></pre>
+            </section>
+        <section data-state="force">
+            <h3>D3 Force</h3>
+            <svg id="D3Force" class="Chart"></svg>
+                <pre><code class="hljs" style="word-wrap: break-word;" data-trim>
+var cforce = new dex.charts.d3.Force({
+  'parent': '#D3Force',
+  'csv': orgData
+});
+cforce.render();</code></pre>
+        </section>
+        </section>
         <section>
             <h1>THE END</h1>
         </section>
@@ -261,6 +305,17 @@ chord.render();</code></pre>
 
 <script>
     $(document).ready(function () {
+
+        var axisData =
+        {
+            'header' : ["X", "Y"],
+            'data'   : []
+        };
+
+        for (var i = -100; i <= 100; i++) {
+            axisData.data.push([i, i * i]);
+        }
+
         var ncsv = {
             'header': ["SAMPLE", "A", "B", "C"],
             'data': dex.datagen.randomIndexedMatrix({rows: 50, columns: 4, min: 0, max: 100})
@@ -278,6 +333,71 @@ chord.render();</code></pre>
                 ["Jim", "M"],
                 ["John", "M" ]
             ]
+        };
+
+        var presidents =
+        {
+            'header' : ["Presidency", "President", "Party", "Home State"],
+            'data'   : [
+                ["1", "George Washington", "Independent", "Virginia"],
+                ["2", "John Adams", "Federalist", "Massachusetts"],
+                ["3", "Thomas Jefferson", "Dem-Rep", "Virginia"],
+                ["4", "James Madison", "Dem-Rep", "Virginia"],
+                ["5", "James Monroe", "Dem-Rep", "Virginia"],
+                ["6", "John Quincy Adams", "Dem-Rep/Nat Rep", "Massachusetts"],
+                ["7", "Andrew Jackson", "Democratic", "Tennessee"],
+                ["8", "Martin Van Buren", "Democratic", "New York"],
+                ["9", "William Henry Harrison", "Whig", "Ohio"],
+                ["10", "John Tyler", "Whig", "Virginia"],
+                ["11", "James K. Polk", "Democratic", "Tennessee"],
+                ["12", "Zachary Taylor", "Whig", "Louisiana"],
+                ["13", "Millard Fillmore", "Whig", "New York"],
+                ["14", "Franklin Pierce", "Democratic", "New Hampshire"],
+                ["15", "James Buchanan", "Democratic", "Pennsylvania"],
+                ["16", "Abraham Lincoln", "Rep/Nat Union", "Illinois"],
+                ["17", "Andrew Johnson", "Dem/Nat Union", "Tennessee"],
+                ["18", "Ulysses S. Grant", "Republican", "Ohio"],
+                ["19", "Rutherford B. Hayes", "Republican", "Ohio"],
+                ["20", "James A. Garfield", "Republican", "Ohio"],
+                ["21", "Chester A. Arthur", "Republican", "New York"],
+                ["22", "Grover Cleveland", "Democratic", "New York"],
+                ["23", "Benjamin Harrison", "Republican", "Indiana"],
+                ["24", "Grover Cleveland (2nd)", "Democratic", "New York"],
+                ["25", "William McKinley", "Republican", "Ohio"],
+                ["26", "Theodore Roosevelt", "Republican", "New York"],
+                ["27", "William Howard Taft", "Republican", "Ohio"],
+                ["28", "Woodrow Wilson", "Democratic", "New Jersey"],
+                ["29", "Warren G. Harding", "Republican", "Ohio"],
+                ["30", "Calvin Coolidge", "Republican", "Massachusetts"],
+                ["31", "Herbert Hoover", "Republican", "Iowa"],
+                ["32", "Franklin D. Roosevelt", "Democratic", "New York"],
+                ["33", "Harry S. Truman", "Democratic", "Missouri"],
+                ["34", "Dwight D. Eisenhower", "Republican", "Texas"],
+                ["35", "John F. Kennedy", "Democratic", "Massachusetts"],
+                ["36", "Lyndon B. Johnson", "Democratic", "Texas"],
+                ["37", "Richard Nixon", "Republican", "California"],
+                ["38", "Gerald Ford", "Republican", "Michigan"],
+                ["39", "Jimmy Carter", "Democratic", "Georgia"],
+                ["40", "Ronald Reagan", "Republican", "California"],
+                ["41", "George H. W. Bush", "Republican", "Texas"],
+                ["42", "Bill Clinton", "Democratic", "Arkansas"],
+                ["43", "George W. Bush", "Republican", "Texas"],
+                ["44", "Barack Obama", "Democratic", "Illinois"]
+            ]
+        };
+
+        var orgChart = { header : [ 'CEO', 'Director', 'Employee' ],
+        data : [[ 'Big Boss', 'Slick Willy', 'Jimbo' ],
+           [ 'Big Boss', 'Slick Willy', 'Jimbo' ],
+           [ 'Big Boss', 'Slick Willy', 'Timbo' ],
+           [ 'Big Boss', 'Slick Willy', 'Anita' ],
+           [ 'Big Boss', 'Sneaky Jack', 'Roger' ],
+           [ 'Big Boss', 'Sneaky Jack', 'Susan' ]
+        ]};
+
+        var playerData = {
+            'header' : ["T", "A", "B", "C" ],
+            'data'   : dex.datagen.randomIntegerMatrix({rows:1000, columns: 4, min: -100, max:100})
         };
 
         var linechart = new dex.charts.c3.LineChart({
@@ -314,6 +434,11 @@ chord.render();</code></pre>
                 }
         );
         stackedarea.render();
+        var axis1 = dex.charts.d3.Axis({
+            'parent'  : "#D3Axis1",
+            'csv'     : axisData
+        });
+        axis1.render();
 
         var chord = new dex.charts.d3.Chord({
                     'parent'      : '#D3ChordDiagram',
@@ -322,11 +447,31 @@ chord.render();</code></pre>
         );
         chord.render();
 
+        var cforce = new dex.charts.d3.ClusteredForce({
+                    'parent' : "#D3ClusteredForce",
+                    'csv'    : ncsv
+                });
+        cforce.render();
+
+        var dendrogram = new dex.charts.d3.Dendrogram({
+            'parent' : "#D3Dendrogram",
+            'csv'    : orgChart,
+            'root'  : 'Organization'
+        });
+        dendrogram.render();
+
+        var force = new dex.charts.d3.Force({
+            'parent' : "#D3Force",
+            'csv'    : orgChart,
+            'root'  : 'Organization'
+        });
+        force.render();
+
         // Required, even if empty.
         Reveal.initialize({
             height: '768',
             width: '1024',
-            center: false,
+            center: true,
             rollingLinks: true,
             touch: false,
             transition: 'convex',
@@ -365,6 +510,18 @@ chord.render();</code></pre>
 
         Reveal.addEventListener( 'chord', function() {
             chord.resize();
+        } );
+        Reveal.addEventListener( 'axis', function() {
+            axis1.resize();
+        } );
+        Reveal.addEventListener( 'cforce', function() {
+            cforce.resize();
+        } );
+        Reveal.addEventListener( 'dendrogram', function() {
+            dendrogram.resize();
+        } );
+        Reveal.addEventListener( 'force', function() {
+            force.resize();
         } );
     });
 </script>

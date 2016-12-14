@@ -70,7 +70,6 @@
     'id'         : 'axis1',
     'class'      : 'axis1',
     'csv'        : csv,
-    'column'     : 1,
     'title.text' : 'Axis Example #1'
   });
   axis1.render();
@@ -81,7 +80,7 @@
     'id'         : 'axis2',
     'class'      : 'axis2',
     'csv'        : csv,
-    'column'     : 2,
+    'column'     : 1,
     'title.text' : 'Axis Example #2'
   });
   axis2.render();
@@ -92,7 +91,6 @@
     'id'              : 'axis3',
     'class'           : 'axis3',
     'csv'             : csv,
-    'column'          : 1,
     'transform'       : 'translate(100,0)',
     'axis.orient'     : 'left',
     'axis.scale.type' : 'linear',
@@ -111,7 +109,6 @@
     'id'              : 'axis4',
     'class'           : 'axis4',
     'csv'             : csv,
-    'column'          : 1,
     'transform'       : 'translate(100,0)',
     'axis.orient'     : 'right',
     'axis.scale.type' : 'linear',
@@ -130,7 +127,6 @@
     'id'                              : 'axis5',
     'class'                           : 'axis5',
     'csv'                             : csv,
-    'column'                          : 1,
     'transform'                       : 'translate(100,0)',
     'axis.orient'                     : 'right',
     'axis.scale.type'                 : 'linear',
@@ -151,76 +147,4 @@
     'title.transform'                 : 'rotate(90)'
   });
   axis5.render();
-
-  /*
-   var axis5 = new Axis({
-   'parent'                         : "#AxisArea5",
-   'id'                             : 'axis5',
-   'class'                          : 'axis5',
-   'csv'                            : csv,
-   'column'                         : 1,
-   'transform'       : 'translate(100,0)',
-   'axis.orient'                    : 'left',
-   'axis.scale.type'                : 'log',
-   'title.text'                     : 'Log Axis',
-   'title.x'                        : 80,
-   'title.y'                        : function (d, i) {
-   return axis5.attr("width") / 2;
-   },
-   'title.writingMode'              : 'tb',
-   'title.glyphOrientationVertical' : 0,
-   'title.font.wordSpacing'         : 0,
-   'title.font.letterSpacing'       : -5,
-   'title.font.size'                : 24,
-   'title.font.weight'              : 'bold',
-   'title.fill.fillColor'           : 'steelblue'
-   });
-   axis5.render();
-
-   var axis6 = new Axis({
-   'parent'                         : "#AxisArea6",
-   'id'                             : 'axis6',
-   'class'                          : 'axis6',
-   'csv'                            : csv,
-   'column'                         : 1,
-   'axis.orient'                    : 'left',
-   'axis.scale.type'                : 'time',
-   'axis.scale.domain'              : [new Date(2012, 0, 1), new Date(2013, 0, 1)],
-   'axis.scale.range'               : [0, 500],
-   'title.text'                     : 'Time Axis',
-   'title.x'                        : -70,
-   'title.y'                        : 0,
-   'title.writingMode'              : 'tb',
-   'title.glyphOrientationVertical' : 0,
-   'title.font.wordSpacing'         : 0,
-   'title.font.letterSpacing'       : -5,
-   'title.font.size'                : 24,
-   'title.font.weight'              : 'bold',
-   'title.fill.fillColor'           : 'steelblue'
-   });
-   axis6.render();
-
-   var axis7 = new Axis({
-   'parent'                         : "#AxisArea7",
-   'id'                             : 'axis7',
-   'class'                          : 'axis7',
-   'csv'                            : csv,
-   'column'                         : 1,
-   'axis.orient'                    : 'left',
-   'axis.scale.type'                : 'ordinal',
-   'axis.scale.domain'              : ['A', 'E', 'I', 'O', 'U'],
-   'axis.scale.rangePoints'         : [0, 500],
-   'title.text'                     : 'Ordinal Axis',
-   'title.x'                        : -70,
-   'title.y'                        : 0,
-   'title.writingMode'              : 'tb',
-   'title.glyphOrientationVertical' : 0,
-   'title.font.wordSpacing'         : 0,
-   'title.font.letterSpacing'       : -5,
-   'title.font.size'                : 24,
-   'title.font.weight'              : 'bold',
-   'title.fill.fillColor'           : 'steelblue'
-   });
-   axis7.render();
-   **/
 </script>
