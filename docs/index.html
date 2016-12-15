@@ -61,9 +61,11 @@
 <div class="reveal">
     <div class="slides">
         <section>
-            <h1>dex.js</h1>
-            <img border="0" src="images/dexjs.png">
-            <p>dex.js is a javascript framework for visualizing data.</p>
+            <div class="fill-screen">
+                <h1>dex.js</h1>
+                <img border="0" src="images/dexjs.png">
+                <p>dex.js is a javascript framework for visualizing data.</p>
+            </div>
         </section>
         <section>
             <section data-markdown>
@@ -176,8 +178,9 @@ sankey.render();</code></pre>
                 </script>
             </section>
             <section>
-                <h1>C3 Line Chart</h1>
-                <div id="C3LineChart"></div>
+                <div class="fill-screen">
+                    <h1>C3 Line Chart</h1>
+                    <div id="C3LineChart"></div>
                 <pre><code class="hljs" style="word-wrap: break-word;">// Instantiate the line chart given dataset ncsv
 var linechart = new dex.charts.c3.LineChart({
   'parent': '#C3LineChart', // The node this chart will attach to.
@@ -185,6 +188,7 @@ var linechart = new dex.charts.c3.LineChart({
 });
 // Render the chart
 linechart.render();</code></pre>
+                </div>
             </section>
             <section>
                 <h1>C3 Bar Chart</h1>
@@ -220,8 +224,9 @@ var stackedbar = new dex.charts.c3.StackedBarChart({
 stackedbar.render();</code></pre>
             </section>
             <section>
-                <h1>C3 Stacked Area Chart</h1>
-                <div id="C3StackedAreaChart" class="Chart"></div>
+                <div class="fill-screen">
+                    <h1>C3 Stacked Area Chart</h1>
+                    <div id="C3StackedAreaChart" class="Chart"></div>
                 <pre><code class="hljs" style="word-wrap: break-word;">// Instantiate the area chart given dataset ncsv
 var stackedarea = new dex.charts.c3.StackedAreaChart({
   'parent': '#C3StackedAreaChart', // The node this chart will attach to.
@@ -229,6 +234,7 @@ var stackedarea = new dex.charts.c3.StackedAreaChart({
 });
 // Render the chart
 stackedarea.render();</code></pre>
+                    <div class="fill-screen">
             </section>
         </section>
 
@@ -270,8 +276,9 @@ axis.render();
                 </div>
             </section>
             <section data-state="chord">
-                <h3>D3 Chord Diagram</h3>
-                <svg id="D3ChordDiagram" class="Chart"></svg>
+                <div class="fill-screen">
+                    <h3>D3 Chord Diagram</h3>
+                    <svg id="D3ChordDiagram" class="Chart"></svg>
                 <pre><code class="hljs" style="word-wrap: break-word;">// Instantiate the chord diagram dataset presidents
 var chord = new dex.charts.d3.Chord({
   'parent': '#D3ChordDiagram',
@@ -279,6 +286,7 @@ var chord = new dex.charts.d3.Chord({
 });
 // Render the chart
 chord.render();</code></pre>
+                </div>
             </section>
 
             <section data-state="cforce">
