@@ -1034,17 +1034,13 @@ motionChart.render();</code></pre>
         var motionChart = new dex.charts.d3.MotionChart({
             'parent'    : "#D3MotionChart",
             'csv' : motionData,
-            'xaxis.label.font.size': 12,
-            'yaxis.label.font.size': 24,
-            'yaxis.title.font.size' : 48,
-            'label.font.size': 64
         });
         motionChart.render();
 
         // Required, even if empty.
         Reveal.initialize({
-            height: '1024',
-            width: '768',
+            height: '100%',
+            width: '100%',
             center: true,
             rollingLinks: true,
             //touch: false,
@@ -1053,8 +1049,8 @@ motionChart.render();</code></pre>
             progress: true,
             history: true,
             minScale: 0.2,
-            maxScale: 2.0,
-            margin: .05,
+            maxScale: 10.0,
+            margin: .1,
             dependencies: [
                 {
                     src: 'https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.3.0/lib/js/classList.min.js',

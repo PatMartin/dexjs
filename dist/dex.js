@@ -6699,7 +6699,7 @@ var motionbarchart = function (userConfig) {
 module.exports = motionbarchart;
 },{}],23:[function(require,module,exports){
 var motionchart = function (userConfig) {
-  var defaultColor = d3.scale.category10();
+  var defaultColor = d3.scale.category20();
 
   var csv = {
     'header' : ['name', 'color', 'time', 'x', 'y', 'size'],
@@ -6737,7 +6737,7 @@ var motionchart = function (userConfig) {
     // Chart dimensions.
     'width'  : 600,
     'height' : 400,
-    'margin' : {top : 50, right : 50, bottom : 50, left : 100},
+    'margin' : {top : 50, right : 50, bottom : 50, left : 50},
 
     // Configuration for drawing the data-circles.
     'circle' : dex.config.circle({
@@ -6784,18 +6784,20 @@ var motionchart = function (userConfig) {
     'xaxis' : dex.config.axis({
       'scale.type'              : 'linear',
       'orient'                  : 'bottom',
-      'label'                   : dex.config.text({
-        'x'      : function (d) {
-          //dex.console.log("X=" + (chart.config.width - chart.config.margin.right));
-          return chart.config.width - chart.config.margin.left - chart.config.margin.right;
-        },
-        'y'      : function (d) {
-          //dex.console.log("Y=" + (chart.config.height - chart.config.margin.top
-          //- chart.config.margin.bottom - chart.config.xaxis.label.font.size));
-          return chart.config.height - chart.config.margin.top
-            - chart.config.margin.bottom - chart.config.xaxis.label.font.size;
-        },
-        'anchor' : 'end'
+      'label': dex.config.text({
+        'anchor': 'middle',
+        'writingMode' : 'lr',
+        'dx' : 0,
+        'dy' : '1.5em'
+      }),
+      'title': dex.config.text({
+        'anchor' : 'middle',
+        'font.size' : '16',
+        'x': function (d) {
+          return (chart.config.width - chart.config.margin.left) / 2; },
+        'y': function(d) {
+          return chart.config.height - chart.config.margin.bottom - 12;
+        }
       }),
       'tick.stroke.width'       : 1,
       'tick.fill.fillColor'     : 'none',
@@ -6807,11 +6809,25 @@ var motionchart = function (userConfig) {
       'scale.type'              : 'linear',
       'orient'                  : 'left',
       'label': dex.config.text({
-        'anchor': 'end',
-        'dx' : '-.5em' //function(d) { return chart.config.margin.left; },
+        'anchor': 'middle',
+        'writingMode' : 'tb',
+        'dx' : '-1em',
+        'dy' : '-.5em'
       }),
-      'tick.stroke.width'       : 1,
-      'tick.fill.fillColor'     : 'none',
+      'title': dex.config.text({
+        'anchor' : 'start',
+        'writingMode' : 'tb',
+        //'transform' : 'rotate(90)',
+        'font.size' : '16',
+        'x': function (d) { return 0; },
+        'dx' : '1em',
+        'y': function(d) {
+          return config.margin.top;
+        },
+        'dy' : '2em'
+      }),
+      'tick.stroke.width'       : 3,
+      'tick.fill.fillColor'     : 'red',
       'axisLine.stroke.color'   : 'black',
       'axisLine.stroke.width'   : 1,
       'axisLine.fill.fillColor' : 'none'
@@ -6945,11 +6961,15 @@ var motionchart = function (userConfig) {
       .attr("class", "yaxis")
       .call(yAxis);
 
-    var xticks = svg.selectAll(".xaxis .tick line")
+    var xticks = svg.selectAll(".xaxis .tick");
+
+    xticks.selectAll("line")
       .call(dex.config.configureStroke, config.xaxis.tick.stroke)
       .call(dex.config.configureFill, config.xaxis.tick.fill);
 
-    var yticks = svg.selectAll(".yaxis .tick line")
+    var yticks = svg.selectAll(".yaxis .tick");
+
+    yticks.selectAll("line")
       .call(dex.config.configureStroke, config.yaxis.tick.stroke)
       .call(dex.config.configureFill, config.yaxis.tick.fill);
 
@@ -6964,18 +6984,22 @@ var motionchart = function (userConfig) {
     // Add an x-axis label.
     svg.append("text")
       .attr("class", "xLabel")
-      .call(dex.config.configureText, config.xaxis.label)
-      //.attr("text-anchor", "end")
-      //.attr("x", width)
-      //.attr("y", height - 6)
+      .call(dex.config.configureText, config.xaxis.title)
+      //.attr("dx", width)
+      //.attr("dy", height - 6)
       .text(config.csv.header[config.index.x]);
 
     // Add a y-axis label.
     svg.append("text")
       .attr("class", "yLabel")
-      .call(dex.config.configureText, config.yaxis.label)
-      .attr("transform", "rotate(-90)")
+      .call(dex.config.configureText, config.yaxis.title)
       .text(config.csv.header[config.index.y]);
+
+    xticks.selectAll("text")
+      .call(dex.config.configureText, config.xaxis.label);
+
+    yticks.selectAll("text")
+      .call(dex.config.configureText, config.yaxis.label);
 
     // Add the year label; the value is set on transition.
     var label = svg.append("text")
