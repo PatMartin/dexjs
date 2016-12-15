@@ -10,7 +10,8 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
-    <meta name="viewport" content="width=device-width, width=device-height, initial-scale=1.0, maximum-scale=10.0, user-scalable=no, minimal-ui">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, maximum-scale=10.0, user-scalable=no, minimal-ui">
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.3.0/css/reveal.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.3.0/css/theme/white.min.css"
@@ -27,10 +28,10 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.3.0/lib/css/zenburn.min.css">
 <style>
     .Chart {
-        height: 60% !important;
-        min-height: 60% !important;
-        width: 60% !important;
-        min-width: 60% !important;
+        height: 50% !important;
+        min-height: 50% !important;
+        width: 50% !important;
+        min-width: 50% !important;
     }
 
     .reveal .slides > section.present, .reveal .slides > section > section.present {
@@ -41,6 +42,7 @@
         position: absolute !important;
         top: 0 !important;
     }
+
     .fill-screen {
         position: absolute !important;
         top: 0 !important;
@@ -69,7 +71,8 @@
 
                 | GOAL | DESCRIPTION |
                 |---------------|-------------|
-                | Consistent | All data is stored consistently in CSV form and all components follow the same API patterns. |
+                | Consistent | All data is stored consistently in CSV form and all components follow the same API
+                patterns. |
                 | Simple | General use is made as simple as possible. |
                 | Configurable | Underlying capabilities are exposed though attributes. |
                 | Reusable | Components are designed for reuse. |
@@ -238,11 +241,14 @@ stackedarea.render();</code></pre>
 
                     |          |               |              |
                     |----------|---------------|--------------|
-                    | <a href="#/3/1">Axis</a>         | <a href="#/3/2">Chord Diagrams</a> | <a href="#/3/3">Clustered Force</a> |
+                    | <a href="#/3/1">Axis</a>         | <a href="#/3/2">Chord Diagrams</a> | <a href="#/3/3">Clustered
+                        Force</a> |
                     | <a href="#/3/4">Dendrograms</a>         | <a href="#/3/5">Force</a> | Heatmap |
                     | <a href="#/3/7">Horizon Chart</a>         | <a href="#/3/8">Legends</a> | Linechart |
-                    | <a href="#/3/10">Motion Bar Chart</a>         | <a href="#/3/11">Motion Chart</a> | <a href="#/3/12">Motion Line Charts</a> |
-                    |  <a href="#/3/13">Orbital Layout</a> | <a href="#/3/14">Parallel Coordinates</a> | <a href="#/3/15">Pie Chart</a> |
+                    | <a href="#/3/10">Motion Bar Chart</a>         | <a href="#/3/11">Motion Chart</a> | <a
+                            href="#/3/12">Motion Line Charts</a> |
+                    |  <a href="#/3/13">Orbital Layout</a> | <a href="#/3/14">Parallel Coordinates</a> | <a
+                            href="#/3/15">Pie Chart</a> |
                     | <a href="#/3/16">Radar Chart</a>         | <a href="#/3/17">Radial Tree</a> | <a href="#/3/18">Sankey</a> |
                     | <a href="#/3/19">Sankey Particles</a> | <a href="#/3/20">Scatter Plot</a> | <a href="#/3/21">Sunburst</a> |
                     | <a href="#/3/22">Titled Treemap</a>         | <a href="#/3/23">Treemap</a> | |
@@ -251,8 +257,9 @@ stackedarea.render();</code></pre>
                 </script>
             </section>
             <section data-state="axis">
-                <h1>Axis</h1>
-                <svg id="D3Axis1" class="Chart"></svg>
+                <div class="fill-screen">
+                    <h1>Axis</h1>
+                    <svg id="D3Axis1" class="Chart"></svg>
                 <pre><code class="hljs" style="word-wrap: break-word;" data-trim>
 var axis = dex.charts.d3.Axis({
   'parent'     : "#D3Axis",
@@ -260,6 +267,7 @@ var axis = dex.charts.d3.Axis({
 });
 axis.render();
                 </code></pre>
+                </div>
             </section>
             <section data-state="chord">
                 <h3>D3 Chord Diagram</h3>
@@ -275,55 +283,63 @@ chord.render();</code></pre>
 
             <section data-state="cforce">
                 <div class="fill-screen">
-                <h3>D3 Clustered Force</h3>
-                <svg id="D3ClusteredForce" class="Chart"></svg>
+                    <h3>D3 Clustered Force</h3>
+                    <svg id="D3ClusteredForce" class="Chart"></svg>
                 <pre><code class="hljs" style="word-wrap: break-word;" data-trim>
 var cforce = new dex.charts.d3.ClusteredForce({
   'parent': '#D3ClusteredForce',
   'csv': ncsv
 });
 cforce.render();</code></pre>
-                    </div>
+                </div>
             </section>
             <section data-state="dendrogram">
-                <h3>D3 Dendrogram</h3>
-                <svg id="D3Dendrogram" class="Chart"></svg>
+                <div class="fill-screen">
+                    <h3>D3 Dendrogram</h3>
+                    <svg id="D3Dendrogram" class="Chart"></svg>
                 <pre><code class="hljs" style="word-wrap: break-word;" data-trim>
 var cforce = new dex.charts.d3.Dendrogram({
   'parent': '#D3Dendrogram',
   'csv': orgData
 });
 cforce.render();</code></pre>
+                </div>
             </section>
             <section data-state="force">
-                <h3>D3 Force</h3>
-                <svg id="D3Force" class="Chart"></svg>
+                <div class="fill-screen">
+                    <h3>D3 Force</h3>
+                    <svg id="D3Force" class="Chart"></svg>
                 <pre><code class="hljs" style="word-wrap: break-word;" data-trim>
 var cforce = new dex.charts.d3.Force({
   'parent': '#D3Force',
   'csv': orgData
 });
 cforce.render();</code></pre>
+                </div>
             </section>
             <section data-state="horizonchart">
-                <h3>D3 Horizon Chart</h3>
-                <svg id="D3HorizonChart" class="Chart"></svg>
+                <div class="fill-screen">
+                    <h3>D3 Horizon Chart</h3>
+                    <svg id="D3HorizonChart" class="Chart"></svg>
                 <pre><code class="hljs" style="word-wrap: break-word;" data-trim>
 var horizonChart = new dex.charts.d3.HorizonChart({
   'parent': '#D3HorizonChart',
   'csv': ncsv
 });
 horizonChart.render();</code></pre>
+                </div>
             </section>
             <section data-state="motionbarchart">
-                <h3>D3 Horizon Chart</h3>
-                <svg id="D3MotionBarChart" class="Chart"></svg>
+                <div class="fill-screen">
+                    <h3>D3 Horizon Chart</h3>
+                    <svg id="D3MotionBarChart" class="Chart"></svg>
                 <pre><code class="hljs" style="word-wrap: break-word;" data-trim>
 var horizonChart = new dex.charts.d3.HorizonChart({
   'parent': '#D3HorizonChart',
   'csv': ncsv
 });
 horizonChart.render();</code></pre>
+                </div>
             </section>
         </section>
         <section>
@@ -347,8 +363,8 @@ horizonChart.render();</code></pre>
 
         var axisData =
         {
-            'header' : ["X", "Y"],
-            'data'   : []
+            'header': ["X", "Y"],
+            'data': []
         };
 
         for (var i = -100; i <= 100; i++) {
@@ -366,18 +382,18 @@ horizonChart.render();</code></pre>
 
         var people =
         {
-            'header' : ["Name", "Party"],
-            'data'   : [
-                ["Mary", "F" ],
+            'header': ["Name", "Party"],
+            'data': [
+                ["Mary", "F"],
                 ["Jim", "M"],
-                ["John", "M" ]
+                ["John", "M"]
             ]
         };
 
         var presidents =
         {
-            'header' : ["Presidency", "President", "Party", "Home State"],
-            'data'   : [
+            'header': ["Presidency", "President", "Party", "Home State"],
+            'data': [
                 ["1", "George Washington", "Independent", "Virginia"],
                 ["2", "John Adams", "Federalist", "Massachusetts"],
                 ["3", "Thomas Jefferson", "Dem-Rep", "Virginia"],
@@ -944,18 +960,20 @@ horizonChart.render();</code></pre>
                 ["SAU", "Saudi Arabia", "2003", "4.09600000000000E+00", "2.44200000000000E+01", "2.23343710000000E+07"]]
         };
 
-        var orgChart = { header : [ 'CEO', 'Director', 'Employee' ],
-        data : [[ 'Big Boss', 'Slick Willy', 'Jimbo' ],
-           [ 'Big Boss', 'Slick Willy', 'Jimbo' ],
-           [ 'Big Boss', 'Slick Willy', 'Timbo' ],
-           [ 'Big Boss', 'Slick Willy', 'Anita' ],
-           [ 'Big Boss', 'Sneaky Jack', 'Roger' ],
-           [ 'Big Boss', 'Sneaky Jack', 'Susan' ]
-        ]};
+        var orgChart = {
+            header: ['CEO', 'Director', 'Employee'],
+            data: [['Big Boss', 'Slick Willy', 'Jimbo'],
+                ['Big Boss', 'Slick Willy', 'Jimbo'],
+                ['Big Boss', 'Slick Willy', 'Timbo'],
+                ['Big Boss', 'Slick Willy', 'Anita'],
+                ['Big Boss', 'Sneaky Jack', 'Roger'],
+                ['Big Boss', 'Sneaky Jack', 'Susan']
+            ]
+        };
 
         var playerData = {
-            'header' : ["T", "A", "B", "C" ],
-            'data'   : dex.datagen.randomIntegerMatrix({rows:1000, columns: 4, min: -100, max:100})
+            'header': ["T", "A", "B", "C"],
+            'data': dex.datagen.randomIntegerMatrix({rows: 1000, columns: 4, min: -100, max: 100})
         };
 
         var linechart = new dex.charts.c3.LineChart({
@@ -993,41 +1011,41 @@ horizonChart.render();</code></pre>
         );
         stackedarea.render();
         var axis1 = dex.charts.d3.Axis({
-            'parent'  : "#D3Axis1",
-            'csv'     : axisData
+            'parent': "#D3Axis1",
+            'csv': axisData
         });
         axis1.render();
 
         var chord = new dex.charts.d3.Chord({
-                    'parent'      : '#D3ChordDiagram',
-                    'csv'         : people
+                    'parent': '#D3ChordDiagram',
+                    'csv': people
                 }
         );
         chord.render();
 
         var cforce = new dex.charts.d3.ClusteredForce({
-                    'parent' : "#D3ClusteredForce",
-                    'csv'    : ncsv
-                });
+            'parent': "#D3ClusteredForce",
+            'csv': ncsv
+        });
         cforce.render();
 
         var dendrogram = new dex.charts.d3.Dendrogram({
-            'parent' : "#D3Dendrogram",
-            'csv'    : orgChart,
-            'root'  : 'Organization'
+            'parent': "#D3Dendrogram",
+            'csv': orgChart,
+            'root': 'Organization'
         });
         dendrogram.render();
 
         var force = new dex.charts.d3.Force({
-            'parent' : "#D3Force",
-            'csv'    : orgChart,
-            'root'  : 'Organization'
+            'parent': "#D3Force",
+            'csv': orgChart,
+            'root': 'Organization'
         });
         force.render();
 
         var horizonChart = new dex.charts.d3.HorizonChart({
-            'parent' : "#D3HorizonChart",
-            'csv'    : ncsv
+            'parent': "#D3HorizonChart",
+            'csv': ncsv
         });
         horizonChart.render();
 
@@ -1044,8 +1062,8 @@ horizonChart.render();</code></pre>
                 'y': 3
             },
             'csv': motionData,
-            'margin.bottom' : 240,
-            'xaxis.label.font.size' : 24,
+            'margin.bottom': 240,
+            'xaxis.label.font.size': 24,
         });
         motionBarChart.render();
 
@@ -1094,27 +1112,27 @@ horizonChart.render();</code></pre>
             ]
         });
 
-        Reveal.addEventListener( 'chord', function() {
+        Reveal.addEventListener('chord', function () {
             chord.resize();
-        } );
-        Reveal.addEventListener( 'axis', function() {
+        });
+        Reveal.addEventListener('axis', function () {
             axis1.resize();
-        } );
-        Reveal.addEventListener( 'cforce', function() {
+        });
+        Reveal.addEventListener('cforce', function () {
             cforce.resize();
-        } );
-        Reveal.addEventListener( 'dendrogram', function() {
+        });
+        Reveal.addEventListener('dendrogram', function () {
             dendrogram.resize();
-        } );
-        Reveal.addEventListener( 'force', function() {
+        });
+        Reveal.addEventListener('force', function () {
             force.resize();
-        } );
-        Reveal.addEventListener( 'horizonchart', function() {
+        });
+        Reveal.addEventListener('horizonchart', function () {
             horizonChart.resize();
-        } );
-        Reveal.addEventListener( 'motionbarchart', function() {
+        });
+        Reveal.addEventListener('motionbarchart', function () {
             motionBarChart.resize();
-        } );
+        });
     });
 </script>
 
