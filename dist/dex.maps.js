@@ -3416,9 +3416,10 @@ var motionbarchart = function (userConfig) {
       'scale.type': 'linear',
       'orient': 'left',
       'label': dex.config.text({
-        'anchor': 'start',
-        'dx' : function(d) { return chart.config.margin.left; },
+        'anchor': 'end',
+        'dx' : '-.5em' //function(d) { return chart.config.margin.left; },
       }),
+      'title': dex.config.text(),
       'tick.stroke.width': 1,
       'tick.fill.fillColor': 'none',
       'axisLine.stroke.color': 'black',
@@ -3556,8 +3557,11 @@ var motionbarchart = function (userConfig) {
     // Add a y-axis label.
     svg.append("text")
       .attr("class", "yLabel")
-      .call(dex.config.configureText, config.yaxis.label)
+      .call(dex.config.configureText, config.yaxis.title)
       .text(config.csv.header[config.index.y]);
+
+    yticks.selectAll("text")
+      .call(dex.config.configureText, config.yaxis.label);
 
     // Add the year label; the value is set on transition.
     var label = svg.append("text")
@@ -3856,14 +3860,9 @@ var motionchart = function (userConfig) {
     'yaxis' : dex.config.axis({
       'scale.type'              : 'linear',
       'orient'                  : 'left',
-      'label'                   : dex.config.text({
-        'x' : function (d) {
-          return chart.config.width - chart.config.margin.right;
-        },
-        'y' : function (d) {
-          return chart.config.height - chart.config.margin.top
-            - chart.config.margin.bottom - chart.config.xaxis.label.font.size;
-        }
+      'label': dex.config.text({
+        'anchor': 'end',
+        'dx' : '-.5em' //function(d) { return chart.config.margin.left; },
       }),
       'tick.stroke.width'       : 1,
       'tick.fill.fillColor'     : 'none',
@@ -4028,9 +4027,7 @@ var motionchart = function (userConfig) {
     // Add a y-axis label.
     svg.append("text")
       .attr("class", "yLabel")
-      .attr("text-anchor", "end")
-      .attr("y", 6)
-      .attr("dy", ".75em")
+      .call(dex.config.configureText, config.yaxis.label)
       .attr("transform", "rotate(-90)")
       .text(config.csv.header[config.index.y]);
 

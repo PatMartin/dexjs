@@ -101,9 +101,10 @@ var motionbarchart = function (userConfig) {
       'scale.type': 'linear',
       'orient': 'left',
       'label': dex.config.text({
-        'anchor': 'start',
-        'dx' : function(d) { return chart.config.margin.left; },
+        'anchor': 'end',
+        'dx' : '-.5em' //function(d) { return chart.config.margin.left; },
       }),
+      'title': dex.config.text(),
       'tick.stroke.width': 1,
       'tick.fill.fillColor': 'none',
       'axisLine.stroke.color': 'black',
@@ -241,8 +242,11 @@ var motionbarchart = function (userConfig) {
     // Add a y-axis label.
     svg.append("text")
       .attr("class", "yLabel")
-      .call(dex.config.configureText, config.yaxis.label)
+      .call(dex.config.configureText, config.yaxis.title)
       .text(config.csv.header[config.index.y]);
+
+    yticks.selectAll("text")
+      .call(dex.config.configureText, config.yaxis.label);
 
     // Add the year label; the value is set on transition.
     var label = svg.append("text")

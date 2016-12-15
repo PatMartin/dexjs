@@ -11,7 +11,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
     <meta name="viewport"
-          content="width=device-width, initial-scale=1.0, maximum-scale=10.0, user-scalable=no, minimal-ui">
+          content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=no, minimal-ui">
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.3.0/css/reveal.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.3.0/css/theme/white.min.css"
@@ -28,32 +28,10 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.3.0/lib/css/zenburn.min.css">
 <style>
     .Chart {
-        height: 50% !important;
-        min-height: 50% !important;
-        width: 50% !important;
-        min-width: 50% !important;
-    }
-
-    .reveal .slides > section.present, .reveal .slides > section > section.present {
-        min-height: 100% !important;
-        display: flex !important;
-        flex-direction: column !important;
-        justify-content: center !important;
-        position: absolute !important;
-        top: 0 !important;
-    }
-
-    .fill-screen {
-        position: absolute !important;
-        top: 0 !important;
-        margin-left: auto !important;
-        margin-right: auto !important;
-        left: 0 !important;
-        right: 0 !important;
-        height: 100% !important;
-        min-height: 100% !important;
-        width: 100% !important;
-        min-width: 100% !important;
+        height: 500px;
+        min-height: 300px;
+        width: 700px;
+        min-width: 400px;
     }
 </style>
 <body>
@@ -61,11 +39,9 @@
 <div class="reveal">
     <div class="slides">
         <section>
-            <div class="fill-screen">
-                <h1>dex.js</h1>
-                <img border="0" src="images/dexjs.png">
-                <p>dex.js is a javascript framework for visualizing data.</p>
-            </div>
+            <h1>dex.js</h1>
+            <img border="0" src="images/dexjs.png">
+            <p>dex.js is a javascript framework for visualizing data.</p>
         </section>
         <section>
             <section data-markdown>
@@ -73,8 +49,7 @@
 
                 | GOAL | DESCRIPTION |
                 |---------------|-------------|
-                | Consistent | All data is stored consistently in CSV form and all components follow the same API
-                patterns. |
+                | Consistent | All data is stored consistently in CSV form and all components follow the same API patterns. |
                 | Simple | General use is made as simple as possible. |
                 | Configurable | Underlying capabilities are exposed though attributes. |
                 | Reusable | Components are designed for reuse. |
@@ -178,9 +153,8 @@ sankey.render();</code></pre>
                 </script>
             </section>
             <section>
-                <div class="fill-screen">
-                    <h1>C3 Line Chart</h1>
-                    <div id="C3LineChart"></div>
+                <h1>C3 Line Chart</h1>
+                <div id="C3LineChart" class="Chart"></div>
                 <pre><code class="hljs" style="word-wrap: break-word;">// Instantiate the line chart given dataset ncsv
 var linechart = new dex.charts.c3.LineChart({
   'parent': '#C3LineChart', // The node this chart will attach to.
@@ -188,7 +162,6 @@ var linechart = new dex.charts.c3.LineChart({
 });
 // Render the chart
 linechart.render();</code></pre>
-                </div>
             </section>
             <section>
                 <h1>C3 Bar Chart</h1>
@@ -224,9 +197,8 @@ var stackedbar = new dex.charts.c3.StackedBarChart({
 stackedbar.render();</code></pre>
             </section>
             <section>
-                <div class="fill-screen">
-                    <h1>C3 Stacked Area Chart</h1>
-                    <div id="C3StackedAreaChart" class="Chart"></div>
+                <h1>C3 Stacked Area Chart</h1>
+                <div id="C3StackedAreaChart" class="Chart"></div>
                 <pre><code class="hljs" style="word-wrap: break-word;">// Instantiate the area chart given dataset ncsv
 var stackedarea = new dex.charts.c3.StackedAreaChart({
   'parent': '#C3StackedAreaChart', // The node this chart will attach to.
@@ -234,7 +206,6 @@ var stackedarea = new dex.charts.c3.StackedAreaChart({
 });
 // Render the chart
 stackedarea.render();</code></pre>
-                    <div class="fill-screen">
             </section>
         </section>
 
@@ -247,14 +218,11 @@ stackedarea.render();</code></pre>
 
                     |          |               |              |
                     |----------|---------------|--------------|
-                    | <a href="#/3/1">Axis</a>         | <a href="#/3/2">Chord Diagrams</a> | <a href="#/3/3">Clustered
-                        Force</a> |
+                    | <a href="#/3/1">Axis</a>         | <a href="#/3/2">Chord Diagrams</a> | <a href="#/3/3">Clustered Force</a> |
                     | <a href="#/3/4">Dendrograms</a>         | <a href="#/3/5">Force</a> | Heatmap |
                     | <a href="#/3/7">Horizon Chart</a>         | <a href="#/3/8">Legends</a> | Linechart |
-                    | <a href="#/3/10">Motion Bar Chart</a>         | <a href="#/3/11">Motion Chart</a> | <a
-                            href="#/3/12">Motion Line Charts</a> |
-                    |  <a href="#/3/13">Orbital Layout</a> | <a href="#/3/14">Parallel Coordinates</a> | <a
-                            href="#/3/15">Pie Chart</a> |
+                    | <a href="#/3/10">Motion Bar Chart</a>         | <a href="#/3/11">Motion Chart</a> | <a href="#/3/12">Motion Line Charts</a> |
+                    |  <a href="#/3/13">Orbital Layout</a> | <a href="#/3/14">Parallel Coordinates</a> | <a href="#/3/15">Pie Chart</a> |
                     | <a href="#/3/16">Radar Chart</a>         | <a href="#/3/17">Radial Tree</a> | <a href="#/3/18">Sankey</a> |
                     | <a href="#/3/19">Sankey Particles</a> | <a href="#/3/20">Scatter Plot</a> | <a href="#/3/21">Sunburst</a> |
                     | <a href="#/3/22">Titled Treemap</a>         | <a href="#/3/23">Treemap</a> | |
@@ -263,9 +231,8 @@ stackedarea.render();</code></pre>
                 </script>
             </section>
             <section data-state="axis">
-                <div class="fill-screen">
-                    <h1>Axis</h1>
-                    <svg id="D3Axis1" class="Chart"></svg>
+                <h1>Axis</h1>
+                <svg id="D3Axis1" class="Chart"></svg>
                 <pre><code class="hljs" style="word-wrap: break-word;" data-trim>
 var axis = dex.charts.d3.Axis({
   'parent'     : "#D3Axis",
@@ -273,12 +240,10 @@ var axis = dex.charts.d3.Axis({
 });
 axis.render();
                 </code></pre>
-                </div>
             </section>
             <section data-state="chord">
-                <div class="fill-screen">
-                    <h3>D3 Chord Diagram</h3>
-                    <svg id="D3ChordDiagram" class="Chart"></svg>
+                <h3>D3 Chord Diagram</h3>
+                <svg id="D3ChordDiagram" class="Chart"></svg>
                 <pre><code class="hljs" style="word-wrap: break-word;">// Instantiate the chord diagram dataset presidents
 var chord = new dex.charts.d3.Chord({
   'parent': '#D3ChordDiagram',
@@ -286,32 +251,27 @@ var chord = new dex.charts.d3.Chord({
 });
 // Render the chart
 chord.render();</code></pre>
-                </div>
             </section>
 
             <section data-state="cforce">
-                <div class="fill-screen">
-                    <h3>D3 Clustered Force</h3>
-                    <svg id="D3ClusteredForce" class="Chart"></svg>
+                <h3>D3 Clustered Force</h3>
+                <svg id="D3ClusteredForce" class="Chart"></svg>
                 <pre><code class="hljs" style="word-wrap: break-word;" data-trim>
 var cforce = new dex.charts.d3.ClusteredForce({
   'parent': '#D3ClusteredForce',
   'csv': ncsv
 });
 cforce.render();</code></pre>
-                </div>
             </section>
             <section data-state="dendrogram">
-                <div class="fill-screen">
-                    <h3>D3 Dendrogram</h3>
-                    <svg id="D3Dendrogram" class="Chart"></svg>
+                <h3>D3 Dendrogram</h3>
+                <svg id="D3Dendrogram" class="Chart"></svg>
                 <pre><code class="hljs" style="word-wrap: break-word;" data-trim>
 var cforce = new dex.charts.d3.Dendrogram({
   'parent': '#D3Dendrogram',
   'csv': orgData
 });
 cforce.render();</code></pre>
-                </div>
             </section>
             <section data-state="force">
                 <div class="fill-screen">
@@ -326,28 +286,34 @@ cforce.render();</code></pre>
                 </div>
             </section>
             <section data-state="horizonchart">
-                <div class="fill-screen">
-                    <h3>D3 Horizon Chart</h3>
-                    <svg id="D3HorizonChart" class="Chart"></svg>
+                <h3>D3 Horizon Chart</h3>
+                <svg id="D3HorizonChart" class="Chart"></svg>
                 <pre><code class="hljs" style="word-wrap: break-word;" data-trim>
 var horizonChart = new dex.charts.d3.HorizonChart({
   'parent': '#D3HorizonChart',
   'csv': ncsv
 });
 horizonChart.render();</code></pre>
-                </div>
             </section>
             <section data-state="motionbarchart">
-                <div class="fill-screen">
-                    <h3>D3 Horizon Chart</h3>
-                    <svg id="D3MotionBarChart" class="Chart"></svg>
+                <h3>D3 Motion Bar Chart</h3>
+                <svg id="D3MotionBarChart" class="Chart"></svg>
                 <pre><code class="hljs" style="word-wrap: break-word;" data-trim>
-var horizonChart = new dex.charts.d3.HorizonChart({
-  'parent': '#D3HorizonChart',
-  'csv': ncsv
+var motionBarChart = new dex.charts.d3.MotionBarChart({
+  'parent': '#D3MotionBarChart',
+  'csv': motionData
 });
-horizonChart.render();</code></pre>
-                </div>
+motionBarChart.render();</code></pre>
+            </section>
+            <section data-state="motionchart">
+                <h3>D3 Motion Chart</h3>
+                <svg id="D3MotionChart" class="Chart"></svg>
+                <pre><code class="hljs" style="word-wrap: break-word;" data-trim>
+var motionChart = new dex.charts.d3.MotionChart({
+  'parent': '#D3MotionChart',
+  'csv': motionData
+});
+motionChart.render();</code></pre>
             </section>
         </section>
         <section>
@@ -448,7 +414,6 @@ horizonChart.render();</code></pre>
                 ["44", "Barack Obama", "Democratic", "Illinois"]
             ]
         };
-
 
         var motionData = {
             'header': ["Country Abbreviation", "Country", "Year", "Births per 1000 People", "Deaths per 1000 People", "population"],
@@ -968,22 +933,6 @@ horizonChart.render();</code></pre>
                 ["SAU", "Saudi Arabia", "2003", "4.09600000000000E+00", "2.44200000000000E+01", "2.23343710000000E+07"]]
         };
 
-        var orgChart = {
-            header: ['CEO', 'Director', 'Employee'],
-            data: [['Big Boss', 'Slick Willy', 'Jimbo'],
-                ['Big Boss', 'Slick Willy', 'Jimbo'],
-                ['Big Boss', 'Slick Willy', 'Timbo'],
-                ['Big Boss', 'Slick Willy', 'Anita'],
-                ['Big Boss', 'Sneaky Jack', 'Roger'],
-                ['Big Boss', 'Sneaky Jack', 'Susan']
-            ]
-        };
-
-        var playerData = {
-            'header': ["T", "A", "B", "C"],
-            'data': dex.datagen.randomIntegerMatrix({rows: 1000, columns: 4, min: -100, max: 100})
-        };
-
         var linechart = new dex.charts.c3.LineChart({
                     'parent': '#C3LineChart',
                     'csv': ncsv
@@ -1037,17 +986,20 @@ horizonChart.render();</code></pre>
         });
         cforce.render();
 
+        var presidentsBy = {
+            'header' : dex.array.slice(presidents.header, [2, 3, 1]),
+            'data'   : dex.matrix.slice(presidents.data, [2, 3, 1])
+        };
+
         var dendrogram = new dex.charts.d3.Dendrogram({
             'parent': "#D3Dendrogram",
-            'csv': orgChart,
-            'root': 'Organization'
+            'csv':  presidentsBy
         });
         dendrogram.render();
 
         var force = new dex.charts.d3.Force({
             'parent': "#D3Force",
-            'csv': orgChart,
-            'root': 'Organization'
+            'csv': presidentsBy
         });
         force.render();
 
@@ -1070,24 +1022,38 @@ horizonChart.render();</code></pre>
                 'y': 3
             },
             'csv': motionData,
-            'margin.bottom': 240,
-            'xaxis.label.font.size': 24,
+            'margin.bottom': 100,
+            'xaxis.label.font.size': 12,
+            'yaxis.label.font.size': 12,
+            'yaxis.title.font.size' : 24,
+            'label.font.size': 64,
+            'yaxis.title.dx' : 24,
         });
         motionBarChart.render();
 
+        var motionChart = new dex.charts.d3.MotionChart({
+            'parent'    : "#D3MotionChart",
+            'csv' : motionData,
+            'xaxis.label.font.size': 12,
+            'yaxis.label.font.size': 24,
+            'yaxis.title.font.size' : 48,
+            'label.font.size': 64
+        });
+        motionChart.render();
+
         // Required, even if empty.
         Reveal.initialize({
-            height: '100%',
-            width: '100%',
+            height: '1024',
+            width: '768',
             center: true,
             rollingLinks: true,
             //touch: false,
             transition: 'convex',
             controls: true,
             progress: true,
-            //history: true,
+            history: true,
             minScale: 0.2,
-            maxScale: 10.0,
+            maxScale: 2.0,
             margin: .05,
             dependencies: [
                 {
@@ -1141,6 +1107,11 @@ horizonChart.render();</code></pre>
         Reveal.addEventListener('motionbarchart', function () {
             motionBarChart.resize();
         });
+
+        Reveal.addEventListener('motionchart', function () {
+            motionChart.resize();
+        });
+
     });
 </script>
 
