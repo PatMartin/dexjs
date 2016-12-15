@@ -42,6 +42,7 @@
             <h1>dex.js</h1>
             <img border="0" src="images/dexjs.png">
             <p>dex.js is a javascript framework for visualizing data.</p>
+            **This is a work in progress**
         </section>
         <section>
             <section data-markdown>
@@ -312,6 +313,26 @@ motionBarChart.render();</code></pre>
 var motionChart = new dex.charts.d3.MotionChart({
   'parent': '#D3MotionChart',
   'csv': motionData
+});
+motionChart.render();</code></pre>
+            </section>
+            <section data-state="motionlinechart">
+                <h3>D3 Motion Line Chart</h3>
+                <svg id="D3MotionLineChart" class="Chart"></svg>
+                <pre><code class="hljs" style="word-wrap: break-word;" data-trim>
+var motionChart = new dex.charts.d3.MotionChart({
+  'parent': '#D3MotionChart',
+  'csv': motionData
+});
+motionChart.render();</code></pre>
+            </section>
+            <section data-state="orbitallayout">
+                <h3>D3 Orbital Layout</h3>
+                <svg id="D3OrbitalLayout" class="Chart"></svg>
+                <pre><code class="hljs" style="word-wrap: break-word;" data-trim>
+var motionChart = new dex.charts.d3.OrbitalLayout({
+  'parent': '#D3OrbitalLayout',
+  'csv': presidents
 });
 motionChart.render();</code></pre>
             </section>
@@ -986,20 +1007,20 @@ motionChart.render();</code></pre>
         });
         cforce.render();
 
-        var presidentsBy = {
+        var presidentsByParty = {
             'header' : dex.array.slice(presidents.header, [2, 3, 1]),
             'data'   : dex.matrix.slice(presidents.data, [2, 3, 1])
         };
 
         var dendrogram = new dex.charts.d3.Dendrogram({
             'parent': "#D3Dendrogram",
-            'csv':  presidentsBy
+            'csv':  presidentsByParty
         });
         dendrogram.render();
 
         var force = new dex.charts.d3.Force({
             'parent': "#D3Force",
-            'csv': presidentsBy
+            'csv': presidentsByParty
         });
         force.render();
 
@@ -1033,9 +1054,21 @@ motionChart.render();</code></pre>
 
         var motionChart = new dex.charts.d3.MotionChart({
             'parent'    : "#D3MotionChart",
-            'csv' : motionData,
+            'csv' : motionData
         });
         motionChart.render();
+
+        var motionLineChart = new dex.charts.d3.MotionLineChart({
+            'parent'    : "#D3MotionLineChart",
+            'csv' : motionData
+        });
+        motionLineChart.render();
+
+        var orbitalLayout = new dex.charts.d3.OrbitalLayout({
+            'parent'    : "#D3OrbitalLayout",
+            'csv' : presidentsByParty
+        });
+        orbitalLayout.render();
 
         // Required, even if empty.
         Reveal.initialize({
@@ -1108,6 +1141,13 @@ motionChart.render();</code></pre>
             motionChart.resize();
         });
 
+        Reveal.addEventListener('motionlinechart', function () {
+            motionLineChart.resize();
+        });
+
+        Reveal.addEventListener('orbitallayout', function () {
+            orbitalLayout.resize();
+        });
     });
 </script>
 
