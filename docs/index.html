@@ -30,7 +30,6 @@
     .C3Chart {
         height: 500px;
         width: 100%;
-        data-prevent-swipe: true;
     }
 
     .Chart {
@@ -38,7 +37,6 @@
         min-height: 300px;
         width: 700px;
         min-width: 400px;
-        data-prevent-swipe: true;
     }
 </style>
 <body>
@@ -107,19 +105,9 @@ sankey.render();</code></pre>
                 </script>
             </section>
             <section data-markdown>
-                ### Configurability
-
-                While general usage is simple, the underlying mechanics of the SVG
-                are exposed via attributes. Here are a few examples:</p>
-
-                * [Sankey](http://dexvis.net/vis/blog/2013/oct/dexcharts2/examples/Sankey7.html)
-                * [Another Sankey](http://dexvis.net/vis/blog/2013/oct/dexcharts2/examples/Sankey6.html)
-                * [Trees with style](https://dexvis.wordpress.com/2013/04/07/dexcharts-trees-with-style/)
-            </section>
-            <section data-markdown>
                 <script type="text/template">
-                    ### Simplicity
-                    The consistency of data representation and component behavior make life easier.
+                    ### Simple
+                    The consistency of data representation and component behavior make things simpler.
                     Here is a 1 liner which charts and renders a dataset called csv. It also assumes the existence of
                     a dom element named 'LineChart'.
                     <pre><code class="hljs" style="word-wrap: break-word;">var linechart = new dex.charts.c3.LineChart({'csv' : csv }).render();</code></pre>
@@ -127,8 +115,20 @@ sankey.render();</code></pre>
                 </script>
             </section>
             <section data-markdown>
+                ### Configurable
+
+                While general usage is simple, a framework should not obscure
+                underlying power of the underpinning foundation.  The underlying
+                mechanics of the SVG are exposed and configurable via attributes.
+                Here are a few examples:</p>
+
+                * [Sankey](http://dexvis.net/vis/blog/2013/oct/dexcharts2/examples/Sankey7.html)
+                * [Another Sankey](http://dexvis.net/vis/blog/2013/oct/dexcharts2/examples/Sankey6.html)
+                * [Trees with style](https://dexvis.wordpress.com/2013/04/07/dexcharts-trees-with-style/)
+            </section>
+            <section data-markdown>
                 <script type="text/template">
-                    ### Framework Unification
+                    ### Interoperable
 
                     dex.js currently unifies selected components from the following
                     visualization packages:
@@ -140,7 +140,8 @@ sankey.render();</code></pre>
                     | Three.js | Plot.ly       |          |
 
                     When components are integrated into dex.js, they gain the ability to communicate with one
-                    another via a publish/subscribe method.
+                    another via a publish/subscribe method so it's easy, for example, to integrate
+                    D3 components with Three.js/WebGL components.
                 </script>
             </section>
         </section>
@@ -161,15 +162,20 @@ sankey.render();</code></pre>
                 </script>
             </section>
             <section data-state="linechart">
-                <h3>C3 Line Chart</h3>
-                <div id="C3LineChart" class="C3Chart"></div>
-                <pre><code class="hljs" style="word-wrap: break-word;">// Instantiate the line chart given dataset ncsv
+                <table>
+                    <tr><h3>C3 Line Chart</h3></tr>
+                    <tr><div id="C3LineChart"></div></tr>
+                    <tr><pre><code class="hljs" style="word-wrap: break-word;">// Instantiate the line chart given dataset ncsv
 var linechart = new dex.charts.c3.LineChart({
   'parent': '#C3LineChart', // The node this chart will attach to.
   'csv': ncsv // The data
 });
 // Render the chart
-linechart.render();</code></pre>
+linechart.render();</code></pre></tr>
+                </table>
+                <h3>C3 Line Chart</h3>
+
+
             </section>
             <section data-state="barchart">
                 <h3>C3 Bar Chart</h3>
@@ -282,16 +288,14 @@ var cforce = new dex.charts.d3.Dendrogram({
 cforce.render();</code></pre>
             </section>
             <section data-state="force">
-                <div class="fill-screen">
-                    <h3>D3 Force</h3>
-                    <svg id="D3Force" class="Chart"></svg>
+                <h3>D3 Force</h3>
+                <svg id="D3Force" class="Chart"></svg>
                 <pre><code class="hljs" style="word-wrap: break-word;" data-trim>
 var cforce = new dex.charts.d3.Force({
   'parent': '#D3Force',
   'csv': orgData
 });
 cforce.render();</code></pre>
-                </div>
             </section>
             <section data-state="horizonchart">
                 <h3>D3 Horizon Chart</h3>
@@ -337,11 +341,21 @@ motionChart.render();</code></pre>
                 <h3>D3 Orbital Layout</h3>
                 <svg id="D3OrbitalLayout" class="Chart"></svg>
                 <pre><code class="hljs" style="word-wrap: break-word;" data-trim>
-var motionChart = new dex.charts.d3.OrbitalLayout({
+var orbital = new dex.charts.d3.OrbitalLayout({
   'parent': '#D3OrbitalLayout',
   'csv': presidents
 });
-motionChart.render();</code></pre>
+orbintal.render();</code></pre>
+            </section>
+            <section data-state="radarchart">
+                <h3>D3 Radar Chart</h3>
+                <svg id="D3RadarChart" class="Chart"></svg>
+                <pre><code class="hljs" style="word-wrap: break-word;" data-trim>
+var radarChart = new dex.charts.d3.RadarChart({
+  'parent': '#D3RadarChart',
+  'csv': ncsv
+});
+radarChart.render();</code></pre>
             </section>
         </section>
         <section>
@@ -961,6 +975,16 @@ motionChart.render();</code></pre>
                 ["SAU", "Saudi Arabia", "2003", "4.09600000000000E+00", "2.44200000000000E+01", "2.23343710000000E+07"]]
         };
 
+        var presidentsByPartyAndState = {
+            'header' : dex.array.slice(presidents.header, [2, 3, 1]),
+            'data'   : dex.matrix.slice(presidents.data, [2, 3, 1])
+        };
+
+        var presidentsByParty = {
+            'header' : dex.array.slice(presidents.header, [2, 3]),
+            'data'   : dex.matrix.slice(presidents.data, [2, 3])
+        };
+
         var linechart = new dex.charts.c3.LineChart({
                     'parent': '#C3LineChart',
                     'csv': ncsv
@@ -1003,7 +1027,7 @@ motionChart.render();</code></pre>
 
         var chord = new dex.charts.d3.Chord({
                     'parent': '#D3ChordDiagram',
-                    'csv': people
+                    'csv': presidentsByParty
                 }
         );
         chord.render();
@@ -1014,14 +1038,9 @@ motionChart.render();</code></pre>
         });
         cforce.render();
 
-        var presidentsByParty = {
-            'header' : dex.array.slice(presidents.header, [2, 3, 1]),
-            'data'   : dex.matrix.slice(presidents.data, [2, 3, 1])
-        };
-
         var dendrogram = new dex.charts.d3.Dendrogram({
             'parent': "#D3Dendrogram",
-            'csv':  presidentsByParty
+            'csv':  presidentsByPartyAndState
         });
         dendrogram.render();
 
@@ -1077,8 +1096,19 @@ motionChart.render();</code></pre>
         });
         orbitalLayout.render();
 
+        var radarChart = new dex.charts.d3.RadarChart({
+            'parent'    : "#D3RadarChart",
+            'csv' : ncsv
+        });
+        radarChart.render();
+
+        dex.console.log("WINDOW HEIGHT: " + window.screen.availHeight);
+        dex.console.log("WINDOW WIDTH : " + window.screen.availWidth);
+
         // Required, even if empty.
         Reveal.initialize({
+            //height: window.screen.availHeight,
+            //width: window.screen.availWidth,
             height: '100%',
             width: '100%',
             center: true,
@@ -1089,7 +1119,7 @@ motionChart.render();</code></pre>
             progress: true,
             history: true,
             minScale: 0.2,
-            maxScale: 10.0,
+            maxScale: 2.0,
             margin: .1,
             dependencies: [
                 {
@@ -1172,6 +1202,10 @@ motionChart.render();</code></pre>
 
         Reveal.addEventListener('orbitallayout', function () {
             orbitalLayout.resize();
+        });
+
+        Reveal.addEventListener('radarchart', function () {
+            radarChart.resize();
         });
     });
 </script>
