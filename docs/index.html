@@ -234,26 +234,35 @@ areachart.render();</code></pre>
                 </table>
             </section>
             <section data-state="stackedbar">
-                <h3>C3 Stacked Bar Chart</h3>
-                <div id="C3StackedBarChart" class="C3Chart"></div>
-                <pre><code class="hljs" style="word-wrap: break-word;">// Instantiate the bar chart given dataset ncsv
+                <table>
+                    <tr><h3>C3 Stacked Bar Chart</h3></tr>
+                    <tr>
+                        <div id="C3StackedBarChart" class="C3Chart"></div>
+                    </tr>
+                    <tr><pre><code class="hljs" style="word-wrap: break-word;">// Instantiate the bar chart given dataset ncsv
 var stackedbar = new dex.charts.c3.StackedBarChart({
   'parent': '#C3StackedBarChart', // The node this chart will attach to.
   'csv': ncsv // The data
 });
 // Render the chart
 stackedbar.render();</code></pre>
+                    </tr>
             </section>
             <section data-state="stackedarea">
-                <h3>C3 Stacked Area Chart</h3>
-                <div id="C3StackedAreaChart" class="C3Chart"></div>
-                <pre><code class="hljs" style="word-wrap: break-word;">// Instantiate the area chart given dataset ncsv
+                <table>
+                    <tr><h3>C3 Stacked Area Chart</h3></tr>
+                    <tr>
+                        <div id="C3StackedAreaChart" class="C3Chart"></div>
+                    </tr>
+                    <tr><pre><code class="hljs" style="word-wrap: break-word;">// Instantiate the area chart given dataset ncsv
 var stackedarea = new dex.charts.c3.StackedAreaChart({
   'parent': '#C3StackedAreaChart', // The node this chart will attach to.
   'csv': ncsv // The data
 });
 // Render the chart
 stackedarea.render();</code></pre>
+                    </tr>
+                </table>
             </section>
         </section>
 
@@ -290,15 +299,20 @@ axis.render();
                 </code></pre>
             </section>
             <section data-state="chord">
-                <h3>D3 Chord Diagram</h3>
-                <svg id="D3ChordDiagram" class="Chart"></svg>
-                <pre><code class="hljs" style="word-wrap: break-word;">// Instantiate the chord diagram dataset presidents
+                <table>
+                    <tr><h3>D3 Chord Diagram</h3></tr>
+                    <tr>
+                        <svg id="D3ChordDiagram" class="Chart"></svg>
+                    </tr>
+                    <tr><pre><code class="hljs" style="word-wrap: break-word;">// Instantiate the chord diagram dataset presidents
 var chord = new dex.charts.d3.Chord({
   'parent': '#D3ChordDiagram',
   'csv': people
 });
 // Render the chart
 chord.render();</code></pre>
+                    </tr>
+                </table>
             </section>
 
             <section data-state="cforce">
@@ -1135,9 +1149,6 @@ radarChart.render();</code></pre>
             'csv' : ncsv
         });
         radarChart.render();
-
-        dex.console.log("WINDOW HEIGHT: " + window.screen.availHeight);
-        dex.console.log("WINDOW WIDTH : " + window.screen.availWidth);
 
         // Required, even if empty.
         Reveal.initialize({
