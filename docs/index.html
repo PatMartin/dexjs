@@ -28,37 +28,35 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.3.0/lib/css/zenburn.min.css">
 <style>
     .C3Chart {
-        height: 500px;
+        height: 100%;
         width: 100%;
     }
 
     .Chart {
-        height: 500px;
-        min-height: 300px;
-        width: 700px;
-        min-width: 400px;
+        height: 100%;
+        width: 100%;
     }
 
-    @media screen and (max-width: 2000px), (max-height: 1600px) {
+    @media screen and (max-height: 2000px) {
         .reveal .slides {
-            font-style: italic;
+            ;;font-style: italic;
             font-size: 1em;
         }
     }
 
-    @media screen and (max-width: 1000px), (max-height: 800px) {
+    @media screen and (max-height: 900px) {
         .reveal .slides {
             font-size: 0.8em;
         }
     }
 
-    @media screen and (max-width: 900px), (max-height: 600px) {
+    @media screen and (max-height: 600px) {
         .reveal .slides {
             font-size: 0.60em;
         }
     }
 
-    @media screen and (max-width: 700px), (max-height: 400px) {
+    @media screen and (max-height: 400px) {
         .reveal .slides {
             font-size: 0.50em;
         }
@@ -191,37 +189,49 @@ sankey.render();</code></pre>
             <section data-state="linechart">
                 <table>
                     <tr><h3>C3 Line Chart</h3></tr>
-                    <tr><div id="C3LineChart"></div></tr>
+                    <tr>
+                        <div id="C3LineChart"></div>
+                    </tr>
                     <tr><pre><code class="hljs" style="word-wrap: break-word;">// Instantiate the line chart given dataset ncsv
 var linechart = new dex.charts.c3.LineChart({
   'parent': '#C3LineChart', // The node this chart will attach to.
   'csv': ncsv // The data
 });
 // Render the chart
-linechart.render();</code></pre></tr>
+linechart.render();</code></pre>
+                    </tr>
                 </table>
             </section>
             <section data-state="barchart">
-                <h3>C3 Bar Chart</h3>
-                    <div id="C3BarChart" class="C3Chart"></div>
-                <pre><code class="hljs" style="word-wrap: break-word;">// Instantiate the bar chart given dataset ncsv
+                <table>
+                    <tr><h3>C3 Bar Chart</h3></tr>
+                    <tr>
+                        <div id="C3BarChart" class="C3Chart"></div>
+                    </tr>
+                    <tr><pre><code class="hljs" style="word-wrap: break-word;">// Instantiate the bar chart given dataset ncsv
 var barchart = new dex.charts.c3.BarChart({
   'parent': '#C3BarChart', // The node this chart will attach to.
   'csv': ncsv // The data
 });
 // Render the chart
 barchart.render();</code></pre>
+                    </tr>
             </section>
             <section data-state="areachart">
-                <h3>C3 Area Chart</h3>
-                <div id="C3AreaChart" class="C3Chart"></div>
-                <pre><code class="hljs" style="word-wrap: break-word;">// Instantiate the area chart given dataset ncsv
+                <table>
+                    <tr><h3>C3 Area Chart</h3></tr>
+                    <tr>
+                        <div id="C3AreaChart" class="C3Chart"></div>
+                    </tr>
+                    <tr><pre><code class="hljs" style="word-wrap: break-word;">// Instantiate the area chart given dataset ncsv
 var areachart = new dex.charts.c3.AreaChart({
   'parent': '#C3AreaChart', // The node this chart will attach to.
   'csv': ncsv // The data
 });
 // Render the chart
 areachart.render();</code></pre>
+                    </tr>
+                </table>
             </section>
             <section data-state="stackedbar">
                 <h3>C3 Stacked Bar Chart</h3>
