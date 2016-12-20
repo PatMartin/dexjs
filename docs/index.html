@@ -27,11 +27,18 @@
 <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.theme.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.3.0/lib/css/zenburn.min.css">
 <style>
+    .C3Chart {
+        height: 500px;
+        width: 100%;
+        data-prevent-swipe: true;
+    }
+
     .Chart {
         height: 500px;
         min-height: 300px;
         width: 700px;
         min-width: 400px;
+        data-prevent-swipe: true;
     }
 </style>
 <body>
@@ -153,9 +160,9 @@ sankey.render();</code></pre>
                     **Navigate down for concrete examples**
                 </script>
             </section>
-            <section>
-                <h1>C3 Line Chart</h1>
-                <div id="C3LineChart" class="Chart"></div>
+            <section data-state="linechart">
+                <h3>C3 Line Chart</h3>
+                <div id="C3LineChart" class="C3Chart"></div>
                 <pre><code class="hljs" style="word-wrap: break-word;">// Instantiate the line chart given dataset ncsv
 var linechart = new dex.charts.c3.LineChart({
   'parent': '#C3LineChart', // The node this chart will attach to.
@@ -164,9 +171,9 @@ var linechart = new dex.charts.c3.LineChart({
 // Render the chart
 linechart.render();</code></pre>
             </section>
-            <section>
-                <h1>C3 Bar Chart</h1>
-                <div id="C3BarChart" class="Chart"></div>
+            <section data-state="barchart">
+                <h3>C3 Bar Chart</h3>
+                    <div id="C3BarChart" class="C3Chart"></div>
                 <pre><code class="hljs" style="word-wrap: break-word;">// Instantiate the bar chart given dataset ncsv
 var barchart = new dex.charts.c3.BarChart({
   'parent': '#C3BarChart', // The node this chart will attach to.
@@ -175,9 +182,9 @@ var barchart = new dex.charts.c3.BarChart({
 // Render the chart
 barchart.render();</code></pre>
             </section>
-            <section>
-                <h1>C3 Area Chart</h1>
-                <div id="C3AreaChart" class="Chart"></div>
+            <section data-state="areachart">
+                <h3>C3 Area Chart</h3>
+                <div id="C3AreaChart" class="C3Chart"></div>
                 <pre><code class="hljs" style="word-wrap: break-word;">// Instantiate the area chart given dataset ncsv
 var areachart = new dex.charts.c3.AreaChart({
   'parent': '#C3AreaChart', // The node this chart will attach to.
@@ -186,9 +193,9 @@ var areachart = new dex.charts.c3.AreaChart({
 // Render the chart
 areachart.render();</code></pre>
             </section>
-            <section>
-                <h1>C3 Stacked Bar Chart</h1>
-                <div id="C3StackedBarChart" class="Chart"></div>
+            <section data-state="stackedbar">
+                <h3>C3 Stacked Bar Chart</h3>
+                <div id="C3StackedBarChart" class="C3Chart"></div>
                 <pre><code class="hljs" style="word-wrap: break-word;">// Instantiate the bar chart given dataset ncsv
 var stackedbar = new dex.charts.c3.StackedBarChart({
   'parent': '#C3StackedBarChart', // The node this chart will attach to.
@@ -197,9 +204,9 @@ var stackedbar = new dex.charts.c3.StackedBarChart({
 // Render the chart
 stackedbar.render();</code></pre>
             </section>
-            <section>
-                <h1>C3 Stacked Area Chart</h1>
-                <div id="C3StackedAreaChart" class="Chart"></div>
+            <section data-state="stackedarea">
+                <h3>C3 Stacked Area Chart</h3>
+                <div id="C3StackedAreaChart" class="C3Chart"></div>
                 <pre><code class="hljs" style="word-wrap: break-word;">// Instantiate the area chart given dataset ncsv
 var stackedarea = new dex.charts.c3.StackedAreaChart({
   'parent': '#C3StackedAreaChart', // The node this chart will attach to.
@@ -232,7 +239,7 @@ stackedarea.render();</code></pre>
                 </script>
             </section>
             <section data-state="axis">
-                <h1>Axis</h1>
+                <h3>Axis</h3>
                 <svg id="D3Axis1" class="Chart"></svg>
                 <pre><code class="hljs" style="word-wrap: break-word;" data-trim>
 var axis = dex.charts.d3.Axis({
@@ -1113,6 +1120,24 @@ motionChart.render();</code></pre>
                 {src: 'https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.3.0/plugin/zoom-js/zoom.min.js', async: true},
                 {src: 'https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.3.0/plugin/notes/notes.min.js', async: true}
             ]
+        });
+
+        Reveal.addEventListener('linechart', function () {
+            linechart.resize();
+        });
+
+        Reveal.addEventListener('barchart', function () {
+            barchart.resize();
+        });
+
+        Reveal.addEventListener('areachart', function () {
+            areachart.resize();
+        });
+        Reveal.addEventListener('stackedarea', function () {
+            stackedarea.resize();
+        });
+        Reveal.addEventListener('stackedbar', function () {
+            stackedbar.resize();
         });
 
         Reveal.addEventListener('chord', function () {

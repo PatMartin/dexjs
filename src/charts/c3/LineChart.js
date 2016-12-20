@@ -49,19 +49,28 @@ var linechart = function (userConfig) {
     var internalChart;
     var selectedColumns = [];
 
+    chart.resize = function resize() {
+        dex.console.log("PARENT: '" + chart.config.parent + "'");
+        if (chart.config.resizable) {
+            var width = $("" + chart.config.parent).width();
+            var height = $("" + chart.config.parent).height();
+            dex.console.log("RESIZE: " + width + "x" + height);
+            chart.attr("width", width)
+              .attr("height", height)
+              .update();
+        }
+        else {
+            chart.update();
+        }
+    };
+
     chart.render = function render() {
 
         //var chart = this;
         var config = chart.config;
         var csv = config.csv;
-        window.onresize = this.render;
-
-        if (chart.config.resizable) {
-            var width = d3.select(chart.config.parent).property("clientWidth");
-            var height = d3.select(chart.config.parent).property("clientHeight");
-            dex.console.log(chart.config.id + ": resize(" + width + "," + height + ")");
-            chart.attr("width", width).attr("height", height);
-        }
+        window.onresize = this.resize;
+        
         d3.select(config.parent).selectAll("*").remove();
         var gtypes = dex.csv.guessTypes(csv);
         selectedColumns = dex.csv.getNumericIndices(csv);

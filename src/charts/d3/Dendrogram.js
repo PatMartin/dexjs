@@ -107,9 +107,6 @@ var dendrogram = function Dendrogram(userConfig) {
       dex.console.log("RESIZE: " + width + "x" + height);
       chart.attr("width", width)
         .attr("height", height)
-        //.attr("connection.length", width / chart.config.csv.header.length -
-        //  ((chart.config.csv.header.length) * chart.config.node.expanded.label.font.size))
-        //.attr("connection.length", 200)
         .update();
     }
     else {
