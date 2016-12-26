@@ -688,19 +688,28 @@ var linechart = function (userConfig) {
     var internalChart;
     var selectedColumns = [];
 
+    chart.resize = function resize() {
+        dex.console.log("PARENT: '" + chart.config.parent + "'");
+        if (chart.config.resizable) {
+            var width = $("" + chart.config.parent).width();
+            var height = $("" + chart.config.parent).height();
+            dex.console.log("RESIZE: " + width + "x" + height);
+            chart.attr("width", width)
+              .attr("height", height)
+              .update();
+        }
+        else {
+            chart.update();
+        }
+    };
+
     chart.render = function render() {
 
         //var chart = this;
         var config = chart.config;
         var csv = config.csv;
-        window.onresize = this.render;
-
-        if (chart.config.resizable) {
-            var width = d3.select(chart.config.parent).property("clientWidth");
-            var height = d3.select(chart.config.parent).property("clientHeight");
-            dex.console.log(chart.config.id + ": resize(" + width + "," + height + ")");
-            chart.attr("width", width).attr("height", height);
-        }
+        window.onresize = this.resize;
+        
         d3.select(config.parent).selectAll("*").remove();
         var gtypes = dex.csv.guessTypes(csv);
         selectedColumns = dex.csv.getNumericIndices(csv);
@@ -1937,9 +1946,6 @@ var dendrogram = function Dendrogram(userConfig) {
       dex.console.log("RESIZE: " + width + "x" + height);
       chart.attr("width", width)
         .attr("height", height)
-        //.attr("connection.length", width / chart.config.csv.header.length -
-        //  ((chart.config.csv.header.length) * chart.config.node.expanded.label.font.size))
-        //.attr("connection.length", 200)
         .update();
     }
     else {
@@ -4786,7 +4792,7 @@ var motionlinechart = function (userConfig) {
     'label.fill.fillColor'   : 'steelblue',
     'label.fill.fillOpacity' : 0.4,
     'label.y'                : function (d) {
-      return 0;
+      return chart.config.height * .1;
     },
     'label.x'                : function (d) {
       return chart.config.width * .5;
@@ -4798,14 +4804,20 @@ var motionlinechart = function (userConfig) {
     'xaxis' : dex.config.axis({
       'scale.type'                : 'linear',
       'orient'                    : 'bottom',
-      'label'                     : dex.config.text({
-        'x'      : function (d) {
-          return (chart.config.width - chart.config.margin.right) / 2;
-        },
-        'y'      : function (d) {
-          return chart.config.height - chart.config.margin.bottom + 20;
-        },
-        'anchor' : 'end'
+      'label': dex.config.text({
+        'anchor': 'middle',
+        'writingMode' : 'lr',
+        'dx' : 0,
+        'dy' : '1.5em'
+      }),
+      'title': dex.config.text({
+        'anchor' : 'middle',
+        'font.size' : '16',
+        'x': function (d) {
+          return (chart.config.width - chart.config.margin.left) / 2; },
+        'y': function(d) {
+          return chart.config.height - chart.config.margin.bottom - 12;
+        }
       }),
       'tick.stroke.color'         : 'black',
       'tick.stroke.width'         : 1,
@@ -4818,21 +4830,23 @@ var motionlinechart = function (userConfig) {
     'yaxis' : dex.config.axis({
       'scale.type'                : 'linear',
       'orient'                    : 'left',
-      'label'                     : dex.config.text({
-        'x'         : function (d) {
-          //return chart.config.width - chart.config.margin.right;
-          //return chart.config.margin.top;
-          return 0;
+      'label': dex.config.text({
+        'anchor': 'middle',
+        'writingMode' : 'tb',
+        'dx' : '-1em',
+        'dy' : '-.5em'
+      }),
+      'title': dex.config.text({
+        'anchor' : 'start',
+        'writingMode' : 'tb',
+        //'transform' : 'rotate(90)',
+        'font.size' : '16',
+        'x': function (d) { return 0; },
+        'dx' : '1em',
+        'y': function(d) {
+          return config.margin.top;
         },
-        'y'         : function (d) {
-          //return chart.config.height - chart.config.margin.top
-          //  - chart.config.margin.bottom - chart.config.xaxis.label.font.size;
-          //return -chart.config.margin.left/2;
-          return 10;
-        },
-        'anchor'    : 'end',
-        'dy'        : '.75em',
-        'transform' : 'rotate(-90)'
+        'dy' : '2em'
       }),
       'tick.stroke.width'         : 1,
       'tick.fill.fillColor'       : 'none',
@@ -4939,13 +4953,13 @@ var motionlinechart = function (userConfig) {
 
     var xticks = svg.selectAll(".xaxis .tick");
 
-    var xtickLines = xticks.selectAll("line")
+    xticks.selectAll("line")
       .call(dex.config.configureStroke, config.xaxis.tick.stroke)
       .call(dex.config.configureFill, config.xaxis.tick.fill);
 
     var yticks = svg.selectAll(".yaxis .tick");
 
-    var yTickLines = yticks.selectAll("line")
+    yticks.selectAll("line")
       .call(dex.config.configureStroke, config.yaxis.tick.stroke)
       .call(dex.config.configureFill, config.yaxis.tick.fill);
 
@@ -4957,25 +4971,30 @@ var motionlinechart = function (userConfig) {
       .call(dex.config.configureStroke, config.yaxis.axisLine.stroke)
       .call(dex.config.configureFill, config.yaxis.axisLine.fill);
 
-    var xTickLabels = xticks.selectAll("text")
-      .style("text-anchor", "start");
+    xticks.selectAll("text")
+      .call(dex.config.configureText, config.xaxis.label);
+
+    yticks.selectAll("text")
+      .call(dex.config.configureText, config.yaxis.label);
 
     // Add an x-axis label.
     svg.append("text")
       .attr("class", "xLabel")
-      .call(dex.config.configureText, config.xaxis.label)
+      .call(dex.config.configureText, config.xaxis.title)
       .text(config.csv.header[config.index.name]);
 
     // Add a y-axis label.
     svg.append("text")
       .attr("class", "yLabel")
-      .call(dex.config.configureText, config.yaxis.label)
+      .call(dex.config.configureText, config.yaxis.title)
       .text(config.csv.header[config.index.y]);
 
     // Add the year label; the value is set on transition.
     var label = svg.append("text")
       .attr("class", "timeLabel")
       .attr("text-anchor", "end")
+      .attr("y", height - 24)
+      .attr("x", width)
       .call(dex.config.configureText, config.label)
       .text(timeExtents[0]);
 
@@ -7364,6 +7383,7 @@ var sankey = function (userConfig) {
         //dex.console.log("-- HEIGHT: " + config.height);
         var width = d3.select(config.parent).property("clientWidth");
         var height = d3.select(config.parent).property("clientHeight");
+        var csv = config.csv;
 
         d3.selectAll("#" + config.id).remove();
 

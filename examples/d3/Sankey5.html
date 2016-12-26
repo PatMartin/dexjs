@@ -109,7 +109,7 @@ var sankey = new dex.charts.d3.Sankey(
         return csv.data[ri][0];
       }
     },
-    { 
+    {
       'source' : 0,
       'target' : 2,
       'value' : function(csv, ri)
@@ -118,7 +118,7 @@ var sankey = new dex.charts.d3.Sankey(
       },
       'category' : function(csv, ri)
       {
-        return csv.data[ri][0];
+        return csv.data[ri][w];
       }
     }
   ],

@@ -304,6 +304,7 @@ var sankey = function (userConfig) {
         //dex.console.log("-- HEIGHT: " + config.height);
         var width = d3.select(config.parent).property("clientWidth");
         var height = d3.select(config.parent).property("clientHeight");
+        var csv = config.csv;
 
         d3.selectAll("#" + config.id).remove();
 

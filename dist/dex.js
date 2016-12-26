@@ -10329,6 +10329,7 @@ var sankey = function (userConfig) {
         //dex.console.log("-- HEIGHT: " + config.height);
         var width = d3.select(config.parent).property("clientWidth");
         var height = d3.select(config.parent).property("clientHeight");
+        var csv = config.csv;
 
         d3.selectAll("#" + config.id).remove();
 
@@ -15195,9 +15196,10 @@ module.exports = function config(dex) {
     'events': function events(custom) {
       var defaults =
       {
-        'mouseover': function (d) {
-          //console.log("Default mouseover");
-        }
+        // REM: Deletes any existing events.
+        //'mouseover': function (d) {
+        //console.log("Default mouseover");
+        //}
       };
       var config = defaults;
 

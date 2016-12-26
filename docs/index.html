@@ -424,6 +424,26 @@ var radarChart = new dex.charts.d3.RadarChart({
 });
 radarChart.render();</code></pre>
             </section>
+            <section data-state="radialtree">
+                <h3>D3 Radial Tree</h3>
+                <svg id="D3RadialTree" class="D3Chart" data-prevent-swipe></svg>
+                <pre><code class="hljs" style="word-wrap: break-word;" data-trim>
+var radialTree = new dex.charts.d3.RadialTree({
+  'parent': '#D3RadialTree',
+  'csv': ncsv
+});
+radarChart.render();</code></pre>
+            </section>
+            <section data-state="sankey">
+                <h3>D3 Sankey Diagram</h3>
+                <svg id="D3Sankey" class="D3Chart" data-prevent-swipe></svg>
+                <pre><code class="hljs" style="word-wrap: break-word;" data-trim>
+var sankey = new dex.charts.d3.Sankey({
+  'parent': '#D3Sankey',
+  'csv': presidentsByPartyAndState
+});
+sankey.render();</code></pre>
+            </section>
         </section>
         <section>
             <h1>THE END</h1>
@@ -1052,6 +1072,17 @@ radarChart.render();</code></pre>
             'data'   : dex.matrix.slice(presidents.data, [2, 3])
         };
 
+        var sales = {
+            'header' : [ 'SALESMAN', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec' ],
+            'data' : [
+                [ 'Frenchie', 100, 123, 52, 234, 545, 642, 112, 232, 923, 123, 122, 912 ],
+                [ 'Mosley', 103, 223, 152, 134, 445, 62, 412, 332, 323, 223, 322, 212 ],
+                [ 'Mike', 203, 323, 56, 164, 425, 162, 312, 132, 223, 623, 822, 812 ],
+                [ 'Brad', 103, 243, 562, 763, 25, 62, 412, 32, 723, 222, 222, 522 ],
+            ]
+        };
+
         var linechart = new dex.charts.c3.LineChart({
                     'parent': '#C3LineChart',
                     'csv': ncsv
@@ -1165,9 +1196,74 @@ radarChart.render();</code></pre>
 
         var radarChart = new dex.charts.d3.RadarChart({
             'parent'    : "#D3RadarChart",
-            'csv' : ncsv
+            'csv' : sales
         });
         radarChart.render();
+
+        var radialTree = new dex.charts.d3.RadialTree({
+            'parent'    : "#D3RadialTree",
+            'csv' : presidentsByParty
+        });
+        radialTree.render();
+
+        var sankeyData = { 'header' : ["Party","Home State","President"],
+            'data' : [["Independent","Virginia","George Washington"],
+                ["Federalist","Massachusetts","John Adams"],
+                ["Dem-Rep","Virginia","Thomas Jefferson"],
+                ["Dem-Rep","Virginia","James Madison"],
+                ["Dem-Rep","Virginia","James Monroe"],
+                ["Dem-Rep/Nat-Rep","Massachusetts","John Quincy Adams"],
+                ["Democratic","Tennessee","Andrew Jackson"],
+                ["Democratic","New York","Martin Van Buren"],
+                ["Whig","Ohio","William Henry Harrison"],
+                ["Whig","Virginia","John Tyler"],
+                ["Democratic","Tennessee","James K. Polk"],
+                ["Whig","Louisiana","Zachary Taylor"],
+                ["Whig","New York","Millard Fillmore"],
+                ["Democratic","New Hampshire","Franklin Pierce"],
+                ["Democratic","Pennsylvania","James Buchanan"],
+                ["Rep/Nat-Union","Illinois","Abraham Lincoln"],
+                ["Dem/Nat-Union","Tennessee","Andrew Johnson"],
+                ["Republican","Ohio","Ulysses S. Grant"],
+                ["Republican","Ohio","Rutherford B. Hayes"],
+                ["Republican","Ohio","James A. Garfield"],
+                ["Republican","New York","Chester A. Arthur"],
+                ["Democratic","New York","Grover Cleveland"],
+                ["Republican","Indiana","Benjamin Harrison"],
+                ["Democratic","New York","Grover Cleveland"],
+                ["Republican","Ohio","William McKinley"],
+                ["Republican","New York","Theodore Roosevelt"],
+                ["Republican","Ohio","William Howard Taft"],
+                ["Democratic","New Jersey","Woodrow Wilson"],
+                ["Republican","Ohio","Warren G. Harding"],
+                ["Republican","Massachusetts","Calvin Coolidge"],
+                ["Republican","Iowa","Herbert Hoover"],
+                ["Democratic","New York","Franklin D. Roosevelt"],
+                ["Democratic","Missouri","Harry S. Truman"],
+                ["Republican","Texas","Dwight D. Eisenhower"],
+                ["Democratic","Massachusetts","John F. Kennedy"],
+                ["Democratic","Texas","Lyndon B. Johnson"],
+                ["Republican","California","Richard Nixon"],
+                ["Republican","Michigan","Gerald Ford"],
+                ["Democratic","Georgia","Jimmy Carter"],
+                ["Republican","California","Ronald Reagan"],
+                ["Republican","Texas","George H. W. Bush"],
+                ["Democratic","Arkansas","Bill Clinton"],
+                ["Republican","Texas","George W. Bush"],
+                ["Democratic","Illinois","Barack Obama"]] };
+
+        var sankeyData2 = {
+            'header' : dex.array.slice(sankeyData.header, [2, 0, 1]),
+            'data'   : dex.matrix.slice(sankeyData.data, [2, 0, 1])
+        };
+
+// Configure a chart.
+        var sankey = new dex.charts.d3.Sankey({
+                    'parent'  : "#D3Sankey",
+                    'csv'     : sankeyData2,
+                });
+
+
 
         // Required, even if empty.
         Reveal.initialize({
@@ -1184,7 +1280,7 @@ radarChart.render();</code></pre>
             history: true,
             minScale: 0.1,
             maxScale: 5.0,
-            margin: 0,
+            margin: .15,
             dependencies: [
                 {
                     src: 'https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.3.0/lib/js/classList.min.js',
@@ -1252,6 +1348,14 @@ radarChart.render();</code></pre>
 
         Reveal.addEventListener('radarchart', function () {
             radarChart.resize();
+        });
+
+        Reveal.addEventListener('radialtree', function () {
+            radialTree.resize();
+        });
+
+        Reveal.addEventListener('sankey', function () {
+            sankey.resize();
         });
     });
 </script>
