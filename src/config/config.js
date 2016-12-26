@@ -490,9 +490,10 @@ module.exports = function config(dex) {
     'events': function events(custom) {
       var defaults =
       {
-        'mouseover': function (d) {
-          //console.log("Default mouseover");
-        }
+        // REM: Deletes any existing events.
+        //'mouseover': function (d) {
+        //console.log("Default mouseover");
+        //}
       };
       var config = defaults;
 
