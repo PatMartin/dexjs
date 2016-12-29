@@ -69,10 +69,10 @@ dex.bus = require("../lib/pubsub");
 
 // Kai's parallel coordinates needs this, but seems to break
 // in D4
-require('../lib/d3.svg.multibrush');
-require('../lib/d3.selection');
+//require('../lib/d3.svg.multibrush');
+//require('../lib/d3.selection');
+//dex.pc = require('../lib/d3.parcoords');
 
-dex.pc = require('../lib/d3.parcoords');
 dex.util = require('./util/util')(dex);
 
 /**
