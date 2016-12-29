@@ -58,20 +58,20 @@ var chord = function (userConfig) {
         {
           'stroke.color'     : "grey",
           'stroke.dasharray' : '',
-          'stroke.width'     : 0,
+          'stroke.width'     : 1,
           'fill.fillColor'   : function (d, i) {
             return (chart.config.color(d.target.index));
           },
-          'fill.fillOpacity' : 0.5,
+          'fill.fillOpacity' : 0.3,
           'fill.fill'        : 'none',
           'd'                : d3.svg.chord(),
           'transform'        : ''
         }),
       'mouseover' : dex.config.link(
         {
-          'stroke.color'     : "red",
+          'stroke.color'     : "black",
           'stroke.dasharray' : '',
-          'stroke.width'     : 0,
+          'stroke.width'     : 2,
           'fill.fillColor'   : function (d, i) {
             return (chart.config.color(d.target.index));
           },
@@ -126,7 +126,7 @@ var chord = function (userConfig) {
     var config = chart.config;
     var csv = config.csv;
 
-    d3.selectAll("#" + config.id).remove();
+    d3.selectAll(config.parent).selectAll("*").remove();
 
     var minDimension = Math.min(config.width, config.height);
     var outer = Math.min(config.width, config.height) / 3;
@@ -167,15 +167,17 @@ var chord = function (userConfig) {
     //dex.console.log("LINKS", config.links);
 
     chartContainer.append("g")
+      .attr("class", "arcs")
       .selectAll("path")
       .data(chord.groups)
       .enter().append("path")
       .attr("id", "fillpath")
       .call(dex.config.configureLink, config.nodes.mouseout)
       .on("mouseover", function (activeChord) {
-        d3.select(this).call(dex.config.configureLink, config.nodes.mouseover);
+        d3.select(this)
+          .call(dex.config.configureLink, config.nodes.mouseover);
         //dex.console.log("F", activeChord);
-        d3.selectAll("g.chord path")
+        chartContainer.selectAll("g.chord path")
           .filter(function (d) {
             //return false;
             //dex.console.log("ACTIVE D", d);
@@ -188,7 +190,7 @@ var chord = function (userConfig) {
         d3.select(this)
           .call(dex.config.configureLink, config.nodes.mouseout)
         //dex.console.log("INACTIVE", inactiveChord);
-        d3.selectAll("g.chord path")
+        chartContainer.selectAll("g.chord path")
           .filter(function (d) {
             //return false;
             //dex.console.log("INACTIVE D", d);
@@ -206,7 +208,8 @@ var chord = function (userConfig) {
       .enter().append("g")
       .selectAll("g")
       .data(groupTicks)
-      .enter().append("g")
+      .enter()
+      .append("g")
       .attr("transform", function (d) {
         //console.dir(d);
         // Probably a bad idea, but getting parent angle data from parent.
