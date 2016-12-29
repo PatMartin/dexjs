@@ -4,8 +4,8 @@
     <meta charset="utf-8">
     <title>dex.js</title>
 
-    <meta name="description" content="A framework for easily creating beautiful presentations using HTML">
-    <meta name="author" content="Hakim El Hattab">
+    <meta name="description" content="DexJS presentation and demo">
+    <meta name="author" content="Patrick E. Martin">
 
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -27,7 +27,7 @@
 <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.theme.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.3.0/lib/css/zenburn.min.css">
 <style>
-    .C3Chart {
+    .DefaultChart {
         height: 100%;
         width: 100%;
     }
@@ -38,11 +38,11 @@
         }
         .reveal .slides {
             ;;font-style: italic;
-            font-size: 1em;
+            font-size: .9em;
         }
 
         .D3Chart {
-            height: 1000px;
+            height: 650px;
             width: 100%;
         }
     }
@@ -52,10 +52,10 @@
             color: green;
         }
         .reveal .slides {
-            font-size: 0.7em;
+            font-size: 0.6em;
         }
         .D3Chart {
-            height: 450px;
+            height: 400px;
             width: 100%;
         }
     }
@@ -76,10 +76,9 @@
     @media screen and (max-height: 400px) {
         .reveal h3 {
             color: red;
-            font-size: .2em;
         }
         .reveal .slides {
-            font-size: 0.20em;
+            font-size: 0.35em;
         }
         .D3Chart {
             height: 200px;
@@ -93,7 +92,7 @@
     <div class="slides">
         <section>
             <h1>dex.js</h1>
-            <img border="0" src="images/dexjs.png">
+            <img border="0" src="../images/dexjs.png">
             <p>dex.js is a javascript framework for visualizing data.</p>
             **This is a work in progress**
         </section>
@@ -300,14 +299,13 @@ stackedarea.render();</code></pre>
 
                     |          |               |              |
                     |----------|---------------|--------------|
-                    | <a href="#/3/1">Axis</a>         | <a href="#/3/2">Chord Diagrams</a> | <a href="#/3/3">Clustered Force</a> |
-                    | <a href="#/3/4">Dendrograms</a>         | <a href="#/3/5">Force</a> | Heatmap |
-                    | <a href="#/3/7">Horizon Chart</a>         | <a href="#/3/8">Legends</a> | Linechart |
-                    | <a href="#/3/10">Motion Bar Chart</a>         | <a href="#/3/11">Motion Chart</a> | <a href="#/3/12">Motion Line Charts</a> |
-                    |  <a href="#/3/13">Orbital Layout</a> | <a href="#/3/14">Parallel Coordinates</a> | <a href="#/3/15">Pie Chart</a> |
-                    | <a href="#/3/16">Radar Chart</a>         | <a href="#/3/17">Radial Tree</a> | <a href="#/3/18">Sankey</a> |
-                    | <a href="#/3/19">Sankey Particles</a> | <a href="#/3/20">Scatter Plot</a> | <a href="#/3/21">Sunburst</a> |
-                    | <a href="#/3/22">Titled Treemap</a>         | <a href="#/3/23">Treemap</a> | |
+                    | <a href="#/3/1">Axis</a>              | <a href="#/3/2">Chord Diagrams</a> | <a href="#/3/3">Clustered Force</a> |
+                    | <a href="#/3/4">Dendrograms</a>       | <a href="#/3/5">Horizon Chart</a> | <a href="#/3/6">Legends</a> |
+                    | Linechart | <a href="#/3/7">Motion Bar Chart</a> | <a href="#/3/8">Motion Chart</a> |
+                    | <a href="#/3/12">Motion Line Charts</a> | <a href="#/3/13">Orbital Layout</a>  | <a href="#/3/14">Parallel Coordinates</a> |
+                    | <a href="#/3/15">Pie Chart</a> | <a href="#/3/16">Radar Chart</a>      | <a href="#/3/17">Radial Tree</a> |
+                    | <a href="#/3/18">Sankey</a> | <a href="#/3/19">Sankey Particles</a> | <a href="#/3/20">Scatter Plot</a> |
+                    | <a href="#/3/21">Sunburst</a> | <a href="#/3/22">Titled Treemap</a>         | <a href="#/3/23">Treemap</a> |
                     ---
                     <a href="#/3/1">Navigate down for concrete examples</a>
                 </script>
@@ -334,36 +332,6 @@ var chord = new dex.charts.d3.Chord({
 chord.render();</code></pre>
             </section>
 
-            <section data-state="cforce">
-                <h3>D3 Clustered Force</h3>
-                <svg id="D3ClusteredForce" class="D3Chart" data-prevent-swipe></svg>
-                <pre><code class="hljs" style="word-wrap: break-word;" data-trim>
-var cforce = new dex.charts.d3.ClusteredForce({
-  'parent': '#D3ClusteredForce',
-  'csv': ncsv
-});
-cforce.render();</code></pre>
-            </section>
-            <section data-state="dendrogram">
-                <h3>D3 Dendrogram</h3>
-                <svg id="D3Dendrogram" class="D3Chart" data-prevent-swipe></svg>
-                <pre><code class="hljs" style="word-wrap: break-word;" data-trim>
-var cforce = new dex.charts.d3.Dendrogram({
-  'parent': '#D3Dendrogram',
-  'csv': orgData
-});
-cforce.render();</code></pre>
-            </section>
-            <section data-state="force">
-                <h3>D3 Force</h3>
-                <svg id="D3Force" class="D3Chart" data-prevent-swipe></svg>
-                <pre><code class="hljs" style="word-wrap: break-word;" data-trim>
-var cforce = new dex.charts.d3.Force({
-  'parent': '#D3Force',
-  'csv': orgData
-});
-cforce.render();</code></pre>
-            </section>
             <section data-state="horizonchart">
                 <h3>D3 Horizon Chart</h3>
                 <svg id="D3HorizonChart" class="D3Chart" data-prevent-swipe></svg>
@@ -446,6 +414,18 @@ sankey.render();</code></pre>
             </section>
         </section>
         <section>
+            <section data-state="network">
+                <h3>Vis.js Network</h3>
+                <div id="VisNetwork" class="D3Chart" data-prevent-swipe></div>
+                <pre><code class="hljs" style="word-wrap: break-word;" data-trim>
+var network = new dex.charts.vis.Network({
+  'parent': '#VisNetwork',
+  'csv': presidentsByPartyAndState
+});
+network.render();</code></pre>
+            </section>
+        </section>
+        <section>
             <h1>THE END</h1>
         </section>
 
@@ -459,7 +439,8 @@ sankey.render();</code></pre>
 <script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
 <script src="http://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.10/c3.min.js"></script>
-<script src="js/dex.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.17.0/vis.min.js"></script>
+<script src="dex.js"></script>
 
 <script>
     $(document).ready(function () {
@@ -1130,24 +1111,6 @@ sankey.render();</code></pre>
         );
         chord.render();
 
-        var cforce = new dex.charts.d3.ClusteredForce({
-            'parent': "#D3ClusteredForce",
-            'csv': ncsv
-        });
-        cforce.render();
-
-        var dendrogram = new dex.charts.d3.Dendrogram({
-            'parent': "#D3Dendrogram",
-            'csv':  presidentsByPartyAndState
-        });
-        dendrogram.render();
-
-        var force = new dex.charts.d3.Force({
-            'parent': "#D3Force",
-            'csv': presidentsByParty
-        });
-        force.render();
-
         var horizonChart = new dex.charts.d3.HorizonChart({
             'parent': "#D3HorizonChart",
             'csv': ncsv
@@ -1263,7 +1226,11 @@ sankey.render();</code></pre>
                     'csv'     : sankeyData2,
                 });
 
-
+        var network = new dex.charts.vis.Network({
+            'parent': "#VisNetwork",
+            'csv': sankeyData
+        });
+        network.render();
 
         // Required, even if empty.
         Reveal.initialize({
@@ -1280,7 +1247,7 @@ sankey.render();</code></pre>
             history: true,
             minScale: 0.1,
             maxScale: 5.0,
-            margin: .15,
+            margin: .05,
             dependencies: [
                 {
                     src: 'https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.3.0/lib/js/classList.min.js',
@@ -1318,15 +1285,7 @@ sankey.render();</code></pre>
         Reveal.addEventListener('axis', function () {
             axis1.resize();
         });
-        Reveal.addEventListener('cforce', function () {
-            cforce.resize();
-        });
-        Reveal.addEventListener('dendrogram', function () {
-            dendrogram.resize();
-        });
-        Reveal.addEventListener('force', function () {
-            force.resize();
-        });
+
         Reveal.addEventListener('horizonchart', function () {
             horizonChart.resize();
         });
@@ -1356,6 +1315,10 @@ sankey.render();</code></pre>
 
         Reveal.addEventListener('sankey', function () {
             sankey.resize();
+        });
+
+        Reveal.addEventListener('network', function () {
+            network.resize();
         });
     });
 </script>

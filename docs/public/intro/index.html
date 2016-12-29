@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>dex.js</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <link rel="stylesheet" href="/css/bootstrap.min.css" media="screen">
+    <link rel="stylesheet" href="/css/hugo-bootswatch.css">
+    <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.css">
+    <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.theme.min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.6.0/styles/default.min.css">
+<style>
+  .LargeChart {
+    height: 600px;
+    width: 800px;
+    horiz-align: center;
+  }
+
+   
+  body { padding: 0; }
+  .page-header,
+  .page-header h1 {margin-top:0;}
+
+</style>
+  </head>
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/sylvester/0.1.3/sylvester.js"></script>
+  <script src="/js/dex.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.6.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script>
+  <body>
+  <h1 margin-top="0">dex.js</h1>
+
+<ul class="nav nav-pills">
+    <li role="presentation" class="active"><a href="/">Home</a></li>
+    <li role="presentation"><a href="/intro">Introduction</a></li>
+    <li role="presentation"><a href="https://www.gitbook.com/book/patmartin/dexjs/details">User Guide</a></li>
+    <li role="presentation"><a href="/examples">Examples</a></li>
+    <li role="presentation"><a href="/about">About</a></li>
+    <li role="presentation"><a href="/posts">Posts</a></li>
+</ul>
+
+    <div class="container">
+        
+        
+        <div class="post">
+            
+
+<h2 id="introduction">Introduction</h2>
+
+<p>dex.js is a javascript framework for data visualization which incorporates
+a diverse set of visualizations from a diverse set of HTML5 technologies
+such as D3 and WebGL and wraps them in a simple and consistent interface.</p>
+
+<h2 id="quick-start">Quick Start</h2>
+
+<h3 id="creating-a-chart">Creating A Chart</h3>
+
+<h4 id="step-1">Step 1</h4>
+
+<p>Include the necessary scripts and stylesheets into your HTML page.  This is pretty much boilerplate.</p>
+
+<pre><code class="language-html">&lt;link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.css"&gt;
+&lt;link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.theme.min.css"&gt;
+&lt;script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"&gt;&lt;/script&gt;
+&lt;script src="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"&gt;&lt;/script&gt;
+&lt;script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"&gt;&lt;/script&gt;
+&lt;script src="http://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"&gt;&lt;/script&gt;
+&lt;script src="dex.js"&gt;&lt;/script&gt;</code></pre>
+
+<p>Dex requires jquery, jquery-ui, underscore and D3 at a minimum.</p>
+
+<h4 id="step-2">Step 2</h4>
+
+<p>Provide a container for the chart somewhere within the body of the html document.</p>
+
+<p>The container is usually an SVG though there are a few exceptions.  Here we define an
+svg for a Chord Diagram.</p>
+
+<pre><code class="language-html">&lt;svg id="ChordDiagram"&gt;&lt;/svg&gt;</code></pre>
+
+<h4 id="step-3">Step 3</h4>
+
+<p>Next, provide some data.</p>
+
+<pre><code class="language-javascript">&lt;script&gt;
+  var csv = {
+    header : [ 'Name', 'Gender' ],
+    data   : [
+      ['Todd', 'Male'],
+      ['Mike', 'Male'],
+      ['Jennifer', 'Female'],
+      ['Patrick', 'Male']
+    ]
+  };
+  // Script continues here...</code></pre>
+
+<p>Regardless of the visual, all dex.js components expect data in csv format.
+dex.js also provides convenience functions for manipulating and generating
+csv data.  More on this later.</p>
+
+<h4 id="step-4">Step 4</h4>
+
+<p>Configure the chart.</p>
+
+<pre><code class="language-javascript">  var chord = new dex.charts.d3.Chord({
+    'parent' : '#ChordDiagram',
+    'csv'    : csv
+  });</code></pre>
+
+<h4 id="step-5">Step 5</h4>
+
+<p>Render the chart.</p>
+
+<pre><code class="language-javascript">  chord.render();</code></pre>
+
+<p>You should see something like the following when you are through:</p>
+
+<p><svg id="ChordDiagram" height="300" width="300"><defs></defs></svg></p>
+
+<h3 id="creating-charts-from-charts">Creating Charts from Charts</h3>
+
+<p>In dex.js you can construct new charts from existing charts.  This is useful
+when you wish to construct a number of related charts; for instance when
+providing some sort of chart-multiples visualization.</p>
+
+<p>Ok, let&rsquo;s get started.  First, let&rsquo;s give it a container somewhere in our HTML document.</p>
+
+<pre><code class="language-html">&lt;svg id="ChordDiagram2" height="300" width="300"&gt;&lt;/svg&gt;</code></pre>
+
+<p>Then lets make a verbatim copy of the chart into chord2.</p>
+
+<pre><code class="language-javascript">var chord2 = new dex.charts.d3.Chord(chord);</code></pre>
+
+<p>Next, let&rsquo;s associate this chart with a distinct parent svg container and give
+the chart it&rsquo;s own personality.</p>
+
+<pre><code class="language-javascript">chord2.attr("parent", "#ChordDiagram2")
+  .attr("tick.stroke.color", "red")
+  .attr("tick.stroke.width", "15")
+  .attr("links.mouseout.fill.fillOpacity", .1)
+  .attr("links.mouseover.stroke.dasharray", "2 2")
+  .attr("links.mouseover.stroke.color", "blue")
+  .attr("links.mouseover.stroke.width", "3")
+  .attr("color", d3.scale.category10());</code></pre>
+
+<p>Now that it&rsquo;s configured properly, let&rsquo;s render it.</p>
+
+<pre><code class="language-javascript">chord2.render();</code></pre>
+
+<p><svg id="ChordDiagram2" height="300" width="300"></svg></p>
+
+<p>alternately, we could have used chaining which is implicit in all dex
+components to achieve this in a single line of code.</p>
+
+<pre><code class="language-javascript">var chord2 = new dex.charts.d3.Chord(chord)
+  .attr("parent", "#ChordDiagram2")
+  .attr("tick.stroke.color", "red")
+  .attr("tick.stroke.width", "15")
+  .attr("links.mouseout.fill.fillOpacity", .1)
+  .attr("links.mouseover.stroke.dasharray", "2 2")
+  .attr("links.mouseover.stroke.color", "blue")
+  .attr("links.mouseover.stroke.width", "3")
+  .attr("color", d3.scale.category10())
+  .render();
+</code></pre>
+
+<h3 id="chart-communication">Chart Communication</h3>
+
+<p>Charts in isolation are of limited interest, when charts communicate with one
+another, they become much more interesting.</p>
+
+<h4 id="step-1-1">Step 1</h4>
+
+<p>Providing containers for two charts.</p>
+
+<pre><code class="language-html">&lt;svg id="ChartTalk1" height=500 width=400 horiz-align="left"&gt;&lt;/svg&gt;
+&lt;svg id="ChartTalk2" height=500 width=400 horiz-align="right"&gt;&lt;/svg&gt;</pre></code>
+
+### Step 2
+
+Configure and render the charts.  We'll pick a parallel coordinates chart
+for the first one and a dendrogram for the second one.
+
+We will also use a csv containing U.S. President names with Party and state affiliations.
+
+<pre><code class="language-javascript">var pc1 = new dex.charts.d3.ParallelCoordinates({
+  'parent' : "#ChartTalk1",
+  'csv'    : presidents
+});
+pc1.render();
+  
+var dendrogram = new dex.charts.d3.Dendrogram({
+  'parent' : "#ChartTalk2",
+  'csv'    : presidents,
+  'node.expanded.label.font.size' : 8,
+  'connection.length' : 100
+});
+dendrogram.render();</code></pre>
+
+<h3 id="step-3-1">Step 3</h3>
+
+<p>Lastly, we will configure the dendrogram to listen or subscribe to
+to brush selection events on the parallel coordinates visual.
+The dendrogram sets it&rsquo;s data to only the selected subset of the
+parallel coordinates.</p>
+
+<pre><code class="language-javascript">dendrogram.subscribe(pc1, "select", function (msg) {
+  dendrogram.attr('csv', msg.selected).update();
+});</code></pre>
+
+<h3 id="final-result">Final Result</h3>
+
+<p><svg id="ChartTalk1" height=500 width=400 horiz-align="left"></svg>
+<svg id="ChartTalk2" height=500 width=400 horiz-align="right"></svg></p>
+
+<script>
+  var csv = {
+    header : [ 'Name', 'Gender' ],
+    data   : [
+      ['Todd', 'Male'],
+      ['Mike', 'Male'],
+      ['Jennifer', 'Female'],
+      ['Patrick', 'Male']
+    ]
+  };
+  
+  var presidents = dex.csv.columnSlice({
+      'header' : ["President", "Party", "Home State"],
+      'data'   : [
+        ["George Washington", "Independent", "Virginia"],
+        ["John Adams", "Federalist", "Massachusetts"],
+        ["Thomas Jefferson", "Dem-Rep", "Virginia"],
+        ["James Madison", "Dem-Rep", "Virginia"],
+        ["James Monroe", "Dem-Rep", "Virginia"],
+        ["John Quincy Adams", "Dem-Rep/Nat-Rep", "Massachusetts"],
+        ["Andrew Jackson", "Democratic", "Tennessee"],
+        ["Martin Van Buren", "Democratic", "New York"],
+        ["William Henry Harrison", "Whig", "Ohio"],
+        ["John Tyler", "Whig", "Virginia"],
+        ["James K. Polk", "Democratic", "Tennessee"],
+        ["Zachary Taylor", "Whig", "Louisiana"],
+        ["Millard Fillmore", "Whig", "New York"],
+        ["Franklin Pierce", "Democratic", "New Hampshire"],
+        ["James Buchanan", "Democratic", "Pennsylvania"],
+        ["Abraham Lincoln", "Republican/Nat-Union", "Illinois"],
+        ["Andrew Johnson", "Democratic/Nat-Union", "Tennessee"],
+        ["Ulysses S. Grant", "Republican", "Ohio"],
+        ["Rutherford B. Hayes", "Republican", "Ohio"],
+        ["James A. Garfield", "Republican", "Ohio"],
+        ["Chester A. Arthur", "Republican", "New York"],
+        ["Grover Cleveland", "Democratic", "New York"],
+        ["Benjamin Harrison", "Republican", "Indiana"],
+        ["Grover Cleveland (2nd term)", "Democratic", "New York"],
+        ["William McKinley", "Republican", "Ohio"],
+        ["Theodore Roosevelt", "Republican", "New York"],
+        ["William Howard Taft", "Republican", "Ohio"],
+        ["Woodrow Wilson", "Democratic", "New Jersey"],
+        ["Warren G. Harding", "Republican", "Ohio"],
+        ["Calvin Coolidge", "Republican", "Massachusetts"],
+        ["Herbert Hoover", "Republican", "Iowa"],
+        ["Franklin D. Roosevelt", "Democratic", "New York"],
+        ["Harry S. Truman", "Democratic", "Missouri"],
+        ["Dwight D. Eisenhower", "Republican", "Texas"],
+        ["John F. Kennedy", "Democratic", "Massachusetts"],
+        ["Lyndon B. Johnson", "Democratic", "Texas"],
+        ["Richard Nixon", "Republican", "California"],
+        ["Gerald Ford", "Republican", "Michigan"],
+        ["Jimmy Carter", "Democratic", "Georgia"],
+        ["Ronald Reagan", "Republican", "California"],
+        ["George H. W. Bush", "Republican", "Texas"],
+        ["Bill Clinton", "Democratic", "Arkansas"],
+        ["George W. Bush", "Republican", "Texas"],
+        ["Barack Obama", "Democratic", "Illinois"]
+      ]
+    }, [1, 2, 0]);
+  
+  var chord = new dex.charts.d3.Chord({
+    'parent' : '#ChordDiagram',
+    'csv'    : csv});
+  chord.render();
+  
+  var chord2 = new dex.charts.d3.Chord(chord)
+    .attr("parent", "#ChordDiagram2")
+    .attr("tick.stroke.color", "red")
+    .attr("tick.stroke.width", "15")
+    .attr("links.mouseout.fill.fillOpacity", .1)
+    .attr("links.mouseover.stroke.dasharray", "2 2")
+    .attr("links.mouseover.stroke.color", "blue")
+    .attr("links.mouseover.stroke.width", "3")
+    .attr("color", d3.scale.category10())
+    .render();
+    
+  var pc1 = new dex.charts.d3.ParallelCoordinates({
+    'parent' : "#ChartTalk1",
+    'csv'    : presidents
+  });
+  pc1.render();
+  
+  var dendrogram = new dex.charts.d3.Dendrogram({
+    'parent' : "#ChartTalk2",
+    'csv'    : presidents,
+    'node.expanded.label.font.size' : 8,
+    'connection.length' : 100
+  });
+  dendrogram.render();
+  
+  dendrogram.subscribe(pc1, "select", function (msg) {
+      dendrogram.attr('csv', msg.selected).update();
+  });
+</script>
+
+<h2 id="final-thoughts">Final Thoughts</h2>
+
+<p>With a design where consistency, reusability and interoperability are first
+class design concerns; it becomes easier to write single-purpose chart
+components which gain the ability to interoperate with other single-purpose
+charts.</p>
+
+<p>Here are a few example benefits of this approach:</p>
+
+<ul>
+<li>Chart implementations no longer have to focus on things
+such as legend implementation.  Instead, legends can be
+first class components in their own right.  Legends, in turn
+become reusable.</li>
+<li>Specialized chart implementations such as Motion Charts become
+unnecessary.  Instead, dex offers a data player which allows all
+charts to become motion charts with very little effort.</li>
+</ul>
+
+        </div>
+
+              <footer>
+        <nav class="navbar navbar-default">
+          <div class="container-fluid">
+            <div class="collapse navbar-collapse">
+              <ul class="nav navbar-nav">
+                <li><a href="http://gohugo.io">Hugo</a></li>
+                <li><a href="http://bootswatch.com">Bootswatch</a></li>
+                <li><a href="http://getbootstrap.com">Bootstrap</a></li>
+              </ul>
+              <ul class="nav navbar-nav navbar-right">
+                <li class="pull-right"><a href="#top">Back to top</a></li>
+              </ul>
+            </div>
+          </nav>
+        </div>
+      </footer>
+
+ 
+     </div>
+     
+        
+        <script src="/js/bootstrap.min.js"></script>
+        <script src="/js/bootswatch.js"></script>
+    </body>
+</html>
+
+
