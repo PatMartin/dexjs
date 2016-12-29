@@ -2,14 +2,14 @@ var clusteredforce = function (userConfig) {
 
   var defaults =
   {
-    'parent'         : null,
-    'id'             : "ClusteredForce",
-    'class'          : "ClusteredForce",
-    'height'         : "100%",
-    'width'          : "100%",
-    'csv'            : {
-      'header' : ["X", "Y"],
-      'data'   : [
+    'parent': null,
+    'id': "ClusteredForce",
+    'class': "ClusteredForce",
+    'height': "100%",
+    'width': "100%",
+    'csv': {
+      'header': ["X", "Y"],
+      'data': [
         [0, 0],
         [1, 1],
         [2, 4],
@@ -17,34 +17,61 @@ var clusteredforce = function (userConfig) {
         [4, 16]
       ]
     },
-    'xi'             : 0,
-    'yi'             : 2,
-    'transform'      : '',
-    'color'          : d3.scale.category20(),
-    'padding'        : 10,
+    'groups': [{'category': 0, 'value': 1, 'label': 0}],
+    'transform': '',
+    'color': d3.scale.category10(),
+    'padding': 10,
     // TODO: Add normalization function.
-    'sizingFunction' : function () {
+    'sizingFunction': function () {
       return d3.scale.linear()
     },
-    'minRadius'      : 1,
-    'maxRadius'      : 20,
-    'gravity'        : 10,
-    'charge'         : -100,
-    'scaleColumns'   : true,
-    'circle'         : dex.config.circle({
-      'r'         : function (d) {
+    'minRadius': 5,
+    'maxRadius': 20,
+    'gravity': 2,
+    'charge': 0,
+    'scaleColumns': true,
+    'circle': dex.config.circle({
+      'r': function (d) {
         return (dex.object.isNumeric(d.radius) ? d.radius : 1);
       },
-      'fill'      : dex.config.fill({
-        'fillColor' : function (d) {
-          return d.color;
+      'fill': dex.config.fill({
+        'fillColor': function (d, i) {
+          var darkColor = dex.color.shadeColor(d.color, -10);
+          var gradientId = "gradient" + d.color.substring(1)
+          var grad = d3.select(chart.config.parent)
+            .select("#gradients")
+            .selectAll("#" + gradientId)
+            .data([gradientId])
+            .enter()
+            .append("radialGradient")
+            .attr("class", "colorGradient")
+            .attr("id", gradientId)
+            .attr("gradientUnits", "objectBoundingBox")
+            .attr("fx", "30%")
+            .attr("fy", "30%");
+
+          grad.append("stop")
+            .attr("offset", "0%")
+            .attr("style", "stop-color:#FFFFFF");
+
+          // Middle
+          grad.append("stop")
+            .attr("offset", "90%")
+            .attr("style", "stop-color:" + d.color);
+
+          // Outer Edges
+          grad.append("stop")
+            .attr("offset", "100%")
+            .attr("style", "stop-color:" + darkColor);
+
+          return "url(#" + gradientId + ")";
         }
       }),
-      'stroke'    : dex.config.stroke(),
-      'tooltip'   : function (d) {
+      'stroke': dex.config.stroke(),
+      'tooltip': function (d) {
         return d.text;
       },
-      'transform' : ''
+      'transform': ''
     })
   };
 
@@ -66,17 +93,8 @@ var clusteredforce = function (userConfig) {
     var config = chart.config;
 
     var csv = config.csv;
-    var ri, ci, hi;
 
-    var numericHeaders = dex.csv.getNumericColumnNames(csv);
-    var numericIndices = dex.csv.getNumericIndices(csv);
-
-    var i;
-
-    var m = numericHeaders.length,
-      radius = d3.scale.sqrt().range([0, 12]);
-
-    var n = (dex.length - 1) * numericHeaders.length;
+    var radius = d3.scale.sqrt().range([0, 12]);
 
     var minValue, maxValue;
 
@@ -91,51 +109,43 @@ var clusteredforce = function (userConfig) {
 
     var nodes = [];
 
-    function scaleNodes(minRadius, maxRadius) {
-      var numericScales = [];
+    var values = [];
+    var min = null;
+    var max = null;
 
-      for (i = 0; i < numericIndices.length; i++) {
-        if (config.scaleColumns) {
-          minValue = dex.matrix.min(csv.data, numericIndices[i]);
-          maxValue = dex.matrix.max(csv.data, numericIndices[i]);
+    config.groups.forEach(function (group) {
+      "use strict";
+      config.csv.data.forEach(function (row) {
+        var value = _.isNumber(row[group.value]) ? row[group.value] : 1;
+        nodes.push({
+          'category': row[group.category],
+          'value': value,
+          'color' : config.color(row[group.category]),
+          'text': "<table><tr><td>Label</td></td><td>" + row[group.label] +
+          "</td></tr><tr><td>Category</td><td>" + row[group.category] + "</td></tr>" +
+          "<tr><td>Value</td><td>" + row[group.value] +
+          "</td></tr></table>"
+        });
+        if (min == null || min > value) {
+          min = value;
         }
 
-        //console.log("I: " + i + ", MIN: " + minValue + ", MAX: " + maxValue);
-
-        numericScales.push(config.sizingFunction()
-          .domain([minValue, maxValue]).range([config.minRadius, config.maxRadius]));
-      }
-
-      if (nodes.length == 0) {
-        nodes = new Array((csv.data.length - 1) * numericIndices.length);
-      }
-
-      for (ri = 0; ri < csv.data.length; ri++) {
-        dex.console.debug("RI:", ri, csv.data[ri]);
-        for (ci = 0; ci < numericIndices.length; ci++) {
-          var label = "<table border='1'>";
-          for (hi = 0; hi < csv.data[ri].length; hi++) {
-            if (hi == numericIndices[ci]) {
-              label += "<tr><td><b>" + csv.data[0][hi] + "</b></td><td><b>" + csv.data[ri][hi] + "</b></td></tr>";
-            }
-            else {
-              label += "<tr><td>" + csv.data[0][hi] + "</td><td>" + csv.data[ri][hi] + "</td></tr>";
-            }
-          }
-          label += "</table>";
-
-          nodes[(ri) * numericIndices.length + ci] =
-          {
-            radius : numericScales[ci](csv.data[ri][numericIndices[ci]]),
-            //radius: radius(0.1),
-            color  : config.color(ci),
-            text   : label
-          };
+        if (max == null || max < value) {
+          max = value;
         }
-      }
-    }
+      })
+    });
 
-    scaleNodes(config.minRadius, config.maxRadius);
+    var radiusScale = d3.scale.linear()
+      .domain([min, max])
+      .range([config.minRadius, config.maxRadius]);
+
+    nodes.forEach(function (node) {
+      "use strict";
+      node.radius = radiusScale(node.value);
+    });
+
+    dex.console.log("NODES", nodes, "VALUES", values, "EXTENTS", min, max);
 
     force = d3.layout.force()
       .nodes(nodes)
@@ -145,7 +155,12 @@ var clusteredforce = function (userConfig) {
       .on("tick", tick)
       .start();
 
-    var chartContainer = d3.select(config.parent).append("g")
+    var chartContainer = d3.select(config.parent);
+
+    chartContainer.append('defs')
+      .attr('id', 'gradients');
+
+    chartContainer.append("g")
       .attr("id", config["id"])
       .attr("class", config["class"])
       .attr("transform", config.transform);
@@ -243,11 +258,14 @@ var clusteredforce = function (userConfig) {
 
   $(document).ready(function () {
     $(chart.config.parent).tooltip({
-      items    : "circle",
-      content  : function () {
+      items: "circle",
+      position: {
+        my: "right bottom+50"
+      },
+      content: function () {
         return $(this).find("text").text();
       },
-      track    : true
+      track: true
     });
 
     // Make the entire chart draggable.
