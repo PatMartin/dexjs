@@ -1,7 +1,8 @@
 var parallelcoordinates = function (userConfig) {
   var chart;
 
-  defaults = {
+  defaults =
+  {
     'id': "ParallelCoordinates",
     'class': "ParallelCoordinates",
     'parent': null,
@@ -20,134 +21,181 @@ var parallelcoordinates = function (userConfig) {
         [4, 16]
       ]
     },
-    'margin': {'top': 35, 'bottom': 30, 'left': 10, 'right': 0},
-    'brush': {
-      'mode': '1D-axes'
+    'rows': 0,
+    //'transform'       : function (d) {
+    //  return 'scale(.95, .95) translate(50, 50)'
+    //},
+    'normalize': false,
+    'margin': {
+      'left': 80,
+      'right': 60,
+      'top': 60,
+      'bottom': 20
     },
-    'bundlingStrength': .5,
-    'smoothness': .1,
-    'alphaOnBrushed': .75,
-    'alpha': 1,
-    'mode': 'queue',
-    'foregroundQueueRate': 50,
-    'brushedQueueRate': 50,
-    'heading.label': dex.config.text({
-      'anchor': 'middle',
-      'font.size': 22,
-      'fill.fillColor' : 'steelblue',
-      'dy': "-4",
+    'axis': {
+      'orient': 'left'
+    },
+    'axis.line': dex.config.line({
+      'stroke': dex.config.stroke(
+        {
+          'color': function (d, i) {
+            return "black";
+          },
+          'width': 1
+        }),
+      'fill': {
+        'fillColor': "none",
+        'fillOpacity': 1.0
+      }
     }),
     'axis.label': dex.config.text({
-      'anchor': 'end',
-      'font.size': 12,
-      'fill.fillColor' : 'black',
+      'font': {
+        'size': function (d, i) {
+          var uniques = _.uniq(_.flatten(dex.matrix.slice(chart.config.csv.data, [i])));
+
+          var maxLabelLength =
+            Math.min(("" + _.max(uniques,
+              function (item) {
+                return ("" + item).length;
+              })).length, 40);
+
+          // No need to adjust margins, initial transform already did.
+          var maxFontSizeByHeight =
+            ((chart.config.height) /
+            (uniques.length ? uniques.length : 1) - 2);
+
+          var maxFontSizeByWidth =
+            (((chart.config.width) /
+            (chart.config.csv.header.length - 1)) / maxLabelLength);
+
+          //dex.console.log("AXIS-FONT-SIZE: I: " + i + ", MAX-HEIGHT: " + maxFontSizeByHeight +
+          //", MAX-WIDTH: " + maxFontSizeByWidth + ", MAX-LABEL-LENGTH: " + maxLabelLength);
+          return Math.min(Math.max(Math.min(maxFontSizeByWidth, maxFontSizeByHeight), 4), 18);
+        }
+      },
+      'anchor': function (d, i) {
+        if (i < chart.config.csv.header.length - 1) {
+          return 'end';
+        }
+        else {
+          return 'start';
+        }
+      },
+      'dx': function (d, i) {
+        return -1 * Math.max(chart.config.axis.label.font.size(d, i) / 2, 8);
+      },
       'dy': ".35em",
+      'fill.fillColor': 'black',
+      'fill.fillOpacity': 1,
+      'events': {
+        'mouseover': function (d, i) {
+          d3.select(this)
+            .style('fill', 'red')
+            .style('fill-opacity', 1);
+        },
+        'mouseout': function (d, i) {
+          d3.select(this)
+            .style('fill', 'black')
+            .style('fill-opacity', 1);
+        }
+      }
     }),
-    'firstAxis.label': dex.config.text({
-      'anchor': 'end',
-      'font.size': 12,
-      'fill.fillColor' : 'black',
-      'dy': ".35em",
+    'verticalLabel': dex.config.text({
+      // If you want to stagger labels.
+      'dy': function (d, i) {
+        return (i % 2) ?
+        -chart.config.margin.top * .60 :
+        -chart.config.margin.top * .20;
+      },
+      'font.size': function (d) {
+        var maxFontSizeByHeight =
+          chart.config.margin.top * .5;
+        var maxFontSizeByWidth =
+          (chart.config.width - chart.config.margin.left - chart.config.margin.right) /
+          (chart.config.csv.header.length) / 10;
+        //dex.console.log("TITLE-FONT-SIZE: MAX-HEIGHT: " + maxFontSizeByHeight +
+        //", MAX-WIDTH: " + maxFontSizeByWidth);
+        return Math.max(Math.min(maxFontSizeByWidth, maxFontSizeByHeight), 4);
+      },
+      'anchor': 'middle',
+      'text': function (d) {
+        return d;
+      },
+      'events': {
+        'mouseover': function (d) {
+          //dex.console.log("Mouseover detected...");
+        }
+      }
     }),
-    'lastAxis.label': dex.config.text({
-      'anchor': 'start',
-      'font.size': 12,
-      'fill.fillColor' : 'black',
-      'dy': ".35em",
-      'dx' : 16
-    })
+    'selected.link': {
+      'stroke': dex.config.stroke(
+        {
+          'color': function (d, i) {
+            return chart.config.color(i);
+          },
+          'width': 3
+        }),
+      'fill': {
+        'fillColor': "none",
+        'fillOpacity': .9
+      },
+      'events': {
+        'mouseover': function () {
+          d3.select(this)
+            .style("stroke-width", chart.config.selected.link.stroke.width +
+              Math.max(4, (chart.config.selected.link.stroke.width / 3)))
+            .style("stroke-opacity", chart.config.selected.link.stroke.opacity);
+        },
+        'mouseout': function () {
+          d3.select(this)
+            .style("stroke-width", chart.config.selected.link.stroke.width)
+            .style("stroke-opacity", chart.config.selected.link.stroke.opacity);
+        }
+      }
+    },
+    'unselected.link': {
+      'stroke': dex.config.stroke(
+        {
+          'color': function (d, i) {
+            return chart.config.color(i);
+          },
+          'width': .8,
+          //'dasharray': "10 10"
+        }),
+      'fill': {
+        'fillColor': "none",
+        'fillOpacity': 0.1
+      }
+    },
+    'brush': {
+      'width': 12,
+      'x': -6,
+      'opacity': .8,
+      'color': "steelblue",
+      'stroke': dex.config.stroke({'color': "black", 'width': 1})
+    },
+    'ui.config': {}
   };
 
-  var iChart;
   chart = new dex.component(userConfig, defaults);
-
   chart.render = function render() {
-    var chart = this;
-    var config = chart.config;
-    var csv = config.csv;
-    var i;
-    d3.selectAll("#" + chart.config.id).remove();
-
     window.onresize = this.resize;
-
-    var jsonData = dex.csv.toJson(csv);
-
-    iChart = dex.pc.create()(config.parent)
-      .data(jsonData)
-      //.hideAxis(["name"])
-      .color(function (d, i) {
-        return config.color(d[csv.header[0]]);
-      })
-      .alpha(config.alpha)
-      .alphaOnBrushed(config.alphaOnBrushed)
-      .composite("darken")
-      .margin(config.margin)
-      .mode(config.mode)
-      .bundlingStrength(config.bundlingStrength)
-      .smoothness(config.smoothness)
-      .foregroundQueueRate(config.foregroundQueueRate)
-      .brushedQueueRate(config.brushedQueueRate)
-      .reorderable()
-      .interactive()
-      .shadows()
-      .bundleDimension(csv.header[0])
-      .render()
-      .brushMode(config.brush.mode);
-
-    iChart.on("brush", function (selected) {
-      // Convert json data of form: [{h1:r1c1, h2:r1c2, ...},
-      // {h1:r2c1, h2:r2c2, ... } ]
-      // to csv form.
-      chart.publish({
-        "type": "select",
-        "selected": dex.csv.json2Csv(selected)
-      });
-    });
-
-    iChart.on("resize", function() {
-      iChart.autoscale();
-    });
-
-    //parcoords.svg.selectAll("text")
-    //  .style("font", "12px sans-serif");
-
-    // Apply some window dressing:
-    var axis = d3.selectAll(config.parent + " svg g g.dimension g.axis");
-    dex.console.log("AXIS", axis);
-
-    if (config.axis.label) {
-      axis.selectAll(".tick text")
-        .call(dex.config.configureText, config.axis.label);
-    }
-
-    if (config.firstAxis.label) {
-      axis.first().selectAll(".tick text")
-        .call(dex.config.configureText, config.firstAxis.label);
-    }
-
-    if (config.lastAxis.label) {
-      axis.last().selectAll(".tick text")
-        .call(dex.config.configureText, config.lastAxis.label);
-    }
-
-    if (config.heading.label) {
-      axis.selectAll(".label")
-        .call(dex.config.configureText, config.heading.label);
-    }
+    chart.resize();
   };
 
   chart.resize = function resize() {
     if (chart.config.resizable) {
-      /*
       var width = d3.select(chart.config.parent).property("clientWidth");
       var height = d3.select(chart.config.parent).property("clientHeight");
       chart
         .attr("width", width - chart.config.margin.left - chart.config.margin.right)
         .attr("height", height - chart.config.margin.top - chart.config.margin.bottom)
         .attr("transform", "translate(" + chart.config.margin.left + "," +
-          chart.config.margin.top + ")");
-      */
-      iChart.autoscale();
+          chart.config.margin.top + ")")
+        .update();
+    }
+    else {
+      chart.update();
     }
   };
 
@@ -156,20 +204,242 @@ var parallelcoordinates = function (userConfig) {
     var config = chart.config;
     var csv = config.csv;
 
+    d3.selectAll("#" + chart.config.id).remove();
+
+    var numericColumns =
+      dex.csv.getNumericColumnNames(csv);
+
     var jsonData = dex.csv.toJson(csv);
+
+    var x = d3.scale.ordinal()
+      .rangePoints([0, config.width], 1);
+
+    var y = {};
+
+    var line = d3.svg.line();
+
+    // Holds unselected paths.
+    var background;
+    // Holds selected paths.
+    var foreground;
+    // Will hold our column names.
+    var dimensions;
+    var key;
+
+    //dex.console.log("TRANSFORM:", config.transform, "HEIGHT: ", config.height, "WIDTH:", config.width);
+    var chartContainer = d3.select(config.parent).append("g")
+      .attr("id", config["id"])
+      .attr("class", config["class"])
+      //.attr("width", config.width)
+      //.attr("height", config.height)
+      .attr("transform", config.transform);
+
+    // Extract the list of dimensions and create a scale for each.
+    //x.domain(dimensions = d3.keys(cars[0]).filter(function(d)
+    //{
+    //  return d != "name" && (y[d] = d3.scale.linear()
+    //    .domain(d3.extent(cars, function(p) { return +p[d]; }))
+    //    .range([height, 0]));
+    //}));
+    var allExtents = []
+
+    numericColumns.forEach(function (d) {
+      allExtents = allExtents.concat(d3.extent(jsonData, function (p) {
+        return +p[d];
+      }));
+    });
+
+    var normalizedExtent = d3.extent(allExtents);
+
+    // REM: Figure out how to switch over to consistent extents.  Snapping.
+    x.domain(dimensions = d3.keys(jsonData[0]).filter(function (d) {
+      if (d === "name") return false;
+
+      if (dex.object.contains(numericColumns, d)) {
+        var extent = d3.extent(jsonData, function (p) {
+          return +p[d];
+        });
+        if (config.normalize) {
+          extent = normalizedExtent;
+        }
+
+        y[d] = d3.scale.linear()
+          .domain(extent)
+          .range([config.height, 0]);
+        allExtents.concat(extent);
+      }
+      else {
+        y[d] = d3.scale.ordinal()
+          .domain(jsonData.map(function (p) {
+            return p[d];
+          }))
+          .rangePoints([config.height, 0]);
+      }
+
+      return true;
+    }));
+
+    // Add grey background lines for context.
+    background = chartContainer.append("g")
+      .attr("class", "background")
+      .selectAll("path")
+      .data(jsonData)
+      .enter().append("path")
+      .call(dex.config.configureLink, config.unselected.link)
+      .attr("d", path)
+      .attr("id", "fillpath");
+
+    foreground = chartContainer.append("g")
+      .selectAll("path")
+      .data(jsonData)
+      .enter().append("path")
+      .attr("d", path)
+      .call(dex.config.configureLink, config.selected.link);
+
+    foreground
+      .append("tooltip-content").text(function (d, i) {
+      var info = "<table border=\"1\">";
+      for (key in jsonData[i]) {
+        info += "<tr><td><b><i>" + key + "</i></b></td><td>" + jsonData[i][key] + "</td></tr>"
+      }
+      return info + "</table>";
+    });
+//      .on("mouseover", function () {
+//        d3.select(this)
+//          .style("stroke-width", config.selected.link.stroke.width +
+//          Math.max(4, (config.selected.link.stroke.width / 3)))
+//          .style("stroke-opacity", config.selected.link.stroke.opacity);
+//      })
+//      .on("mouseout", function () {
+//        d3.select(this)
+//          .style("stroke-width", config.selected.link.stroke.width)
+//          .style("stroke-opacity", config.selected.link.stroke.opacity);
+//      });
+
+    // Add a group element for each dimension.
+    var g = chartContainer.selectAll(".dimension")
+      .data(dimensions)
+      .enter().append("g")
+      .attr("class", "dimension")
+      .attr("transform", function (d) {
+        return "translate(" + x(d) + ")";
+      });
+
+    // Add an axis and title.
+    g.append("g")
+      .attr("class", "axis")
+      .each(function (d, i) {
+
+        var axisScale = dex.config.createScale(dex.config.scale(config.axis.scale));
+        var axis = d3.svg.axis()
+          .scale(axisScale);
+
+        var myConfig = dex.object.clone(config.axis);
+        // If the last label, turn it to the right.
+        if (i == config.csv.header.length - 1) {
+          myConfig.orient = 'right';
+          myConfig.label.dx = function (d, i) {
+            return Math.max(chart.config.axis.label.font.size(d, i) / 2, 8);
+          }
+        }
+        // Configure and apply the axis.
+        dex.config.configureAxis(axis, myConfig, i);
+        d3.select(this).call(axis.scale(y[d]));
+
+        // Now that the axis has rendered, adjust the tick labels based on our spec.
+        var tickLabels = d3.select(this)
+          .selectAll('.tick')
+          .selectAll("text")
+          .call(dex.config.configureText, myConfig.label, i);
+      })
+      .append("text")
+      .call(dex.config.configureText, config.verticalLabel);
+
+    // Add and store a brush for each axis.
+    g.append("g")
+      .attr("class", "brush")
+      .each(function (d) {
+        d3.select(this).call(y[d].brush =
+          d3.svg.brush().y(y[d])
+            .on("brush", brush)
+            .on("brushend", brushend));
+      })
+      .selectAll("rect")
+      .call(dex.config.configureRectangle, config.brush);
+
+    // Configure the axis lines:
+    //dex.console.log("DOMAIN", d3.selectAll(".domain"));
+    d3.selectAll(".domain")
+      .call(dex.config.configurePath, config.axis.line);
+
+    // Returns the path for a given data point.
+    function path(d) {
+      return line(dimensions.map(function (p) {
+        return [x(p), y[p](d[p])];
+      }));
+    }
+
+    // Handles a brush event, toggling the display of foreground lines.
+    function brush() {
+      // Get a list of our active brushes.
+      var actives = dimensions.filter(function (p) {
+          return !y[p].brush.empty();
+        }),
+
+      // Get an array of min/max values for each brush constraint.
+        extents = actives.map(function (p) {
+          return y[p].brush.extent();
+        });
+
+      foreground.style("display", function (d) {
+        //dex.console.log("Calculating what lines to display: ", actives);
+        return actives.every(
+          // P is column name, i is an index
+          function (p, i) {
+            // Categorical
+            //console.log("P: " + p + ", I: " + i);
+            if (!dex.object.contains(numericColumns, p)) {
+              return extents[i][0] <= y[p](d[p]) && y[p](d[p]) <= extents[i][1];
+            }
+            // Numeric
+            else {
+              return extents[i][0] <= d[p] && d[p] <= extents[i][1];
+            }
+          }) ? null : "none";
+      });
+    }
+
+    // Handles a brush event, toggling the display of foreground lines.
+    function brushend() {
+      //dex.console.log("BRUSH-END: ", foreground);
+      //dex.console.log("chart: ", chart);
+      var activeData = [];
+      var i;
+
+      // WARNING:
+      //
+      // Can't find an elegant way to get back at the data so I am getting
+      // at the data in a somewhat fragile manner instead.  Mike Bostock ever
+      // changes the __data__ convention and this will break.
+      for (i = 0; i < foreground[0].length; i++) {
+        if (!(foreground[0][i]["style"]["display"] == "none")) {
+          activeData.push(foreground[0][i]['__data__']);
+        }
+      }
+
+      //dex.console.log("Selected: ", dex.json.toCsv(activeData, dimensions));
+      chart.publish({"type" : "select", "selected" : dex.json.toCsv(activeData, dimensions)});
+    }
   };
 
-
   $(document).ready(function () {
-    /*
-     $(document).tooltip({
-     items: "path",
-     content: function () {
-     return $(this).find("tooltip-content").text();
-     },
-     track: true
-     });
-     */
+    $(document).tooltip({
+      items: "path",
+      content: function () {
+        return $(this).find("tooltip-content").text();
+      },
+      track: true
+    });
   });
 
   return chart;
