@@ -290,7 +290,7 @@ var sankey = function (userConfig) {
         var height = window.innerHeight;
 
         //dex.console.log(config.id + " RESIZING: " + width + "x" + height);
-        d3.selectAll("#" + config.id).remove();
+        d3.selectAll(config.parent).selectAll('*').remove();
 
         chart.attr("width", width)
             .attr("height", height)
@@ -306,7 +306,7 @@ var sankey = function (userConfig) {
         var height = d3.select(config.parent).property("clientHeight");
         var csv = config.csv;
 
-        d3.selectAll("#" + config.id).remove();
+        d3.selectAll(config.parent).selectAll('*').remove();
 
         var chartContainer = d3.select(config.parent).append("g")
             .attr("class", config["id"])
@@ -482,11 +482,11 @@ var sankey = function (userConfig) {
                 return b.dy - a.dy;
             })
             .on("mouseover", function (d) {
-                d3.selectAll("#" + d.linkid)//.style("stroke-opacity", 1)
+                chartContainer.selectAll("#" + d.linkid)//.style("stroke-opacity", 1)
                     .call(dex.config.configureLink, config.mouseover.link);
             })
             .on("mouseout", function (d) {
-                d3.selectAll("#" + d.linkid)//.style("stroke-opacity", config.link.stroke.opacity);
+                chartContainer.selectAll("#" + d.linkid)//.style("stroke-opacity", config.link.stroke.opacity);
                     .call(dex.config.configureLink, config.mouseout.link);
             });
 
@@ -522,7 +522,7 @@ var sankey = function (userConfig) {
                     d.sourceLinks : d.targetLinks;
 
                 links.forEach(function (link) {
-                    d3.selectAll("#" + link.linkid)
+                    chartContainer.selectAll("#" + link.linkid)
                         .call(dex.config.configureLink, config.mouseover.node);
                 });
             })
@@ -531,7 +531,7 @@ var sankey = function (userConfig) {
                 var links = (d.sourceLinks.length > 0) ?
                     d.sourceLinks : d.targetLinks;
                 links.forEach(function (link) {
-                    d3.selectAll("#" + link.linkid)
+                    chartContainer.selectAll("#" + link.linkid)
                         .call(dex.config.configureLink, config.mouseout.link);
                 });
             })
@@ -546,7 +546,7 @@ var sankey = function (userConfig) {
 
         /////////// A HACK TO ADD TITLE LABELS
         var locations = {};
-        var rects = d3.selectAll("rect").each(function (rect) {
+        var rects = chartContainer.selectAll("rect").each(function (rect) {
             locations[rect.x] = true;
         });
 
