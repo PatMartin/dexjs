@@ -352,10 +352,10 @@ var sankeyparticles = function (userConfig) {
     var config = chart.config;
     var csv = config.csv;
 
-    d3.selectAll("#" + config.id).remove();
+    d3.selectAll(config.parent).selectAll('*').remove();
 
     var data = dex.csv.getGraph(csv);
-    dex.console.log("DATA", data);
+    //dex.console.log("DATA", data);
 
     var margin = config.margin,
       width = config.width - margin.left - margin.right,
@@ -485,7 +485,7 @@ var sankeyparticles = function (userConfig) {
         return d.current < d.path.getTotalLength()
       });
 
-      d3.selectAll("path.link")
+      chartContainer.selectAll("path.link")
         .each(
           function (d) {
 //        if (d.freq < 1) {
@@ -518,7 +518,8 @@ var sankeyparticles = function (userConfig) {
     }
 
     function particleEdgeCanvasPath(elapsed) {
-      var context = d3.select("canvas").node().getContext("2d")
+      var context = chartContainer.select("canvas")
+        .node().getContext("2d")
 
       context.clearRect(0, 0, 1000, 1000);
 
