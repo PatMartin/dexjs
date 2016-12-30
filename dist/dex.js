@@ -5311,7 +5311,7 @@ var parallelcoordinates = function (userConfig) {
     var config = chart.config;
     var csv = config.csv;
 
-    d3.selectAll("#" + chart.config.id).remove();
+    d3.selectAll(chart.config.parent).selectAll('*').remove();
 
     var numericColumns =
       dex.csv.getNumericColumnNames(csv);
@@ -6604,7 +6604,7 @@ var sankey = function (userConfig) {
         var height = window.innerHeight;
 
         //dex.console.log(config.id + " RESIZING: " + width + "x" + height);
-        d3.selectAll("#" + config.id).remove();
+        d3.selectAll(config.parent).selectAll('*').remove();
 
         chart.attr("width", width)
             .attr("height", height)
@@ -6620,7 +6620,7 @@ var sankey = function (userConfig) {
         var height = d3.select(config.parent).property("clientHeight");
         var csv = config.csv;
 
-        d3.selectAll("#" + config.id).remove();
+        d3.selectAll(config.parent).selectAll('*').remove();
 
         var chartContainer = d3.select(config.parent).append("g")
             .attr("class", config["id"])
@@ -6796,11 +6796,11 @@ var sankey = function (userConfig) {
                 return b.dy - a.dy;
             })
             .on("mouseover", function (d) {
-                d3.selectAll("#" + d.linkid)//.style("stroke-opacity", 1)
+                chartContainer.selectAll("#" + d.linkid)//.style("stroke-opacity", 1)
                     .call(dex.config.configureLink, config.mouseover.link);
             })
             .on("mouseout", function (d) {
-                d3.selectAll("#" + d.linkid)//.style("stroke-opacity", config.link.stroke.opacity);
+                chartContainer.selectAll("#" + d.linkid)//.style("stroke-opacity", config.link.stroke.opacity);
                     .call(dex.config.configureLink, config.mouseout.link);
             });
 
@@ -6836,7 +6836,7 @@ var sankey = function (userConfig) {
                     d.sourceLinks : d.targetLinks;
 
                 links.forEach(function (link) {
-                    d3.selectAll("#" + link.linkid)
+                    chartContainer.selectAll("#" + link.linkid)
                         .call(dex.config.configureLink, config.mouseover.node);
                 });
             })
@@ -6845,7 +6845,7 @@ var sankey = function (userConfig) {
                 var links = (d.sourceLinks.length > 0) ?
                     d.sourceLinks : d.targetLinks;
                 links.forEach(function (link) {
-                    d3.selectAll("#" + link.linkid)
+                    chartContainer.selectAll("#" + link.linkid)
                         .call(dex.config.configureLink, config.mouseout.link);
                 });
             })
@@ -6860,7 +6860,7 @@ var sankey = function (userConfig) {
 
         /////////// A HACK TO ADD TITLE LABELS
         var locations = {};
-        var rects = d3.selectAll("rect").each(function (rect) {
+        var rects = chartContainer.selectAll("rect").each(function (rect) {
             locations[rect.x] = true;
         });
 
@@ -7597,10 +7597,10 @@ var sankeyparticles = function (userConfig) {
     var config = chart.config;
     var csv = config.csv;
 
-    d3.selectAll("#" + config.id).remove();
+    d3.selectAll(config.parent).selectAll('*').remove();
 
     var data = dex.csv.getGraph(csv);
-    dex.console.log("DATA", data);
+    //dex.console.log("DATA", data);
 
     var margin = config.margin,
       width = config.width - margin.left - margin.right,
@@ -7730,7 +7730,7 @@ var sankeyparticles = function (userConfig) {
         return d.current < d.path.getTotalLength()
       });
 
-      d3.selectAll("path.link")
+      chartContainer.selectAll("path.link")
         .each(
           function (d) {
 //        if (d.freq < 1) {
@@ -7763,7 +7763,8 @@ var sankeyparticles = function (userConfig) {
     }
 
     function particleEdgeCanvasPath(elapsed) {
-      var context = d3.select("canvas").node().getContext("2d")
+      var context = chartContainer.select("canvas")
+        .node().getContext("2d")
 
       context.clearRect(0, 0, 1000, 1000);
 
@@ -8052,13 +8053,13 @@ var sunburst = function (userConfig) {
     var config = chart.config;
     var csv = config.csv;
 
-    d3.selectAll("#" + config.id).remove();
+    d3.selectAll(config.parent).selectAll('*').remove();
 
     var data = dex.csv.toNestedJson(dex.csv.copy(csv));
-    dex.console.log("DATA", csv, data);
+    //dex.console.log("DATA", csv, data);
 
-    var width = 960,
-      height = 700,
+    var width = config.width - 10,
+      height = config.height - 10,
       radius = Math.min(width, height) / 2;
 
     var x = d3.scale.linear()
@@ -8111,8 +8112,9 @@ var sunburst = function (userConfig) {
         .on("click", click);
 
       var text = g.append("text")
+        .call(dex.config.configureText, config.label)
         .attr("transform", function (d) {
-          dex.console.log("D", d);
+          //dex.console.log("D", d);
           return "rotate(" + computeTextRotation(d) + ")";
         })
         .attr("x", function (d) {
