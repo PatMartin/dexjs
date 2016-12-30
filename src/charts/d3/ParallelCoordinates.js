@@ -204,7 +204,7 @@ var parallelcoordinates = function (userConfig) {
     var config = chart.config;
     var csv = config.csv;
 
-    d3.selectAll("#" + chart.config.id).remove();
+    d3.selectAll(chart.config.parent).selectAll('*').remove();
 
     var numericColumns =
       dex.csv.getNumericColumnNames(csv);
