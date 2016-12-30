@@ -50,13 +50,13 @@ var sunburst = function (userConfig) {
     var config = chart.config;
     var csv = config.csv;
 
-    d3.selectAll("#" + config.id).remove();
+    d3.selectAll(config.parent).selectAll('*').remove();
 
     var data = dex.csv.toNestedJson(dex.csv.copy(csv));
-    dex.console.log("DATA", csv, data);
+    //dex.console.log("DATA", csv, data);
 
-    var width = 960,
-      height = 700,
+    var width = config.width - 10,
+      height = config.height - 10,
       radius = Math.min(width, height) / 2;
 
     var x = d3.scale.linear()
@@ -109,8 +109,9 @@ var sunburst = function (userConfig) {
         .on("click", click);
 
       var text = g.append("text")
+        .call(dex.config.configureText, config.label)
         .attr("transform", function (d) {
-          dex.console.log("D", d);
+          //dex.console.log("D", d);
           return "rotate(" + computeTextRotation(d) + ")";
         })
         .attr("x", function (d) {
