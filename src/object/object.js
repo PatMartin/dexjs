@@ -2,7 +2,7 @@
  *
  * This module provides routines dealing with javascript objects.
  *
- * @module dex/object
+ * @module dex:object
  * @name object
  * @memberOf dex
  *
@@ -13,11 +13,11 @@ module.exports = function object(dex) {
   return {
     /**
      *
-     * Return the lccal keys of this object without the inherited ones.
+     * Return the local keys of this object without the inherited ones.
      *
      * @param obj The object whose local keys we are interested in.
      *
-     * @returns {Array} An array of 0 or more lccal keys.
+     * @returns {Array} An array of 0 or more local keys.
      */
     'keys': function keys(obj) {
       var keys = [];
