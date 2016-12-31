@@ -5,9 +5,9 @@
 ////
 {
   "opts": {
-    "encoding": "utf8",               // same as -e utf8
-    "destination": "./docs",          // same as -d ./out/
-    "recurse": true                  // same as -r
+    "encoding": "utf8",           // same as -e utf8
+    "destination": "./jsdocs",    // same as -d ./out/
+    "recurse": true               // same as -r
   },
   "tags": {
     "allowUnknownTags": true,
@@ -15,7 +15,7 @@
   },
   "source": {
     "include" : "src",
-    "includePattern": ".+\\.js(doc)?$",
+    "includePattern": ".+\\.js$",
     "excludePattern": "((^|\\/|\\\\)_|^dex.maps.js$)"
   },
   "plugins": [],
