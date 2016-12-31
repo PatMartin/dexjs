@@ -148,13 +148,15 @@ dex.json = require("./json/json")(dex);
  * A module for dealing with matrices.
  *
  * @name matrix
- * @type {module:dex/matrix}
+ * @type {module:dex.matrix}
  *
  */
 dex.matrix = require("./matrix/matrix")(dex);
 
 /**
- * @module dex/object
+ * @name object
+ * @type {module:object}
+ *
  */
 dex.object = require("./object/object")(dex);
 
