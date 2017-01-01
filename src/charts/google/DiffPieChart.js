@@ -2,10 +2,10 @@ var diffpiechart = function (userConfig) {
 
   var defaults = {
     // The parent container of this chart.
-    'parent'     : null,
+    'parent'     : "#DiffPieChart",
     // Set these when you need to CSS style components independently.
-    'id'         : 'PieChart',
-    'class'      : 'PieChart',
+    'id'         : 'DiffPieChart',
+    'class'      : 'DiffPieChart',
     // Our data...
     'csv'        : {
       'header' : ['Category', 'Major', 'Degrees'],
@@ -21,7 +21,7 @@ var diffpiechart = function (userConfig) {
         ['new', 'Health', 129634],
         ['new', 'Psychology', 97216]]
     },
-    'resizeable' : true,
+    'resizable' : true,
     'diff'       : {
       'compare'       : 'Category',
       'compareGroups' : ['old', 'new']
@@ -41,7 +41,7 @@ var diffpiechart = function (userConfig) {
   };
 
   chart.resize = function resize() {
-    if (chart.config.resizeable) {
+    if (chart.config.resizable) {
       var config = chart.config;
       var target = (config.parent && config.parent[0] == '#') ?
         config.parent.substring(1) : config.parent;

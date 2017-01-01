@@ -22,7 +22,7 @@ var timeline = function (userConfig) {
         ['Jefferson', '2/3/1801', '2/3/1809']
       ]
     },
-    'resizeable' : true,
+    'resizable' : true,
     'title'      : "Timeline",
     'options'    : {}
   };
@@ -35,7 +35,7 @@ var timeline = function (userConfig) {
   };
 
   chart.resize = function resize() {
-    if (chart.config.resizeable || isNaN(chart.config.height) ||
+    if (chart.config.resizable || isNaN(chart.config.height) ||
       isNaN(chart.config.width)) {
       var config = chart.config;
       var target = (config.parent && config.parent[0] == '#') ?

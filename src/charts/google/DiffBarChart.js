@@ -2,10 +2,10 @@ var diffbarchart = function (userConfig) {
 
   var defaults = {
     // The parent container of this chart.
-    'parent'     : null,
+    'parent'     : "#GoogleDiffBarChart",
     // Set these when you need to CSS style components independently.
-    'id'         : 'PieChart',
-    'class'      : 'PieChart',
+    'id'         : 'GoogleDiffBarChart',
+    'class'      : 'GoogleDiffBarChart',
     // Our data...
     'csv'        : {
       'header' : ['Category', 'Major', 'Degrees'],
@@ -21,7 +21,7 @@ var diffbarchart = function (userConfig) {
         ['new', 'Health', 129634],
         ['new', 'Psychology', 97216]]
     },
-    'resizeable' : true,
+    'resizable' : true,
     'diff'       : {
       'compare'       : 'Category',
       'compareGroups' : ['old', 'new']
@@ -49,7 +49,7 @@ var diffbarchart = function (userConfig) {
   };
 
   chart.resize = function resize() {
-    if (chart.config.resizeable) {
+    if (chart.config.resizable) {
       var config = chart.config;
       var target = (config.parent && config.parent[0] == '#') ?
         config.parent.substring(1) : config.parent;
@@ -57,7 +57,7 @@ var diffbarchart = function (userConfig) {
 
       var width = targetElt.clientWidth;
       var height = targetElt.clientHeight;
-      dex.console.log("google.DiffPieChart Resize: " + width + "x" + height);
+      dex.console.log("google.DiffBarChart Resize: " + width + "x" + height);
 
       chart
         .attr("width", width)
