@@ -9,6 +9,6 @@
  */
 var d3plus = {};
 
-d3plus.Network = require("./Network");
+d3plus.RingNetwork = require("./RingNetwork");
 
 module.exports = d3plus;
