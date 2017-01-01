@@ -20,8 +20,8 @@ var ringnetwork = function (userConfig) {
         ["SALLY", "F", "TRUCK"]
       ]
     },
+    'type' : "rings",
     'connect': 'last',
-    'type': 'rings',
     //'connect' : 'all',
     'width': "100%",
     'height': "100%",
