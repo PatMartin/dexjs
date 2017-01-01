@@ -49,10 +49,8 @@ width: 100%;
     dex.console.debug("CSV", csv);
 
     // A simple Bar Chart
-    var diffbarchart1 = dex.charts.google.DiffBarChart({
+    var diffbarchart = dex.charts.google.DiffBarChart({
       'parent'        : "#DiffBarChartArea1",
-      'id'            : 'diffbarchart1',
-      'class'         : 'diffbarchart',
       'csv'           : csv,
       'diff'       : {
         'category' : 'Category',
@@ -60,6 +58,6 @@ width: 100%;
       },
       'options' : { 'barSliceText': 'none' }
     });
-    diffbarchart1.render();
+    diffbarchart.render();
   }
 </script>
