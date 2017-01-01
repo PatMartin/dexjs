@@ -1,4 +1,4 @@
-var network = function (userConfig) {
+var ringnetwork = function (userConfig) {
   var chart;
 
   var defaults =
@@ -101,4 +101,4 @@ var network = function (userConfig) {
   return chart;
 };
 
-module.exports = network;
+module.exports = ringnetwork;
