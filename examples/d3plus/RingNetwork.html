@@ -72,9 +72,9 @@
     };
 
     // Configure a chart.
-    var network = new dex.charts.d3plus.Network({
+    var network = dex.charts.d3plus.RingNetwork({
                 'parent': '#ChartDiv',
-                'connect': 'first',
+                //'connect': 'first',
                 'type' : 'rings',
                 'edges' : {'arrows' : true},
                 'csv': csv
