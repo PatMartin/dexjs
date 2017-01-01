@@ -13821,13 +13821,15 @@ dex.json = require("./json/json")(dex);
  * A module for dealing with matrices.
  *
  * @name matrix
- * @type {module:dex/matrix}
+ * @type {module:dex.matrix}
  *
  */
 dex.matrix = require("./matrix/matrix")(dex);
 
 /**
- * @module dex/object
+ * @name object
+ * @type {module:object}
+ *
  */
 dex.object = require("./object/object")(dex);
 
@@ -14305,7 +14307,7 @@ module.exports = function matrix(dex) {
  *
  * This module provides routines dealing with javascript objects.
  *
- * @module dex/object
+ * @module dex:object
  * @name object
  * @memberOf dex
  *
@@ -14316,11 +14318,11 @@ module.exports = function object(dex) {
   return {
     /**
      *
-     * Return the lccal keys of this object without the inherited ones.
+     * Return the local keys of this object without the inherited ones.
      *
      * @param obj The object whose local keys we are interested in.
      *
-     * @returns {Array} An array of 0 or more lccal keys.
+     * @returns {Array} An array of 0 or more local keys.
      */
     'keys': function keys(obj) {
       var keys = [];
