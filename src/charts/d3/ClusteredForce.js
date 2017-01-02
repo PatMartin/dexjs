@@ -257,7 +257,7 @@ var clusteredforce = function (userConfig) {
   };
 
   $(document).ready(function () {
-    $(chart.config.parent).tooltip({
+    $(chart.config.parent).uitooltip({
       items: "circle",
       position: {
         my: "right bottom+50"

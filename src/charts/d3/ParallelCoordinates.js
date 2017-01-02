@@ -433,7 +433,7 @@ var parallelcoordinates = function (userConfig) {
   };
 
   $(document).ready(function () {
-    $(document).tooltip({
+    $(document).uitooltip({
       items: "path",
       content: function () {
         return $(this).find("tooltip-content").text();

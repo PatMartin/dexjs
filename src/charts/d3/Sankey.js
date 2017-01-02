@@ -912,7 +912,7 @@ d3.sankey = function () {
 
     $(document).ready(function () {
         // Add tooltips
-        $(document).tooltip({
+        $(document).uitooltip({
             items: "path",
             content: function () {
                 return $(this).find("tooltip-content").text();
