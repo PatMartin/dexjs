@@ -13,6 +13,9 @@
 module.exports = function array(dex) {
 
     return {
+        'unique' : function (array) {
+          return _.uniq(array);
+        },
         /**
          *
          * Take a slice of an array without modifying the original array.
