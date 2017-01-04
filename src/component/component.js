@@ -499,6 +499,31 @@ module.exports = function (dex) {
       }
     };
 
+    this.resize = function resize(chart) {
+      return function() {
+        if (chart.config && chart.config.resizable) {
+          var width = d3.select(chart.config.parent).property("clientWidth");
+          var height = d3.select(chart.config.parent).property("clientHeight");
+
+          dex.console.log("Resizing: " + chart.config.parent + " to (" +
+            width + "w x " + height + "h");
+
+          if (!_.isNumber(height)) {
+            height = "100%";
+          }
+
+          if (!_.isNumber(width)) {
+            width = "100%";
+          }
+
+          return chart.attr("width", width).attr("height", height).update();
+        }
+        else {
+          return chart.update();
+        }
+      };
+    }
+
     /**
      *
      * A default no-op implementation of render.  Subclasses should
