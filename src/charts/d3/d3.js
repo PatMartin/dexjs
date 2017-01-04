@@ -39,6 +39,7 @@ d3.ScatterPlot = require("./ScatterPlot");
 d3.Sunburst = require("./Sunburst");
 //d3.TitledTreemap = require("./TitledTreemap");
 d3.Treemap = require("./Treemap");
+d3.TreemapBarChart = require("./TreemapBarChart");
 d3.VerticalLegend = require("./VerticalLegend");
 
 // Too large, need optional config

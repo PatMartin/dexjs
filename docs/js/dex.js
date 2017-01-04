@@ -185,6 +185,9 @@
 module.exports = function array(dex) {
 
     return {
+        'unique' : function (array) {
+          return _.uniq(array);
+        },
         /**
          *
          * Take a slice of an array without modifying the original array.
@@ -1110,7 +1113,7 @@ module.exports = function charts() {
     'vis' : require("./vis/vis")
   };
 };
-},{"./c3/c3":8,"./d3/d3":29,"./d3plus/d3plus":31,"./dygraphs/dygraphs":33,"./google/google":39,"./threejs/threejs":41,"./vis/vis":43}],10:[function(require,module,exports){
+},{"./c3/c3":8,"./d3/d3":30,"./d3plus/d3plus":32,"./dygraphs/dygraphs":34,"./google/google":40,"./threejs/threejs":42,"./vis/vis":44}],10:[function(require,module,exports){
 var chord = function (userConfig) {
   var chart;
 
@@ -1218,20 +1221,9 @@ var chord = function (userConfig) {
   var chart = new dex.component(userConfig, defaults);
 
   chart.render = function render() {
-    window.onresize = this.resize;
-    chart.resize();
-  };
-
-  chart.resize = function resize() {
-    if (chart.config.resizable) {
-      var width = d3.select(chart.config.parent).property("clientWidth");
-      var height = d3.select(chart.config.parent).property("clientHeight");
-      dex.console.log(chart.config.id + ": resize(" + width + "," + height + ")");
-      chart.attr("width", width).attr("height", height).update();
-    }
-    else {
-      chart.update();
-    }
+    chart.resize = this.resize(chart);
+    window.onresize = chart.resize;
+    return chart.resize();
   };
 
   chart.update = function () {
@@ -7734,6 +7726,394 @@ var treemap = function (userConfig) {
 
 module.exports = treemap;
 },{}],28:[function(require,module,exports){
+var treemapBarChart = function (userConfig) {
+  var chart;
+
+  var defaults = {
+    // The parent container of this chart.
+    'parent': '#TreemapBarChart',
+    // Set these when you need to CSS style components independently.
+    'id': 'TreemapBarChart',
+    'class': 'TreemapBarChart',
+    'resizable': true,
+    // Our data...
+    'csv': {
+      // HERE IS THE STOP POINT...
+      // Give folks without data something to look at anyhow.
+      'header': ["Country", "Continent", "Trade Indicator", "Year", 'Gross'],
+      'data': [
+        ['US', 'North America', 'Imports', 2000, 10000000],
+        ['US', 'North America', 'Exports', 2000, 10000000],
+        ['US', 'North America', 'Imports', 2001, 15000000],
+        ['US', 'North America', 'Exports', 2001, 30000000],
+        ['Japan', 'Asia', 'Imports', 2000, 5000000],
+        ['Japan', 'Asia', 'Exports', 2000, 30000000],
+        ['Japan', 'Asia', 'Imports', 2001, 6000000],
+        ['Japan', 'Asia', 'Exports', 2001, 30000000],
+        ['Canada', 'North America', 'Imports', 2000, 6000000],
+        ['Canada', 'North America', 'Exports', 2000, 4000000],
+        ['Canada', 'North America', 'Imports', 2001, 3000000],
+        ['Canada', 'North America', 'Exports', 2001, 1000000],
+      ]
+    },
+    'index' : {
+      'divider'  : 0,
+      'color'    : 1,
+      'category' : 2,
+      'x'        : 3,
+      'value'    : 4
+    },
+    'width': "100%",
+    'height': "100%",
+    'transform': "translate(0 0)"
+  };
+
+  var chart = new dex.component(userConfig, defaults);
+  var config = chart.config;
+
+  chart.render = function render() {
+    chart.resize = this.resize(chart);
+    window.onresize = chart.resize;
+    return chart.resize();
+  };
+
+  chart.update = function update() {
+    var margin = {top: 25, right: 15, bottom: 50, left: 60};
+    var width = config.width - margin.left - margin.right;
+    var height = config.height - margin.top - margin.bottom;
+
+    d3.selectAll(config.parent).selectAll("*").remove();
+
+    var chartContainer = d3.select(config.parent)
+      .append("g")
+      .attr("id", config["id"])
+      .attr("class", config["class"])
+      .attr("transform", config.transform)
+      .attr('width', config.width)
+      .attr('height', config.height);
+
+    var colorDomain = dex.csv.uniqueArray(config.csv, config.index.color);
+    //var orderedContinents = ['Asia', 'North America', 'Europe', 'South America', 'Africa', 'Australia']
+    var color = d3.scaleOrdinal()
+      .domain(colorDomain)
+      .range(d3.schemeCategory20)
+
+    /*
+    var dollarFormat = d3.format('$,')
+    var tickFormat = function (n) {
+      return n === 0 ? '$0'
+        : n < 1000000 ? dollarFormat(n / 1000) + ' billion'
+          : dollarFormat(n / 1000000) + ' trillion'
+    }
+  */
+
+    var options = {
+      key: config.csv.header[config.index.value],
+      divider: null
+    }
+
+    var chartData = csvToJson(config.csv, []);
+
+    function csvToJson(csv, hierarchy) {
+      var csvStr = csv.header.join(",") + "\n";
+      csv.data.forEach(function (row) {
+        csvStr += row.join(",") + "\n";
+      })
+      var data = d3.csvParse(csvStr);
+      var jsonData = d3.nest()
+        .key(function (d) {
+          return d[config.csv.header[config.index.x]]
+        })
+        .sortKeys(d3.ascending)
+        .key(function (d) {
+          return d[config.csv.header[config.index.category]]
+        })
+        .sortKeys(d3.ascending)
+        .key(function (d) {
+          return d[config.csv.header[config.index.color]]
+        })
+        .sortKeys(d3.ascending)
+        .entries(data)
+        .map(function (d) {
+          return {
+            "x": d.key,
+            "children": d.values.map(function (d) {
+              return {
+                "divider": d.key,
+                "children": d.values.map(function (d) {
+                  return {
+                    "color": d.key,
+                    "children": d.values
+                  };
+                })
+              };
+            })
+          };
+        });
+      return {"children" : jsonData };
+    }
+
+    var root = d3.hierarchy(chartData).sum(function (d) {
+      return d[options.key]
+    })
+    var xData = root.children
+
+    xData.sort(function (a, b) {
+      return a.data.x - b.data.x
+    })
+
+    var svg = chartContainer
+      .append('g')
+      .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
+
+    var x0 = d3.scaleBand()
+      .domain(xData.map(function (d) {
+        return d.data.x
+      }).sort())
+      .range([0, width])
+      .padding(0.15)
+
+    var x1 = d3.scaleBand()
+      .domain(['Imports', 'Exports'])
+      .rangeRound([0, x0.bandwidth()])
+      .paddingInner(0.1)
+
+    var y = d3.scaleLinear()
+      .domain([0, d3.max(xData, function (d) {
+        return d3.max(d.children, function (e) {
+          return e.value
+        })
+      })]).nice()
+      .range([0, height])
+
+    var x0Axis = d3.axisBottom()
+      .scale(x0)
+      .tickSize(0)
+
+    var x1Axis = d3.axisBottom()
+      .scale(x1)
+
+    var yAxis = d3.axisLeft()
+      .tickSize(-width)
+      //.tickFormat(tickFormat)
+      .scale(y.copy().range([height, 0]))
+
+    svg.append('g')
+      .attr('class', 'x0 axis')
+      .attr('transform', 'translate(0,' + (height + 22) + ')')
+      .call(x0Axis)
+
+    var gy = svg.append('g')
+      .attr('class', 'y axis')
+      .call(yAxis)
+
+    var xs = svg.selectAll('.x')
+      .data(xData, function (d) {
+        return d.data.x
+      })
+      .enter().append('g')
+      .attr('class', 'x')
+      .attr('transform', function (d) {
+        return 'translate(' + x0(d.data.x) + ',0)'
+      })
+
+    xs.append('g')
+      .attr('class', 'x1 axis')
+      .attr('transform', 'translate(0,' + height + ')')
+      .call(x1Axis)
+
+    d3.select('#inflation-adjusted').on('change', function () {
+      options.key = this.checked ? 'adj_value' : 'value'
+      tmUpdate()
+    })
+
+    tmUpdate()
+
+    function sum(d) {
+      //dex.console.log("SUM:", d[config.csv.header[config.index.divider]], "OPTS", options)
+      return !options.divider ||
+        options.divider === d[config.csv.header[config.index.divider]] ? d[options.key] : 0
+    }
+
+    function tmUpdate() {
+      root.sum(sum)
+
+      var t = d3.transition()
+
+      var dividerData = d3.merge(xData.map(function (d) {
+        return d.children
+      }))
+
+      y.domain([0, d3.max(dividerData.map(function (d) {
+        return d.value
+      }))]).nice()
+
+      // We use a copied Y scale to invert the range for display purposes
+      yAxis.scale(y.copy().range([height, 0]))
+      gy.transition(t).call(yAxis)
+
+      var dividers = xs.selectAll('.divider')
+        .data(function (d) {
+            return d.children
+          },
+          function (d) {
+            return d.data.divider
+          })
+        .each(function (d) {
+          // UPDATE
+          // The copied branches are orphaned from the larger hierarchy, and must be
+          // updated separately (see note at L152).
+          d.treemapRoot.sum(sum)
+          d.treemapRoot.children.forEach(function (d) {
+            d.sort(function (a, b) {
+              return b.value - a.value
+            })
+          })
+        })
+
+      dividers = dividers.enter().append('g')
+        .attr('class', 'divider')
+        .attr('transform', function (d) {
+          return 'translate(' + x1(d.data.divider) + ',' + height + ')'
+        })
+        .each(function (d) {
+          // ENTER
+          // Note that we can use .each on selections as a way to perform operations
+          // at a given depth of the hierarchy tree.
+          d.children.sort(function (a, b) {
+            return colorDomain.indexOf(b.data.color) -
+              colorDomain.indexOf(a.data.color)
+          })
+          d.children.forEach(function (d) {
+            d.sort(function (a, b) {
+              return b.value - a.value
+            })
+          })
+          d.treemap = d3.treemap().tile(d3.treemapResquarify)
+
+          // The treemap layout must be given a root node, so we make a copy of our
+          // child node, which creates a new tree from the branch.
+          d.treemapRoot = d.copy()
+        })
+        .merge(dividers)
+        .each(function (d) {
+          // UPDATE + ENTER
+          d.treemap.size([x1.bandwidth(), y(d.value)])(d.treemapRoot)
+        })
+
+      // d3.hierarchy gives us a convenient way to access the parent datum. This line
+      // adds an index property to each node that we'll use for the transition delay.
+      root.each(function (d) {
+        d.index = d.parent ? d.parent.children.indexOf(d) : 0
+      })
+
+      dividers.transition(t)
+        .delay(function (d, i) {
+          return d.parent.index * 150 + i * 50
+        })
+        .attr('transform', function (d) {
+          return 'translate(' + x1(d.data.divider) + ',' + (height - y(d.value)) + ')'
+        })
+
+      var colors = dividers.selectAll('.color')
+      // Note that we're using our copied branch.
+        .data(function (d) {
+            return d.treemapRoot.children
+          },
+          function (d) {
+            return d.data.color
+          })
+
+      colors = colors.enter().append('g')
+        .attr('class', 'color')
+        .merge(colors)
+
+      var countries = colors.selectAll('.divider')
+        .data(function (d) {
+
+            return d.children
+          },
+          function (d) {
+            //dex.console.log("COUNTRY-DATA", d, d.data[config.csv.header[config.index.divider]])
+            return d.data[config.csv.header[config.index.divider]]
+          })
+
+      var enterCountries = countries.enter().append('rect')
+        .attr('class', 'divider')
+        .attr('x', function (d) {
+          return d.value ? d.x0 : x1.bandwidth() / 2
+        })
+        .attr('width', function (d) {
+          return d.value ? d.x1 - d.x0 : 0
+        })
+        .attr('y', 0)
+        .attr('height', 0)
+        .style('fill', function (d) {
+          //dex.console.log("COLOR", d.parent.data.color)
+          return color(d.parent.data.color)
+        })
+
+      countries = countries.merge(enterCountries)
+
+      enterCountries
+        .on('mouseover', function (d) {
+          svg.classed('hover-active', true)
+          countries.classed('hover', function (e) {
+            //dex.console.log("E-HOVER", e.data[config.csv.header[config.index.divider]], d.data[config.csv.header[config.index.divider]])
+            return e.data[config.csv.header[config.index.divider]] === d.data[config.csv.header[config.index.divider]]
+          })
+        })
+        .on('mouseout', function () {
+          svg.classed('hover-active', false)
+          countries.classed('hover', false)
+        })
+        .on('click', function (d) {
+          //dex.console.log("ON-CLICK", options, d.data[config.csv.header[config.index.divider]])
+          options.divider = options.divider === d.data[config.csv.header[config.index.divider]] ? null : d.data[config.csv.header[config.index.divider]]
+          tmUpdate()
+        })
+        .append('title')
+        .text(function (d) {
+          return d.data[config.csv.header[config.index.divider]]
+        })
+
+      countries.filter(function (d) {
+        return d.data[config.csv.header[config.index.divider]] === options.divider
+      })
+        .each(function (d) {
+          d3.select(this.parentNode).raise()
+        })
+        .raise()
+
+      countries
+        .transition(t)
+        .attr('x', function (d) {
+          return d.value ? d.x0 : x1.bandwidth() / 2
+        })
+        .attr('width', function (d) {
+          return d.value ? d.x1 - d.x0 : 0
+        })
+        .attr('y', function (d) {
+          return d.value ? d.y0 : d.parent.parent.y1 / 2
+        })
+        .attr('height', function (d) {
+          return d.value ? d.y1 - d.y0 : 0
+        })
+    }
+
+    return chart;
+  };
+
+  $(document).ready(function () {
+    // Make the entire chart draggable.
+    //$(chart.config.parent).draggable();
+  });
+
+  return chart;
+};
+
+module.exports = treemapBarChart;
+},{}],29:[function(require,module,exports){
 var verticallegend = function (userConfig) {
 
   var defaults = {
@@ -7952,7 +8332,7 @@ var verticallegend = function (userConfig) {
 };
 
 module.exports = verticallegend;
-},{}],29:[function(require,module,exports){
+},{}],30:[function(require,module,exports){
 /**
  *
  * This module provides D3 based visualization components.
@@ -7994,13 +8374,14 @@ d3.ScatterPlot = require("./ScatterPlot");
 d3.Sunburst = require("./Sunburst");
 //d3.TitledTreemap = require("./TitledTreemap");
 d3.Treemap = require("./Treemap");
+d3.TreemapBarChart = require("./TreemapBarChart");
 d3.VerticalLegend = require("./VerticalLegend");
 
 // Too large, need optional config
 //d3.map = require("./map/map");
 
 module.exports = d3;
-},{"./Chord":10,"./ClusteredForce":11,"./Dendrogram":12,"./HorizontalLegend":13,"./MotionBarChart":14,"./MotionChart":15,"./MotionCircleChart":16,"./MotionLineChart":17,"./OrbitalLayout":18,"./ParallelCoordinates":19,"./PieChart":20,"./RadarChart":21,"./RadialTree":22,"./Sankey":23,"./SankeyParticles":24,"./ScatterPlot":25,"./Sunburst":26,"./Treemap":27,"./VerticalLegend":28}],30:[function(require,module,exports){
+},{"./Chord":10,"./ClusteredForce":11,"./Dendrogram":12,"./HorizontalLegend":13,"./MotionBarChart":14,"./MotionChart":15,"./MotionCircleChart":16,"./MotionLineChart":17,"./OrbitalLayout":18,"./ParallelCoordinates":19,"./PieChart":20,"./RadarChart":21,"./RadialTree":22,"./Sankey":23,"./SankeyParticles":24,"./ScatterPlot":25,"./Sunburst":26,"./Treemap":27,"./TreemapBarChart":28,"./VerticalLegend":29}],31:[function(require,module,exports){
 var ringnetwork = function (userConfig) {
   var chart;
 
@@ -8105,7 +8486,7 @@ var ringnetwork = function (userConfig) {
 };
 
 module.exports = ringnetwork;
-},{}],31:[function(require,module,exports){
+},{}],32:[function(require,module,exports){
 /**
  *
  * This module provides d3plus based visualizations.
@@ -8120,7 +8501,7 @@ var d3plus = {};
 d3plus.RingNetwork = require("./RingNetwork");
 
 module.exports = d3plus;
-},{"./RingNetwork":30}],32:[function(require,module,exports){
+},{"./RingNetwork":31}],33:[function(require,module,exports){
 /**
  * This will construct a new DygraphsLineChart with the user supplied userConfig applied.
  * @param userConfig - A user supplied configuration of the form:
@@ -8190,7 +8571,7 @@ var linechart = function (userConfig) {
 };
 
 module.exports = linechart;
-},{}],33:[function(require,module,exports){
+},{}],34:[function(require,module,exports){
 /**
  *
  * This module provides a dygraphs linechart component.
@@ -8206,7 +8587,7 @@ var dygraphs = {};
 dygraphs.LineChart = require("./LineChart");
 
 module.exports = dygraphs;
-},{"./LineChart":32}],34:[function(require,module,exports){
+},{"./LineChart":33}],35:[function(require,module,exports){
 var diffbarchart = function (userConfig) {
 
   var defaults = {
@@ -8345,7 +8726,7 @@ var diffbarchart = function (userConfig) {
 };
 
 module.exports = diffbarchart;
-},{}],35:[function(require,module,exports){
+},{}],36:[function(require,module,exports){
 var diffpiechart = function (userConfig) {
 
   var defaults = {
@@ -8468,7 +8849,7 @@ var diffpiechart = function (userConfig) {
 };
 
 module.exports = diffpiechart;
-},{}],36:[function(require,module,exports){
+},{}],37:[function(require,module,exports){
 /**
  *
  * @param userConfig A user supplied configuration object which will override the defaults.
@@ -8561,7 +8942,7 @@ var piechart = function (userConfig) {
 };
 
 module.exports = piechart;
-},{}],37:[function(require,module,exports){
+},{}],38:[function(require,module,exports){
 /**
  *
  * @param userConfig A user supplied configuration object which will override the defaults.
@@ -8668,7 +9049,7 @@ var timeline = function (userConfig) {
 };
 
 module.exports = timeline;
-},{}],38:[function(require,module,exports){
+},{}],39:[function(require,module,exports){
 /**
  *
  * @param userConfig A user supplied configuration object which will override the defaults.
@@ -8763,7 +9144,7 @@ var wordtree = function (userConfig) {
 };
 
 module.exports = wordtree;
-},{}],39:[function(require,module,exports){
+},{}],40:[function(require,module,exports){
 /**
  *
  * This module provides routines for dealing with arrays.
@@ -8782,7 +9163,7 @@ google.Timeline = require("./Timeline");
 google.WordTree = require("./WordTree");
 
 module.exports = google;
-},{"./DiffBarChart":34,"./DiffPieChart":35,"./PieChart":36,"./Timeline":37,"./WordTree":38}],40:[function(require,module,exports){
+},{"./DiffBarChart":35,"./DiffPieChart":36,"./PieChart":37,"./Timeline":38,"./WordTree":39}],41:[function(require,module,exports){
 var scatterplot = function (userConfig) {
   var defaults = {
     // The parent container of this chart.
@@ -9148,7 +9529,7 @@ var scatterplot = function (userConfig) {
 };
 
 module.exports = scatterplot;
-},{}],41:[function(require,module,exports){
+},{}],42:[function(require,module,exports){
 /**
  *
  * This module provides ThreeJS/WebGL based visualization components.
@@ -9163,7 +9544,7 @@ var threejs = {};
 threejs.ScatterPlot = require("./ScatterPlot");
 
 module.exports = threejs;
-},{"./ScatterPlot":40}],42:[function(require,module,exports){
+},{"./ScatterPlot":41}],43:[function(require,module,exports){
 var network = function (userConfig) {
   var chart;
 
@@ -9387,7 +9768,7 @@ var network = function (userConfig) {
 };
 
 module.exports = network;
-},{}],43:[function(require,module,exports){
+},{}],44:[function(require,module,exports){
 /**
  *
  * This module provides routines for dealing with arrays.
@@ -9402,7 +9783,7 @@ var vis = {};
 vis.Network = require("./Network");
 
 module.exports = vis;
-},{"./Network":42}],44:[function(require,module,exports){
+},{"./Network":43}],45:[function(require,module,exports){
 "use strict";
 
 /**
@@ -9661,7 +10042,7 @@ module.exports = function color(dex) {
   };
 };
 
-},{}],45:[function(require,module,exports){
+},{}],46:[function(require,module,exports){
 /**
  *
  * This module provides base capabilities which are available to all dex components.
@@ -10163,6 +10544,31 @@ module.exports = function (dex) {
       }
     };
 
+    this.resize = function resize(chart) {
+      return function() {
+        if (chart.config && chart.config.resizable) {
+          var width = d3.select(chart.config.parent).property("clientWidth");
+          var height = d3.select(chart.config.parent).property("clientHeight");
+
+          dex.console.log("Resizing: " + chart.config.parent + " to (" +
+            width + "w x " + height + "h");
+
+          if (!_.isNumber(height)) {
+            height = "100%";
+          }
+
+          if (!_.isNumber(width)) {
+            width = "100%";
+          }
+
+          return chart.attr("width", width).attr("height", height).update();
+        }
+        else {
+          return chart.update();
+        }
+      };
+    }
+
     /**
      *
      * A default no-op implementation of render.  Subclasses should
@@ -10220,7 +10626,7 @@ module.exports = function (dex) {
     };
   };
 };
-},{}],46:[function(require,module,exports){
+},{}],47:[function(require,module,exports){
 /**
  *
  * Config module.
@@ -11505,7 +11911,7 @@ module.exports = function config(dex) {
     }
   };
 };
-},{}],47:[function(require,module,exports){
+},{}],48:[function(require,module,exports){
 /**
  *
  * This module provides console logging capabilities.
@@ -11644,7 +12050,7 @@ module.exports = function (dex) {
     }
   };
 };
-},{}],48:[function(require,module,exports){
+},{}],49:[function(require,module,exports){
 /**
  *
  * This module provides support for dealing with csv structures.  This
@@ -12128,6 +12534,11 @@ module.exports = function csv(dex) {
       return csv;
     },
 
+    'uniqueArray' : function(csv, columnIndex) {
+      return dex.array.unique(dex.matrix.flatten(
+        dex.matrix.slice(csv.data, columnIndex)));
+    },
+
     /**
      *
      * This routine will return a frames structure based on a csv and
@@ -12517,7 +12928,7 @@ module.exports = function csv(dex) {
     }
   };
 };
-},{}],49:[function(require,module,exports){
+},{}],50:[function(require,module,exports){
 /**
  *
  * This module provides support for creating various datasets.
@@ -12659,7 +13070,7 @@ module.exports = function datagen(dex) {
   };
 };
 
-},{}],50:[function(require,module,exports){
+},{}],51:[function(require,module,exports){
 // Allow user to override, but define this by default:
 
 /**
@@ -12858,7 +13269,7 @@ $.widget.bridge('uitooltip', $.ui.tooltip);
 $.widget.bridge('uibutton', $.ui.button);
 
 module.exports = dex;
-},{"../lib/pubsub":1,"./array/array":2,"./charts/charts":9,"./color/color":44,"./component/component":45,"./config/config":46,"./console/console":47,"./csv/csv":48,"./datagen/datagen":49,"./json/json":51,"./matrix/matrix":52,"./object/object":53,"./ui/ui":63,"./util/util":64}],51:[function(require,module,exports){
+},{"../lib/pubsub":1,"./array/array":2,"./charts/charts":9,"./color/color":45,"./component/component":46,"./config/config":47,"./console/console":48,"./csv/csv":49,"./datagen/datagen":50,"./json/json":52,"./matrix/matrix":53,"./object/object":54,"./ui/ui":64,"./util/util":65}],52:[function(require,module,exports){
 /**
  *
  * This module provides routines dealing with json data.
@@ -12955,7 +13366,7 @@ module.exports = function json(dex) {
   };
 };
 
-},{}],52:[function(require,module,exports){
+},{}],53:[function(require,module,exports){
 /**
  *
  * This module provides routines dealing with matrices.
@@ -13296,7 +13707,7 @@ module.exports = function matrix(dex) {
   };
 };
 
-},{}],53:[function(require,module,exports){
+},{}],54:[function(require,module,exports){
 /**
  *
  * This module provides routines dealing with javascript objects.
@@ -13620,7 +14031,7 @@ module.exports = function object(dex) {
 };
 
 
-},{}],54:[function(require,module,exports){
+},{}],55:[function(require,module,exports){
 /**
  *
  * This class creates and attaches a SqlQuery user interface onto the
@@ -13719,7 +14130,7 @@ var sqlquery = function (userConfig) {
 };
 
 module.exports = sqlquery;
-},{}],55:[function(require,module,exports){
+},{}],56:[function(require,module,exports){
 /**
  *
  * @constructor
@@ -13819,7 +14230,7 @@ var table = function (userConfig) {
 };
 
 module.exports = table;
-},{}],56:[function(require,module,exports){
+},{}],57:[function(require,module,exports){
 var typestable = function (userConfig) {
 
   var defaults =
@@ -13900,7 +14311,7 @@ var typestable = function (userConfig) {
 };
 
 module.exports = typestable;
-},{}],57:[function(require,module,exports){
+},{}],58:[function(require,module,exports){
 var configurationbox = function (userConfig) {
 
   var defaults =
@@ -13986,7 +14397,7 @@ var configurationbox = function (userConfig) {
 };
 
 module.exports = configurationbox;
-},{}],58:[function(require,module,exports){
+},{}],59:[function(require,module,exports){
 var player = function (userConfig) {
 
   var defaults = {
@@ -14132,7 +14543,7 @@ var player = function (userConfig) {
 };
 
 module.exports = player;
-},{}],59:[function(require,module,exports){
+},{}],60:[function(require,module,exports){
 var selectable = function (userConfig) {
 
   var defaults =
@@ -14229,7 +14640,7 @@ var selectable = function (userConfig) {
 };
 
 module.exports = selectable;
-},{}],60:[function(require,module,exports){
+},{}],61:[function(require,module,exports){
 var slider = function (userConfig) {
 
   var defaults = {
@@ -14321,7 +14732,7 @@ var slider = function (userConfig) {
 };
 
 module.exports = slider;
-},{}],61:[function(require,module,exports){
+},{}],62:[function(require,module,exports){
 var tabs = function (userConfig) {
   var defaults = {
     // The parent container of this chart.
@@ -14425,7 +14836,7 @@ var tabs = function (userConfig) {
 };
 
 module.exports = tabs;
-},{}],62:[function(require,module,exports){
+},{}],63:[function(require,module,exports){
 /**
  *
  * This module provides ui components based upon jquery-ui.
@@ -14445,7 +14856,7 @@ module.exports = function jqueryui(dex) {
     'Tabs': require("./Tabs")
   };
 };
-},{"./ConfigurationBox":57,"./Player":58,"./Selectable":59,"./Slider":60,"./Tabs":61}],63:[function(require,module,exports){
+},{"./ConfigurationBox":58,"./Player":59,"./Selectable":60,"./Slider":61,"./Tabs":62}],64:[function(require,module,exports){
 /**
  *
  * This module provides ui components from a variety of sources.
@@ -14473,7 +14884,7 @@ module.exports = function ui(dex) {
     'TypesTable': require("./TypesTable")
   };
 };
-},{"./SqlQuery":54,"./Table":55,"./TypesTable":56,"./jqueryui/jqueryui":62}],64:[function(require,module,exports){
+},{"./SqlQuery":55,"./Table":56,"./TypesTable":57,"./jqueryui/jqueryui":63}],65:[function(require,module,exports){
 "use strict";
 
 /**
@@ -14503,5 +14914,5 @@ module.exports = function util(dex) {
     }
   };
 };
-},{}]},{},[50])(50)
+},{}]},{},[51])(51)
 });
