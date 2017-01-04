@@ -481,6 +481,11 @@ module.exports = function csv(dex) {
       return csv;
     },
 
+    'uniqueArray' : function(csv, columnIndex) {
+      return dex.array.unique(dex.matrix.flatten(
+        dex.matrix.slice(csv.data, columnIndex)));
+    },
+
     /**
      *
      * This routine will return a frames structure based on a csv and
