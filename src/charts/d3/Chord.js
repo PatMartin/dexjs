@@ -105,20 +105,9 @@ var chord = function (userConfig) {
   var chart = new dex.component(userConfig, defaults);
 
   chart.render = function render() {
-    window.onresize = this.resize;
-    chart.resize();
-  };
-
-  chart.resize = function resize() {
-    if (chart.config.resizable) {
-      var width = d3.select(chart.config.parent).property("clientWidth");
-      var height = d3.select(chart.config.parent).property("clientHeight");
-      dex.console.log(chart.config.id + ": resize(" + width + "," + height + ")");
-      chart.attr("width", width).attr("height", height).update();
-    }
-    else {
-      chart.update();
-    }
+    chart.resize = this.resize(chart);
+    window.onresize = chart.resize;
+    return chart.resize();
   };
 
   chart.update = function () {
