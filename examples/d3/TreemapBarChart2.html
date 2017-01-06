@@ -1,31 +1,47 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 <style>
-  html, body {
-    height: 100%;
-    min-height: 100%;
-    width: 100%;
-    min-width: 100%;
-  }
+    html, body {
+        height: 100%;
+        min-height: 100%;
+        width: 100%;
+        min-width: 100%;
+    }
 
-  #ChartArea {
-    height: 100%;
-    min-height: 100%;
-    width: 100%;
-    min-width: 100%;
-  }
+    #ChartArea {
+        height: 100%;
+        min-height: 100%;
+        width: 100%;
+        min-width: 100%;
+    }
 
-  label {
-      font-family: sans-serif;
-      font-size: 14px;
-      position: absolute;
-      left: 92px; top: 26px;
-  }
-  .axis .domain { display: none; }
-  .axis line { stroke: #ccc; }
-  .axis.x0 text { font-weight: 700; }
-  .hover-active rect { opacity: .75; }
-  .hover-active rect.hover { opacity: 1; }
+    label {
+        font-family: sans-serif;
+        font-size: 14px;
+        position: absolute;
+        left: 92px;
+        top: 26px;
+    }
+
+    .axis .domain {
+        display: none;
+    }
+
+    .axis line {
+        stroke: #ccc;
+    }
+
+    .axis.x0 text {
+        font-weight: 700;
+    }
+
+    .hover-active rect {
+        opacity: .75;
+    }
+
+    .hover-active rect.hover {
+        opacity: 1;
+    }
 </style>
 <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.css">
 <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.theme.min.css">
@@ -40,31 +56,26 @@
 <script>
 
   var csv = {
-    'header': ["Country", "Continent", "Trade Indicator", "Year", 'Gross'],
-      'data': [
-      ['US', 'North America', 'Imports', 2000, 10000000],
-      ['US', 'North America', 'Exports', 2000, 10000000],
-      ['US', 'North America', 'Imports', 2001, 15000000],
-      ['US', 'North America', 'Exports', 2001, 30000000],
-      ['Japan', 'Asia', 'Imports', 2000, 5000000],
-      ['Japan', 'Asia', 'Exports', 2000, 30000000],
-      ['Japan', 'Asia', 'Imports', 2001, 6000000],
-      ['Japan', 'Asia', 'Exports', 2001, 30000000],
-      ['China', 'Asia', 'Imports', 2000, 50000000],
-      ['China', 'Asia', 'Exports', 2000, 900000000],
-      ['China', 'Asia', 'Imports', 2001, 90000000],
-      ['China', 'Asia', 'Exports', 2001, 320000000],
-      ['Canada', 'North America', 'Imports', 2000, 6000000],
-      ['Canada', 'North America', 'Exports', 2000, 4000000],
-      ['Canada', 'North America', 'Imports', 2001, 3000000],
-      ['Canada', 'North America', 'Exports', 2001, 1000000],
-    ]
+    'header': ["State", "Type of Crime", "Crime", "Year", "Count"],
+    'data': [
+      ["Alabama", "Violent Crime", "Murder", "2003", "299"],
+      ["Alabama", "Violent Crime", "Murder", "2004", "254"],
+      ["Alabama", "Violent Crime", "Murder", "2005", "374"],
+      ["Alaska", "Violent Crime", "Murder", "2003", "39"],
+      ["Alaska", "Violent Crime", "Murder", "2004", "37"],
+      ["Alaska", "Violent Crime", "Murder", "2005", "32"],
+      ["Arizona", "Violent Crime", "Murder", "2003", "441"],
+      ["Arizona", "Violent Crime", "Murder", "2004", "414"],
+      ["Arizona", "Violent Crime", "Murder", "2005", "445"],
+      ["Arkansas", "Violent Crime", "Murder", "2003", "180"],
+      ["Arkansas", "Violent Crime", "Murder", "2004", "176"],
+      ["Arkansas", "Violent Crime", "Murder", "2005", "186"]]
   };
 
   var treemapBarChart = new dex.charts.d3.TreemapBarChart({
-        'parent'      : '#ChartArea',
-    'csv' : csv
-      }
+      'parent': '#ChartArea',
+      'csv': csv
+    }
   );
   treemapBarChart.render();
 

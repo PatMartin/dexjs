@@ -39,31 +39,9 @@
 
 <script>
 
-  var csv = {
-    'header': ["Country", "Continent", "Trade Indicator", "Year", 'Gross'],
-      'data': [
-      ['US', 'North America', 'Imports', 2000, 10000000],
-      ['US', 'North America', 'Exports', 2000, 10000000],
-      ['US', 'North America', 'Imports', 2001, 15000000],
-      ['US', 'North America', 'Exports', 2001, 30000000],
-      ['Japan', 'Asia', 'Imports', 2000, 5000000],
-      ['Japan', 'Asia', 'Exports', 2000, 30000000],
-      ['Japan', 'Asia', 'Imports', 2001, 6000000],
-      ['Japan', 'Asia', 'Exports', 2001, 30000000],
-      ['China', 'Asia', 'Imports', 2000, 50000000],
-      ['China', 'Asia', 'Exports', 2000, 900000000],
-      ['China', 'Asia', 'Imports', 2001, 90000000],
-      ['China', 'Asia', 'Exports', 2001, 320000000],
-      ['Canada', 'North America', 'Imports', 2000, 6000000],
-      ['Canada', 'North America', 'Exports', 2000, 4000000],
-      ['Canada', 'North America', 'Imports', 2001, 3000000],
-      ['Canada', 'North America', 'Exports', 2001, 1000000],
-    ]
-  };
 
   var treemapBarChart = new dex.charts.d3.TreemapBarChart({
-        'parent'      : '#ChartArea',
-    'csv' : csv
+        'parent'      : '#ChartArea'
       }
   );
   treemapBarChart.render();
