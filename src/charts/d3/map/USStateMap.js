@@ -1,4 +1,5 @@
 var usstatemap = function (userConfig) {
+  d3 = dex.charts.d3.d3v3;
   var defaults = {
     'parent'        : "#USStateMap",
     'id'            : 'USStateMap',
@@ -16,11 +17,13 @@ var usstatemap = function (userConfig) {
   var chart = new dex.component(userConfig, defaults);
 
   chart.render = function () {
+    d3 = dex.charts.d3.d3v3;
     window.onresize = this.resize;
     chart.resize();
   };
 
   chart.resize = function () {
+    d3 = dex.charts.d3.d3v3;
     var width = d3.select(chart.config.parent).property("clientWidth");
     var height = d3.select(chart.config.parent).property("clientHeight");
     chart
@@ -32,6 +35,7 @@ var usstatemap = function (userConfig) {
   };
 
   chart.update = function () {
+    d3 = dex.charts.d3.d3v3;
     var chart = this;
     var config = chart.config;
     var selected = {};
@@ -78,7 +82,7 @@ var usstatemap = function (userConfig) {
 
   $(document).ready(function () {
     // Make the entire chart draggable.
-    $(chart.config.parent).draggable();
+    //$(chart.config.parent).draggable();
   });
 
   return chart;

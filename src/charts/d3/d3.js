@@ -9,13 +9,9 @@
  */
 var d3 = {};
 
-/**
- *
- * A class for drawing an axis.
- *
- * @name Axis
- *
- */
+d3.d3v4 = require("../../../lib/d3.v4.4.0.min");
+d3.d3v3 = require("../../../lib/d3.v3.5.17.min");
+
 //d3.Axis = require("./Axis");
 d3.Chord = require("./Chord");
 d3.ClusteredForce = require("./ClusteredForce");
@@ -39,10 +35,8 @@ d3.ScatterPlot = require("./ScatterPlot");
 d3.Sunburst = require("./Sunburst");
 //d3.TitledTreemap = require("./TitledTreemap");
 d3.Treemap = require("./Treemap");
-d3.TreemapBarChart = require("./TreemapBarChart");
 d3.VerticalLegend = require("./VerticalLegend");
-
-// Too large, need optional config
-//d3.map = require("./map/map");
+d3.TreemapBarChart = require("./TreemapBarChart");
+d3.map = {};
 
 module.exports = d3;

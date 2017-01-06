@@ -1,4 +1,5 @@
 var motionbarchart = function (userConfig) {
+  d3 = dex.charts.d3.d3v3;
   var defaultColor = d3.scale.category10();
 
   var csv = {
@@ -118,11 +119,13 @@ var motionbarchart = function (userConfig) {
   var config = chart.config;
 
   chart.render = function render() {
+    d3 = dex.charts.d3.d3v3;
     window.onresize = this.resize;
     this.resize();
   };
 
   chart.resize = function resize() {
+    d3 = dex.charts.d3.d3v3;
     var width = d3.select(chart.config.parent).property("clientWidth");
     var height = d3.select(chart.config.parent).property("clientHeight");
     chart
@@ -132,6 +135,7 @@ var motionbarchart = function (userConfig) {
   };
 
   chart.update = function update() {
+    d3 = dex.charts.d3.d3v3;
     // If we need to call super:
     //DexComponent.prototype.update.call(this);
     var chart = this.chart;

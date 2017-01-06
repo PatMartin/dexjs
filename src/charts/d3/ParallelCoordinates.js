@@ -1,4 +1,5 @@
 var parallelcoordinates = function (userConfig) {
+  d3 = dex.charts.d3.d3v3;
   var chart;
 
   defaults =
@@ -179,11 +180,13 @@ var parallelcoordinates = function (userConfig) {
 
   chart = new dex.component(userConfig, defaults);
   chart.render = function render() {
+    d3 = dex.charts.d3.d3v3;
     window.onresize = this.resize;
     chart.resize();
   };
 
   chart.resize = function resize() {
+    d3 = dex.charts.d3.d3v3;
     if (chart.config.resizable) {
       var width = d3.select(chart.config.parent).property("clientWidth");
       var height = d3.select(chart.config.parent).property("clientHeight");
@@ -200,6 +203,7 @@ var parallelcoordinates = function (userConfig) {
   };
 
   chart.update = function update() {
+    d3 = dex.charts.d3.d3v3;
     var chart = this;
     var config = chart.config;
     var csv = config.csv;

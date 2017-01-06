@@ -1,4 +1,5 @@
 var chord = function (userConfig) {
+  d3 = dex.charts.d3.d3v3;
   var chart;
 
   var defaults =
@@ -105,12 +106,14 @@ var chord = function (userConfig) {
   var chart = new dex.component(userConfig, defaults);
 
   chart.render = function render() {
+    d3 = dex.charts.d3.d3v3;
     chart.resize = this.resize(chart);
     window.onresize = chart.resize;
     return chart.resize();
   };
 
   chart.update = function () {
+    d3 = dex.charts.d3.d3v3;
     var chart = this;
     var config = chart.config;
     var csv = config.csv;

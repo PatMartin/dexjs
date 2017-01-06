@@ -1,4 +1,5 @@
 var sankeyparticles = function (userConfig) {
+  d3 = dex.charts.d3.d3v3;
   var chart;
 
   var defaults =
@@ -30,11 +31,13 @@ var sankeyparticles = function (userConfig) {
   var chart = new dex.component(userConfig, defaults);
 
   chart.render = function render() {
+    d3 = dex.charts.d3.d3v3;
     window.onresize = this.resize;
     chart.resize();
   };
 
   chart.resize = function resize() {
+    d3 = dex.charts.d3.d3v3;
     if (chart.config.resizable) {
       var width = d3.select(chart.config.parent).property("clientWidth");
       var height = d3.select(chart.config.parent).property("clientHeight");
@@ -46,7 +49,7 @@ var sankeyparticles = function (userConfig) {
     }
   };
 
-  d3.sankey = function () {
+  d3sankey = function () {
     var sankey = {},
       nodeWidth = 24,
       nodePadding = 8,
@@ -373,7 +376,7 @@ var sankeyparticles = function (userConfig) {
       .attr("id", config["id"])
       .attr("transform", config.transform);
 
-    var sankey = d3.sankey()
+    var sankey = d3sankey()
       .nodeWidth(15)
       .nodePadding(10)
       .size([width, height]);

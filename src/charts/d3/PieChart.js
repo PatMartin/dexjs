@@ -1,4 +1,5 @@
 var piechart = function (userConfig) {
+  d3 = dex.charts.d3.d3v3;
   var chart = new dex.component(userConfig,
     {
       'parent'      : "#PieChart",
@@ -28,11 +29,13 @@ var piechart = function (userConfig) {
     });
 
   chart.render = function () {
+    d3 = dex.charts.d3.d3v3;
     window.onresize = this.resize;
     chart.resize();
   };
 
   chart.resize = function () {
+    d3 = dex.charts.d3.d3v3;
     d3.selectAll("#" + chart.config.id).remove();
     var width = d3.select(chart.config.parent).property("clientWidth");
     var height = d3.select(chart.config.parent).property("clientHeight");
@@ -45,6 +48,7 @@ var piechart = function (userConfig) {
   };
 
   chart.update = function () {
+    d3 = dex.charts.d3.d3v3;
     var chart = this;
     var config = chart.config;
     var csv = config.csv;

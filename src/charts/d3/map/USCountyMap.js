@@ -1,5 +1,6 @@
 var uscountymap = function (userConfig)
 {
+  d3 = dex.charts.d3.d3v3;
   var defaults =
   {
     'parent'        : null,
@@ -17,51 +18,47 @@ var uscountymap = function (userConfig)
 
   var chart = new dex.component(userConfig, defaults);
 
-  chart.render = function()
-  {
+  chart.render = function () {
+    d3 = dex.charts.d3.d3v3;
     this.update();
   };
 
-  chart.update = function()
-  {
+  chart.update = function () {
+    d3 = dex.charts.d3.d3v3;
     var chart = this;
     var config = chart.config;
-  var selected = {};
-  var path = d3.geo.path();
+    var selected = {};
+    var path = d3.geo.path();
 
-  var chartContainer = d3.select(config.parent).append("g")
-    .attr("id", config["id"])
-    .attr("class", config["class"])
-    .attr("transform", "translate(" + config.xoffset + "," + config.yoffset + ")")
-    .attr("width", config.width)
-    .attr("height", config.height);
+    var chartContainer = d3.select(config.parent).append("g")
+      .attr("id", config["id"])
+      .attr("class", config["class"])
+      .attr("transform", "translate(" + config.xoffset + "," + config.yoffset + ")")
+      .attr("width", config.width)
+      .attr("height", config.height);
 
-  chartContainer.selectAll("path")
+    chartContainer.selectAll("path")
       .data(topojson.feature(config.topology, config.topology.objects.counties).features)
-    .enter().append("path")
+      .enter().append("path")
       .attr("d", path)
       .style("fill", config.unselectedColor)
-      .on("mouseover", function(d)
-      {
-        chart.publish({ type: "mouseover", county : d.id });
+      .on("mouseover", function (d) {
+        chart.publish({type: "mouseover", county: d.id});
       })
-      .on("mousedown", function(d)
-      {
-       	if (selected[d.id] == null)
-      	{
-      	  chart.publish({ type: "selectCounty", county : d.id });
-      	  selected[d.id] = true;
-      	  d3.select(this).style("fill", config.selectedColor);
-      	}
-      	else
-      	{
-      		chart.publish({ type: "deselectCounty", county : d.id });
-      		selected[d.id] = null;
-      		d3.select(this).style("fill", config.unselectedColor);
-      	}
+      .on("mousedown", function (d) {
+        if (selected[d.id] == null) {
+          chart.publish({type: "selectCounty", county: d.id});
+          selected[d.id] = true;
+          d3.select(this).style("fill", config.selectedColor);
+        }
+        else {
+          chart.publish({type: "deselectCounty", county: d.id});
+          selected[d.id] = null;
+          d3.select(this).style("fill", config.unselectedColor);
+        }
       });
-};
-	  return chart;
+  };
+  return chart;
 };
 
 module.exports = uscountymap;

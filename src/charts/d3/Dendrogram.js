@@ -1,4 +1,5 @@
 var dendrogram = function Dendrogram(userConfig) {
+  d3 = dex.charts.d3.d3v3;
   var defaults =
   {
     // The parent container of this chart.
@@ -94,12 +95,14 @@ var dendrogram = function Dendrogram(userConfig) {
   var chart = new dex.component(userConfig, defaults);
 
   chart.render = function render() {
+    d3 = dex.charts.d3.d3v3;
     var chart = this;
     window.onresize = chart.resize;
     chart.resize();
   };
 
   chart.resize = function resize() {
+    d3 = dex.charts.d3.d3v3;
     dex.console.log("PARENT: '" + chart.config.parent + "'");
     if (chart.config.resizable) {
       var width = $("" + chart.config.parent).width();
@@ -115,6 +118,7 @@ var dendrogram = function Dendrogram(userConfig) {
   };
 
   chart.update = function update() {
+    d3 = dex.charts.d3.d3v3;
     var chart = this;
     var config = chart.config;
 

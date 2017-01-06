@@ -1,20 +1,19 @@
+// Allow user to override, but define this by default:
+
 /**
  *
  * The main dexjs module.
  *
  * @module dex
+ * @name dex
+ *
  * @requires d3
  * @requires jquery
- * @requires jquery-ui
+ * @requires jqueryui
  * @requires underscore
  *
  */
-var dex = {};
-
-//require("d3");
-//$ = require("jquery");
-//require("jquery-ui");
-//_ = require("underscore");
+var dex = { charts : { d3 : { map : {}}}};
 
 /**
  *
@@ -24,7 +23,7 @@ var dex = {};
  * @type {string}
  *
  */
-dex.version = "0.7";
+dex.version = "0.8.0.8";
 
 /**
  * This routine will return an array [ start, ..., start + len ] using an increment of 1.
@@ -59,26 +58,6 @@ dex.copy = function(obj) {
 
 /**
  *
- * A module for dealing with arrays.
- *
- * @name array
- * @type {module:array}
- *
- */
-dex.array = require('./array/array');
-
-/**
- *
- * A module for configuring things.
- *
- * @name config
- * @type {module:config}
- *
- */
-dex.config = require("./config/config");
-
-/**
- *
  * The pub/sub bus used by dex in order to publish and subscribe to events.
  *
  * @name bus
@@ -88,100 +67,108 @@ dex.config = require("./config/config");
  */
 dex.bus = require("../lib/pubsub");
 
+// Kai's parallel coordinates needs this, but seems to break
+// in D4
+//require('../lib/d3.svg.multibrush');
+//require('../lib/d3.selection');
+//dex.pc = require('../lib/d3.parcoords');
+
+dex.util = require('./util/util')(dex);
+
 /**
  *
- * A module for logging to the console.
+ * A module for dealing with arrays.
  *
- * @name console
- * @type {module:console}
+ * @name array
+ * @type {module:dex.array}
  *
  */
-dex.console = require("./console/console");
+dex.array = require('./array/array')(dex);
 
 /**
  * A module for dealing with colors.
  *
  * @name color
- * @type {module:color}
+ * @type {module:dex.color}
  *
  */
-dex.color = require("./color/color");
+dex.color = require("./color/color")(dex);
 
 /**
  *
- * A charting module.
+ * A module for configuring things.
  *
- * @name charts
- * @type {module:charts}
+ * @name config
+ * @type {module:dex.config}
  *
  */
-dex.charts = {'d3' : {'map' : {}},
-  'c3'   : {},
-  'dygraphs' : {},
-  'd3plus'   : {},
-  'google' : {},
-  'handlebars' : {},
-  'threejs' : {}};
+dex.config = require("./config/config")(dex);
 
 /**
  *
- * A charting module.
+ * A module for logging to the console.
  *
- * @name charts
- * @type {module:charts}
+ * @name console
+ * @type {module:dex.console}
  *
  */
-dex.ui = {'jqueryui' : {}};
+dex.console = require("./console/console")(dex);
 
 /**
  *
  * A module for handling CSV data structures.
  *
  * @name csv
- * @type {module:csv}
+ * @type {module:dex.csv}
  *
  */
-dex.csv = require("./csv/csv");
+dex.csv = require("./csv/csv")(dex);
 
 /**
  *
  * A module providing utilities for data generation.
  *
  * @name datagen
- * @type {module:datagen}
+ * @type {module:dex.datagen}
  *
  */
-dex.datagen = require("./datagen/datagen");
+dex.datagen = require("./datagen/datagen")(dex);
 
 /**
  *
  * A module for dealing with JSON data.
  *
  * @name json
- * @type {module:json}
+ * @type {module:dex.json}
  *
  */
-dex.json = require("./json/json");
+dex.json = require("./json/json")(dex);
 
 /**
  * A module for dealing with matrices.
  *
  * @name matrix
- * @type {module:matrix}
+ * @type {module:dex.matrix}
  *
  */
-dex.matrix = require("./matrix/matrix");
+dex.matrix = require("./matrix/matrix")(dex);
 
 /**
- * A module for dealing with javascript objects.
- *
  * @name object
  * @type {module:object}
  *
  */
-dex.object = require("./object/object");
+dex.object = require("./object/object")(dex);
 
-dex.ui = require("./ui/ui");
+/**
+ *
+ * A module for creating ui components such as players and sliders.
+ *
+ * @name ui
+ * @type {module:ui}
+ *
+ */
+dex.ui = require("./ui/ui")(dex);
 
 /**
  *
@@ -191,10 +178,25 @@ dex.ui = require("./ui/ui");
  * @type {module:component}
  *
  */
-dex.component = require("./component/component");
+dex.component = require("./component/component")(dex);
 
-dex.charts = require("./charts/charts");
+/**
+ *
+ * An overall charting module composed of many sub-modules.
+ *
+ * @name charts
+ * @type {module:charts}
+ *
+ */
+dex.charts = require("./charts/charts")(dex);
 
 dex.charts.d3.map = require("./charts/d3/map/map");
+
+d3 = dex.charts.d3.d3v3;
+
+// Allow jqueryui to play well with bootstrap.  This
+// also means we must include dex.js before bootstrap.
+$.widget.bridge('uitooltip', $.ui.tooltip);
+$.widget.bridge('uibutton', $.ui.button);
 
 module.exports = dex;

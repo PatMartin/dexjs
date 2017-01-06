@@ -190,6 +190,8 @@ dex.component = require("./component/component")(dex);
  */
 dex.charts = require("./charts/charts")(dex);
 
+d3 = dex.charts.d3.d3v3;
+
 // Allow jqueryui to play well with bootstrap.  This
 // also means we must include dex.js before bootstrap.
 $.widget.bridge('uitooltip', $.ui.tooltip);

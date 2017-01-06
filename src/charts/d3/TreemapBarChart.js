@@ -1,4 +1,5 @@
 var treemapBarChart = function (userConfig) {
+  d3 = dex.charts.d3.d3v4;
   var chart;
 
   var defaults = {
@@ -71,12 +72,14 @@ var treemapBarChart = function (userConfig) {
   var config = chart.config;
 
   chart.render = function render() {
+    d3 = dex.charts.d3.d3v4;
     chart.resize = this.resize(chart);
     window.onresize = chart.resize;
     return chart.resize();
   };
 
   chart.update = function update() {
+    d3 = dex.charts.d3.d3v4;
     var margin = config.margin;
     var width = config.width - margin.left - margin.right;
     var height = config.height - margin.top - margin.bottom;
