@@ -7756,16 +7756,43 @@ var treemapBarChart = function (userConfig) {
         ['Canada', 'North America', 'Exports', 2001, 1000000],
       ]
     },
-    'index' : {
-      'divider'  : 0,
-      'color'    : 1,
-      'category' : 2,
-      'x'        : 3,
-      'value'    : 4
+    'index': {
+      'divider': 0,
+      'color': 1,
+      'category': 2,
+      'x': 3,
+      'value': 4
     },
     'width': "100%",
     'height': "100%",
-    'transform': "translate(0 0)"
+    'transform': "translate(0 0)",
+    'colorScheme': d3.schemeCategory20,
+    // <text fill="#000" y="9" x="0.5" dy="0.71em">Property Crime</text>
+    // <text fill="#000" y="9" x="0.5" dy=".71em" dx="0" font-family="sans-serif" font-size="14" font-weight="normal" font-style="normal" text-decoration="none" word-spacing="normal" letter-spacing="normal" variant="normal" transform="" style="text-anchor: start; fill: grey; fill-opacity: 1;">Violent Crime</text>
+    'categoryLabel': dex.config.text({
+        "x": .5,
+        "y": 9,
+        "dy": ".71em",
+        'font' : dex.config.font({'size': 10}),
+        'anchor': 'middle'
+      }
+    ),
+    'margin': {
+      'top': 25,
+      'right': 15,
+      'bottom': 50,
+      'left': 60
+    },
+    // <text fill="#000" y="3" x="0.5" dy="0.71em">2000</text>
+    'xLabel': dex.config.text({
+        "x": .5,
+        "y": 15,
+        "dy": ".71em",
+        'font.size': 16,
+        'fill.fillColor': 'steelblue',
+        'anchor': 'middle'
+      }
+    )
   };
 
   var chart = new dex.component(userConfig, defaults);
@@ -7778,7 +7805,7 @@ var treemapBarChart = function (userConfig) {
   };
 
   chart.update = function update() {
-    var margin = {top: 25, right: 15, bottom: 50, left: 60};
+    var margin = config.margin;
     var width = config.width - margin.left - margin.right;
     var height = config.height - margin.top - margin.bottom;
 
@@ -7793,19 +7820,21 @@ var treemapBarChart = function (userConfig) {
       .attr('height', config.height);
 
     var colorDomain = dex.csv.uniqueArray(config.csv, config.index.color);
+    var categoryDomain = dex.csv.uniqueArray(config.csv, config.index.category);
+    //dex.console.log("COLOR-DOMAIN", colorDomain, "CATEGORY-DOMAIN", categoryDomain);
     //var orderedContinents = ['Asia', 'North America', 'Europe', 'South America', 'Africa', 'Australia']
     var color = d3.scaleOrdinal()
       .domain(colorDomain)
-      .range(d3.schemeCategory20)
+      .range(config.colorScheme)
 
     /*
-    var dollarFormat = d3.format('$,')
-    var tickFormat = function (n) {
-      return n === 0 ? '$0'
-        : n < 1000000 ? dollarFormat(n / 1000) + ' billion'
-          : dollarFormat(n / 1000000) + ' trillion'
-    }
-  */
+     var dollarFormat = d3.format('$,')
+     var tickFormat = function (n) {
+     return n === 0 ? '$0'
+     : n < 1000000 ? dollarFormat(n / 1000) + ' billion'
+     : dollarFormat(n / 1000000) + ' trillion'
+     }
+     */
 
     var options = {
       key: config.csv.header[config.index.value],
@@ -7850,7 +7879,7 @@ var treemapBarChart = function (userConfig) {
             })
           };
         });
-      return {"children" : jsonData };
+      return {"children": jsonData};
     }
 
     var root = d3.hierarchy(chartData).sum(function (d) {
@@ -7873,8 +7902,10 @@ var treemapBarChart = function (userConfig) {
       .range([0, width])
       .padding(0.15)
 
+    // REM
+
     var x1 = d3.scaleBand()
-      .domain(['Imports', 'Exports'])
+      .domain(categoryDomain)
       .rangeRound([0, x0.bandwidth()])
       .paddingInner(0.1)
 
@@ -7932,7 +7963,7 @@ var treemapBarChart = function (userConfig) {
     function sum(d) {
       //dex.console.log("SUM:", d[config.csv.header[config.index.divider]], "OPTS", options)
       return !options.divider ||
-        options.divider === d[config.csv.header[config.index.divider]] ? d[options.key] : 0
+      options.divider === d[config.csv.header[config.index.divider]] ? d[options.key] : 0
     }
 
     function tmUpdate() {
@@ -8057,6 +8088,7 @@ var treemapBarChart = function (userConfig) {
 
       enterCountries
         .on('mouseover', function (d) {
+          chart.publish({"type" : "mouseover", "selected" : d});
           svg.classed('hover-active', true)
           countries.classed('hover', function (e) {
             //dex.console.log("E-HOVER", e.data[config.csv.header[config.index.divider]], d.data[config.csv.header[config.index.divider]])
@@ -8064,18 +8096,27 @@ var treemapBarChart = function (userConfig) {
           })
         })
         .on('mouseout', function () {
+          chart.publish({"type" : "mouseout", "selected" : this });
           svg.classed('hover-active', false)
           countries.classed('hover', false)
         })
         .on('click', function (d) {
-          //dex.console.log("ON-CLICK", options, d.data[config.csv.header[config.index.divider]])
+
+          //dex.console.log("ON-CLICK", options, d, d.data[config.csv.header[config.index.divider]])
+          chart.publish({"type" : "click", "selected" : d});
           options.divider = options.divider === d.data[config.csv.header[config.index.divider]] ? null : d.data[config.csv.header[config.index.divider]]
           tmUpdate()
         })
         .append('title')
         .text(function (d) {
-          return d.data[config.csv.header[config.index.divider]]
-        })
+          return (
+          config.csv.header[config.index.color] +
+          " = " + d.data[config.csv.header[config.index.color]] +
+          "\n" + config.csv.header[config.index.divider] +
+          "  = " + d.data[config.csv.header[config.index.divider]] +
+          "\n" + config.csv.header[config.index.value] + " = " +
+          d.data[config.csv.header[config.index.value]]);
+        });
 
       countries.filter(function (d) {
         return d.data[config.csv.header[config.index.divider]] === options.divider
@@ -8101,12 +8142,24 @@ var treemapBarChart = function (userConfig) {
         })
     }
 
+    // Style category axis
+    catAxisG = d3.select(config.parent).selectAll(".x1");
+    //dex.console.log("CatAxisG", catAxisG);
+    catAxisG.selectAll("text")
+      .call(dex.config.configureText, config.categoryLabel);
+
+    // Styling x axis
+    xAxisG = d3.select(config.parent).selectAll(".x0");
+    //dex.console.log("CatAxisG", catAxisG);
+    xAxisG.selectAll("text")
+      .call(dex.config.configureText, config.xLabel);
+
     return chart;
   };
 
   $(document).ready(function () {
     // Make the entire chart draggable.
-    //$(chart.config.parent).draggable();
+    //$(sankey.config.parent).draggable();
   });
 
   return chart;
@@ -12536,7 +12589,18 @@ module.exports = function csv(dex) {
 
     'uniqueArray' : function(csv, columnIndex) {
       return dex.array.unique(dex.matrix.flatten(
-        dex.matrix.slice(csv.data, columnIndex)));
+        dex.matrix.slice(csv.data, [ columnIndex ])));
+    },
+
+    'selectRows' : function(csv, fn) {
+      var subset = [];
+      csv.data.forEach(function(row) {
+        if (fn(row)) {
+          subset.push(row);
+        }
+      });
+
+      return { 'header' : csv.header, 'data' : subset };
     },
 
     /**
