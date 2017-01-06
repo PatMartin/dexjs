@@ -1433,7 +1433,7 @@ var clusteredforce = function (userConfig) {
     },
     'groups': [{'category': 0, 'value': 1, 'label': 0}],
     'transform': '',
-    'color': d3.scale.category10(),
+    'color': d3.scale.category20(),
     'padding': 10,
     // TODO: Add normalization function.
     'sizingFunction': function () {
@@ -1513,6 +1513,7 @@ var clusteredforce = function (userConfig) {
 
     var radius = d3.scale.sqrt().range([0, 12]);
 
+    /*
     var minValue, maxValue;
 
     if (!config.scaleColumns) {
@@ -1523,6 +1524,7 @@ var clusteredforce = function (userConfig) {
         maxValue = Math.max(maxValue, dex.matric.max(csv.data, numericIndices[i]));
       }
     }
+*/
 
     var nodes = [];
 
@@ -1533,22 +1535,22 @@ var clusteredforce = function (userConfig) {
     config.groups.forEach(function (group) {
       "use strict";
       config.csv.data.forEach(function (row) {
-        var value = _.isNumber(row[group.value]) ? row[group.value] : 1;
+        var value = +(row[group.value]);
         nodes.push({
           'category': row[group.category],
-          'value': value,
+          'value': +value,
           'color' : config.color(row[group.category]),
           'text': "<table><tr><td>Label</td></td><td>" + row[group.label] +
           "</td></tr><tr><td>Category</td><td>" + row[group.category] + "</td></tr>" +
           "<tr><td>Value</td><td>" + row[group.value] +
           "</td></tr></table>"
         });
-        if (min == null || min > value) {
-          min = value;
+        if (min == null || min > +value) {
+          min = +value;
         }
 
-        if (max == null || max < value) {
-          max = value;
+        if (max == null || max < +value) {
+          max = +value;
         }
       })
     });
@@ -1559,7 +1561,7 @@ var clusteredforce = function (userConfig) {
 
     nodes.forEach(function (node) {
       "use strict";
-      node.radius = radiusScale(node.value);
+      node.radius = radiusScale(+node.value);
     });
 
     dex.console.log("NODES", nodes, "VALUES", values, "EXTENTS", min, max);
@@ -8032,19 +8034,20 @@ var treemapBarChart = function (userConfig) {
       .call(x1Axis)
 
     d3.select('#inflation-adjusted').on('change', function () {
-      options.key = this.checked ? 'adj_value' : 'value'
-      tmUpdate()
+      options.key = this.checked ? 'adj_value' : 'value';
+      tmUpdate();
     })
 
-    tmUpdate()
+    tmUpdate();
 
     function sum(d) {
       //dex.console.log("SUM:", d[config.csv.header[config.index.divider]], "OPTS", options)
       return !options.divider ||
-      options.divider === d[config.csv.header[config.index.divider]] ? d[options.key] : 0
+      options.divider === d[config.csv.header[config.index.divider]] ? d[options.key] : 0;
     }
 
     function tmUpdate() {
+      d3 = dex.charts.d3.d3v4;
       root.sum(sum)
 
       var t = d3.transition()
@@ -8218,6 +8221,8 @@ var treemapBarChart = function (userConfig) {
         .attr('height', function (d) {
           return d.value ? d.y1 - d.y0 : 0
         })
+
+      d3 = dex.charts.d3.d3v3;
     }
 
     // Style category axis
@@ -8508,6 +8513,7 @@ d3.map = {};
 module.exports = d3;
 },{"../../../lib/d3.v3.5.17.min":1,"../../../lib/d3.v4.4.0.min":2,"./Chord":12,"./ClusteredForce":13,"./Dendrogram":14,"./HorizontalLegend":15,"./MotionBarChart":16,"./MotionChart":17,"./MotionCircleChart":18,"./MotionLineChart":19,"./OrbitalLayout":20,"./ParallelCoordinates":21,"./PieChart":22,"./RadarChart":23,"./RadialTree":24,"./Sankey":25,"./SankeyParticles":26,"./ScatterPlot":27,"./Sunburst":28,"./Treemap":29,"./TreemapBarChart":30,"./VerticalLegend":31}],33:[function(require,module,exports){
 var ringnetwork = function (userConfig) {
+  d3 = dex.charts.d3.d3v3;
   var chart;
 
   var defaults =
@@ -8540,11 +8546,13 @@ var ringnetwork = function (userConfig) {
   var chart = new dex.component(userConfig, defaults);
 
   chart.render = function render() {
+    d3 = dex.charts.d3.d3v3;
     window.onresize = this.resize;
     chart.resize();
   };
 
   chart.resize = function resize() {
+    d3 = dex.charts.d3.d3v3;
     if (chart.config.resizable) {
       var width = d3.select(chart.config.parent).property("clientWidth");
       var height = d3.select(chart.config.parent).property("clientHeight");
@@ -8557,6 +8565,7 @@ var ringnetwork = function (userConfig) {
   };
 
   chart.update = function () {
+    d3 = dex.charts.d3.d3v3;
     var chart = this;
     var config = chart.config;
     var csv = config.csv;
