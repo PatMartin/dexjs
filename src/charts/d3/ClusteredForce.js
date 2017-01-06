@@ -19,7 +19,7 @@ var clusteredforce = function (userConfig) {
     },
     'groups': [{'category': 0, 'value': 1, 'label': 0}],
     'transform': '',
-    'color': d3.scale.category10(),
+    'color': d3.scale.category20(),
     'padding': 10,
     // TODO: Add normalization function.
     'sizingFunction': function () {
@@ -99,6 +99,7 @@ var clusteredforce = function (userConfig) {
 
     var radius = d3.scale.sqrt().range([0, 12]);
 
+    /*
     var minValue, maxValue;
 
     if (!config.scaleColumns) {
@@ -109,6 +110,7 @@ var clusteredforce = function (userConfig) {
         maxValue = Math.max(maxValue, dex.matric.max(csv.data, numericIndices[i]));
       }
     }
+*/
 
     var nodes = [];
 
@@ -119,22 +121,22 @@ var clusteredforce = function (userConfig) {
     config.groups.forEach(function (group) {
       "use strict";
       config.csv.data.forEach(function (row) {
-        var value = _.isNumber(row[group.value]) ? row[group.value] : 1;
+        var value = +(row[group.value]);
         nodes.push({
           'category': row[group.category],
-          'value': value,
+          'value': +value,
           'color' : config.color(row[group.category]),
           'text': "<table><tr><td>Label</td></td><td>" + row[group.label] +
           "</td></tr><tr><td>Category</td><td>" + row[group.category] + "</td></tr>" +
           "<tr><td>Value</td><td>" + row[group.value] +
           "</td></tr></table>"
         });
-        if (min == null || min > value) {
-          min = value;
+        if (min == null || min > +value) {
+          min = +value;
         }
 
-        if (max == null || max < value) {
-          max = value;
+        if (max == null || max < +value) {
+          max = +value;
         }
       })
     });
@@ -145,7 +147,7 @@ var clusteredforce = function (userConfig) {
 
     nodes.forEach(function (node) {
       "use strict";
-      node.radius = radiusScale(node.value);
+      node.radius = radiusScale(+node.value);
     });
 
     dex.console.log("NODES", nodes, "VALUES", values, "EXTENTS", min, max);
