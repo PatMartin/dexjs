@@ -483,7 +483,18 @@ module.exports = function csv(dex) {
 
     'uniqueArray' : function(csv, columnIndex) {
       return dex.array.unique(dex.matrix.flatten(
-        dex.matrix.slice(csv.data, columnIndex)));
+        dex.matrix.slice(csv.data, [ columnIndex ])));
+    },
+
+    'selectRows' : function(csv, fn) {
+      var subset = [];
+      csv.data.forEach(function(row) {
+        if (fn(row)) {
+          subset.push(row);
+        }
+      });
+
+      return { 'header' : csv.header, 'data' : subset };
     },
 
     /**
