@@ -229,19 +229,20 @@ var treemapBarChart = function (userConfig) {
       .call(x1Axis)
 
     d3.select('#inflation-adjusted').on('change', function () {
-      options.key = this.checked ? 'adj_value' : 'value'
-      tmUpdate()
+      options.key = this.checked ? 'adj_value' : 'value';
+      tmUpdate();
     })
 
-    tmUpdate()
+    tmUpdate();
 
     function sum(d) {
       //dex.console.log("SUM:", d[config.csv.header[config.index.divider]], "OPTS", options)
       return !options.divider ||
-      options.divider === d[config.csv.header[config.index.divider]] ? d[options.key] : 0
+      options.divider === d[config.csv.header[config.index.divider]] ? d[options.key] : 0;
     }
 
     function tmUpdate() {
+      d3 = dex.charts.d3.d3v4;
       root.sum(sum)
 
       var t = d3.transition()
@@ -415,6 +416,8 @@ var treemapBarChart = function (userConfig) {
         .attr('height', function (d) {
           return d.value ? d.y1 - d.y0 : 0
         })
+
+      d3 = dex.charts.d3.d3v3;
     }
 
     // Style category axis
