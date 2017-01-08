@@ -103,47 +103,6 @@ module.exports = function matrix(dex) {
 
     /**
      *
-     * Return a slice of this matrix based upon the supplied columns.
-     * The original matrix will be left untouched.
-     *
-     * @param {matrix} matrix - The matrix to slice.
-     * @param {Array.<number>} columns - An array of column indexes to be included in the slice.
-     *
-     * @returns {*}
-     *
-     */
-    /*
-     'columnSlice' : function (matrix, columns) {
-     // TODO: Determine, is this destructive?
-     var slice = [];
-     var ri;
-     var transposeMatrix;
-
-     if (arguments.length != 2) {
-     return matrix;
-     }
-
-     transposeMatrix = dex.matrix.transpose(matrix);
-     //dex.console.log("transposing", matrix, "transpose", transposedMatrix);
-
-     // Specific columns targetted:
-     if (Array.isArray(columns)) {
-     for (ri = 0; ri < columns.length; ri += 1) {
-     slice.push(transposeMatrix[columns[ri]]);
-     }
-     }
-     // Single column.
-     else {
-     slice.push(transposeMatrix[columns]);
-     }
-
-     // Back to row/column format.
-     return dex.matrix.transpose(slice);
-     };
-     */
-
-    /**
-     *
      * Return a flattened version of the matrix.
      *
      * @param {matrix} matrix - The matrix to flatten.
