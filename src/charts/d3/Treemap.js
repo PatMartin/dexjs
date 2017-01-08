@@ -1,183 +1,363 @@
 var treemap = function (userConfig) {
   d3 = dex.charts.d3.d3v3;
-  var chart;
+  var chart = null;
 
-  var defaults =
-    {
-      // The parent container of this chart.
-      'parent': '#TreemapBarchart',
-      // Set these when you need to CSS style components independently.
-      'id': 'TreemapBarchart',
-      'class': 'TreemapBarchart',
-      'resizable': true,
-      // Our data...
-      'csv': {
-        // Give folks without data something to look at anyhow.
-        'header': ["NAME", "PACAGE", "SIZE"],
-        'data': [
-          ["name1", "package1", 100],
-          ["name2", "package2", 50],
-          ["name3", "package3", 25]
-        ]
+  var defaults = {
+    'parent': '#Treemap',
+    // Set these when you need to CSS style components independently.
+    'id': 'Treemap',
+    'class': 'Treemap',
+    'resizable': true,
+    // Our data...
+    'csv': undefined,
+    'title': 'Level: ',
+    'margin': {
+      'left': 10,
+      'right': 10,
+      'top': 25,
+      'bottom': 10
+    },
+    'shader': {
+      'type': 'darken',
+      'increment': .1
+    },
+    'manualSizing': false,
+    'width': '100%',
+    'height': '100%',
+    'transform': '',
+    'color': d3.scale.category10(),
+    'navbar': dex.config.rectangle({
+      'fill.fillColor': 'steelblue',
+      'y': function () {
+        return -chart.config.margin.top;
       },
-      'width': "100%",
-      'height': "100%",
-      'transform': "translate(0 0)",
-      'title': dex.config.text(),
-      'label': dex.config.text()
-    };
+      'width': function () {
+        return chart.config.width
+          - chart.config.margin.left - chart.config.margin.right;
+      },
+      'height': function () {
+        return chart.config.margin.top;
+      }
+    }),
+    'navbarLabel': dex.config.text({
+      'x': 6,
+      'y': function () {
+        return 6 - chart.config.margin.top;
+      },
+      'dy': '.75em',
+      'fill.fillColor': 'white'
+    }),
+    'label': dex.config.text({
+      //'dy': '1em',
+      'fill.fillColor': 'white',
+//      'font.size': function (d) {
+//       return 16;
+//      }
+    })
+  };
 
   var chart = new dex.component(userConfig, defaults);
+  var config = chart.config;
+  var margin = config.margin;
+  var csv = config.csv;
+  var color = config.color;
 
   chart.render = function render() {
     d3 = dex.charts.d3.d3v3;
-    window.onresize = this.resize;
-    chart.resize();
+    chart.resize = this.resize(chart);
+    window.onresize = chart.resize;
+    return chart.resize();
   };
 
-  chart.resize = function resize() {
+  chart.update = function update() {
     d3 = dex.charts.d3.d3v3;
-    if (chart.config.resizable) {
-      var width = d3.select(chart.config.parent).property("clientWidth");
-      var height = d3.select(chart.config.parent).property("clientHeight");
-      dex.console.log(chart.config.id + ": resize(" + width + "," + height + ")");
-      chart.attr("width", width).attr("height", height).update();
-    }
-    else {
-      chart.update();
-    }
-  };
+    var width = config.width - margin.left - margin.right;
+    var height = config.height - margin.top - margin.bottom;
 
-  chart.update = function () {
-    d3 = dex.charts.d3.d3v3;
-    var chart = this;
-    var config = chart.config;
-    var csv = config.csv;
+    d3.selectAll(config.parent).selectAll("*").remove();
 
-    d3.selectAll("#" + config.id).remove();
-
-    var chartContainer = d3.select(config.parent).append("g")
-      .attr("class", config["id"])
+    var chartContainer = d3.select(config.parent)
+      .append("g")
       .attr("id", config["id"])
+      .attr("class", config["class"])
+      .attr('width', config.width)
+      .attr('height', config.height)
       .attr("transform", config.transform);
 
-    var w = 1280 - 80,
-      h = 800 - 180,
-      x = d3.scale.linear().range([0, w]),
-      y = d3.scale.linear().range([0, h]),
-      color = d3.scale.category20c(),
-      root,
-      node;
+    var chartG = chartContainer
+      .append('g')
+      .attr('transform', 'translate(' +
+        margin.left + ',' + margin.top + ')');
 
-    var treemap = d3.layout.treemap()
-      .round(false)
-      .size([w, h])
-      .sticky(true)
+    var formatNumber = d3.format(",d");
+    var transitioning;
+
+    var x = d3.scale.linear()
+      .domain([0, width])
+      .range([0, width]);
+
+    var y = d3.scale.linear()
+      .domain([0, height])
+      .range([0, height]);
+
+    var tmap = d3.layout.treemap()
+      .children(function (d, depth) {
+        return depth ? null : d._children;
+      })
       .value(function (d) {
         return d.size;
-      });
-
-    var data = dex.csv.toNestedJson(dex.csv.copy(csv));
-    dex.console.log("DATA", csv, data);
-
-    node = root = data;
-
-    var nodes = treemap.nodes(root)
-      .filter(function (d) {
-        return !d.children;
-      });
-
-    var cell = chartContainer.selectAll("g")
-      .data(nodes)
-      .enter().append("svg:g")
-      .attr("class", "cell")
-      .attr("transform", function (d) {
-        return "translate(" + d.x + "," + d.y + ")";
       })
-      .on("click", function (d) {
-        return zoom(node == d.parent ? root : d.parent);
-      });
-
-    cell.append("svg:rect")
-      .attr("width", function (d) {
-        return d.dx - 1;
+      .sort(function (a, b) {
+        return a.size - b.size;
       })
-      .attr("height", function (d) {
-        return d.dy - 1;
-      })
-      .style("fill", function (d) {
-        return color(d.parent.name);
-      });
+      .ratio(height / width * 0.5 * (1 + Math.sqrt(5)))
+      .round(false);
 
-    cell.append("svg:text")
-      .attr("x", function (d) {
-        return d.dx / 2;
-      })
-      .attr("y", function (d) {
-        return d.dy / 2;
-      })
-      .attr("dy", ".35em")
-      .attr("text-anchor", "middle")
-      .text(function (d) {
-        return d.name;
-      })
-      .style("opacity", function (d) {
-        d.w = this.getComputedTextLength();
-        return d.dx > d.w ? 1 : 0;
-      });
+    var grandparent = chartG.append("g")
+      .attr("class", "grandparent");
 
-    d3.select(window).on("click", function () {
-      zoom(root);
-    });
+    grandparent.append("rect")
+      .call(dex.config.configureRectangle, config.navbar);
 
-    d3.select("select").on("change", function () {
-      treemap.value(this.value == "size" ? size : count).nodes(root);
-      zoom(node);
-    });
+    grandparent.append("text")
+      .call(dex.config.configureText, config.navbarLabel);
 
+    var chartData = dex.csv.toNestedJson(csv, config.manualSizing);
 
-    function size(d) {
-      return d.size;
+    //dex.console.log("chartData", chartData);
+
+    initialize(chartData);
+    accumulate(chartData);
+    layout(chartData);
+    display(chartData);
+
+    function initialize(root) {
+      root.x = root.y = 0;
+      root.dx = width;
+      root.dy = height;
+      root.depth = 0;
     }
 
-    function count(d) {
-      return 1;
+    // Aggregate the values for internal nodes. This is normally done by the
+    // treemap layout, but not here because of our custom implementation.
+    // We also take a snapshot of the original children (_children) to avoid
+    // the children being overwritten when when layout is computed.
+    function accumulate(d) {
+      return (d._children = d.children)
+        ? d.size = d.children.reduce(function (p, v) {
+          return p + accumulate(v);
+        }, 0)
+        : d.size;
     }
 
-    function zoom(d) {
-      var kx = w / d.dx, ky = h / d.dy;
-      x.domain([d.x, d.x + d.dx]);
-      y.domain([d.y, d.y + d.dy]);
+    // Compute the treemap layout recursively such that each group of siblings
+    // uses the same size (1×1) rather than the dimensions of the parent cell.
+    // This optimizes the layout for the current zoom state. Note that a wrapper
+    // object is created for the parent node for each group of siblings so that
+    // the parent’s dimensions are not discarded as we recurse. Since each group
+    // of sibling was laid out in 1×1, we must rescale to fit using absolute
+    // coordinates. This lets us use a viewport to zoom.
+    function layout(d) {
+      if (d._children) {
+        tmap.nodes({_children: d._children});
+        d._children.forEach(function (c) {
+          c.x = d.x + c.x * d.dx;
+          c.y = d.y + c.y * d.dy;
+          c.dx *= d.dx;
+          c.dy *= d.dy;
+          c.parent = d;
+          layout(c);
+        });
+      }
+    }
 
-      var t = chartContainer.selectAll("g.cell").transition()
-        .duration(d3.event.altKey ? 7500 : 750)
-        .attr("transform", function (d) {
-          return "translate(" + x(d.x) + "," + y(d.y) + ")";
+    function display(d) {
+      grandparent
+        .datum(d.parent)
+        .on("click", transition)
+        .select("text")
+        .text(config.title + name(d));
+
+      var g1 = chartG.insert("g", ".grandparent")
+        .datum(d)
+        .attr("class", "depth");
+
+      var g = g1.selectAll("g")
+        .data(d._children)
+        .enter().append("g");
+
+      g.filter(function (d) {
+        return d._children;
+      })
+        .classed("children", true)
+        .on("click", transition);
+
+      g.selectAll(".child")
+        .data(function (d) {
+          return d._children || [d];
+        })
+        .enter().append("rect")
+        .attr("class", "child")
+        .call(rect);
+
+      g.append("rect")
+        .attr("class", "parent")
+        .call(rect)
+        .append("title")
+        .text(function (d) {
+          return formatNumber(d.size);
         });
 
-      t.select("rect")
+      g.append("text")
+      //.call(dex.config.configureText, config.label)
+        .text(function (d) {
+          return d.name;
+        })
+        .call(text)
+        .style("font-size", "1px")
+        .each(getSize)
+        .style("font-size", function (d) {
+          return Math.min(64, d.scale) + "px";
+        })
+        .style('fill', 'white')
+        .attr('text-anchor', 'start')
+        .style('alignment-baseline', 'hanging')
+        .attr('dy', '1px')
+        .attr('dy', '.1em');
+
+      // AWESOME Text Fitter
+      function getSize(d) {
+        var bbox = this.getBBox();
+        var cbbox = this.parentNode.getBBox();
+        var hMargin = Math.min(30, cbbox.height * .1);
+        var wMargin = Math.min(30, cbbox.width * .1);
+        var wscale = Math.min((cbbox.width - wMargin) / bbox.width);
+        var hscale = Math.min((cbbox.height - hMargin) / bbox.height);
+
+        d.scale = Math.min(wscale, hscale);
+        d.hscale = hscale;
+        d.wscale = wscale;
+        d.bbox = bbox;
+        d.cbox = cbbox;
+
+        //dex.console.log("SCALE: ", d);
+      }
+
+      function transition(d) {
+        if (transitioning || !d) return;
+        transitioning = true;
+
+        //dex.console.log("DISPLAY", d);
+
+        var g2 = display(d),
+          t1 = g1.transition().duration(300),
+          t2 = g2.transition().duration(300);
+
+        // Update the domain only after entering new elements.
+        x.domain([d.x, d.x + d.dx]);
+        y.domain([d.y, d.y + d.dy]);
+
+        // Enable anti-aliasing during the transition.
+        chartG.style("shape-rendering", null);
+
+        // Draw child nodes on top of parent nodes.
+        chartG.selectAll(".depth").sort(function (a, b) {
+          return a.depth - b.depth;
+        });
+
+        // Fade-in entering text.
+        g2.selectAll("text")
+          .style("fill-opacity", 0);
+
+        // Transition to the new view.
+        t1.selectAll("rect").call(rect);
+        t2.selectAll("rect").call(rect);
+        //t1.selectAll("text").call(text).style("fill-opacity", 0);
+        //t2.selectAll("text").call(text).style("fill-opacity", 1);
+
+        // Remove the old node when the transition is finished.
+        t1.remove().each("end", function () {
+          chartG.style("shape-rendering", "crispEdges");
+          transitioning = false;
+        });
+
+        // Text resizing breaks if I do it mid-transition.
+        t2.each("end", function () {
+          g2.selectAll("text")
+            .call(text)
+            .style("font-size", "1px")
+            .each(getSize)
+            .style("font-size", function (d) {
+              return Math.min(64, d.scale) + "px";
+            })
+            .attr('text-anchor', 'start')
+            .style('alignment-baseline', 'hanging')
+            .style('fill', 'white')
+            .style("fill-opacity", 1)
+            .attr('dx', '0')
+            .attr('dy', '1px');
+        })
+      }
+
+      return g;
+    }
+
+    function text(text) {
+      text.attr("x", function (d) {
+        return x(d.x);
+      })
+        .attr("y", function (d) {
+          return y(d.y);
+        });
+    }
+
+    function rect(rect) {
+      var shader = {};
+      rect.attr("x", function (d) {
+        return x(d.x);
+      })
+        .attr("y", function (d) {
+          return y(d.y);
+        })
         .attr("width", function (d) {
-          return kx * d.dx - 1;
+          return x(d.x + d.dx) - x(d.x);
         })
         .attr("height", function (d) {
-          return ky * d.dy - 1;
+          return y(d.y + d.dy) - y(d.y);
         })
+        .style("fill", function (d) {
+          if (!(d.parent.name in shader)) {
+            shader[d.parent.name] = {'currentShade': 0};
+          }
+          if (!(d.name in shader[d.parent.name])) {
+            shader[d.parent.name][d.name] = shader[d.parent.name].currentShade;
+            shader[d.parent.name].currentShade += config.shader.increment;
+          }
+          //dex.console.log("SHADING-RECT", d, shader[d.parent.name]);
 
-      t.select("text")
-        .attr("x", function (d) {
-          return kx * d.dx / 2;
-        })
-        .attr("y", function (d) {
-          return ky * d.dy / 2;
-        })
-        .style("opacity", function (d) {
-          return kx * d.dx > d.w ? 1 : 0;
+          if (config.shader.type == 'darken') {
+            return d3.rgb(color(d.parent.name))
+              .darker(shader[d.parent.name][d.name]);
+          }
+          else if (config.shader.type == 'lighten') {
+            return d3.rgb(color(d.parent.name))
+              .brighter(shader[d.parent.name][d.name]);
+          }
+          else {
+            return color(d.parent.name);
+          }
         });
-
-      node = d;
-      d3.event.stopPropagation();
     }
 
+    function name(d) {
+      dex.console.log("NAME", d);
+      return d.parent
+        ? name(d.parent) + " > " + d.name + " (" +
+        formatNumber(d.size) + ")"
+        : d.name + " (" + formatNumber(d.size) + ")";
+    }
+
+    return chart;
   };
 
   $(document).ready(function () {

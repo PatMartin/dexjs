@@ -14,6 +14,46 @@
         width: 100%;
         min-width: 100%;
     }
+
+    .Treemap text {
+        pointer-events: none;
+    }
+
+    .Treemap .grandparent text {
+        font-weight: bold;
+    }
+
+    .Treemap rect {
+        fill: none;
+        stroke: #fff;
+    }
+
+    .Treemap rect.parent,
+    .grandparent rect {
+        stroke-width: 2px;
+    }
+
+    .Treemap .grandparent rect {
+        fill: steelblue;
+    }
+
+    .grandparent:hover rect {
+        fill: #ee9700;
+    }
+
+    .Treemap .children rect.parent,
+    .grandparent rect {
+        cursor: pointer;
+    }
+
+    .Treemap .children rect.parent {
+        fill-opacity: .1;
+    }
+
+    .Treemap .children:hover rect.child {
+        fill-opacity: .8;
+    }
+
 </style>
 <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.css">
 <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.theme.min.css">
@@ -28,21 +68,21 @@
     var csv = { 'header' : ["Party","Home State","President"],
         'data' : [["Independent ","Virginia","George Washington"],
             ["Federalist","Massachusetts","John Adams"],
-            ["Democratic-Republican ","Virginia","Thomas Jefferson"],
-            ["Democratic-Republican ","Virginia","James Madison"],
-            ["Democratic-Republican ","Virginia","James Monroe"],
-            ["Democratic-Republican/National Republican ","Massachusetts","John Quincy Adams"],
+            ["Dem-Rep","Virginia","Thomas Jefferson"],
+            ["Dem-Rep","Virginia","James Madison"],
+            ["Dem-Rep","Virginia","James Monroe"],
+            ["Dem-Rep/Nat Rep","Massachusetts","John Quincy Adams"],
             ["Democratic","Tennessee","Andrew Jackson"],
             ["Democratic","New York","Martin Van Buren"],
             ["Whig","Ohio","William Henry Harrison"],
             ["Whig","Virginia","John Tyler"],
-            ["Democratic ","Tennessee","James K. Polk"],
+            ["Democratic","Tennessee","James K. Polk"],
             ["Whig","Louisiana","Zachary Taylor"],
             ["Whig","New York","Millard Fillmore"],
             ["Democratic","New Hampshire","Franklin Pierce"],
             ["Democratic","Pennsylvania","James Buchanan"],
-            ["Republican/National Union","Illinois","Abraham Lincoln"],
-            ["Democratic/National Union","Tennessee","Andrew Johnson"],
+            ["Rep/Nat Union","Illinois","Abraham Lincoln"],
+            ["Dem/Nat Union","Tennessee","Andrew Johnson"],
             ["Republican","Ohio","Ulysses S. Grant"],
             ["Republican","Ohio","Rutherford B. Hayes"],
             ["Republican","Ohio","James A. Garfield"],
@@ -73,7 +113,6 @@
 
     var treemap = new dex.charts.d3.Treemap({
                 'parent': '#ChartArea',
-                //'csv': dex.csv.columnSlice(csv, [2, 3, 1])
                 'csv': csv
             }
     );
