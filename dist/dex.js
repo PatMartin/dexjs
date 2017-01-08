@@ -199,213 +199,216 @@
 
 module.exports = function array(dex) {
 
-    return {
-        'unique' : function (array) {
-          return _.uniq(array);
-        },
-        /**
-         *
-         * Take a slice of an array without modifying the original array.
-         *
-         * dex.array.slice(array) - Return a copy of the array.
-         * dex.array.slice(array, rowRange) - Copy the array, then return a slice
-         * within the specified range.
-         * dex.array.slice(array, rowRange, maxRows) - Copy the array, then return a slice
-         * within the specified range up to, but not exceeding, maxRows rows.
-         *
-         * @param (array) array - The array to slice.
-         * @param (array|number) rowRange - If supplied an array, the range defined by the of rows to slice.
-         * @param {number} maxRows - The maximum number of rows to return.
-         *
-         * @example {@lang javascript}
-         * var myArray = [ 1, 2, 3, 4, 5 ];
-         *
-         * // Returns: [ 3, 4, 5]
-         * slice(myArray, 2);
-         *
-         * // Returns: [ 1, 3, 5 ]
-         * slice(myArray, [0, 2, 4]);
-         *
-         * // I am not sure why you would do this, but in the interest of supporting
-         * // the Principle of Least Surprise, this returns the array unchanged.
-         * // Returns: [ 1, 2, 3, 4, 5 ]
-         * slice(myArray)
-         *
-         */
-        'slice': function (array, rowRange, maxRows) {
-            var arraySlice = [];
-            var range;
-            var i;
+  return {
+    'unique': function (array) {
+      return _.uniq(array);
+    },
+    /**
+     *
+     * Take a slice of an array without modifying the original array.
+     *
+     * dex.array.slice(array) - Return a copy of the array.
+     * dex.array.slice(array, rowRange) - Copy the array, then return a slice
+     * within the specified range.
+     * dex.array.slice(array, rowRange, maxRows) - Copy the array, then return a slice
+     * within the specified range up to, but not exceeding, maxRows rows.
+     *
+     * @param (array) array - The array to slice.
+     * @param (array|number) rowRange - If supplied an array, the range defined by the of rows to slice.
+     * @param {number} maxRows - The maximum number of rows to return.
+     *
+     * @example {@lang javascript}
+     * var myArray = [ 1, 2, 3, 4, 5 ];
+     *
+     * // Returns: [ 3, 4, 5]
+     * slice(myArray, 2);
+     *
+     * // Returns: [ 1, 3, 5 ]
+     * slice(myArray, [0, 2, 4]);
+     *
+     * // I am not sure why you would do this, but in the interest of supporting
+     * // the Principle of Least Surprise, this returns the array unchanged.
+     * // Returns: [ 1, 2, 3, 4, 5 ]
+     * slice(myArray)
+     *
+     */
+    'slice': function (array, rowRange, maxRows) {
+      var arraySlice = [];
+      var range;
+      var i;
 
-            var arrayCopy = dex.array.copy(array);
+      var arrayCopy = dex.array.copy(array);
 
-            // Numeric.
-            // Array.
-            // Object.  Numeric with start and end.
-            if (arguments.length === 2) {
-                if (Array.isArray(rowRange)) {
-                    range = rowRange;
-                }
-                else {
-                    range = dex.range(rowRange, arrayCopy.length - rowRange);
-                }
-            }
-            else if (arguments.length < 2) {
-                return arrayCopy;
-            }
-            else {
-                if (Array.isArray(rowRange)) {
-                    range = rowRange;
-                }
-                else {
-                    range = dex.range(rowRange, maxRows);
-                }
-            }
+      // Numeric.
+      // Array.
+      // Object.  Numeric with start and end.
+      if (arguments.length === 2) {
+        if (Array.isArray(rowRange)) {
+          range = rowRange;
+        }
+        else {
+          range = dex.range(rowRange, arrayCopy.length - rowRange);
+        }
+      }
+      else if (arguments.length < 2) {
+        return arrayCopy;
+      }
+      else {
+        if (Array.isArray(rowRange)) {
+          range = rowRange;
+        }
+        else {
+          range = dex.range(rowRange, maxRows);
+        }
+      }
 
-            //dex.console.log("BEFORE: array.slice(range=" + range + "): arraySlice=" + arraySlice);
-            for (i = 0; i < range.length; i++) {
-                arraySlice.push(arrayCopy[range[i]]);
-            }
-            //dex.console.log("AFTER: array.slice(range=" + range + "): arraySlice=" + arraySlice);
-            return arraySlice;
-        },
+      //dex.console.log("BEFORE: array.slice(range=" + range + "): arraySlice=" + arraySlice);
+      for (i = 0; i < range.length; i++) {
+        arraySlice.push(arrayCopy[range[i]]);
+      }
+      //dex.console.log("AFTER: array.slice(range=" + range + "): arraySlice=" + arraySlice);
+      return arraySlice;
+    },
 
-        /**
-         *
-         * This method locates the array element whose id tag matches the supplied
-         * id.  It returns the index of the first matching array element, or -1 if
-         * none was found.
-         *
-         * @param array The array to search.
-         * @param id The id to search on.
-         *
-         * @returns {number} The index of the first matching array element, or -1
-         * if not found.
-         *
-         */
-        /*
-         module.exports.indexOfById = function (array, id) {
-         return _.findIndex(array, { id: id })
-         };
-         */
+    /**
+     *
+     * This method locates the array element whose id tag matches the supplied
+     * id.  It returns the index of the first matching array element, or -1 if
+     * none was found.
+     *
+     * @param array The array to search.
+     * @param id The id to search on.
+     *
+     * @returns {number} The index of the first matching array element, or -1
+     * if not found.
+     *
+     */
+    /*
+     module.exports.indexOfById = function (array, id) {
+     return _.findIndex(array, { id: id })
+     };
+     */
 
-        /**
-         *
-         * Is this routine actually used anymore?  Can I deprecate it?  It's long and
-         * I don't remember exactly what its doing.
-         *
-         * @param data
-         * @param numValues
-         * @returns {*}
-         *
-         */
-        /*
-         module.exports.indexBands = function (data, numValues) {
-         dex.console.log("BANDS");
-         var interval, residual, tickIndices, last, i;
+    /**
+     *
+     * Is this routine actually used anymore?  Can I deprecate it?  It's long and
+     * I don't remember exactly what its doing.
+     *
+     * @param data
+     * @param numValues
+     * @returns {*}
+     *
+     */
+    /*
+     module.exports.indexBands = function (data, numValues) {
+     dex.console.log("BANDS");
+     var interval, residual, tickIndices, last, i;
 
-         if (numValues <= 0) {
-         tickIndices = [];
-         }
-         else if (numValues == 1) {
-         tickIndices = [Math.floor(numValues / 2)];
-         }
-         else if (numValues == 2) {
-         tickIndices = [0, data.length - 1];
-         }
-         else {
-         // We have at least 2 ticks to display.
-         // Calculate the rough interval between ticks.
-         interval = Math.max(1, Math.floor(data.length / (numValues - 1)));
+     if (numValues <= 0) {
+     tickIndices = [];
+     }
+     else if (numValues == 1) {
+     tickIndices = [Math.floor(numValues / 2)];
+     }
+     else if (numValues == 2) {
+     tickIndices = [0, data.length - 1];
+     }
+     else {
+     // We have at least 2 ticks to display.
+     // Calculate the rough interval between ticks.
+     interval = Math.max(1, Math.floor(data.length / (numValues - 1)));
 
-         // If it's not perfect, record it in the residual.
-         residual = Math.floor(data.length % (numValues - 1));
+     // If it's not perfect, record it in the residual.
+     residual = Math.floor(data.length % (numValues - 1));
 
-         // Always label our first data point.
-         tickIndices = [0];
+     // Always label our first data point.
+     tickIndices = [0];
 
-         // Set stop point on the interior ticks.
-         last = data.length - interval;
+     // Set stop point on the interior ticks.
+     last = data.length - interval;
 
-         dex.console.log("TEST", data, numValues, interval, residual, last);
+     dex.console.log("TEST", data, numValues, interval, residual, last);
 
-         // Figure out the interior ticks, gently drift to accommodate
-         // the residual.
-         for (i = interval; i <= last; i += interval) {
-         if (residual > 0) {
-         i += 1;
-         residual -= 1;
-         }
-         tickIndices.push(i);
-         }
-         // Always graph the last tick.
-         tickIndices.push(data.length - 1);
-         }
-         dex.console.log("BANDS");
-         return tickIndices;
-         };
-         */
+     // Figure out the interior ticks, gently drift to accommodate
+     // the residual.
+     for (i = interval; i <= last; i += interval) {
+     if (residual > 0) {
+     i += 1;
+     residual -= 1;
+     }
+     tickIndices.push(i);
+     }
+     // Always graph the last tick.
+     tickIndices.push(data.length - 1);
+     }
+     dex.console.log("BANDS");
+     return tickIndices;
+     };
+     */
 
-        /**
-         * Return an array consisting of unique elements within the first.
-         *
-         * @param array The array to extract unique values from.
-         *
-         * @returns {Array} An array which consists of unique elements within
-         * the user supplied array.
-         *
-         */
+    /**
+     * Return an array consisting of unique elements within the first.
+     *
+     * @param array The array to extract unique values from.
+     *
+     * @returns {Array} An array which consists of unique elements within
+     * the user supplied array.
+     *
+     */
 //module.exports.unique = function (array) {
 //  return _.uniq(array);
 //};
 
-        /**
-         *
-         * Returns an array of the mathematically smallest and largest
-         * elements within the array.
-         *
-         * @param matrix The array to evaluate.
-         * @param indices The array indices to be considered in the evaluation.
-         *
-         * @returns {Array} - An array consisting of [ min, max ] of the array.
-         *
-         */
-        'extent': function (matrix, indices) {
-            if (!matrix || matrix.length <= 0 || !indices || indices.length <= 0) {
-                return [0, 0];
-            }
+    /**
+     *
+     * Returns an array of the mathematically smallest and largest
+     * elements within the array.
+     *
+     * @param matrix The array to evaluate.
+     * @param indices The array indices to be considered in the evaluation.
+     *
+     * @returns {Array} - An array consisting of [ min, max ] of the array.
+     *
+     */
+    'extent': function (matrix, indices) {
+      if (!matrix || matrix.length <= 0 || !indices || indices.length <= 0) {
+        return [0, 0];
+      }
 
-            var min = matrix[0][indices[0]];
-            var max = min;
+      var min = matrix[0][indices[0]];
+      var max = min;
 
-            indices.forEach(function (ci) {
-                matrix.forEach(function (row) {
-                    if (min > row[ci]) {
-                        min = row[ci];
-                    }
-                    if (max < row[ci]) {
-                        max = row[ci];
-                    }
-                });
-            });
-            return [min, max];
-        },
+      indices.forEach(function (ci) {
+        matrix.forEach(function (row) {
+          if (min > row[ci]) {
+            min = row[ci];
+          }
+          if (max < row[ci]) {
+            max = row[ci];
+          }
+        });
+      });
+      return [min, max];
+    },
 
-        /**
-         *
-         * Return a distinct copy of an array.
-         *
-         * @param {Array} array The array to copy.
-         * @returns {Array} The copy of the array.
-         *
-         */
-        'copy': function (array) {
-            // Shallow copy
-            return _.clone(array);
-            // Deep copy:
-            //return $.extend(true, {}, array);
-        }
-    };
+    /**
+     *
+     * Return a distinct copy of an array.
+     *
+     * @param {Array} array The array to copy.
+     * @returns {Array} The copy of the array.
+     *
+     */
+    'copy': function (array) {
+      // Shallow copy
+      return _.clone(array);
+      // Deep copy:
+      //return $.extend(true, {}, array);
+    },
+    'isNumeric' : function(array) {
+      return array.every(dex.object.isNumeric);
+    }
+  };
 };
 },{}],5:[function(require,module,exports){
 /**
@@ -7613,184 +7616,364 @@ module.exports = sunburst;
 },{}],29:[function(require,module,exports){
 var treemap = function (userConfig) {
   d3 = dex.charts.d3.d3v3;
-  var chart;
+  var chart = null;
 
-  var defaults =
-    {
-      // The parent container of this chart.
-      'parent': '#TreemapBarchart',
-      // Set these when you need to CSS style components independently.
-      'id': 'TreemapBarchart',
-      'class': 'TreemapBarchart',
-      'resizable': true,
-      // Our data...
-      'csv': {
-        // Give folks without data something to look at anyhow.
-        'header': ["NAME", "PACAGE", "SIZE"],
-        'data': [
-          ["name1", "package1", 100],
-          ["name2", "package2", 50],
-          ["name3", "package3", 25]
-        ]
+  var defaults = {
+    'parent': '#Treemap',
+    // Set these when you need to CSS style components independently.
+    'id': 'Treemap',
+    'class': 'Treemap',
+    'resizable': true,
+    // Our data...
+    'csv': undefined,
+    'title': 'Level: ',
+    'margin': {
+      'left': 10,
+      'right': 10,
+      'top': 25,
+      'bottom': 10
+    },
+    'shader': {
+      'type': 'darken',
+      'increment': .1
+    },
+    'manualSizing': false,
+    'width': '100%',
+    'height': '100%',
+    'transform': '',
+    'color': d3.scale.category10(),
+    'navbar': dex.config.rectangle({
+      'fill.fillColor': 'steelblue',
+      'y': function () {
+        return -chart.config.margin.top;
       },
-      'width': "100%",
-      'height': "100%",
-      'transform': "translate(0 0)",
-      'title': dex.config.text(),
-      'label': dex.config.text()
-    };
+      'width': function () {
+        return chart.config.width
+          - chart.config.margin.left - chart.config.margin.right;
+      },
+      'height': function () {
+        return chart.config.margin.top;
+      }
+    }),
+    'navbarLabel': dex.config.text({
+      'x': 6,
+      'y': function () {
+        return 6 - chart.config.margin.top;
+      },
+      'dy': '.75em',
+      'fill.fillColor': 'white'
+    }),
+    'label': dex.config.text({
+      //'dy': '1em',
+      'fill.fillColor': 'white',
+//      'font.size': function (d) {
+//       return 16;
+//      }
+    })
+  };
 
   var chart = new dex.component(userConfig, defaults);
+  var config = chart.config;
+  var margin = config.margin;
+  var csv = config.csv;
+  var color = config.color;
 
   chart.render = function render() {
     d3 = dex.charts.d3.d3v3;
-    window.onresize = this.resize;
-    chart.resize();
+    chart.resize = this.resize(chart);
+    window.onresize = chart.resize;
+    return chart.resize();
   };
 
-  chart.resize = function resize() {
+  chart.update = function update() {
     d3 = dex.charts.d3.d3v3;
-    if (chart.config.resizable) {
-      var width = d3.select(chart.config.parent).property("clientWidth");
-      var height = d3.select(chart.config.parent).property("clientHeight");
-      dex.console.log(chart.config.id + ": resize(" + width + "," + height + ")");
-      chart.attr("width", width).attr("height", height).update();
-    }
-    else {
-      chart.update();
-    }
-  };
+    var width = config.width - margin.left - margin.right;
+    var height = config.height - margin.top - margin.bottom;
 
-  chart.update = function () {
-    d3 = dex.charts.d3.d3v3;
-    var chart = this;
-    var config = chart.config;
-    var csv = config.csv;
+    d3.selectAll(config.parent).selectAll("*").remove();
 
-    d3.selectAll("#" + config.id).remove();
-
-    var chartContainer = d3.select(config.parent).append("g")
-      .attr("class", config["id"])
+    var chartContainer = d3.select(config.parent)
+      .append("g")
       .attr("id", config["id"])
+      .attr("class", config["class"])
+      .attr('width', config.width)
+      .attr('height', config.height)
       .attr("transform", config.transform);
 
-    var w = 1280 - 80,
-      h = 800 - 180,
-      x = d3.scale.linear().range([0, w]),
-      y = d3.scale.linear().range([0, h]),
-      color = d3.scale.category20c(),
-      root,
-      node;
+    var chartG = chartContainer
+      .append('g')
+      .attr('transform', 'translate(' +
+        margin.left + ',' + margin.top + ')');
 
-    var treemap = d3.layout.treemap()
-      .round(false)
-      .size([w, h])
-      .sticky(true)
+    var formatNumber = d3.format(",d");
+    var transitioning;
+
+    var x = d3.scale.linear()
+      .domain([0, width])
+      .range([0, width]);
+
+    var y = d3.scale.linear()
+      .domain([0, height])
+      .range([0, height]);
+
+    var tmap = d3.layout.treemap()
+      .children(function (d, depth) {
+        return depth ? null : d._children;
+      })
       .value(function (d) {
         return d.size;
-      });
-
-    var data = dex.csv.toNestedJson(dex.csv.copy(csv));
-    dex.console.log("DATA", csv, data);
-
-    node = root = data;
-
-    var nodes = treemap.nodes(root)
-      .filter(function (d) {
-        return !d.children;
-      });
-
-    var cell = chartContainer.selectAll("g")
-      .data(nodes)
-      .enter().append("svg:g")
-      .attr("class", "cell")
-      .attr("transform", function (d) {
-        return "translate(" + d.x + "," + d.y + ")";
       })
-      .on("click", function (d) {
-        return zoom(node == d.parent ? root : d.parent);
-      });
-
-    cell.append("svg:rect")
-      .attr("width", function (d) {
-        return d.dx - 1;
+      .sort(function (a, b) {
+        return a.size - b.size;
       })
-      .attr("height", function (d) {
-        return d.dy - 1;
-      })
-      .style("fill", function (d) {
-        return color(d.parent.name);
-      });
+      .ratio(height / width * 0.5 * (1 + Math.sqrt(5)))
+      .round(false);
 
-    cell.append("svg:text")
-      .attr("x", function (d) {
-        return d.dx / 2;
-      })
-      .attr("y", function (d) {
-        return d.dy / 2;
-      })
-      .attr("dy", ".35em")
-      .attr("text-anchor", "middle")
-      .text(function (d) {
-        return d.name;
-      })
-      .style("opacity", function (d) {
-        d.w = this.getComputedTextLength();
-        return d.dx > d.w ? 1 : 0;
-      });
+    var grandparent = chartG.append("g")
+      .attr("class", "grandparent");
 
-    d3.select(window).on("click", function () {
-      zoom(root);
-    });
+    grandparent.append("rect")
+      .call(dex.config.configureRectangle, config.navbar);
 
-    d3.select("select").on("change", function () {
-      treemap.value(this.value == "size" ? size : count).nodes(root);
-      zoom(node);
-    });
+    grandparent.append("text")
+      .call(dex.config.configureText, config.navbarLabel);
 
+    var chartData = dex.csv.toNestedJson(csv, config.manualSizing);
 
-    function size(d) {
-      return d.size;
+    //dex.console.log("chartData", chartData);
+
+    initialize(chartData);
+    accumulate(chartData);
+    layout(chartData);
+    display(chartData);
+
+    function initialize(root) {
+      root.x = root.y = 0;
+      root.dx = width;
+      root.dy = height;
+      root.depth = 0;
     }
 
-    function count(d) {
-      return 1;
+    // Aggregate the values for internal nodes. This is normally done by the
+    // treemap layout, but not here because of our custom implementation.
+    // We also take a snapshot of the original children (_children) to avoid
+    // the children being overwritten when when layout is computed.
+    function accumulate(d) {
+      return (d._children = d.children)
+        ? d.size = d.children.reduce(function (p, v) {
+          return p + accumulate(v);
+        }, 0)
+        : d.size;
     }
 
-    function zoom(d) {
-      var kx = w / d.dx, ky = h / d.dy;
-      x.domain([d.x, d.x + d.dx]);
-      y.domain([d.y, d.y + d.dy]);
+    // Compute the treemap layout recursively such that each group of siblings
+    // uses the same size (1×1) rather than the dimensions of the parent cell.
+    // This optimizes the layout for the current zoom state. Note that a wrapper
+    // object is created for the parent node for each group of siblings so that
+    // the parent’s dimensions are not discarded as we recurse. Since each group
+    // of sibling was laid out in 1×1, we must rescale to fit using absolute
+    // coordinates. This lets us use a viewport to zoom.
+    function layout(d) {
+      if (d._children) {
+        tmap.nodes({_children: d._children});
+        d._children.forEach(function (c) {
+          c.x = d.x + c.x * d.dx;
+          c.y = d.y + c.y * d.dy;
+          c.dx *= d.dx;
+          c.dy *= d.dy;
+          c.parent = d;
+          layout(c);
+        });
+      }
+    }
 
-      var t = chartContainer.selectAll("g.cell").transition()
-        .duration(d3.event.altKey ? 7500 : 750)
-        .attr("transform", function (d) {
-          return "translate(" + x(d.x) + "," + y(d.y) + ")";
+    function display(d) {
+      grandparent
+        .datum(d.parent)
+        .on("click", transition)
+        .select("text")
+        .text(config.title + name(d));
+
+      var g1 = chartG.insert("g", ".grandparent")
+        .datum(d)
+        .attr("class", "depth");
+
+      var g = g1.selectAll("g")
+        .data(d._children)
+        .enter().append("g");
+
+      g.filter(function (d) {
+        return d._children;
+      })
+        .classed("children", true)
+        .on("click", transition);
+
+      g.selectAll(".child")
+        .data(function (d) {
+          return d._children || [d];
+        })
+        .enter().append("rect")
+        .attr("class", "child")
+        .call(rect);
+
+      g.append("rect")
+        .attr("class", "parent")
+        .call(rect)
+        .append("title")
+        .text(function (d) {
+          return formatNumber(d.size);
         });
 
-      t.select("rect")
+      g.append("text")
+      //.call(dex.config.configureText, config.label)
+        .text(function (d) {
+          return d.name;
+        })
+        .call(text)
+        .style("font-size", "1px")
+        .each(getSize)
+        .style("font-size", function (d) {
+          return Math.min(64, d.scale) + "px";
+        })
+        .style('fill', 'white')
+        .attr('text-anchor', 'start')
+        .style('alignment-baseline', 'hanging')
+        .attr('dy', '1px')
+        .attr('dy', '.1em');
+
+      // AWESOME Text Fitter
+      function getSize(d) {
+        var bbox = this.getBBox();
+        var cbbox = this.parentNode.getBBox();
+        var hMargin = Math.min(30, cbbox.height * .1);
+        var wMargin = Math.min(30, cbbox.width * .1);
+        var wscale = Math.min((cbbox.width - wMargin) / bbox.width);
+        var hscale = Math.min((cbbox.height - hMargin) / bbox.height);
+
+        d.scale = Math.min(wscale, hscale);
+        d.hscale = hscale;
+        d.wscale = wscale;
+        d.bbox = bbox;
+        d.cbox = cbbox;
+
+        //dex.console.log("SCALE: ", d);
+      }
+
+      function transition(d) {
+        if (transitioning || !d) return;
+        transitioning = true;
+
+        //dex.console.log("DISPLAY", d);
+
+        var g2 = display(d),
+          t1 = g1.transition().duration(300),
+          t2 = g2.transition().duration(300);
+
+        // Update the domain only after entering new elements.
+        x.domain([d.x, d.x + d.dx]);
+        y.domain([d.y, d.y + d.dy]);
+
+        // Enable anti-aliasing during the transition.
+        chartG.style("shape-rendering", null);
+
+        // Draw child nodes on top of parent nodes.
+        chartG.selectAll(".depth").sort(function (a, b) {
+          return a.depth - b.depth;
+        });
+
+        // Fade-in entering text.
+        g2.selectAll("text")
+          .style("fill-opacity", 0);
+
+        // Transition to the new view.
+        t1.selectAll("rect").call(rect);
+        t2.selectAll("rect").call(rect);
+        //t1.selectAll("text").call(text).style("fill-opacity", 0);
+        //t2.selectAll("text").call(text).style("fill-opacity", 1);
+
+        // Remove the old node when the transition is finished.
+        t1.remove().each("end", function () {
+          chartG.style("shape-rendering", "crispEdges");
+          transitioning = false;
+        });
+
+        // Text resizing breaks if I do it mid-transition.
+        t2.each("end", function () {
+          g2.selectAll("text")
+            .call(text)
+            .style("font-size", "1px")
+            .each(getSize)
+            .style("font-size", function (d) {
+              return Math.min(64, d.scale) + "px";
+            })
+            .attr('text-anchor', 'start')
+            .style('alignment-baseline', 'hanging')
+            .style('fill', 'white')
+            .style("fill-opacity", 1)
+            .attr('dx', '0')
+            .attr('dy', '1px');
+        })
+      }
+
+      return g;
+    }
+
+    function text(text) {
+      text.attr("x", function (d) {
+        return x(d.x);
+      })
+        .attr("y", function (d) {
+          return y(d.y);
+        });
+    }
+
+    function rect(rect) {
+      var shader = {};
+      rect.attr("x", function (d) {
+        return x(d.x);
+      })
+        .attr("y", function (d) {
+          return y(d.y);
+        })
         .attr("width", function (d) {
-          return kx * d.dx - 1;
+          return x(d.x + d.dx) - x(d.x);
         })
         .attr("height", function (d) {
-          return ky * d.dy - 1;
+          return y(d.y + d.dy) - y(d.y);
         })
+        .style("fill", function (d) {
+          if (!(d.parent.name in shader)) {
+            shader[d.parent.name] = {'currentShade': 0};
+          }
+          if (!(d.name in shader[d.parent.name])) {
+            shader[d.parent.name][d.name] = shader[d.parent.name].currentShade;
+            shader[d.parent.name].currentShade += config.shader.increment;
+          }
+          //dex.console.log("SHADING-RECT", d, shader[d.parent.name]);
 
-      t.select("text")
-        .attr("x", function (d) {
-          return kx * d.dx / 2;
-        })
-        .attr("y", function (d) {
-          return ky * d.dy / 2;
-        })
-        .style("opacity", function (d) {
-          return kx * d.dx > d.w ? 1 : 0;
+          if (config.shader.type == 'darken') {
+            return d3.rgb(color(d.parent.name))
+              .darker(shader[d.parent.name][d.name]);
+          }
+          else if (config.shader.type == 'lighten') {
+            return d3.rgb(color(d.parent.name))
+              .brighter(shader[d.parent.name][d.name]);
+          }
+          else {
+            return color(d.parent.name);
+          }
         });
-
-      node = d;
-      d3.event.stopPropagation();
     }
 
+    function name(d) {
+      dex.console.log("NAME", d);
+      return d.parent
+        ? name(d.parent) + " > " + d.name + " (" +
+        formatNumber(d.size) + ")"
+        : d.name + " (" + formatNumber(d.size) + ")";
+    }
+
+    return chart;
   };
 
   $(document).ready(function () {
@@ -12207,10 +12390,10 @@ module.exports = function csv(dex) {
      */
     'csv': function (header, data) {
       var csv =
-      {
-        "header": header,
-        "data": data
-      };
+        {
+          "header": header,
+          "data": data
+        };
 
       return csv;
     },
@@ -12256,7 +12439,7 @@ module.exports = function csv(dex) {
       nameToIndex = new Array(uniques.length);
       for (ri = 0, cid = 0; ri < uniques.length; ri++) {
         nameToIndex[ri] =
-        {};
+          {};
         for (ci = 0; ci < uniques[ri].length; ci++) {
           nameToIndex[ri][header[cid]] = cid;
           cid += 1;
@@ -12298,12 +12481,12 @@ module.exports = function csv(dex) {
      */
     'createMap': function (csv, keyIndex) {
       var ri, ci, rowMap, map =
-      {};
+        {};
 
       for (ri = 0; ri < csv.data.length; ri += 1) {
         if (csv.data[ri].length === csv.header.length) {
           rowMap =
-          {};
+            {};
 
           for (ci = 0; ci < csv.header.length; ci += 1) {
             rowMap[csv.header[ci]] = csv.data[ri][ci];
@@ -12314,13 +12497,13 @@ module.exports = function csv(dex) {
       return map;
     },
 
-    'json2Csv' : function(json) {
-      var csv = { 'header' : [], 'data' : [] };
+    'json2Csv': function (json) {
+      var csv = {'header': [], 'data': []};
       if (_.isUndefined(json) || json.length <= 0) {
         return csv;
       }
       csv.header = _.keys(json[0]);
-      json.forEach(function(jsonRow) {
+      json.forEach(function (jsonRow) {
         var row = [];
         csv.header.forEach(function (columnName) {
           row.push(jsonRow[columnName]);
@@ -12349,7 +12532,7 @@ module.exports = function csv(dex) {
       }
       else if (arguments.length === 2) {
         var jsonRow =
-        {};
+          {};
         for (ci = 0; ci < csv.header.length; ci += 1) {
           jsonRow[csv.header[ci]] = csv.data[rowIndex][ci];
         }
@@ -12358,7 +12541,7 @@ module.exports = function csv(dex) {
       else if (arguments.length === 1) {
         for (ri = 0; ri < csv.data.length; ri++) {
           var jsonRow =
-          {};
+            {};
           for (ci = 0; ci < csv.header.length; ci++) {
             jsonRow[csv.header[ci]] = csv.data[ri][ci];
             //dex.console.log(csv.header[ci] + "=" + csv.data[ri][ci], jsonRow);
@@ -12483,11 +12666,11 @@ module.exports = function csv(dex) {
 
       function createChild(name, category, children) {
         var child =
-        {
-          "name": name,
-          "category": category,
-          "children": children
-        };
+          {
+            "name": name,
+            "category": category,
+            "children": children
+          };
         return child;
       }
     },
@@ -12512,7 +12695,7 @@ module.exports = function csv(dex) {
      */
     'connections': function (csv) {
       var connections =
-      {};
+        {};
       var ri;
 
       for (ri = 0; ri < csv.data.length; ri++) {
@@ -12532,7 +12715,7 @@ module.exports = function csv(dex) {
      */
     'createRowMap': function (csv, keyIndex) {
       var map =
-      {};
+        {};
       var ri;
 
       for (ri = 0; ri < csv.data.length; ri++) {
@@ -12564,7 +12747,7 @@ module.exports = function csv(dex) {
      */
     'getNumericColumnNames': function (csv) {
       var possibleNumeric =
-      {};
+        {};
       var i, j, ri, ci;
       var numericColumns = [];
 
@@ -12609,7 +12792,7 @@ module.exports = function csv(dex) {
           if (!testResults[i]["notDate"]) {
             var date = new Date(row[i]);
             if (isNaN(date.getTime())) {
-              dex.console.log("not date" + i);
+              //dex.console.log("not date" + i);
               testResults[i]["notDate"] = true;
             }
           }
@@ -12668,20 +12851,20 @@ module.exports = function csv(dex) {
       return csv;
     },
 
-    'uniqueArray' : function(csv, columnIndex) {
+    'uniqueArray': function (csv, columnIndex) {
       return dex.array.unique(dex.matrix.flatten(
-        dex.matrix.slice(csv.data, [ columnIndex ])));
+        dex.matrix.slice(csv.data, [columnIndex])));
     },
 
-    'selectRows' : function(csv, fn) {
+    'selectRows': function (csv, fn) {
       var subset = [];
-      csv.data.forEach(function(row) {
+      csv.data.forEach(function (row) {
         if (fn(row)) {
           subset.push(row);
         }
       });
 
-      return { 'header' : csv.header, 'data' : subset };
+      return {'header': csv.header, 'data': subset};
     },
 
     /**
@@ -12760,7 +12943,7 @@ module.exports = function csv(dex) {
      */
     'getNumericIndices': function (csv) {
       var possibleNumeric =
-      {};
+        {};
       var i, j;
       var numericIndices = [];
 
@@ -12790,7 +12973,7 @@ module.exports = function csv(dex) {
 
     'getCategoricalIndices': function (csv) {
       var possibleNumeric =
-      {};
+        {};
       var i, j;
       var categoricalIndices = [];
 
@@ -12884,11 +13067,11 @@ module.exports = function csv(dex) {
         else {
           //group = { 'csv' : dex.csv.csv(otherHeaders, []) };
           group =
-          {
-            'key': key,
-            'values': [],
-            'csv': dex.csv.csv(csv.header, [])
-          };
+            {
+              'key': key,
+              'values': [],
+              'csv': dex.csv.csv(csv.header, [])
+            };
           for (ci = 0; ci < values.length; ci++) {
             group.values.push({'name': csv.header[columns[ci]], 'value': values[ci]});
           }
@@ -12961,7 +13144,7 @@ module.exports = function csv(dex) {
       // If 1 argument, then setup and call with 2.
       if (arguments.length == 1) {
         var result = {'name': 'root', children: dex.csv.toJsonHierarchy(csv, 0)};
-        dex.console.log("RESULT", result);
+        //dex.console.log("RESULT", result);
         return result;
       }
       else if (arguments.length == 2) {
@@ -13018,39 +13201,63 @@ module.exports = function csv(dex) {
       return {'nodes': nodes, 'links': links};
     },
 
-    'toNestedJson': function (csv) {
-      dex.console.log("CMAP", dex.csv.getConnectionMap(csv));
-      var result = {'name': csv.header[0], 'children': dex.csv.toNestedJsonChildren(dex.csv.getConnectionMap(csv))};
-      dex.console.log("RESULT", result);
+    'toNestedJson': function (csv, manualWeight) {
+      manualWeight = manualWeight || false;
+      dex.console.log("CMAP", dex.csv.getConnectionMap(csv), manualWeight);
+      var result = {
+        'name': csv.header[0],
+        'children': dex.csv.toNestedJsonChildren(
+          dex.csv.getConnectionMap(csv), manualWeight)
+      };
+      //dex.console.log("toNestedJson.result()", result);
       return result;
     },
 
-    'toNestedJsonChildren': function (cmap) {
+    'toNestedJsonChildren': function (cmap, manualWeight) {
+      manualWeight = manualWeight || false;
       //dex.console.log("CMAP", cmap);
       var children = [];
-
       _.keys(cmap).map(function (key) {
         var childMap = cmap[key];
-        if (_.keys(childMap).length <= 0) {
-          children.push({'name': key, 'size': 1000});
-        }
-        else {
-          if (_.keys(childMap).length == 1) {
-            //var grandChildMap = childMap[_.keys(childMap)[0]];
 
-            //dex.console.log("GCMAP", grandChildMap);
-            //if (_.keys(grandChildMap).length <= 0) {
-            //  children.push({'name': key, 'size': 100});
-            //}
-            //else {
-            children.push({'name': key, 'children': dex.csv.toNestedJsonChildren(cmap[key])});
-            //}
+        if (_.keys(childMap).length <= 0) {
+          //dex.console.log("Child Map 0", childMap, cmap);
+          children.push({'name': key, 'size': 1});
+        }
+        else if (manualWeight) {
+
+          var props = Object.getOwnPropertyNames(childMap);
+          //dex.console.log("KEY", key, "childMap", childMap, "cm.props", props);
+
+          if (props.length == 1) {
+            var props2 = Object.getOwnPropertyNames(childMap[props[0]]);
+            //dex.console.log("GRANDCHILD-PROPS", props2);
+            if (props2.length == 0) {
+              children.push({'name': key, size: +props[0]});
+            }
+            else {
+              children.push({
+                'name': key,
+                'children': dex.csv.toNestedJsonChildren(cmap[key], manualWeight)
+              });
+            }
           }
           else {
-            children.push({'name': key, 'children': dex.csv.toNestedJsonChildren(cmap[key])});
+            children.push({
+              'name': key,
+              'children': dex.csv.toNestedJsonChildren(cmap[key], manualWeight)
+            });
           }
         }
-      })
+        else {
+          children.push({
+            'name': key,
+            'children': dex.csv.toNestedJsonChildren(cmap[key], manualWeight)
+          });
+        }
+      });
+
+//dex.console.log("CHILDREN", children);
       return children;
     },
 
@@ -13071,8 +13278,10 @@ module.exports = function csv(dex) {
 
       return rootMap;
     }
-  };
-};
+  }
+    ;
+}
+;
 },{}],52:[function(require,module,exports){
 /**
  *
@@ -13616,47 +13825,6 @@ module.exports = function matrix(dex) {
 
       return transposedMatrix;
     },
-
-    /**
-     *
-     * Return a slice of this matrix based upon the supplied columns.
-     * The original matrix will be left untouched.
-     *
-     * @param {matrix} matrix - The matrix to slice.
-     * @param {Array.<number>} columns - An array of column indexes to be included in the slice.
-     *
-     * @returns {*}
-     *
-     */
-    /*
-     'columnSlice' : function (matrix, columns) {
-     // TODO: Determine, is this destructive?
-     var slice = [];
-     var ri;
-     var transposeMatrix;
-
-     if (arguments.length != 2) {
-     return matrix;
-     }
-
-     transposeMatrix = dex.matrix.transpose(matrix);
-     //dex.console.log("transposing", matrix, "transpose", transposedMatrix);
-
-     // Specific columns targetted:
-     if (Array.isArray(columns)) {
-     for (ri = 0; ri < columns.length; ri += 1) {
-     slice.push(transposeMatrix[columns[ri]]);
-     }
-     }
-     // Single column.
-     else {
-     slice.push(transposeMatrix[columns]);
-     }
-
-     // Back to row/column format.
-     return dex.matrix.transpose(slice);
-     };
-     */
 
     /**
      *
