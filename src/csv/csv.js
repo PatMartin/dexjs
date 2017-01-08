@@ -20,10 +20,10 @@ module.exports = function csv(dex) {
      */
     'csv': function (header, data) {
       var csv =
-      {
-        "header": header,
-        "data": data
-      };
+        {
+          "header": header,
+          "data": data
+        };
 
       return csv;
     },
@@ -69,7 +69,7 @@ module.exports = function csv(dex) {
       nameToIndex = new Array(uniques.length);
       for (ri = 0, cid = 0; ri < uniques.length; ri++) {
         nameToIndex[ri] =
-        {};
+          {};
         for (ci = 0; ci < uniques[ri].length; ci++) {
           nameToIndex[ri][header[cid]] = cid;
           cid += 1;
@@ -111,12 +111,12 @@ module.exports = function csv(dex) {
      */
     'createMap': function (csv, keyIndex) {
       var ri, ci, rowMap, map =
-      {};
+        {};
 
       for (ri = 0; ri < csv.data.length; ri += 1) {
         if (csv.data[ri].length === csv.header.length) {
           rowMap =
-          {};
+            {};
 
           for (ci = 0; ci < csv.header.length; ci += 1) {
             rowMap[csv.header[ci]] = csv.data[ri][ci];
@@ -127,13 +127,13 @@ module.exports = function csv(dex) {
       return map;
     },
 
-    'json2Csv' : function(json) {
-      var csv = { 'header' : [], 'data' : [] };
+    'json2Csv': function (json) {
+      var csv = {'header': [], 'data': []};
       if (_.isUndefined(json) || json.length <= 0) {
         return csv;
       }
       csv.header = _.keys(json[0]);
-      json.forEach(function(jsonRow) {
+      json.forEach(function (jsonRow) {
         var row = [];
         csv.header.forEach(function (columnName) {
           row.push(jsonRow[columnName]);
@@ -162,7 +162,7 @@ module.exports = function csv(dex) {
       }
       else if (arguments.length === 2) {
         var jsonRow =
-        {};
+          {};
         for (ci = 0; ci < csv.header.length; ci += 1) {
           jsonRow[csv.header[ci]] = csv.data[rowIndex][ci];
         }
@@ -171,7 +171,7 @@ module.exports = function csv(dex) {
       else if (arguments.length === 1) {
         for (ri = 0; ri < csv.data.length; ri++) {
           var jsonRow =
-          {};
+            {};
           for (ci = 0; ci < csv.header.length; ci++) {
             jsonRow[csv.header[ci]] = csv.data[ri][ci];
             //dex.console.log(csv.header[ci] + "=" + csv.data[ri][ci], jsonRow);
@@ -296,11 +296,11 @@ module.exports = function csv(dex) {
 
       function createChild(name, category, children) {
         var child =
-        {
-          "name": name,
-          "category": category,
-          "children": children
-        };
+          {
+            "name": name,
+            "category": category,
+            "children": children
+          };
         return child;
       }
     },
@@ -325,7 +325,7 @@ module.exports = function csv(dex) {
      */
     'connections': function (csv) {
       var connections =
-      {};
+        {};
       var ri;
 
       for (ri = 0; ri < csv.data.length; ri++) {
@@ -345,7 +345,7 @@ module.exports = function csv(dex) {
      */
     'createRowMap': function (csv, keyIndex) {
       var map =
-      {};
+        {};
       var ri;
 
       for (ri = 0; ri < csv.data.length; ri++) {
@@ -377,7 +377,7 @@ module.exports = function csv(dex) {
      */
     'getNumericColumnNames': function (csv) {
       var possibleNumeric =
-      {};
+        {};
       var i, j, ri, ci;
       var numericColumns = [];
 
@@ -422,7 +422,7 @@ module.exports = function csv(dex) {
           if (!testResults[i]["notDate"]) {
             var date = new Date(row[i]);
             if (isNaN(date.getTime())) {
-              dex.console.log("not date" + i);
+              //dex.console.log("not date" + i);
               testResults[i]["notDate"] = true;
             }
           }
@@ -481,20 +481,20 @@ module.exports = function csv(dex) {
       return csv;
     },
 
-    'uniqueArray' : function(csv, columnIndex) {
+    'uniqueArray': function (csv, columnIndex) {
       return dex.array.unique(dex.matrix.flatten(
-        dex.matrix.slice(csv.data, [ columnIndex ])));
+        dex.matrix.slice(csv.data, [columnIndex])));
     },
 
-    'selectRows' : function(csv, fn) {
+    'selectRows': function (csv, fn) {
       var subset = [];
-      csv.data.forEach(function(row) {
+      csv.data.forEach(function (row) {
         if (fn(row)) {
           subset.push(row);
         }
       });
 
-      return { 'header' : csv.header, 'data' : subset };
+      return {'header': csv.header, 'data': subset};
     },
 
     /**
@@ -573,7 +573,7 @@ module.exports = function csv(dex) {
      */
     'getNumericIndices': function (csv) {
       var possibleNumeric =
-      {};
+        {};
       var i, j;
       var numericIndices = [];
 
@@ -603,7 +603,7 @@ module.exports = function csv(dex) {
 
     'getCategoricalIndices': function (csv) {
       var possibleNumeric =
-      {};
+        {};
       var i, j;
       var categoricalIndices = [];
 
@@ -697,11 +697,11 @@ module.exports = function csv(dex) {
         else {
           //group = { 'csv' : dex.csv.csv(otherHeaders, []) };
           group =
-          {
-            'key': key,
-            'values': [],
-            'csv': dex.csv.csv(csv.header, [])
-          };
+            {
+              'key': key,
+              'values': [],
+              'csv': dex.csv.csv(csv.header, [])
+            };
           for (ci = 0; ci < values.length; ci++) {
             group.values.push({'name': csv.header[columns[ci]], 'value': values[ci]});
           }
@@ -774,7 +774,7 @@ module.exports = function csv(dex) {
       // If 1 argument, then setup and call with 2.
       if (arguments.length == 1) {
         var result = {'name': 'root', children: dex.csv.toJsonHierarchy(csv, 0)};
-        dex.console.log("RESULT", result);
+        //dex.console.log("RESULT", result);
         return result;
       }
       else if (arguments.length == 2) {
@@ -831,39 +831,63 @@ module.exports = function csv(dex) {
       return {'nodes': nodes, 'links': links};
     },
 
-    'toNestedJson': function (csv) {
-      dex.console.log("CMAP", dex.csv.getConnectionMap(csv));
-      var result = {'name': csv.header[0], 'children': dex.csv.toNestedJsonChildren(dex.csv.getConnectionMap(csv))};
-      dex.console.log("RESULT", result);
+    'toNestedJson': function (csv, manualWeight) {
+      manualWeight = manualWeight || false;
+      dex.console.log("CMAP", dex.csv.getConnectionMap(csv), manualWeight);
+      var result = {
+        'name': csv.header[0],
+        'children': dex.csv.toNestedJsonChildren(
+          dex.csv.getConnectionMap(csv), manualWeight)
+      };
+      //dex.console.log("toNestedJson.result()", result);
       return result;
     },
 
-    'toNestedJsonChildren': function (cmap) {
+    'toNestedJsonChildren': function (cmap, manualWeight) {
+      manualWeight = manualWeight || false;
       //dex.console.log("CMAP", cmap);
       var children = [];
-
       _.keys(cmap).map(function (key) {
         var childMap = cmap[key];
-        if (_.keys(childMap).length <= 0) {
-          children.push({'name': key, 'size': 1000});
-        }
-        else {
-          if (_.keys(childMap).length == 1) {
-            //var grandChildMap = childMap[_.keys(childMap)[0]];
 
-            //dex.console.log("GCMAP", grandChildMap);
-            //if (_.keys(grandChildMap).length <= 0) {
-            //  children.push({'name': key, 'size': 100});
-            //}
-            //else {
-            children.push({'name': key, 'children': dex.csv.toNestedJsonChildren(cmap[key])});
-            //}
+        if (_.keys(childMap).length <= 0) {
+          //dex.console.log("Child Map 0", childMap, cmap);
+          children.push({'name': key, 'size': 1});
+        }
+        else if (manualWeight) {
+
+          var props = Object.getOwnPropertyNames(childMap);
+          //dex.console.log("KEY", key, "childMap", childMap, "cm.props", props);
+
+          if (props.length == 1) {
+            var props2 = Object.getOwnPropertyNames(childMap[props[0]]);
+            //dex.console.log("GRANDCHILD-PROPS", props2);
+            if (props2.length == 0) {
+              children.push({'name': key, size: +props[0]});
+            }
+            else {
+              children.push({
+                'name': key,
+                'children': dex.csv.toNestedJsonChildren(cmap[key], manualWeight)
+              });
+            }
           }
           else {
-            children.push({'name': key, 'children': dex.csv.toNestedJsonChildren(cmap[key])});
+            children.push({
+              'name': key,
+              'children': dex.csv.toNestedJsonChildren(cmap[key], manualWeight)
+            });
           }
         }
-      })
+        else {
+          children.push({
+            'name': key,
+            'children': dex.csv.toNestedJsonChildren(cmap[key], manualWeight)
+          });
+        }
+      });
+
+//dex.console.log("CHILDREN", children);
       return children;
     },
 
@@ -884,5 +908,7 @@ module.exports = function csv(dex) {
 
       return rootMap;
     }
-  };
-};
+  }
+    ;
+}
+;
