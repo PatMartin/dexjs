@@ -1,4 +1,4 @@
-require('jasmine');
+//require('jasmine');
 
 describe("dex.array", function () {
   it("slice", function () {
