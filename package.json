@@ -23,16 +23,16 @@
     "url": "https://www.github.com/PatMartin/dexjs.git"
   },
   "dependencies": {
-    "jquery"    : "latest",
+    "jquery": "latest",
     "underscore": "latest",
-    "jqueryui"  : "latest"
+    "jqueryui": "latest"
   },
   "devDependencies": {
-    "browserify" : "latest",
-    "jasmine"    : "latest",
-    "jshint"     : "latest",
-    "watch"      : "latest",
-    "jslint"     : "latest"
+    "browserify": "latest",
+    "jasmine": "^2.5.2",
+    "jshint": "latest",
+    "jslint": "latest",
+    "watch": "latest"
   },
   "scripts": {
     "lint": "jslint src/*.js src/*/*.js src/*/*/*.js src/*/*/*/*.js",
