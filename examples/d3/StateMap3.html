@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 <style>
-    html, body, #container, #StateMap {
+    html, body, #container, svg {
         height: 100%;
         min-height: 100%;
         width: 100%;
@@ -28,6 +28,45 @@
         fill: red;
     }
 
+    .Treemap text {
+        pointer-events: none;
+    }
+
+    .Treemap .grandparent text {
+        font-weight: bold;
+    }
+
+    .Treemap rect {
+        fill: none;
+        stroke: #fff;
+    }
+
+    .Treemap rect.parent,
+    .grandparent rect {
+        stroke-width: 2px;
+    }
+
+    .Treemap .grandparent rect {
+        fill: steelblue;
+    }
+
+    .grandparent:hover rect {
+        fill: #ee9700;
+    }
+
+    .Treemap .children rect.parent,
+    .grandparent rect {
+        cursor: pointer;
+    }
+
+    .Treemap .children rect.parent {
+        fill-opacity: .1;
+    }
+
+    .Treemap .children:hover rect.child {
+        fill-opacity: .8;
+    }
+
 </style>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.11/c3.min.css"/>
 
@@ -36,7 +75,7 @@
         <svg id="StateMap"></svg>
     </div>
     <div id="bottom_div">
-        <div id="BarChart"></div>
+        <svg id="Treemap"></svg>
     </div>
 </div>
 
@@ -126,55 +165,62 @@ dex.console.log("MAP: " + mapWidth + "x" + mapHeight);
       ["Delaware", 0, 0, 5, 0, 15, 24, 0, 14, 30, 20, 0, 0, 112, 1, 13, 2, 0, 84, 16, 273, 63, 2, 76, 0, 1, 749]
     ];
 
-    dex.console.log("DEX", dex);
-
-    var abbrevIndex = dex.datagen.usStateInfo('abbrev2name');
-    var nameIndex = dex.datagen.usStateInfo('name2abbrev');
-    dex.console.log("Name Index", nameIndex);
-    stateData.forEach(function (row, ri) {
-      stateData[ri][0] = nameIndex[row[0]];
-    });
-    dex.console.log("STATE-DATA", stateData);
-
     var csv = dex.csv.csv(labels, stateData);
     var stateMap = dex.csv.createRowMap(csv, 0);
     dex.console.log("STATE-MAP", stateMap);
-    var selectedStates = {};
 
-    var barChart = dex.charts.c3.StackedBarChart({
-        'parent': "#BarChart",
-        'csv': csv,
-        'order' : 'desc',
-        'padding.bottom' : 100,
+    var selectedStates = {};
+    var treemapCsv = {
+      'header' : [ 'State', 'Tax', 'Value' ],
+      'data' : []
+    };
+
+    csv.data.forEach(function(row) {
+      var stateName = row[0];
+      for (i=1; i<csv.header.length-1; i++) {
+        treemapCsv.data.push([ stateName, csv.header[i], row[i]]);
+      }
+    });
+
+    dex.console.log("TMD", treemapCsv);
+
+    var treemap = dex.charts.d3.Treemap({
+        'parent': "#Treemap",
+        'csv': treemapCsv,
+        'manualSizing' : true
       }
     );
 
-    barChart.subscribe(map, "selectFeature", function (msg) {
-      dex.console.log("SELECT MSG", msg);
+    treemap.subscribe(map, "selectFeature", function (msg) {
+      dex.console.log("SELECT MSG", msg, stateMap);
 
-      if (stateMap[nameIndex[msg.feature.id]] != null) {
-        selectedStates[nameIndex[msg.feature.id]] = true;
-        barChart.attr('csv', dex.csv.selectRows(csv, function (row) {
-          return row[0] in selectedStates && selectedStates[row[0]];
-        }));
-        barChart.update();
-      }
-    });
-
-    barChart.subscribe(map, "deselectFeature", function (msg) {
-      dex.console.log("DESELECT MSG", msg);
-
-      if (stateMap[nameIndex[msg.feature.id]] != null) {
-        selectedStates[nameIndex[msg.feature.id]] = false;
-        var newCsv = dex.csv.selectRows(csv, function (row) {
+      if (stateMap[msg.feature.id] != null) {
+        selectedStates[msg.feature.id] = true;
+        var newCsv = dex.csv.selectRows(treemapCsv, function (row) {
           return row[0] in selectedStates && selectedStates[row[0]];
         });
-        barChart.attr('csv',newCsv.data.length > 0 ? newCsv : csv);
-        barChart.update();
+        treemap.attr('csv', newCsv);
+        dex.console.log("NEW-CSV", newCsv);
+        treemap.update();
       }
     });
 
-    barChart.render();
+    treemap.subscribe(map, "deselectFeature", function (msg) {
+      dex.console.log("DESELECT MSG", msg);
+
+      if (stateMap[msg.feature.id] != null) {
+        selectedStates[msg.feature.id] = false;
+        var newCsv = dex.csv.selectRows(treemapCsv, function (row) {
+          return row[0] in selectedStates && selectedStates[row[0]];
+        });
+
+        dex.console.log("DESELECT-NEW-CSV", newCsv);
+        treemap.attr('csv', newCsv.data.length > 0 ? newCsv : treemapCsv);
+        treemap.update();
+      }
+    });
+
+    treemap.render();
     map.render();
   });
 </script>

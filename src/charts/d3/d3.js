@@ -37,6 +37,6 @@ d3.Sunburst = require("./Sunburst");
 d3.Treemap = require("./Treemap");
 d3.VerticalLegend = require("./VerticalLegend");
 d3.TreemapBarChart = require("./TreemapBarChart");
-d3.map = {};
+d3.TopoJsonMap = require("./TopoJsonMap");
 
 module.exports = d3;
