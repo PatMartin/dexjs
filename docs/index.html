@@ -300,8 +300,8 @@ stackedarea.render();</code></pre>
 
                     |          |               |              |
                     |----------|---------------|--------------|
-                    | <a href="#/3/1">Axis</a>         | <a href="#/3/2">Chord Diagrams</a> | <a href="#/3/3">Clustered Force</a> |
-                    | <a href="#/3/4">Dendrograms</a>         | <a href="#/3/5">Force</a> | Heatmap |
+                    | Axis is deprecated         | <a href="#/3/2">Chord Diagrams</a> | <a href="#/3/3">Clustered Force</a> |
+                    | <a href="#/3/4">Dendrograms</a>         | <a href="#/3/5">Vis Network</a> | Heatmap |
                     | <a href="#/3/7">Horizon Chart</a>         | <a href="#/3/8">Legends</a> | Linechart |
                     | <a href="#/3/10">Motion Bar Chart</a>         | <a href="#/3/11">Motion Chart</a> | <a href="#/3/12">Motion Line Charts</a> |
                     |  <a href="#/3/13">Orbital Layout</a> | <a href="#/3/14">Parallel Coordinates</a> | <a href="#/3/15">Pie Chart</a> |
@@ -314,14 +314,7 @@ stackedarea.render();</code></pre>
             </section>
             <section data-state="axis">
                 <h3>Axis</h3>
-                <svg id="D3Axis1" class="Chart" data-prevent-swipe></svg>
-                <pre><code class="hljs" style="word-wrap: break-word;" data-trim>
-var axis = dex.charts.d3.Axis({
-  'parent'     : "#D3Axis",
-  'csv'        : axisData
-});
-axis.render();
-                </code></pre>
+The axis component has been deprecated for now.
             </section>
             <section data-state="chord">
                 <h3>D3 Chord Diagram</h3>
@@ -1086,11 +1079,6 @@ radarChart.render();</code></pre>
                 }
         );
         stackedarea.render();
-        var axis1 = dex.charts.d3.Axis({
-            'parent': "#D3Axis1",
-            'csv': axisData
-        });
-        axis1.render();
 
         var chord = new dex.charts.d3.Chord({
                     'parent': '#D3ChordDiagram',
@@ -1111,11 +1099,11 @@ radarChart.render();</code></pre>
         });
         dendrogram.render();
 
-        var force = new dex.charts.d3.Force({
-            'parent': "#D3Force",
+        var visNetwork = new dex.charts.vis.Network({
+            'parent': "#VisNetwork",
             'csv': presidentsByParty
         });
-        force.render();
+        visNetwork.render();
 
         var horizonChart = new dex.charts.d3.HorizonChart({
             'parent': "#D3HorizonChart",
@@ -1228,8 +1216,8 @@ radarChart.render();</code></pre>
         Reveal.addEventListener('dendrogram', function () {
             dendrogram.resize();
         });
-        Reveal.addEventListener('force', function () {
-            force.resize();
+        Reveal.addEventListener('visnetwork', function () {
+            visnetwork.resize();
         });
         Reveal.addEventListener('horizonchart', function () {
             horizonChart.resize();
