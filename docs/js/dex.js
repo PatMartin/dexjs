@@ -995,97 +995,107 @@ module.exports = stackedareachart;
  *
  */
 var stackedbarchart = function (userConfig) {
-    var chart;
+  var chart;
 
-    var defaults =
-    {
-        // The parent container of this chart.
-        'parent': '#BarChart',
-        // Set these when you need to CSS style components independently.
-        'id': 'BarChart',
-        'class': 'BarChart',
-        'resizable': true,
-        'csv': {
-            'header': [],
-            'data': []
-        },
-        'width': "100%",
-        'height': "100%",
-        'transform': "translate(0 0)",
+  var defaults = {
+    // The parent container of this chart.
+    'parent': '#BarChart',
+    // Set these when you need to CSS style components independently.
+    'id': 'BarChart',
+    'class': 'BarChart',
+    'resizable': true,
+    'csv': {
+      'header': [],
+      'data': []
+    },
+    'padding': {
+      'top': 10,
+      'bottom': 10,
+      'left': 50,
+      'right': 10
+    },
+    'order': 'desc',
+    'width': "100%",
+    'height': "100%",
+    'transform': "translate(0 0)",
+  };
+
+  var chart = new dex.component(userConfig, defaults);
+
+  chart.render = function render() {
+    window.onresize = this.resize;
+    chart.resize();
+  };
+
+  chart.resize = function resize() {
+    if (chart.config.resizable) {
+      var width = d3.select(chart.config.parent).property("clientWidth");
+      var height = d3.select(chart.config.parent).property("clientHeight");
+      dex.console.log(chart.config.id + ": resize(" + width + "," + height + ")");
+      chart.attr("width", width).attr("height", height).update();
+    }
+    else {
+      chart.update();
+    }
+  };
+
+  chart.update = function () {
+    var chart = this;
+    var config = chart.config;
+    var csv = config.csv;
+
+    var gtypes = dex.csv.guessTypes(csv);
+    var ncsv = dex.csv.numericSubset(csv);
+    var columns = dex.csv.transpose(ncsv);
+
+    for (var ci = 0; ci < columns.header.length; ci++) {
+      columns.data[ci].unshift(columns.header[ci]);
+    }
+
+    var c3config = {
+      'bindto': config.parent,
+      'data': {
+        'columns': columns.data,
+        'type': 'bar',
+        color: d3.scale.category20(),
+        'groups': [columns.header],
+        'order': config.order
+      },
+      'bar': {'width': {'ratio': 0.9}},
+      subchart: {
+        show: true
+      },
+      zoom: {
+        enabled: true
+      },
+      legend: {
+        position: 'right'
+      }
     };
 
-    var chart = new dex.component(userConfig, defaults);
-
-    chart.render = function render() {
-        window.onresize = this.resize;
-        chart.resize();
-    };
-
-    chart.resize = function resize() {
-        if (chart.config.resizable) {
-            var width = d3.select(chart.config.parent).property("clientWidth");
-            var height = d3.select(chart.config.parent).property("clientHeight");
-            dex.console.log(chart.config.id + ": resize(" + width + "," + height + ")");
-            chart.attr("width", width).attr("height", height).update();
+    // Set categorical axis if first column is a string.
+    if (gtypes[0] == "string") {
+      c3config['axis'] = {
+        'x': {
+          'type': 'category',
+          'label': {
+            'text': csv.header[0],
+            'position': 'outer-center'
+          },
+          'categories': dex.csv.transpose(dex.csv.columnSlice(csv, [0])).data[0]
         }
-        else {
-            chart.update();
-        }
-    };
+      };
+    }
 
-    chart.update = function () {
-        var chart = this;
-        var config = chart.config;
-        var csv = config.csv;
+    var chart = c3.generate(c3config);
+  };
 
-        var gtypes = dex.csv.guessTypes(csv);
-        var ncsv = dex.csv.numericSubset(csv);
-        var columns = dex.csv.transpose(ncsv);
+  $(document).ready(function () {
+    // Make the entire chart draggable.
+    //$(chart.config.parent).draggable();
+  });
 
-        for (var ci = 0; ci < columns.header.length; ci++) {
-            columns.data[ci].unshift(columns.header[ci]);
-        }
-
-        var c3config = {
-            'bindto' : config.parent,
-            'data': {
-                'columns': columns.data,
-                'type': 'bar',
-                color : d3.scale.category20(),
-                'groups' : [ columns.header ]
-            },
-            'bar': {'width': { 'ratio': 0.9 }},
-            subchart: {
-                show: true
-            },
-            zoom: {
-                enabled: true
-            },
-            legend: {
-                position : 'right'
-            }
-        };
-
-        // Set categorical axis if first column is a string.
-        if (gtypes[0] == "string")
-        {
-            c3config['axis'] = { 'x' : {
-                'type' : 'category',
-                'label' : { 'text' : csv.header[0],
-                'position' : 'outer-center' },
-                'categories': dex.csv.transpose(dex.csv.columnSlice(csv, [0])).data[0]
-            }};
-        }
-
-        var chart = c3.generate(c3config);
-    };
-
-    $(document).ready(function () {
-        // Make the entire chart draggable.
-        //$(chart.config.parent).draggable();
-    });
-
-    return chart;
+  return chart;
 }
 
 module.exports = stackedbarchart;
@@ -1131,7 +1141,7 @@ module.exports = function charts() {
     'vis'     : require("./vis/vis")
   };
 };
-},{"./c3/c3":10,"./d3/d3":32,"./d3plus/d3plus":34,"./dygraphs/dygraphs":36,"./google/google":42,"./threejs/threejs":44,"./vis/vis":46}],12:[function(require,module,exports){
+},{"./c3/c3":10,"./d3/d3":33,"./d3plus/d3plus":35,"./dygraphs/dygraphs":37,"./google/google":43,"./threejs/threejs":45,"./vis/vis":47}],12:[function(require,module,exports){
 var chord = function (userConfig) {
   d3 = dex.charts.d3.d3v3;
   var chart;
@@ -7614,6 +7624,232 @@ var sunburst = function (userConfig) {
 
 module.exports = sunburst;
 },{}],29:[function(require,module,exports){
+var topojsonmap = function (userConfig) {
+  d3 = dex.charts.d3.d3v3;
+  var chart = null;
+
+  var defaults = {
+    'parent': '#TopoJsonMap',
+    'id': 'TopoJsonMap',
+    'class': 'TopoJsonMap',
+    'toplology': undefined,
+    'feature': undefined,
+    'projection': d3.geo.albers(),
+    'width': '100%',
+    'height': '100%',
+    'transform': 'translate(0,0)',
+    'margin': {
+      'left': 10,
+      'right': 10,
+      'top': 10,
+      'bottom': 10
+    },
+    "selectedColor": "steelblue",
+    "unselectedColor": "grey",
+  };
+
+  chart = new dex.component(userConfig, defaults);
+
+  chart.render = function render() {
+    d3 = dex.charts.d3.d3v3;
+    chart.resize = this.resize(chart);
+    window.onresize = chart.resize;
+    return chart.resize();
+  };
+
+  chart.update = function () {
+    d3 = dex.charts.d3.d3v3;
+    var config = chart.config;
+    var margin = config.margin;
+    var csv = config.csv;
+
+    var width = config.width - margin.left - margin.right;
+    var height = config.height - margin.top - margin.bottom;
+
+    d3.selectAll(config.parent).selectAll("*").remove();
+
+    var chartContainer = d3.select(config.parent)
+      .append("g")
+      .attr("id", config["id"])
+      .attr("class", config["class"])
+      .attr("transform", config.transform)
+      .attr('width', config.width)
+      .attr('height', config.height);
+
+    var featureBounds,
+      geoParent,
+      geo,
+      geoLayer = {},
+      slast,
+      tlast;
+
+    var projection = d3.geo.albersUsa()
+      .scale(1000)
+      .translate([width / 2, height / 2]);
+
+    var path = d3.geo.path()
+      .projection(projection);
+
+    var zoom = d3.behavior.zoom()
+      .translate([0, 0])
+      .scale(1)
+      .center([width / 2, height / 2])
+      .scaleExtent([1, 8])
+      .on("zoom", zoomed);
+
+    var svg = chartContainer;
+
+
+    function getFeaturesBox() {
+      return {
+        x: featureBounds[0][0],
+        y: featureBounds[0][1],
+        width: featureBounds[1][0] - featureBounds[0][0],
+        height: featureBounds[1][1] - featureBounds[0][1]
+      };
+    }
+
+    // fits the geometry layer inside the viewport
+    function fitGeoInside() {
+      var bbox = getFeaturesBox(),
+        scale = 0.95 / Math.max(bbox.width / width, bbox.height / height),
+        trans = [-(bbox.x + bbox.width / 2) * scale + width / 2, -(bbox.y + bbox.height / 2) * scale + height / 2];
+
+      geoLayer.scale = scale;
+      geoLayer.translate = trans;
+
+      geo.attr('transform', [
+        'translate(' + geoLayer.translate + ')',
+        'scale(' + geoLayer.scale + ')'
+      ].join(' '));
+
+      postTransformOperations(geoLayer.scale);
+    }
+
+    // transform geoParent
+    function setGeoTransform(scale, trans) {
+      zoom.scale(scale)
+        .translate(trans);
+
+      tlast = trans;
+      slast = scale;
+
+      geoParent.attr('transform', [
+        'translate(' + trans + ')',
+        'scale(' + scale + ')'
+      ].join(' '));
+
+      postTransformOperations(scale * geoLayer.scale);
+
+    }
+
+    // scale strokes for fussy browsers
+    function postTransformOperations(scale) {
+      geo.selectAll('path')
+        .style('stroke-width', 1 / scale);
+    }
+
+    // limits panning
+    // XXX: this could be better
+    function limitBounds(scale, trans) {
+
+      var bbox = getFeaturesBox();
+      var outer = width - width * scale;
+      var geoWidth = bbox.width * geoLayer.scale * scale,
+        geoLeft = -((width * scale) / 2 - ((geoWidth) / 2)),
+        geoRight = outer - geoLeft;
+
+
+      if (scale === slast) {
+        //trans[0] = Math.min(0, Math.max(trans[0], width - width * scale));
+        trans[1] = Math.min(0, Math.max(trans[1], height - height * scale));
+
+        if (geoWidth > width) {
+          if (trans[0] < tlast[0]) { // panning left
+            trans[0] = Math.max(trans[0], geoRight);
+          } else if (trans[0] > tlast[0]) { // panning right
+            trans[0] = Math.min(trans[0], geoLeft);
+          }
+        } else {
+
+          if (trans[0] < geoLeft) {
+            trans[0] = geoLeft;
+          } else if (trans[0] > geoRight) {
+            trans[0] = geoRight;
+          }
+        }
+      }
+
+      setGeoTransform(scale, trans);
+    }
+
+    // zoom behavior on 'zoom' handler
+    function zoomed() {
+      var e = d3.event,
+        scale = (e && e.scale) ? e.scale : zoom.scale(),
+        trans = (e && e.translate) ? e.translate : zoom.translate();
+
+      limitBounds(scale, trans);
+    }
+
+    // set the map's initial state
+    // geoParent layer to scale 1
+    // geo layer is scaled to fit viewport
+    function initialize() {
+      tlast = null;
+      slast = null;
+      setGeoTransform(1, [0, 0]);
+      fitGeoInside();
+    }
+
+    // load topojson & make map
+
+    dex.console.log("CONFIG", config);
+    var topology = chart.config.toplogy;
+
+    var features = topojson.feature(config.topology, config.feature).features;
+
+    var collection = {
+      'type': 'FeatureCollection',
+      'features': features
+    };
+
+    featureBounds = path.bounds(collection);
+
+    geoParent = svg.append("g");
+
+    geoParent
+      .append('rect')
+      .attr('class', 'bg')
+      .attr('pointer-events', 'none')
+      .attr('fill', 'none')
+      .attr('width', width)
+      .attr('height', height);
+
+    geo = geoParent.append("g");
+
+    geo.selectAll('.feature')
+      .data(features)
+      .enter()
+      .append("path")
+      .attr("class", "feature")
+      .attr("d", path);
+
+
+    svg.append("rect")
+      .attr("class", "overlay")
+      .attr("width", width)
+      .attr("height", height)
+      .call(zoom);
+
+    initialize();
+
+  };
+  return chart;
+};
+
+module.exports = topojsonmap;
+},{}],30:[function(require,module,exports){
 var treemap = function (userConfig) {
   d3 = dex.charts.d3.d3v3;
   var chart = null;
@@ -7673,9 +7909,6 @@ var treemap = function (userConfig) {
   };
 
   var chart = new dex.component(userConfig, defaults);
-  var config = chart.config;
-  var margin = config.margin;
-  var csv = config.csv;
   var color = config.color;
 
   chart.render = function render() {
@@ -7687,6 +7920,10 @@ var treemap = function (userConfig) {
 
   chart.update = function update() {
     d3 = dex.charts.d3.d3v3;
+    var config = chart.config;
+    var margin = config.margin;
+    var csv = config.csv;
+
     var width = config.width - margin.left - margin.right;
     var height = config.height - margin.top - margin.bottom;
 
@@ -7985,7 +8222,7 @@ var treemap = function (userConfig) {
 };
 
 module.exports = treemap;
-},{}],30:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 var treemapBarChart = function (userConfig) {
   d3 = dex.charts.d3.d3v4;
   var chart;
@@ -8432,7 +8669,7 @@ var treemapBarChart = function (userConfig) {
 };
 
 module.exports = treemapBarChart;
-},{}],31:[function(require,module,exports){
+},{}],32:[function(require,module,exports){
 var verticallegend = function (userConfig) {
 
   var defaults = {
@@ -8651,7 +8888,7 @@ var verticallegend = function (userConfig) {
 };
 
 module.exports = verticallegend;
-},{}],32:[function(require,module,exports){
+},{}],33:[function(require,module,exports){
 /**
  *
  * This module provides D3 based visualization components.
@@ -8691,10 +8928,10 @@ d3.Sunburst = require("./Sunburst");
 d3.Treemap = require("./Treemap");
 d3.VerticalLegend = require("./VerticalLegend");
 d3.TreemapBarChart = require("./TreemapBarChart");
-d3.map = {};
+d3.TopoJsonMap = require("./TopoJsonMap");
 
 module.exports = d3;
-},{"../../../lib/d3.v3.5.17.min":1,"../../../lib/d3.v4.4.0.min":2,"./Chord":12,"./ClusteredForce":13,"./Dendrogram":14,"./HorizontalLegend":15,"./MotionBarChart":16,"./MotionChart":17,"./MotionCircleChart":18,"./MotionLineChart":19,"./OrbitalLayout":20,"./ParallelCoordinates":21,"./PieChart":22,"./RadarChart":23,"./RadialTree":24,"./Sankey":25,"./SankeyParticles":26,"./ScatterPlot":27,"./Sunburst":28,"./Treemap":29,"./TreemapBarChart":30,"./VerticalLegend":31}],33:[function(require,module,exports){
+},{"../../../lib/d3.v3.5.17.min":1,"../../../lib/d3.v4.4.0.min":2,"./Chord":12,"./ClusteredForce":13,"./Dendrogram":14,"./HorizontalLegend":15,"./MotionBarChart":16,"./MotionChart":17,"./MotionCircleChart":18,"./MotionLineChart":19,"./OrbitalLayout":20,"./ParallelCoordinates":21,"./PieChart":22,"./RadarChart":23,"./RadialTree":24,"./Sankey":25,"./SankeyParticles":26,"./ScatterPlot":27,"./Sunburst":28,"./TopoJsonMap":29,"./Treemap":30,"./TreemapBarChart":31,"./VerticalLegend":32}],34:[function(require,module,exports){
 var ringnetwork = function (userConfig) {
   d3 = dex.charts.d3.d3v3;
   var chart;
@@ -8803,7 +9040,7 @@ var ringnetwork = function (userConfig) {
 };
 
 module.exports = ringnetwork;
-},{}],34:[function(require,module,exports){
+},{}],35:[function(require,module,exports){
 /**
  *
  * This module provides d3plus based visualizations.
@@ -8818,7 +9055,7 @@ var d3plus = {};
 d3plus.RingNetwork = require("./RingNetwork");
 
 module.exports = d3plus;
-},{"./RingNetwork":33}],35:[function(require,module,exports){
+},{"./RingNetwork":34}],36:[function(require,module,exports){
 /**
  * This will construct a new DygraphsLineChart with the user supplied userConfig applied.
  * @param userConfig - A user supplied configuration of the form:
@@ -8888,7 +9125,7 @@ var linechart = function (userConfig) {
 };
 
 module.exports = linechart;
-},{}],36:[function(require,module,exports){
+},{}],37:[function(require,module,exports){
 /**
  *
  * This module provides a dygraphs linechart component.
@@ -8904,7 +9141,7 @@ var dygraphs = {};
 dygraphs.LineChart = require("./LineChart");
 
 module.exports = dygraphs;
-},{"./LineChart":35}],37:[function(require,module,exports){
+},{"./LineChart":36}],38:[function(require,module,exports){
 var diffbarchart = function (userConfig) {
 
   var defaults = {
@@ -9043,7 +9280,7 @@ var diffbarchart = function (userConfig) {
 };
 
 module.exports = diffbarchart;
-},{}],38:[function(require,module,exports){
+},{}],39:[function(require,module,exports){
 var diffpiechart = function (userConfig) {
 
   var defaults = {
@@ -9166,7 +9403,7 @@ var diffpiechart = function (userConfig) {
 };
 
 module.exports = diffpiechart;
-},{}],39:[function(require,module,exports){
+},{}],40:[function(require,module,exports){
 /**
  *
  * @param userConfig A user supplied configuration object which will override the defaults.
@@ -9259,7 +9496,7 @@ var piechart = function (userConfig) {
 };
 
 module.exports = piechart;
-},{}],40:[function(require,module,exports){
+},{}],41:[function(require,module,exports){
 /**
  *
  * @param userConfig A user supplied configuration object which will override the defaults.
@@ -9366,7 +9603,7 @@ var timeline = function (userConfig) {
 };
 
 module.exports = timeline;
-},{}],41:[function(require,module,exports){
+},{}],42:[function(require,module,exports){
 /**
  *
  * @param userConfig A user supplied configuration object which will override the defaults.
@@ -9461,7 +9698,7 @@ var wordtree = function (userConfig) {
 };
 
 module.exports = wordtree;
-},{}],42:[function(require,module,exports){
+},{}],43:[function(require,module,exports){
 /**
  *
  * This module provides routines for dealing with arrays.
@@ -9480,7 +9717,7 @@ google.Timeline = require("./Timeline");
 google.WordTree = require("./WordTree");
 
 module.exports = google;
-},{"./DiffBarChart":37,"./DiffPieChart":38,"./PieChart":39,"./Timeline":40,"./WordTree":41}],43:[function(require,module,exports){
+},{"./DiffBarChart":38,"./DiffPieChart":39,"./PieChart":40,"./Timeline":41,"./WordTree":42}],44:[function(require,module,exports){
 var scatterplot = function (userConfig) {
   var defaults = {
     // The parent container of this chart.
@@ -9846,7 +10083,7 @@ var scatterplot = function (userConfig) {
 };
 
 module.exports = scatterplot;
-},{}],44:[function(require,module,exports){
+},{}],45:[function(require,module,exports){
 /**
  *
  * This module provides ThreeJS/WebGL based visualization components.
@@ -9861,7 +10098,7 @@ var threejs = {};
 threejs.ScatterPlot = require("./ScatterPlot");
 
 module.exports = threejs;
-},{"./ScatterPlot":43}],45:[function(require,module,exports){
+},{"./ScatterPlot":44}],46:[function(require,module,exports){
 var network = function (userConfig) {
   var chart;
 
@@ -10085,7 +10322,7 @@ var network = function (userConfig) {
 };
 
 module.exports = network;
-},{}],46:[function(require,module,exports){
+},{}],47:[function(require,module,exports){
 /**
  *
  * This module provides routines for dealing with arrays.
@@ -10100,7 +10337,7 @@ var vis = {};
 vis.Network = require("./Network");
 
 module.exports = vis;
-},{"./Network":45}],47:[function(require,module,exports){
+},{"./Network":46}],48:[function(require,module,exports){
 "use strict";
 
 /**
@@ -10359,7 +10596,7 @@ module.exports = function color(dex) {
   };
 };
 
-},{}],48:[function(require,module,exports){
+},{}],49:[function(require,module,exports){
 /**
  *
  * This module provides base capabilities which are available to all dex components.
@@ -10943,7 +11180,7 @@ module.exports = function (dex) {
     };
   };
 };
-},{}],49:[function(require,module,exports){
+},{}],50:[function(require,module,exports){
 /**
  *
  * Config module.
@@ -12228,7 +12465,7 @@ module.exports = function config(dex) {
     }
   };
 };
-},{}],50:[function(require,module,exports){
+},{}],51:[function(require,module,exports){
 /**
  *
  * This module provides console logging capabilities.
@@ -12367,7 +12604,7 @@ module.exports = function (dex) {
     }
   };
 };
-},{}],51:[function(require,module,exports){
+},{}],52:[function(require,module,exports){
 /**
  *
  * This module provides support for dealing with csv structures.  This
@@ -13282,7 +13519,7 @@ module.exports = function csv(dex) {
     ;
 }
 ;
-},{}],52:[function(require,module,exports){
+},{}],53:[function(require,module,exports){
 /**
  *
  * This module provides support for creating various datasets.
@@ -13416,15 +13653,276 @@ module.exports = function datagen(dex) {
      * @returns {Array} Returns an array of the specified columns.
      *
      */
-    'identityHeader': function (spec) {
+    'PPPidentityHeader': function (spec) {
       return dex.range(1, spec.columns).map(function (i) {
         return "C" + i;
       });
+    },
+    'usStateInfo': function (format) {
+      var stateData = [
+        {
+          "name": "Alabama",
+          "abbreviation": "AL"
+        },
+        {
+          "name": "Alaska",
+          "abbreviation": "AK"
+        },
+        {
+          "name": "American Samoa",
+          "abbreviation": "AS"
+        },
+        {
+          "name": "Arizona",
+          "abbreviation": "AZ"
+        },
+        {
+          "name": "Arkansas",
+          "abbreviation": "AR"
+        },
+        {
+          "name": "California",
+          "abbreviation": "CA"
+        },
+        {
+          "name": "Colorado",
+          "abbreviation": "CO"
+        },
+        {
+          "name": "Connecticut",
+          "abbreviation": "CT"
+        },
+        {
+          "name": "Delaware",
+          "abbreviation": "DE"
+        },
+        {
+          "name": "District of Columbia",
+          "abbreviation": "DC"
+        },
+        {
+          "name": "Federated States Of Micronesia",
+          "abbreviation": "FM"
+        },
+        {
+          "name": "Florida",
+          "abbreviation": "FL"
+        },
+        {
+          "name": "Georgia",
+          "abbreviation": "GA"
+        },
+        {
+          "name": "Guam",
+          "abbreviation": "GU"
+        },
+        {
+          "name": "Hawaii",
+          "abbreviation": "HI"
+        },
+        {
+          "name": "Idaho",
+          "abbreviation": "ID"
+        },
+        {
+          "name": "Illinois",
+          "abbreviation": "IL"
+        },
+        {
+          "name": "Indiana",
+          "abbreviation": "IN"
+        },
+        {
+          "name": "Iowa",
+          "abbreviation": "IA"
+        },
+        {
+          "name": "Kansas",
+          "abbreviation": "KS"
+        },
+        {
+          "name": "Kentucky",
+          "abbreviation": "KY"
+        },
+        {
+          "name": "Louisiana",
+          "abbreviation": "LA"
+        },
+        {
+          "name": "Maine",
+          "abbreviation": "ME"
+        },
+        {
+          "name": "Marshall Islands",
+          "abbreviation": "MH"
+        },
+        {
+          "name": "Maryland",
+          "abbreviation": "MD"
+        },
+        {
+          "name": "Massachusetts",
+          "abbreviation": "MA"
+        },
+        {
+          "name": "Michigan",
+          "abbreviation": "MI"
+        },
+        {
+          "name": "Minnesota",
+          "abbreviation": "MN"
+        },
+        {
+          "name": "Mississippi",
+          "abbreviation": "MS"
+        },
+        {
+          "name": "Missouri",
+          "abbreviation": "MO"
+        },
+        {
+          "name": "Montana",
+          "abbreviation": "MT"
+        },
+        {
+          "name": "Nebraska",
+          "abbreviation": "NE"
+        },
+        {
+          "name": "Nevada",
+          "abbreviation": "NV"
+        },
+        {
+          "name": "New Hampshire",
+          "abbreviation": "NH"
+        },
+        {
+          "name": "New Jersey",
+          "abbreviation": "NJ"
+        },
+        {
+          "name": "New Mexico",
+          "abbreviation": "NM"
+        },
+        {
+          "name": "New York",
+          "abbreviation": "NY"
+        },
+        {
+          "name": "North Carolina",
+          "abbreviation": "NC"
+        },
+        {
+          "name": "North Dakota",
+          "abbreviation": "ND"
+        },
+        {
+          "name": "Northern Mariana Islands",
+          "abbreviation": "MP"
+        },
+        {
+          "name": "Ohio",
+          "abbreviation": "OH"
+        },
+        {
+          "name": "Oklahoma",
+          "abbreviation": "OK"
+        },
+        {
+          "name": "Oregon",
+          "abbreviation": "OR"
+        },
+        {
+          "name": "Palau",
+          "abbreviation": "PW"
+        },
+        {
+          "name": "Pennsylvania",
+          "abbreviation": "PA"
+        },
+        {
+          "name": "Puerto Rico",
+          "abbreviation": "PR"
+        },
+        {
+          "name": "Rhode Island",
+          "abbreviation": "RI"
+        },
+        {
+          "name": "South Carolina",
+          "abbreviation": "SC"
+        },
+        {
+          "name": "South Dakota",
+          "abbreviation": "SD"
+        },
+        {
+          "name": "Tennessee",
+          "abbreviation": "TN"
+        },
+        {
+          "name": "Texas",
+          "abbreviation": "TX"
+        },
+        {
+          "name": "Utah",
+          "abbreviation": "UT"
+        },
+        {
+          "name": "Vermont",
+          "abbreviation": "VT"
+        },
+        {
+          "name": "Virgin Islands",
+          "abbreviation": "VI"
+        },
+        {
+          "name": "Virginia",
+          "abbreviation": "VA"
+        },
+        {
+          "name": "Washington",
+          "abbreviation": "WA"
+        },
+        {
+          "name": "West Virginia",
+          "abbreviation": "WV"
+        },
+        {
+          "name": "Wisconsin",
+          "abbreviation": "WI"
+        },
+        {
+          "name": "Wyoming",
+          "abbreviation": "WY"
+        }
+      ];
+
+      if (format == 'name2abbrev') {
+        var nameIndex = {};
+
+        stateData.forEach(function(row) {
+          nameIndex[row.name] = row.abbreviation;
+        });
+
+        return nameIndex;
+      }
+      else if (format == 'abbrev2name') {
+        var abbrevIndex = {};
+
+        stateData.forEach(function(row) {
+          abbrevIndex[row.abbreviation] = row.name;
+        });
+
+        return abbrevIndex;
+      }
+
+      return stateData;
     }
   };
 };
 
-},{}],53:[function(require,module,exports){
+},{}],54:[function(require,module,exports){
 // Allow user to override, but define this by default:
 
 /**
@@ -13625,7 +14123,7 @@ $.widget.bridge('uitooltip', $.ui.tooltip);
 $.widget.bridge('uibutton', $.ui.button);
 
 module.exports = dex;
-},{"../lib/pubsub":3,"./array/array":4,"./charts/charts":11,"./color/color":47,"./component/component":48,"./config/config":49,"./console/console":50,"./csv/csv":51,"./datagen/datagen":52,"./json/json":54,"./matrix/matrix":55,"./object/object":56,"./ui/ui":66,"./util/util":67}],54:[function(require,module,exports){
+},{"../lib/pubsub":3,"./array/array":4,"./charts/charts":11,"./color/color":48,"./component/component":49,"./config/config":50,"./console/console":51,"./csv/csv":52,"./datagen/datagen":53,"./json/json":55,"./matrix/matrix":56,"./object/object":57,"./ui/ui":67,"./util/util":68}],55:[function(require,module,exports){
 /**
  *
  * This module provides routines dealing with json data.
@@ -13722,7 +14220,7 @@ module.exports = function json(dex) {
   };
 };
 
-},{}],55:[function(require,module,exports){
+},{}],56:[function(require,module,exports){
 /**
  *
  * This module provides routines dealing with matrices.
@@ -14022,7 +14520,7 @@ module.exports = function matrix(dex) {
   };
 };
 
-},{}],56:[function(require,module,exports){
+},{}],57:[function(require,module,exports){
 /**
  *
  * This module provides routines dealing with javascript objects.
@@ -14346,7 +14844,7 @@ module.exports = function object(dex) {
 };
 
 
-},{}],57:[function(require,module,exports){
+},{}],58:[function(require,module,exports){
 /**
  *
  * This class creates and attaches a SqlQuery user interface onto the
@@ -14445,7 +14943,7 @@ var sqlquery = function (userConfig) {
 };
 
 module.exports = sqlquery;
-},{}],58:[function(require,module,exports){
+},{}],59:[function(require,module,exports){
 /**
  *
  * @constructor
@@ -14545,7 +15043,7 @@ var table = function (userConfig) {
 };
 
 module.exports = table;
-},{}],59:[function(require,module,exports){
+},{}],60:[function(require,module,exports){
 var typestable = function (userConfig) {
 
   var defaults =
@@ -14626,7 +15124,7 @@ var typestable = function (userConfig) {
 };
 
 module.exports = typestable;
-},{}],60:[function(require,module,exports){
+},{}],61:[function(require,module,exports){
 var configurationbox = function (userConfig) {
 
   var defaults =
@@ -14712,7 +15210,7 @@ var configurationbox = function (userConfig) {
 };
 
 module.exports = configurationbox;
-},{}],61:[function(require,module,exports){
+},{}],62:[function(require,module,exports){
 var player = function (userConfig) {
 
   var defaults = {
@@ -14858,7 +15356,7 @@ var player = function (userConfig) {
 };
 
 module.exports = player;
-},{}],62:[function(require,module,exports){
+},{}],63:[function(require,module,exports){
 var selectable = function (userConfig) {
 
   var defaults =
@@ -14955,7 +15453,7 @@ var selectable = function (userConfig) {
 };
 
 module.exports = selectable;
-},{}],63:[function(require,module,exports){
+},{}],64:[function(require,module,exports){
 var slider = function (userConfig) {
 
   var defaults = {
@@ -15047,7 +15545,7 @@ var slider = function (userConfig) {
 };
 
 module.exports = slider;
-},{}],64:[function(require,module,exports){
+},{}],65:[function(require,module,exports){
 var tabs = function (userConfig) {
   var defaults = {
     // The parent container of this chart.
@@ -15151,7 +15649,7 @@ var tabs = function (userConfig) {
 };
 
 module.exports = tabs;
-},{}],65:[function(require,module,exports){
+},{}],66:[function(require,module,exports){
 /**
  *
  * This module provides ui components based upon jquery-ui.
@@ -15171,7 +15669,7 @@ module.exports = function jqueryui(dex) {
     'Tabs': require("./Tabs")
   };
 };
-},{"./ConfigurationBox":60,"./Player":61,"./Selectable":62,"./Slider":63,"./Tabs":64}],66:[function(require,module,exports){
+},{"./ConfigurationBox":61,"./Player":62,"./Selectable":63,"./Slider":64,"./Tabs":65}],67:[function(require,module,exports){
 /**
  *
  * This module provides ui components from a variety of sources.
@@ -15199,7 +15697,7 @@ module.exports = function ui(dex) {
     'TypesTable': require("./TypesTable")
   };
 };
-},{"./SqlQuery":57,"./Table":58,"./TypesTable":59,"./jqueryui/jqueryui":65}],67:[function(require,module,exports){
+},{"./SqlQuery":58,"./Table":59,"./TypesTable":60,"./jqueryui/jqueryui":66}],68:[function(require,module,exports){
 "use strict";
 
 /**
@@ -15229,5 +15727,5 @@ module.exports = function util(dex) {
     }
   };
 };
-},{}]},{},[53])(53)
+},{}]},{},[54])(54)
 });
