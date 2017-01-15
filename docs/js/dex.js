@@ -5108,7 +5108,7 @@ var radarchart = function (userConfig) {
     // Our data...
     'csv': {
       // Give folks without data something to look at anyhow.
-      'header': ["Salesman", "Q1", "Q2", "Q3", "Q4"],
+      'header': ["Salesman", "Q1", "Q2", "Q3", "Q4" ],
       'data': [
         ["Bob", Math.random(), Math.random(), Math.random(), Math.random()],
         ["Sue", Math.random(), Math.random(), Math.random(), Math.random()],

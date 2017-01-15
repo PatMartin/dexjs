@@ -38,6 +38,7 @@
     "lint": "jslint src/*.js src/*/*.js src/*/*/*.js src/*/*/*/*.js",
     "docs": "jsdoc -c conf.json -t ./node_modules/ink-docstrap/template -d jsdocs -r src/dex.js",
     "build":    "browserify src/dex.js --standalone dex > dist/dex.js && cp dist/dex.js docs/js/dex.js && cp dist/dex.js C:/sites/dexjs/themes/dexjs-theme/static/js/dex.js && browserify src/dex.js --standalone dex | uglifyjs > dist/dex.min.js && cp dist/dex.min.js docs/js/dex.min.js && cp dist/dex.min.js C:/sites/dexjs/themes/dexjs-theme/static/js/dex.min.js",
+    "build:min": "browserify src/dex.js --standalone dex | uglifyjs > dist/dex.min.js && cp dist/dex.min.js docs/js/dex.min.js && cp dist/dex.min.js C:/sites/dexjs/themes/dexjs-theme/static/js/dex.min.js",
     "build:js": "browserify src/dex.js --standalone dex > dist/dex.js && cp dist/dex.js docs/js/dex.js && cp dist/dex.js C:/sites/dexjs/themes/dexjs-theme/static/js/dex.js",
     "watch": "watch \"npm run build:js\" src lib"
   }
