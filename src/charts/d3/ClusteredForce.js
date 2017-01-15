@@ -2,7 +2,7 @@ var clusteredforce = function (userConfig) {
   d3 = dex.charts.d3.d3v3;
   var defaults =
   {
-    'parent': null,
+    'parent': '#ClusteredForceParent',
     'id': "ClusteredForce",
     'class': "ClusteredForce",
     'height': "100%",
