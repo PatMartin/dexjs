@@ -174,8 +174,7 @@ var parallelcoordinates = function (userConfig) {
       'opacity': .8,
       'color': "steelblue",
       'stroke': dex.config.stroke({'color': "black", 'width': 1})
-    },
-    'ui.config': {}
+    }
   };
 
   chart = new dex.component(userConfig, defaults);
