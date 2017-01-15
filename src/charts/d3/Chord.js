@@ -269,6 +269,8 @@ var chord = function (userConfig) {
         };
       });
     }
+    // Allow method chaining
+    return chart;
   };
 
   $(document).ready(function () {
