@@ -5698,9 +5698,9 @@ var radialtree = function (userConfig) {
 
     var diagonal = d3.svg.diagonal.radial()
       .projection(function (d) {
-        //return [d.y, d.x / 180 * Math.PI];
-        var angle = (d.x - 90) / 180 * Math.PI, radius = d.y;
-        return [radius * Math.cos(angle), radius * Math.sin(angle)];
+        return [d.y, d.x / 180 * Math.PI];
+        //var angle = (d.x - 90) / 180 * Math.PI, radius = d.y;
+        //return [radius * Math.cos(angle), radius * Math.sin(angle)];
       });
 
     var chartContainer = d3.select(config.parent)
