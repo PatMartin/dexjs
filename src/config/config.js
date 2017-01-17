@@ -191,16 +191,16 @@ module.exports = function config(dex) {
      */
     'font': function font(custom) {
       var defaults =
-      {
-        'decoration': 'none',
-        'family': 'sans-serif',
-        'letterSpacing': 'normal',
-        'size': 14,
-        'style': 'normal',
-        'weight': 'normal',
-        'wordSpacing': 'normal',
-        'variant': 'normal'
-      };
+        {
+          'decoration': 'none',
+          'family': 'sans-serif',
+          'letterSpacing': 'normal',
+          'size': 14,
+          'style': 'normal',
+          'weight': 'normal',
+          'wordSpacing': 'normal',
+          'variant': 'normal'
+        };
 
       var fontSpec = dex.config.expandAndOverlay(custom, defaults);
       return fontSpec;
@@ -245,23 +245,23 @@ module.exports = function config(dex) {
      */
     'text': function text(custom) {
       var defaults =
-      {
-        'font': dex.config.font(),
-        'x': 0,
-        'y': 0,
-        'textLength': undefined,
-        'lengthAdjust': undefined,
-        'transform': '',
-        'glyphOrientationVertical': undefined,
-        'text': undefined,
-        'dx': 0,
-        'dy': 0,
-        'writingMode': undefined,
-        'anchor': 'start',
-        'fill': dex.config.fill(),
-        'format': undefined,
-        'events': dex.config.events()
-      };
+        {
+          'font': dex.config.font(),
+          'x': 0,
+          'y': 0,
+          'textLength': undefined,
+          'lengthAdjust': undefined,
+          'transform': '',
+          'glyphOrientationVertical': undefined,
+          'text': undefined,
+          'dx': 0,
+          'dy': 0,
+          'writingMode': undefined,
+          'anchor': 'start',
+          'fill': dex.config.fill(),
+          'format': undefined,
+          'events': dex.config.events()
+        };
 
       var textSpec = dex.config.expandAndOverlay(custom, defaults);
       return textSpec;
@@ -312,13 +312,13 @@ module.exports = function config(dex) {
      */
     'stroke': function stroke(strokeSpec) {
       var defaults =
-      {
-        'width': 1,
-        'color': "black",
-        'opacity': 1,
-        'dasharray': '',
-        'transform': ''
-      };
+        {
+          'width': 1,
+          'color': "black",
+          'opacity': 1,
+          'dasharray': '',
+          'transform': ''
+        };
 
       var config = dex.config.expandAndOverlay(strokeSpec, defaults);
       return config;
@@ -354,11 +354,10 @@ module.exports = function config(dex) {
      */
     'fill': function fill(custom) {
       var defaults =
-      {
-        'fillColor': "grey",
-        'fillOpacity': 1,
-        'fillRule' : 'inherit'
-      };
+        {
+          'fillColor': "grey",
+          'fillOpacity': 1
+        };
 
       var config = dex.config.expandAndOverlay(custom, defaults);
       return config;
@@ -377,7 +376,6 @@ module.exports = function config(dex) {
     'configureFill': function configureFill(node, config, i) {
       if (config) {
         dex.config.setStyle(node, 'fill', config.fillColor, i);
-        dex.config.setStyle(node, 'fill-rule', config.fillRule, i);
         dex.config.setStyle(node, 'fill-opacity', config.fillOpacity, i);
       }
       return node;
@@ -396,13 +394,13 @@ module.exports = function config(dex) {
      */
     'link': function link(custom) {
       var defaults =
-      {
-        'fill': dex.config.fill(),
-        'stroke': dex.config.stroke(),
-        'transform': '',
-        'd': undefined,
-        'events': dex.config.events()
-      };
+        {
+          'fill': dex.config.fill(),
+          'stroke': dex.config.stroke(),
+          'transform': '',
+          'd': undefined,
+          'events': dex.config.events()
+        };
 
       var config = dex.config.expandAndOverlay(custom, defaults);
       return config;
@@ -442,19 +440,19 @@ module.exports = function config(dex) {
      */
     'rectangle': function rectangle(custom) {
       var config =
-      {
-        'width': 50,
-        'height': 50,
-        'x': 0,
-        'y': 0,
-        'rx': 0,
-        'ry': 0,
-        'stroke': dex.config.stroke(),
-        'opacity': 1,
-        'color': d3.scale.category20(),
-        'transform': undefined,
-        'events': dex.config.events()
-      };
+        {
+          'width': 50,
+          'height': 50,
+          'x': 0,
+          'y': 0,
+          'rx': 0,
+          'ry': 0,
+          'stroke': dex.config.stroke(),
+          'opacity': 1,
+          'color': d3.scale.category20(),
+          'transform': undefined,
+          'events': dex.config.events()
+        };
       if (custom) {
         config = dex.object.overlay(custom, config);
       }
@@ -491,12 +489,12 @@ module.exports = function config(dex) {
      */
     'events': function events(custom) {
       var defaults =
-      {
-        // REM: Deletes any existing events.
-        //'mouseover': function (d) {
-        //console.log("Default mouseover");
-        //}
-      };
+        {
+          // REM: Deletes any existing events.
+          //'mouseover': function (d) {
+          //console.log("Default mouseover");
+          //}
+        };
       var config = defaults;
 
       if (custom) {
@@ -530,13 +528,13 @@ module.exports = function config(dex) {
      */
     'line': function line(custom) {
       var defaults =
-      {
-        'start': dex.config.point(),
-        'end': dex.config.point(),
-        'stroke': dex.config.stroke(),
-        'fill': dex.config.fill(),
-        'interpolate': undefined
-      };
+        {
+          'start': dex.config.point(),
+          'end': dex.config.point(),
+          'stroke': dex.config.stroke(),
+          'fill': dex.config.fill(),
+          'interpolate': undefined
+        };
       var config = dex.config.expandAndOverlay(custom, defaults);
       return config;
     },
@@ -572,10 +570,11 @@ module.exports = function config(dex) {
      */
     'path': function path(custom) {
       var defaults =
-      {
-        'fill': dex.config.fill(),
-        'stroke': dex.config.stroke()
-      };
+        {
+          'fill': dex.config.fill(),
+          'stroke': dex.config.stroke(),
+          'd': undefined
+        };
       var config = dex.config.expandAndOverlay(custom, defaults);
       return config;
     },
@@ -584,6 +583,7 @@ module.exports = function config(dex) {
       if (config) {
         dex.config.configureFill(node, config.fill, i);
         dex.config.configureStroke(node, config.stroke, i);
+        dex.config.setAttr(node, 'd', config.d, i);
       }
       return node;
     },
@@ -734,10 +734,10 @@ module.exports = function config(dex) {
      */
     'point': function point(custom) {
       var config =
-      {
-        'x': undefined,
-        'y': undefined
-      };
+        {
+          'x': undefined,
+          'y': undefined
+        };
       if (custom) {
         config = dex.object.overlay(custom, config);
       }
@@ -777,16 +777,16 @@ module.exports = function config(dex) {
      */
     'circle': function circle(custom) {
       var config =
-      {
-        'cx': 0,
-        'cy': 0,
-        'r': 10,
-        'fill': dex.config.fill(),
-        'stroke': dex.config.stroke(),
-        'transform': '',
-        'title': '',
-        'events': dex.config.events()
-      };
+        {
+          'cx': 0,
+          'cy': 0,
+          'r': 10,
+          'fill': dex.config.fill(),
+          'stroke': dex.config.stroke(),
+          'transform': '',
+          'title': '',
+          'events': dex.config.events()
+        };
       if (custom) {
         config = dex.object.overlay(custom, config);
       }
@@ -851,19 +851,19 @@ module.exports = function config(dex) {
      */
     'tick': function tick(custom) {
       var config =
-      {
-        'count': 5,
-        //'tickValues'  : undefined,
-        'subdivide': 3,
-        'size': {
-          'major': 5,
-          'minor': 3,
-          'end': 5
-        },
-        'padding': 5,
-        'format': d3.format(",d"),
-        'label': dex.config.text()
-      };
+        {
+          'count': 5,
+          //'tickValues'  : undefined,
+          'subdivide': 3,
+          'size': {
+            'major': 5,
+            'minor': 3,
+            'end': 5
+          },
+          'padding': 5,
+          'format': d3.format(",d"),
+          'label': dex.config.text()
+        };
       if (custom) {
         config = dex.object.overlay(custom, config);
       }
@@ -930,18 +930,18 @@ module.exports = function config(dex) {
      */
     'axis': function axis(custom) {
       var defaults =
-      {
-        'scale': dex.config.scale({'type': 'linear'}),
-        'orient': 'bottom',
-        'ticks': undefined,
-        'tickValues': undefined,
-        'tickSize': undefined,
-        'innerTickSize': undefined,
-        'outerTickSize': undefined,
-        'tickPadding': undefined,
-        'tickFormat': undefined
-        //'label'         : dex.config.text()
-      };
+        {
+          'scale': dex.config.scale({'type': 'linear'}),
+          'orient': 'bottom',
+          'ticks': undefined,
+          'tickValues': undefined,
+          'tickSize': undefined,
+          'innerTickSize': undefined,
+          'outerTickSize': undefined,
+          'tickPadding': undefined,
+          'tickFormat': undefined
+          //'label'         : dex.config.text()
+        };
 
       var axisSpec = dex.config.expandAndOverlay(custom, defaults);
       return axisSpec;
@@ -995,22 +995,22 @@ module.exports = function config(dex) {
      */
     'scale': function scale(custom) {
       var fmap =
-      {
-        'linear': dex.config.linearScale,
-        'sqrt': dex.config.sqrtScale,
-        'pow': dex.config.powScale,
-        'time': dex.config.timeScale,
-        'log': dex.config.logScale,
-        'ordinal': dex.config.ordinalScale,
-        'quantile': dex.config.quantileScale,
-        'quantize': dex.config.quantizeScale,
-        'identity': dex.config.identityScale
-      };
+        {
+          'linear': dex.config.linearScale,
+          'sqrt': dex.config.sqrtScale,
+          'pow': dex.config.powScale,
+          'time': dex.config.timeScale,
+          'log': dex.config.logScale,
+          'ordinal': dex.config.ordinalScale,
+          'quantile': dex.config.quantileScale,
+          'quantize': dex.config.quantizeScale,
+          'identity': dex.config.identityScale
+        };
 
       var defaults =
-      {
-        'type': 'linear'
-      };
+        {
+          'type': 'linear'
+        };
 
       var config = dex.config.expandAndOverlay(custom, defaults);
 
@@ -1030,17 +1030,17 @@ module.exports = function config(dex) {
       var scale;
 
       var fmap =
-      {
-        'linear': d3.scale.linear,
-        'sqrt': d3.scale.sqrt,
-        'pow': d3.scale.pow,
-        'time': d3.time.scale,
-        'log': d3.scale.log,
-        'ordinal': d3.scale.ordinal,
-        'quantile': d3.scale.quantile,
-        'quantize': d3.scale.quantize,
-        'identity': d3.scale.identity
-      };
+        {
+          'linear': d3.scale.linear,
+          'sqrt': d3.scale.sqrt,
+          'pow': d3.scale.pow,
+          'time': d3.time.scale,
+          'log': d3.scale.log,
+          'ordinal': d3.scale.ordinal,
+          'quantile': d3.scale.quantile,
+          'quantize': d3.scale.quantize,
+          'identity': d3.scale.identity
+        };
 
       if (scaleSpec) {
         scale = fmap[scaleSpec.type]();
@@ -1069,15 +1069,15 @@ module.exports = function config(dex) {
      */
     'linearScale': function linearScale(custom) {
       var defaults =
-      {
-        'type': 'linear',
-        'domain': [0, 100],
-        'range': [0, 800],
-        'rangeRound': undefined,
-        'interpolate': undefined,
-        'clamp': undefined,
-        'nice': undefined
-      };
+        {
+          'type': 'linear',
+          'domain': [0, 100],
+          'range': [0, 800],
+          'rangeRound': undefined,
+          'interpolate': undefined,
+          'clamp': undefined,
+          'nice': undefined
+        };
 
       var linearScaleSpec = dex.config.expandAndOverlay(custom, defaults);
       return linearScaleSpec;
@@ -1096,15 +1096,15 @@ module.exports = function config(dex) {
      */
     'powScale': function powScale(custom) {
       var defaults =
-      {
-        'type': 'pow',
-        'domain': [0, 100],
-        'range': [0, 800],
-        'rangeRound': undefined,
-        'interpolate': undefined,
-        'clamp': undefined,
-        'nice': undefined
-      };
+        {
+          'type': 'pow',
+          'domain': [0, 100],
+          'range': [0, 800],
+          'rangeRound': undefined,
+          'interpolate': undefined,
+          'clamp': undefined,
+          'nice': undefined
+        };
 
       var config = dex.config.expandAndOverlay(custom, defaults);
       return config;
@@ -1123,15 +1123,15 @@ module.exports = function config(dex) {
      */
     'sqrtScale': function sqrtScale(custom) {
       var defaults =
-      {
-        'type': 'sqrt',
-        'domain': [0, 100],
-        'range': [0, 800],
-        'rangeRound': undefined,
-        'interpolate': undefined,
-        'clamp': undefined,
-        'nice': undefined
-      };
+        {
+          'type': 'sqrt',
+          'domain': [0, 100],
+          'range': [0, 800],
+          'rangeRound': undefined,
+          'interpolate': undefined,
+          'clamp': undefined,
+          'nice': undefined
+        };
 
       var config = dex.config.expandAndOverlay(custom, defaults);
       return config;
@@ -1150,15 +1150,15 @@ module.exports = function config(dex) {
      */
     'logScale': function logScale(custom) {
       var defaults =
-      {
-        'type': 'log',
-        'domain': [0, 100],
-        'range': [0, 800],
-        'rangeRound': undefined,
-        'interpolate': undefined,
-        'clamp': undefined,
-        'nice': undefined
-      };
+        {
+          'type': 'log',
+          'domain': [0, 100],
+          'range': [0, 800],
+          'rangeRound': undefined,
+          'interpolate': undefined,
+          'clamp': undefined,
+          'nice': undefined
+        };
 
       var logSpec = dex.config.expandAndOverlay(custom, defaults);
       return logSpec;
@@ -1188,14 +1188,14 @@ module.exports = function config(dex) {
      */
     'ordinalScale': function ordinalScale(custom) {
       var defaults =
-      {
-        'type': 'ordinal',
-        'domain': undefined,
-        'range': undefined,
-        'rangeRoundBands': undefined,
-        'rangePoints': undefined,
-        'rangeBands': undefined
-      };
+        {
+          'type': 'ordinal',
+          'domain': undefined,
+          'range': undefined,
+          'rangeRoundBands': undefined,
+          'rangePoints': undefined,
+          'rangeBands': undefined
+        };
 
       var ordinalSpec = dex.config.expandAndOverlay(custom, defaults);
       return ordinalSpec;
@@ -1203,16 +1203,16 @@ module.exports = function config(dex) {
 
     'timeScale': function timeScale(custom) {
       var defaults =
-      {
-        'type': 'time',
-        'domain': undefined,
-        'range': undefined,
-        'rangeRound': undefined,
-        'interpolate': undefined,
-        'clamp': undefined,
-        'ticks': undefined,
-        'tickFormat': undefined
-      };
+        {
+          'type': 'time',
+          'domain': undefined,
+          'range': undefined,
+          'rangeRound': undefined,
+          'interpolate': undefined,
+          'clamp': undefined,
+          'ticks': undefined,
+          'tickFormat': undefined
+        };
 
       var config = dex.config.expandAndOverlay(custom, defaults);
       return config;
@@ -1220,11 +1220,11 @@ module.exports = function config(dex) {
 
     'quantileScale': function quantileScale(custom) {
       var defaults =
-      {
-        'type': 'quantile',
-        'domain': undefined,
-        'range': undefined
-      };
+        {
+          'type': 'quantile',
+          'domain': undefined,
+          'range': undefined
+        };
 
       var config = dex.config.expandAndOverlay(custom, defaults);
       return config;
@@ -1232,11 +1232,11 @@ module.exports = function config(dex) {
 
     'quantizeScale': function quantizeScale(custom) {
       var defaults =
-      {
-        'type': 'quantize',
-        'domain': undefined,
-        'range': undefined
-      };
+        {
+          'type': 'quantize',
+          'domain': undefined,
+          'range': undefined
+        };
 
       var config = dex.config.expandAndOverlay(custom, defaults);
       return config;
@@ -1244,11 +1244,11 @@ module.exports = function config(dex) {
 
     'identityScale': function identityScale(custom) {
       var defaults =
-      {
-        'type': 'identity',
-        'domain': undefined,
-        'range': undefined
-      };
+        {
+          'type': 'identity',
+          'domain': undefined,
+          'range': undefined
+        };
 
       var config = dex.config.expandAndOverlay(custom, defaults);
       return config;
@@ -1256,11 +1256,11 @@ module.exports = function config(dex) {
 
     'thresholdScale': function thresholdScale(custom) {
       var defaults =
-      {
-        'type': 'threshold',
-        'domain': undefined,
-        'range': undefined
-      };
+        {
+          'type': 'threshold',
+          'domain': undefined,
+          'range': undefined
+        };
 
       var config = dex.config.expandAndOverlay(custom, defaults);
       return config;
