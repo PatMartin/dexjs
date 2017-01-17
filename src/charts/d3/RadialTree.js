@@ -1,13 +1,12 @@
 var radialtree = function (userConfig) {
-  d3 = dex.charts.d3.d3v3;
+  d3 = dex.charts.d3.d3v4;
   var chart;
 
   var defaults = {
     // The parent container of this chart.
-    'parent': '#RadialTree',
-    // Set these when you need to CSS style components independently.
-    'id': 'RadialTree',
-    'class': 'RadialTree',
+    'parent': '#RadialTreeParent',
+    'id': 'RadialTreeId',
+    'class': 'RadialTreeClass',
     'resizable': true,
     // Our data...
     'csv': {
@@ -19,242 +18,190 @@ var radialtree = function (userConfig) {
         [2, 2, 2]
       ]
     },
-    'duration': 350,
-    'maxAngle': 360,
+    'nodeColorScheme': d3.scaleOrdinal(d3.schemeCategory10),
+    'linkColorScheme': d3.scaleOrdinal(d3.schemeCategory10),
+    'labelColorScheme': d3.scaleOrdinal(d3.schemeCategory10),
     'width': "100%",
     'height': "100%",
     'transform': "translate(0 0)",
-    'margin': {
-      'left': 100,
-      'right': 100,
-      'top': 100,
-      'bottom': 100
-    },
-    'title': dex.config.text(),
     'label': dex.config.text({
-        'anchor': function (d) {
-          return d.x < 180 ? 'start' : 'end'
-        },
-        'x': function (d) {
-          return d.x < 180 ? '6' : '-6';
-        },
-        //'transform' : function(d) {
-        //  return "rotate(" + (d.x < 180 ? d.x - 90 : d.x + 90) + ")"; },
         'dy': '.31em',
+        "x": function (d) {
+          return d.x < 180 && !d.children ? 6 : -6;
+        },
+        'fill.fillColor': function (d) {
+          return chart.config.labelColorScheme(d.depth);
+        },
         'font': dex.config.font({
           'family': 'sans-serif',
-          'size': function (d, i) {
-            switch (i) {
-              case 0 :
-                return 18;
-              default :
-                return 12;
-            }
-          },
+          'size': 10,
         }),
+        'anchor': function (d) {
+          //dex.console.log("anchor", d);
+          return d.x < 180 && !d.children ? "start" : "end";
+        },
+        'transform': function (d) {
+          //dex.console.log("TRANSFORMING", d);
+          return "rotate(" + (d.x < 180 ? d.x - 90 : d.x + 90) + ")";
+        },
         'text': function (d) {
-          return d.name;
+          //console.dir(d);
+          return d.data.name;
         }
       }
     ),
-    'circle': {
-      'expanded': dex.config.circle({
-        'fill.fillColor': 'white',
-        'r': 4.5
-      }),
-      'collapsed': dex.config.circle({
-        'fill.fillColor': 'steelblue',
-        'r': 4.5
-      })
-    },
     'link': dex.config.path({
-      'stroke.color': "red",
-      'stroke.dasharray': '5 5',
-      'stroke.width': 1,
+      'stroke.color': function (d) {
+        return chart.config.linkColorScheme(d.depth);
+      },
+      'stroke.dasharray': '1 1',
+      'stroke.width': 4,
       'stroke.opacity': .3,
       'fill.fillOpacity': .1,
-      'fill.fillColor': 'none'
+      'fill.fillColor': 'none',
+      'd': function (d) {
+        return "M" + project(d.x, d.y)
+          + "C" + project(d.x, (d.y + d.parent.y) / 2)
+          + " " + project(d.parent.x, (d.y + d.parent.y) / 2)
+          + " " + project(d.parent.x, d.parent.y);
+      }
     }),
-    'connectionLength': function (d, i) {
-      connections = [0, 80, 200, 300];
-      dex.console.log("D", d, d.x);
-      return d.depth * 120;
-    }
+    'connectionRatio': .9,
+    'node': dex.config.circle({
+      'r': 3,
+      'stroke.color': function (d) {
+        return chart.config.nodeColorScheme(d.depth);
+      },
+      'fill.fillColor': 'white'
+    }),
+    'separationModel': function (a, b) {
+      //dex.console.log("separation", a, b);
+      return (a.parent == b.parent ? 1 : 3) / a.depth;
+    },
+    'connectionLength': 80,
+    'maxAngle': 360,
+    'radius': 300,
+    'margin': {
+      'left': 10,
+      'right': 10,
+      'top': 25,
+      'bottom': 10
+    },
+
   };
 
   var chart = new dex.component(userConfig, defaults);
 
   chart.render = function render() {
-    d3 = dex.charts.d3.d3v3;
-    chart.resize = this.resize(chart);
-    window.onresize = chart.resize;
-    return chart.resize();
-  };
-
-  chart.update = function () {
-    d3 = dex.charts.d3.d3v3;
+    d3 = dex.charts.d3.d3v4;
     var chart = this;
     var config = chart.config;
-    var margin = config.margin;
-
-    var csv = config.csv;
-    var width = config.width - margin.left - margin.right;
-    var height = config.height - margin.top - margin.bottom;
-    var diameter = Math.min(height, width);
-    width = height = diameter;
+    chart.resize = chart.resize(chart);
+    window.onresize = function () {
+      chart.resize().update();
+    }
+    chart.resize();
 
     d3.selectAll(config.parent).selectAll('*').remove();
 
-    var data = dex.csv.toNestedJson(dex.csv.copy(csv));
+    var margin = config.margin;
+    var width = config.width - margin.left - margin.right;
+    var height = config.height - margin.top - margin.bottom;
 
-    var i = 0,
-      root;
-
-    var tree = d3.layout.tree()
-      .size([config.maxAngle, diameter / 2])
-      .separation(function (a, b) {
-        return (a.parent == b.parent ? 1 : 10) / a.depth;
-      });
-
-    var diagonal = d3.svg.diagonal.radial()
-      .projection(function (d) {
-        return [d.y, d.x / 180 * Math.PI];
-        //var angle = (d.x - 90) / 180 * Math.PI, radius = d.y;
-        //return [radius * Math.cos(angle), radius * Math.sin(angle)];
-      });
-
-    var chartContainer = d3.select(config.parent)
-      .append("g")
+    var svg = d3.select(config.parent)
+      .append("svg")
       .attr("id", config["id"])
       .attr("class", config["class"])
       .attr('width', config.width)
       .attr('height', config.height)
       .attr("transform", config.transform);
 
-    var chartG = chartContainer
-      .append('g')
-      .attr('transform', 'translate(' +
-        (margin.left + diameter / 2) + ',' +
-        (margin.top + diameter / 2) + ')');
+    var g = svg.append("g")
+      .attr("transform", "translate(" + (width / 2 + margin.left) + "," +
+        (height / 2 + margin.top) + ")");
 
-    root = data;
-    root.x0 = height / 2;
-    root.y0 = 0;
+    return chart.update();
+  };
 
-    //root.children.forEach(collapse); // start with all children collapsed
-    update(root);
+  chart.update = function () {
+    d3 = dex.charts.d3.d3v4;
+    var chart = this;
+    var config = chart.config;
+    var csv = config.csv;
+    var margin = config.margin;
 
-    function update(source) {
+    var width = config.width - margin.left - margin.right;
+    var height = config.height - margin.top - margin.bottom;
 
-      // Compute the new tree layout.
-      var nodes = tree.nodes(root),
-        links = tree.links(nodes);
+    var data = dex.csv.toNestedJson(dex.csv.copy(csv));
 
-      // Dynamic depth.
-      if (dex.object.isFunction(config.connectionLength)) {
-        nodes.forEach(function (d) {
-          d.y = config.connectionLength(d);
-        });
-      }
-      // Fixed depth
-      else {
-        nodes.forEach(function (d) {
-          d.y = d.depth * config.connectionLength;
-        });
-      }
-      // Update the nodes…
-      var node = chartG.selectAll("g.node")
-        .data(nodes, function (d) {
-          return d.id || (d.id = ++i);
-        });
+    chart.internalUpdate(data);
 
-      // Enter any new nodes at the parent's previous position.
-      var nodeEnter = node.enter().append("g")
-        .attr("class", "node")
-        .on("click", click);
+    return chart;
+  };
 
-      nodeEnter.append("circle")
-        .attr("r", 1e-6)
-        .style("fill", function (d) {
-          return d._children ? "lightsteelblue" : "#fff";
-        });
+  chart.internalUpdate = function (source) {
+    d3 = dex.charts.d3.d3v4;
+    var chart = this;
+    var config = chart.config;
+    var csv = config.csv;
+    var margin = config.margin;
 
-      var textEnter = nodeEnter.append("text")
-        .call(dex.config.configureText, config.label);
+    var svg = d3.select(config.parent).select("svg");
+    var g = svg.select("g");
 
-      // Transition nodes to their new position.
-      var nodeUpdate = node.transition()
-        .duration(config.duration)
-        .attr("transform", function (d) {
-          return "rotate(" + (d.x - 90) + ")translate(" + d.y + ")";
-        })
+    var tree = d3.tree()
+      .size([config.maxAngle, config.radius])
+      .separation(config.separationModel);
 
-      nodeUpdate.select("circle")
-        .each(function (d) {
-          d3.select(this).call(dex.config.configureCircle,
-            d._children ? config.circle.collapsed :
-              config.circle.expanded);
-        });
+    var hier = d3.hierarchy(source);
+    var root = tree(hier);
 
-      nodeUpdate.select("text")
-        .style("fill-opacity", 1)
-        .attr("transform", function (d) {
-          return d.x < 180 ? "translate(0)" :
-            "rotate(180)translate(-" + (d.name.length + 50) + ")";
-        });
+    var link = g.selectAll(".link")
+      .data(root.descendants().slice(1))
+      .enter().append("path")
+      .attr("class", "link")
+      .call(dex.config.configurePath, config.link);
 
-      var nodeExit = node.exit()
-        .transition()
-        .duration(config.duration)
-        .remove();
+    //node.attr("y", function(d) { d.y = d.depth * 80; });
 
-      nodeExit.select("circle")
-        .attr('fill-opacity', 0)
-        .attr("r", 1e-6);
+    var nodes = g.selectAll(".node")
+      .data(root.descendants());
 
-      nodeExit.select("text")
-        .style("fill-opacity", 1e-6);
+    //dex.console.log("DESCENDANTS", root.descendants());
 
-// Update the links…
-      var link = chartG.selectAll("path.link")
-        .data(links, function (d) {
-          return d.target.id;
-        });
-
-// Enter any new links at the parent's previous position.
-      link.enter().insert("path", "g")
-        .attr("class", "link")
-        .attr("d", function (d) {
-          var o = {x: source.x0, y: source.y0};
-          return diagonal({source: o, target: o});
-        });
-
-      link
-        .call(dex.config.configureLink, config.link);
-
-// Transition links to their new position.
-      link.transition()
-        .duration(config.duration)
-        .attr("d", diagonal);
-
-// Transition exiting nodes to the parent's new position.
-      link.exit().transition()
-        .duration(config.duration)
-        .attr("d", function (d) {
-          var o = {x: source.x, y: source.y};
-          return diagonal({source: o, target: o});
-        })
-        .remove();
-
-// Stash the old positions for transition.
-      nodes.forEach(function (d) {
-        d.x0 = d.x;
-        d.y0 = d.y;
+    var nodeEnter = nodes.enter()
+      .append("g")
+      .attr("class", function (d) {
+        return "node" + (d.children ? " node--internal" : " node--leaf");
+      })
+      .attr("transform", function (d) {
+        return "translate(" + project(d.x, d.y) + ")";
       });
-    }
+    //.on("click", click);
 
-// Toggle children on click.
+    nodeEnter.append("circle")
+      .call(dex.config.configureCircle, config.node);
+
+    //node.attr("y", function(d) { return d.depth * 40; });
+
+    nodeEnter.append("text")
+      .call(dex.config.configureText, config.label);
+
+
+    var nodeExit = nodes.exit()
+      .transition()
+      .duration(config.duration)
+      .remove();
+
+    nodeExit.select("circle")
+      .attr("r", 1e-6);
+
+    nodeExit.select("text")
+      .style("fill-opacity", 1e-6);
+
     function click(d) {
+      dex.console.log("CLICK", d);
       if (d.children) {
         d._children = d.children;
         d.children = null;
@@ -263,20 +210,18 @@ var radialtree = function (userConfig) {
         d._children = null;
       }
 
-      update(d);
-    }
-
-// Collapse nodes
-    function collapse(d) {
-      if (d.children) {
-        d._children = d.children;
-        d._children.forEach(collapse);
-        d.children = null;
-      }
+      chart.internalUpdate(d);
     }
 
     return chart;
-  };
+  }
+
+  function project(x, y) {
+    //dex.console.log('project(x,y)', x, y);
+    var angle = (x - 90) / 180 * Math.PI;
+    var radius = y * chart.config.connectionRatio;
+    return [radius * Math.cos(angle), radius * Math.sin(angle)];
+  }
 
   $(document).ready(function () {
     // Make the entire chart draggable.
@@ -287,4 +232,3 @@ var radialtree = function (userConfig) {
 };
 
 module.exports = radialtree;
-
