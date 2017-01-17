@@ -356,7 +356,8 @@ module.exports = function config(dex) {
       var defaults =
       {
         'fillColor': "grey",
-        'fillOpacity': 1
+        'fillOpacity': 1,
+        'fillRule' : 'inherit'
       };
 
       var config = dex.config.expandAndOverlay(custom, defaults);
@@ -376,6 +377,7 @@ module.exports = function config(dex) {
     'configureFill': function configureFill(node, config, i) {
       if (config) {
         dex.config.setStyle(node, 'fill', config.fillColor, i);
+        dex.config.setStyle(node, 'fill-rule', config.fillRule, i);
         dex.config.setStyle(node, 'fill-opacity', config.fillOpacity, i);
       }
       return node;

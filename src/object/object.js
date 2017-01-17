@@ -220,7 +220,7 @@ module.exports = function object(dex) {
      */
     'isFunction': function isFunction(obj) {
       //return typeof obj === 'function';
-      return _.isFunction(obj);
+      return (typeof obj === "function");
     },
 
     /**

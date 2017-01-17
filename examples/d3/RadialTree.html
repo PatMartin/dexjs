@@ -14,22 +14,6 @@
         width: 100%;
         min-width: 100%;
     }
-
-    .node {
-        cursor: pointer;
-    }
-
-    .node circle {
-        fill: #fff;
-        stroke: steelblue;
-        stroke-width: 1.5px;
-    }
-
-    .link {
-        fill: none;
-        stroke: #ccc;
-        stroke-width: 1.5px;
-    }
 </style>
 <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.css">
 <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.theme.min.css">
@@ -40,65 +24,58 @@
 <script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
 <script src="../../dist/dex.js"></script>
 <script>
-    csv =
-    {
-        'header' : ["Presidency", "President", "Party", "Home State"],
-        'data'   : [
-            ["1", "George Washington", "Independent", "Virginia"],
-            ["2", "John Adams", "Federalist", "Massachusetts"],
-            ["3", "Thomas Jefferson", "Democratic-Republican", "Virginia"],
-            ["4", "James Madison", "Democratic-Republican", "Virginia"],
-            ["5", "James Monroe", "Democratic-Republican", "Virginia"],
-            ["6", "John Quincy Adams", "Democratic-Republican/National Republican", "Massachusetts"],
-            ["7", "Andrew Jackson", "Democratic", "Tennessee"],
-            ["8", "Martin Van Buren", "Democratic", "New York"],
-            ["9", "William Henry Harrison", "Whig", "Ohio"],
-            ["10", "John Tyler", "Whig", "Virginia"],
-            ["11", "James K. Polk", "Democratic", "Tennessee"],
-            ["12", "Zachary Taylor", "Whig", "Louisiana"],
-            ["13", "Millard Fillmore", "Whig", "New York"],
-            ["14", "Franklin Pierce", "Democratic", "New Hampshire"],
-            ["15", "James Buchanan", "Democratic", "Pennsylvania"],
-            ["16", "Abraham Lincoln", "Republican/National Union", "Illinois"],
-            ["17", "Andrew Johnson", "Democratic/National Union", "Tennessee"],
-            ["18", "Ulysses S. Grant", "Republican", "Ohio"],
-            ["19", "Rutherford B. Hayes", "Republican", "Ohio"],
-            ["20", "James A. Garfield", "Republican", "Ohio"],
-            ["21", "Chester A. Arthur", "Republican", "New York"],
-            ["22", "Grover Cleveland", "Democratic", "New York"],
-            ["23", "Benjamin Harrison", "Republican", "Indiana"],
-            ["24", "Grover Cleveland (2nd term)", "Democratic", "New York"],
-            ["25", "William McKinley", "Republican", "Ohio"],
-            ["26", "Theodore Roosevelt", "Republican", "New York"],
-            ["27", "William Howard Taft", "Republican", "Ohio"],
-            ["28", "Woodrow Wilson", "Democratic", "New Jersey"],
-            ["29", "Warren G. Harding", "Republican", "Ohio"],
-            ["30", "Calvin Coolidge", "Republican", "Massachusetts"],
-            ["31", "Herbert Hoover", "Republican", "Iowa"],
-            ["32", "Franklin D. Roosevelt", "Democratic", "New York"],
-            ["33", "Harry S. Truman", "Democratic", "Missouri"],
-            ["34", "Dwight D. Eisenhower", "Republican", "Texas"],
-            ["35", "John F. Kennedy", "Democratic", "Massachusetts"],
-            ["36", "Lyndon B. Johnson", "Democratic", "Texas"],
-            ["37", "Richard Nixon", "Republican", "California"],
-            ["38", "Gerald Ford", "Republican", "Michigan"],
-            ["39", "Jimmy Carter", "Democratic", "Georgia"],
-            ["40", "Ronald Reagan", "Republican", "California"],
-            ["41", "George H. W. Bush", "Republican", "Texas"],
-            ["42", "Bill Clinton", "Democratic", "Arkansas"],
-            ["43", "George W. Bush", "Republican", "Texas"],
-            ["44", "Barack Obama", "Democratic", "Illinois"]
-        ]
-    };
+  var csv = { 'header' : ["Party","Home State","President"],
+    'data' : [["Independent ","Virginia","George Washington"],
+      ["Federalist","Massachusetts","John Adams"],
+      ["Dem-Rep","Virginia","Thomas Jefferson"],
+      ["Dem-Rep","Virginia","James Madison"],
+      ["Dem-Rep","Virginia","James Monroe"],
+      ["Dem-Rep/Nat Rep","Massachusetts","John Quincy Adams"],
+      ["Democratic","Tennessee","Andrew Jackson"],
+      ["Democratic","New York","Martin Van Buren"],
+      ["Whig","Ohio","William Henry Harrison"],
+      ["Whig","Virginia","John Tyler"],
+      ["Democratic","Tennessee","James K. Polk"],
+      ["Whig","Louisiana","Zachary Taylor"],
+      ["Whig","New York","Millard Fillmore"],
+      ["Democratic","New Hampshire","Franklin Pierce"],
+      ["Democratic","Pennsylvania","James Buchanan"],
+      ["Rep/Nat Union","Illinois","Abraham Lincoln"],
+      ["Dem/Nat Union","Tennessee","Andrew Johnson"],
+      ["Republican","Ohio","Ulysses S. Grant"],
+      ["Republican","Ohio","Rutherford B. Hayes"],
+      ["Republican","Ohio","James A. Garfield"],
+      ["Republican","New York","Chester A. Arthur"],
+      ["Democratic","New York","Grover Cleveland"],
+      ["Republican","Indiana","Benjamin Harrison"],
+      ["Democratic","New York","Grover Cleveland (2nd term)"],
+      ["Republican","Ohio","William McKinley"],
+      ["Republican","New York","Theodore Roosevelt"],
+      ["Republican","Ohio","William Howard Taft"],
+      ["Democratic","New Jersey","Woodrow Wilson"],
+      ["Republican","Ohio","Warren G. Harding"],
+      ["Republican","Massachusetts","Calvin Coolidge"],
+      ["Republican","Iowa","Herbert Hoover"],
+      ["Democratic","New York","Franklin D. Roosevelt"],
+      ["Democratic","Missouri","Harry S. Truman"],
+      ["Republican","Texas","Dwight D. Eisenhower"],
+      ["Democratic","Massachusetts","John F. Kennedy"],
+      ["Democratic","Texas","Lyndon B. Johnson"],
+      ["Republican","California","Richard Nixon"],
+      ["Republican","Michigan","Gerald Ford"],
+      ["Democratic","Georgia","Jimmy Carter"],
+      ["Republican","California","Ronald Reagan"],
+      ["Republican","Texas","George H. W. Bush"],
+      ["Democratic","Arkansas","Bill Clinton"],
+      ["Republican","Texas","George W. Bush"],
+      ["Democratic","Illinois","Barack Obama"]] };
 
-
-    var tree = new dex.charts.d3.RadialTree({
-                'parent'      : '#ChartArea',
-                'resizable'  : true,
-                'color'       : d3.scale.category20c(),
-                'csv'         : dex.csv.columnSlice(csv, [2, 3, 1])
-            }
-    );
-    tree.render();
+  var tree = dex.charts.d3.RadialTree({
+    'parent': '#ChartArea',
+    'resizable': true,
+    'color': d3.scale.category20c(),
+    'csv': csv
+  });
+  tree.render();
 
 </script>

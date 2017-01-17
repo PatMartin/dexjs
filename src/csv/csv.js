@@ -833,7 +833,7 @@ module.exports = function csv(dex) {
 
     'toNestedJson': function (csv, manualWeight) {
       manualWeight = manualWeight || false;
-      dex.console.log("CMAP", dex.csv.getConnectionMap(csv), manualWeight);
+      //dex.console.log("CMAP", dex.csv.getConnectionMap(csv), manualWeight);
       var result = {
         'name': csv.header[0],
         'children': dex.csv.toNestedJsonChildren(

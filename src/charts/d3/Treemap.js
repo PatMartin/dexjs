@@ -240,8 +240,6 @@ var treemap = function (userConfig) {
         d.wscale = wscale;
         d.bbox = bbox;
         d.cbox = cbbox;
-
-        //dex.console.log("SCALE: ", d);
       }
 
       function transition(d) {

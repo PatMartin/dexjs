@@ -1147,104 +1147,100 @@ var chord = function (userConfig) {
   var chart;
 
   var defaults =
-  {
-    // The parent container of this chart.
-    'parent'       : '#ChordDiagram',
-    // Set these when you need to CSS style components independently.
-    'id'           : 'Chord',
-    'class'        : 'Chord',
-    'resizable'   : true,
-    // Our data...
-    'csv'          : {
-      // Give folks without data something to look at anyhow.
-      'header' : ["X", "Y", "Z"],
-      'data'   : [
-        [0, 0, 0],
-        [1, 1, 1],
-        [2, 2, 2]
-      ]
-    },
-    'width'        : "100%",
-    'height'       : "100%",
-    'transform'    : "translate(0 0)",
-    'padding'      : 0.05,
-    'nodes'        : {
-      'mouseout'  : dex.config.link(
-        {
-          'stroke.color'     : "black",
+    {
+      // The parent container of this chart.
+      'parent': '#ChordDiagram',
+      // Set these when you need to CSS style components independently.
+      'id': 'Chord',
+      'class': 'Chord',
+      'resizable': true,
+      // Our data...
+      'csv': {
+        // Give folks without data something to look at anyhow.
+        'header': ["X", "Y", "Z"],
+        'data': [
+          [0, 0, 0],
+          [1, 1, 1],
+          [2, 2, 2]
+        ]
+      },
+      'width': "100%",
+      'height': "100%",
+      'transform': "translate(0 0)",
+      'padding': 0.05,
+      'nodes': {
+        'mouseout': dex.config.link({
+          'stroke.color': "black",
           //'stroke.dasharray': '5 5',
-          'stroke.width'     : 1,
-          'fill.fillColor'   : function (d, i) {
+          'stroke.width': 1,
+          'fill.fillColor': function (d, i) {
             //dex.console.log("COLORD", d);
             return (chart.config.color(d.index));
           },
-          'fill.fillOpacity' : 0.5,
-          'fill.fill'        : 'none',
-          'd'                : d3.svg.arc(),
-          'transform'        : ''
+          'fill.fillOpacity': 0.5,
+          'fill.fill': 'none',
+          'd': d3.svg.arc(),
+          'transform': ''
         }),
-      'mouseover' : dex.config.link(
-        {
-          'stroke.color'     : "red",
+        'mouseover': dex.config.link({
+          'stroke.color': "red",
           //'stroke.dasharray': '5 5',
-          'stroke.width'     : 1,
-          'fill.fillColor'   : function (d, i) {
+          'stroke.width': 1,
+          'fill.fillColor': function (d, i) {
             //dex.console.log("COLORD", d);
             return (chart.config.color(d.index));
           },
-          'fill.fillOpacity' : 1,
-          'fill.fill'        : 'none',
-          'd'                : d3.svg.arc(),
-          'transform'        : ''
+          'fill.fillOpacity': 1,
+          'fill.fill': 'none',
+          'd': d3.svg.arc(),
+          'transform': ''
         })
-    },
-    'links'        : {
-      'mouseout'  : dex.config.link(
-        {
-          'stroke.color'     : "grey",
-          'stroke.dasharray' : '',
-          'stroke.width'     : 1,
-          'fill.fillColor'   : function (d, i) {
+      },
+      'links': {
+        'mouseout': dex.config.link({
+          'stroke.color': "grey",
+          'stroke.dasharray': '',
+          'stroke.width': 1,
+          'fill.fillColor': function (d, i) {
             return (chart.config.color(d.target.index));
           },
-          'fill.fillOpacity' : 0.3,
-          'fill.fill'        : 'none',
-          'd'                : d3.svg.chord(),
-          'transform'        : ''
+          'fill.fillOpacity': 0.3,
+          'fill.fill': 'none',
+          'd': d3.svg.chord(),
+          'transform': ''
         }),
-      'mouseover' : dex.config.link(
-        {
-          'stroke.color'     : "black",
-          'stroke.dasharray' : '',
-          'stroke.width'     : 2,
-          'fill.fillColor'   : function (d, i) {
+        'mouseover': dex.config.link({
+          'stroke.color': "black",
+          'stroke.dasharray': '',
+          'stroke.width': 2,
+          'fill.fillColor': function (d, i) {
             return (chart.config.color(d.target.index));
           },
-          'transform'        : "",
-          'fill.fillOpacity' : 1,
-          'fill.fill'        : 'none',
-          'd'                : d3.svg.chord()
+          'transform': "",
+          'fill.fillOpacity': 1,
+          'fill.fill': 'none',
+          'd': d3.svg.chord()
         })
-    },
+      },
 //                .style("fill", function (d) {
 //        return chart.config.color(d.index);
 //      })
-    'color'        : d3.scale.category20(),
-    'innerRadius'  : 130,
-    'outerRadius'  : 200,
-    'tick.start.x' : 1,
-    'tick.start.y' : 0,
-    'tick.end.x'   : 5,
-    'tick.end.y'   : 0,
-    'tick.padding' : 10,
-    'tick.stroke'  : dex.config.stroke(
+    'color': d3.scale.category20(),
+    'innerRadius': 130,
+    'outerRadius': 200,
+    'tick.start.x': 1,
+    'tick.start.y': 0,
+    'tick.end.x': 5,
+    'tick.end.y': 0,
+    'tick.padding': 10,
+    'tick.stroke': dex.config.stroke(
       {
-        'width' : 2,
-        'color' : 'black'
+        'width': 2,
+        'color': 'black'
         //'dasharray' : '1 2'
       }),
-    'title'        : dex.config.text(),
-    'label'        : dex.config.text()
+    'title': dex.config.text(),
+    'label': dex.config.text()
   };
 
   var chart = new dex.component(userConfig, defaults);
@@ -1282,7 +1278,7 @@ var chord = function (userConfig) {
     //console.log("LONGEST: " + longest + ", FONT-SIZE: " + config.label.font.size + ", INNER: " + inner + ", OUTER: " + outer);
     if (config.debug) {
       console.log("===== Chord#" + config.id + "." + config.class +
-      " Configuration =====");
+        " Configuration =====");
       console.dir(config);
     }
 
@@ -1378,7 +1374,7 @@ var chord = function (userConfig) {
       })
       .attr("transform", function (d) {
         return d.angle > Math.PI ? "rotate(180)translate(-" +
-        ((config.tick.padding * 2) + (config.tick.padding / 2)) + ")" : null;
+          ((config.tick.padding * 2) + (config.tick.padding / 2)) + ")" : null;
       })
       .text(function (d) {
         return d.label;
@@ -1407,12 +1403,13 @@ var chord = function (userConfig) {
       var k = (d.endAngle - d.startAngle) / d.value;
       return d3.range(0, d.value, 1000).map(function (v, i) {
         return {
-          angle : v * k + d.startAngle,
+          angle: v * k + d.startAngle,
           //label: i % 5 ? null : v / 1000 + "k"
-          label : chordData.header[d.index]
+          label: chordData.header[d.index]
         };
       });
     }
+
     // Allow method chaining
     return chart;
   };
@@ -5585,92 +5582,140 @@ var radialtree = function (userConfig) {
   d3 = dex.charts.d3.d3v3;
   var chart;
 
-  var defaults =
-  {
+  var defaults = {
     // The parent container of this chart.
-    'parent'       : '#RadialTree',
+    'parent': '#RadialTree',
     // Set these when you need to CSS style components independently.
-    'id'           : 'RadialTree',
-    'class'        : 'RadialTree',
-    'resizable'   : true,
+    'id': 'RadialTree',
+    'class': 'RadialTree',
+    'resizable': true,
     // Our data...
-    'csv'          : {
+    'csv': {
       // Give folks without data something to look at anyhow.
-      'header' : ["X", "Y", "Z"],
-      'data'   : [
+      'header': ["X", "Y", "Z"],
+      'data': [
         [0, 0, 0],
         [1, 1, 1],
         [2, 2, 2]
       ]
     },
-    'width'        : "100%",
-    'height'       : "100%",
-    'transform'    : "translate(0 0)",
-    'title'        : dex.config.text(),
-    'label'        : dex.config.text(
-      {
-        'font' : dex.config.font({
+    'duration': 350,
+    'maxAngle': 360,
+    'width': "100%",
+    'height': "100%",
+    'transform': "translate(0 0)",
+    'margin': {
+      'left': 100,
+      'right': 100,
+      'top': 100,
+      'bottom': 100
+    },
+    'title': dex.config.text(),
+    'label': dex.config.text({
+        'anchor': function (d) {
+          return d.x < 180 ? 'start' : 'end'
+        },
+        'x': function (d) {
+          return d.x < 180 ? '6' : '-6';
+        },
+        //'transform' : function(d) {
+        //  return "rotate(" + (d.x < 180 ? d.x - 90 : d.x + 90) + ")"; },
+        'dy': '.31em',
+        'font': dex.config.font({
           'family': 'sans-serif',
-          'size': 10,
-        })
+          'size': function (d, i) {
+            switch (i) {
+              case 0 :
+                return 18;
+              default :
+                return 12;
+            }
+          },
+        }),
+        'text': function (d) {
+          return d.name;
+        }
       }
     ),
-    'connectionLength' : 80
+    'circle': {
+      'expanded': dex.config.circle({
+        'fill.fillColor': 'white',
+        'r': 4.5
+      }),
+      'collapsed': dex.config.circle({
+        'fill.fillColor': 'steelblue',
+        'r': 4.5
+      })
+    },
+    'link': dex.config.path({
+      'stroke.color': "red",
+      'stroke.dasharray': '5 5',
+      'stroke.width': 1,
+      'stroke.opacity': .3,
+      'fill.fillOpacity': .1,
+      'fill.fillColor': 'none'
+    }),
+    'connectionLength': function (d, i) {
+      connections = [0, 80, 200, 300];
+      dex.console.log("D", d, d.x);
+      return d.depth * 120;
+    }
   };
 
   var chart = new dex.component(userConfig, defaults);
 
   chart.render = function render() {
     d3 = dex.charts.d3.d3v3;
-    window.onresize = this.resize;
-    chart.resize();
-  };
-
-  chart.resize = function resize() {
-    d3 = dex.charts.d3.d3v3;
-    if (chart.config.resizable) {
-      var width = d3.select(chart.config.parent).property("clientWidth");
-      var height = d3.select(chart.config.parent).property("clientHeight");
-      dex.console.log(chart.config.id + ": resize(" + width + "," + height + ")");
-      chart.attr("width", width).attr("height", height).update();
-    }
-    else {
-      chart.update();
-    }
+    chart.resize = this.resize(chart);
+    window.onresize = chart.resize;
+    return chart.resize();
   };
 
   chart.update = function () {
     d3 = dex.charts.d3.d3v3;
     var chart = this;
     var config = chart.config;
-    var csv = config.csv;
+    var margin = config.margin;
 
-    d3.selectAll("#" + config.id).remove();
+    var csv = config.csv;
+    var width = config.width - margin.left - margin.right;
+    var height = config.height - margin.top - margin.bottom;
+    var diameter = Math.min(height, width);
+    width = height = diameter;
+
+    d3.selectAll(config.parent).selectAll('*').remove();
 
     var data = dex.csv.toNestedJson(dex.csv.copy(csv));
-    dex.console.log("DATA", csv, data);
-
-    var diameter = Math.min(config.height, config.width);
-
-    var margin = {top: 20, right: 60, bottom: 20, left: 60},
-      width = diameter,
-      height = diameter;
 
     var i = 0,
-      duration = 350,
       root;
 
     var tree = d3.layout.tree()
-      .size([360, diameter / 2 - 80])
-      .separation(function(a, b) { return (a.parent == b.parent ? 1 : 10) / a.depth; });
+      .size([config.maxAngle, diameter / 2])
+      .separation(function (a, b) {
+        return (a.parent == b.parent ? 1 : 10) / a.depth;
+      });
 
     var diagonal = d3.svg.diagonal.radial()
-      .projection(function(d) { return [d.y, d.x / 180 * Math.PI]; });
+      .projection(function (d) {
+        //return [d.y, d.x / 180 * Math.PI];
+        var angle = (d.x - 90) / 180 * Math.PI, radius = d.y;
+        return [radius * Math.cos(angle), radius * Math.sin(angle)];
+      });
 
-    var chartContainer = d3.select(config.parent).append("g")
-      .attr("class", config["id"])
+    var chartContainer = d3.select(config.parent)
+      .append("g")
       .attr("id", config["id"])
-      .attr("transform", "translate(" + diameter / 2 + "," + diameter / 2 + ")");
+      .attr("class", config["class"])
+      .attr('width', config.width)
+      .attr('height', config.height)
+      .attr("transform", config.transform);
+
+    var chartG = chartContainer
+      .append('g')
+      .attr('transform', 'translate(' +
+        (margin.left + diameter / 2) + ',' +
+        (margin.top + diameter / 2) + ')');
 
     root = data;
     root.x0 = height / 2;
@@ -5679,99 +5724,116 @@ var radialtree = function (userConfig) {
     //root.children.forEach(collapse); // start with all children collapsed
     update(root);
 
-    //d3.select(self.frameElement).style("height", "800px");
-
     function update(source) {
 
       // Compute the new tree layout.
       var nodes = tree.nodes(root),
         links = tree.links(nodes);
 
-      // Normalize for fixed-depth.
-      nodes.forEach(function(d) { d.y = d.depth * config.connectionLength; });
-
+      // Dynamic depth.
+      if (dex.object.isFunction(config.connectionLength)) {
+        nodes.forEach(function (d) {
+          d.y = config.connectionLength(d);
+        });
+      }
+      // Fixed depth
+      else {
+        nodes.forEach(function (d) {
+          d.y = d.depth * config.connectionLength;
+        });
+      }
       // Update the nodes…
-      var node = chartContainer.selectAll("g.node")
-        .data(nodes, function(d) { return d.id || (d.id = ++i); });
+      var node = chartG.selectAll("g.node")
+        .data(nodes, function (d) {
+          return d.id || (d.id = ++i);
+        });
 
       // Enter any new nodes at the parent's previous position.
       var nodeEnter = node.enter().append("g")
         .attr("class", "node")
-        //.attr("transform", function(d) { return "rotate(" + (d.x - 90) + ")translate(" + d.y + ")"; })
         .on("click", click);
 
       nodeEnter.append("circle")
         .attr("r", 1e-6)
-        .style("fill", function(d) { return d._children ? "lightsteelblue" : "#fff"; });
+        .style("fill", function (d) {
+          return d._children ? "lightsteelblue" : "#fff";
+        });
 
-      nodeEnter.append("text")
-        .attr("x", 10)
-        .attr("dy", ".35em")
-        .attr("text-anchor", "start")
-        //.attr("transform", function(d) { return d.x < 180 ? "translate(0)" : "rotate(180)translate(-" + (d.name.length * 8.5)  + ")"; })
-        .text(function(d) { return d.name; })
+      var textEnter = nodeEnter.append("text")
         .call(dex.config.configureText, config.label);
-        //.style("fill-opacity", 1e-6);
 
       // Transition nodes to their new position.
       var nodeUpdate = node.transition()
-        .duration(duration)
-        .attr("transform", function(d) { return "rotate(" + (d.x - 90) + ")translate(" + d.y + ")"; })
+        .duration(config.duration)
+        .attr("transform", function (d) {
+          return "rotate(" + (d.x - 90) + ")translate(" + d.y + ")";
+        })
 
       nodeUpdate.select("circle")
-        .attr("r", 4.5)
-        .style("fill", function(d) { return d._children ? "lightsteelblue" : "#fff"; });
+        .each(function (d) {
+          d3.select(this).call(dex.config.configureCircle,
+            d._children ? config.circle.collapsed :
+              config.circle.expanded);
+        });
 
       nodeUpdate.select("text")
         .style("fill-opacity", 1)
-        .attr("transform", function(d) { return d.x < 180 ? "translate(0)" : "rotate(180)translate(-" + (d.name.length + 50)  + ")"; });
+        .attr("transform", function (d) {
+          return d.x < 180 ? "translate(0)" :
+            "rotate(180)translate(-" + (d.name.length + 50) + ")";
+        });
 
-      // TODO: appropriate transform
-      var nodeExit = node.exit().transition()
-        .duration(duration)
-        //.attr("transform", function(d) { return "diagonal(" + source.y + "," + source.x + ")"; })
+      var nodeExit = node.exit()
+        .transition()
+        .duration(config.duration)
         .remove();
 
       nodeExit.select("circle")
+        .attr('fill-opacity', 0)
         .attr("r", 1e-6);
 
       nodeExit.select("text")
         .style("fill-opacity", 1e-6);
 
-      // Update the links…
-      var link = chartContainer.selectAll("path.link")
-        .data(links, function(d) { return d.target.id; });
+// Update the links…
+      var link = chartG.selectAll("path.link")
+        .data(links, function (d) {
+          return d.target.id;
+        });
 
-      // Enter any new links at the parent's previous position.
+// Enter any new links at the parent's previous position.
       link.enter().insert("path", "g")
         .attr("class", "link")
-        .attr("d", function(d) {
+        .attr("d", function (d) {
           var o = {x: source.x0, y: source.y0};
           return diagonal({source: o, target: o});
         });
 
-      // Transition links to their new position.
+      link
+        .call(dex.config.configureLink, config.link);
+
+// Transition links to their new position.
       link.transition()
-        .duration(duration)
+        .duration(config.duration)
         .attr("d", diagonal);
 
-      // Transition exiting nodes to the parent's new position.
+// Transition exiting nodes to the parent's new position.
       link.exit().transition()
-        .duration(duration)
-        .attr("d", function(d) {
+        .duration(config.duration)
+        .attr("d", function (d) {
           var o = {x: source.x, y: source.y};
           return diagonal({source: o, target: o});
         })
         .remove();
 
-      // Stash the old positions for transition.
-      nodes.forEach(function(d) {
+// Stash the old positions for transition.
+      nodes.forEach(function (d) {
         d.x0 = d.x;
         d.y0 = d.y;
       });
     }
 
-    // Toggle children on click.
+// Toggle children on click.
     function click(d) {
       if (d.children) {
         d._children = d.children;
@@ -5784,7 +5846,7 @@ var radialtree = function (userConfig) {
       update(d);
     }
 
-    // Collapse nodes
+// Collapse nodes
     function collapse(d) {
       if (d.children) {
         d._children = d.children;
@@ -5793,6 +5855,7 @@ var radialtree = function (userConfig) {
       }
     }
 
+    return chart;
   };
 
   $(document).ready(function () {
@@ -8162,8 +8225,6 @@ var treemap = function (userConfig) {
         d.wscale = wscale;
         d.bbox = bbox;
         d.cbox = cbbox;
-
-        //dex.console.log("SCALE: ", d);
       }
 
       function transition(d) {
@@ -11609,7 +11670,8 @@ module.exports = function config(dex) {
       var defaults =
       {
         'fillColor': "grey",
-        'fillOpacity': 1
+        'fillOpacity': 1,
+        'fillRule' : 'inherit'
       };
 
       var config = dex.config.expandAndOverlay(custom, defaults);
@@ -11629,6 +11691,7 @@ module.exports = function config(dex) {
     'configureFill': function configureFill(node, config, i) {
       if (config) {
         dex.config.setStyle(node, 'fill', config.fillColor, i);
+        dex.config.setStyle(node, 'fill-rule', config.fillRule, i);
         dex.config.setStyle(node, 'fill-opacity', config.fillOpacity, i);
       }
       return node;
@@ -13510,7 +13573,7 @@ module.exports = function csv(dex) {
 
     'toNestedJson': function (csv, manualWeight) {
       manualWeight = manualWeight || false;
-      dex.console.log("CMAP", dex.csv.getConnectionMap(csv), manualWeight);
+      //dex.console.log("CMAP", dex.csv.getConnectionMap(csv), manualWeight);
       var result = {
         'name': csv.header[0],
         'children': dex.csv.toNestedJsonChildren(
@@ -14813,7 +14876,7 @@ module.exports = function object(dex) {
      */
     'isFunction': function isFunction(obj) {
       //return typeof obj === 'function';
-      return _.isFunction(obj);
+      return (typeof obj === "function");
     },
 
     /**
@@ -15784,15 +15847,34 @@ module.exports = function util(dex) {
 
   return {
     // Things pertaining to charts.
-    'chart' : {
+    'chart': {
       // Chart creation hooks:
       'factory': {
         // Kai S Chang aka: @syntagmatic's d3 parallel coordinates
-        'd3' : {
+        'd3': {
           //'parcoords': function (config) {
           //  return require('../../lib/d3.parcoords')()(config.parent);
           //}
         }
+      }
+    },
+    'd3': {
+      'autosize': function (d) {
+        var bbox = this.getBBox();
+        var cbbox = this.parentNode.getBBox();
+        var hMargin = Math.min(30, cbbox.height * .1);
+        var wMargin = Math.min(30, cbbox.width * .1);
+        var wscale = Math.min((cbbox.width - wMargin) / bbox.width);
+        var hscale = Math.min((cbbox.height - hMargin) / bbox.height);
+
+
+        d.bounds = {
+          'container-bounds': cbbox,
+          'bounds': bbox,
+          'scale': Math.min(wscale, hscale),
+          'height-scale': hscale,
+          'width-scale': wscale
+        };
       }
     }
   };
