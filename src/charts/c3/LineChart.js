@@ -40,7 +40,7 @@ var linechart = function (userConfig) {
             'header': [],
             'data': []
         },
-        'linktype' : 'area',
+        'linktype' : 'line',
         'width': "100%",
         'height': "100%"
     };
