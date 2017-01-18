@@ -201,7 +201,8 @@ var radialtree = function (userConfig) {
       .style("fill-opacity", 1e-6);
 
     function click(d) {
-      dex.console.log("CLICK", d);
+      d3 = dex.charts.d3.d3v4;
+      //dex.console.log("CLICK", d);
       if (d.children) {
         d._children = d.children;
         d.children = null;
