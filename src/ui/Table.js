@@ -25,10 +25,10 @@ var table = function (userConfig) {
   var defaults =
   {
     // The parent container of this chart.
-    'parent' : '#Table',
+    'parent' : '#TableParent',
     // Set these when you need to CSS style components independently.
-    'id'     : 'Table',
-    'class'  : 'Table',
+    'id'     : 'TableId',
+    'class'  : 'TableClass',
     // Our data...
     'csv'    : {
       // Give folks without data something to look at anyhow.
@@ -53,7 +53,7 @@ var table = function (userConfig) {
     var config = chart.config;
     var csv = config.csv;
 
-    d3.selectAll("#" + config.id).remove();
+    d3.selectAll(config.parent).selectAll("*").remove();
 
     var table = d3.select(config.parent)
       .append("table")
