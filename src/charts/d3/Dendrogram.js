@@ -125,7 +125,7 @@ var dendrogram = function Dendrogram(userConfig) {
     var csv = config.csv;
     var json;
 
-    d3.selectAll("#" + chart.config.id).remove();
+    d3.selectAll(config.parent).selectAll("*").remove();
 
     if (config.debug) {
       console.log("===== Dendrogram Configuration =====");
@@ -175,7 +175,7 @@ var dendrogram = function Dendrogram(userConfig) {
       .attr("id", config["id"])
       .attr("class", config["class"])
       .attr("transform", config.transform);
-
+/*
     var gradient = chartContainer.append("defs")
       .append("linearGradient")
       .attr("id", "gradient")
@@ -194,6 +194,7 @@ var dendrogram = function Dendrogram(userConfig) {
       .attr("offset", "100%")
       .attr("stop-color", "#c00")
       .attr("stop-opacity", 1);
+*/
 
     json =
     {
