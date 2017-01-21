@@ -2,11 +2,10 @@ var parallelcoordinates = function (userConfig) {
   d3 = dex.charts.d3.d3v3;
   var chart;
 
-  defaults =
-  {
-    'id': "ParallelCoordinates",
-    'class': "ParallelCoordinates",
-    'parent': null,
+  defaults = {
+    'parent': "ParallelCoordinatesParent",
+    'id': "ParallelCoordinatesId",
+    'class': "ParallelCoordinatesClass",
     'width': "100%",
     'height': "100%",
     'resizable': true,
@@ -105,8 +104,8 @@ var parallelcoordinates = function (userConfig) {
       // If you want to stagger labels.
       'dy': function (d, i) {
         return (i % 2) ?
-        -chart.config.margin.top * .60 :
-        -chart.config.margin.top * .20;
+          -chart.config.margin.top * .60 :
+          -chart.config.margin.top * .20;
       },
       'font.size': function (d) {
         var maxFontSizeByHeight =
@@ -180,25 +179,7 @@ var parallelcoordinates = function (userConfig) {
   chart = new dex.component(userConfig, defaults);
   chart.render = function render() {
     d3 = dex.charts.d3.d3v3;
-    window.onresize = this.resize;
-    chart.resize();
-  };
-
-  chart.resize = function resize() {
-    d3 = dex.charts.d3.d3v3;
-    if (chart.config.resizable) {
-      var width = d3.select(chart.config.parent).property("clientWidth");
-      var height = d3.select(chart.config.parent).property("clientHeight");
-      chart
-        .attr("width", width - chart.config.margin.left - chart.config.margin.right)
-        .attr("height", height - chart.config.margin.top - chart.config.margin.bottom)
-        .attr("transform", "translate(" + chart.config.margin.left + "," +
-          chart.config.margin.top + ")")
-        .update();
-    }
-    else {
-      chart.update();
-    }
+    return chart.resize();
   };
 
   chart.update = function update() {
@@ -389,7 +370,7 @@ var parallelcoordinates = function (userConfig) {
           return !y[p].brush.empty();
         }),
 
-      // Get an array of min/max values for each brush constraint.
+        // Get an array of min/max values for each brush constraint.
         extents = actives.map(function (p) {
           return y[p].brush.extent();
         });
@@ -431,7 +412,7 @@ var parallelcoordinates = function (userConfig) {
       }
 
       //dex.console.log("Selected: ", dex.json.toCsv(activeData, dimensions));
-      chart.publish({"type" : "select", "selected" : dex.json.toCsv(activeData, dimensions)});
+      chart.publish({"type": "select", "selected": dex.json.toCsv(activeData, dimensions)});
     }
   };
 

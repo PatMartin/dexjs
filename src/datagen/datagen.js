@@ -131,7 +131,7 @@ module.exports = function datagen(dex) {
      * @returns {Array} Returns an array of the specified columns.
      *
      */
-    'PPPidentityHeader': function (spec) {
+    'identityHeader': function (spec) {
       return dex.range(1, spec.columns).map(function (i) {
         return "C" + i;
       });

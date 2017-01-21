@@ -1,33 +1,18 @@
 var motionbarchart = function (userConfig) {
   d3 = dex.charts.d3.d3v3;
-  var defaultColor = d3.scale.category10();
-
-  var csv = {
-    'header': ['name', 'color', 'time', 'x', 'y', 'size'],
-    'data': []
-  }
-
-  var i = 0;
-  for (var time = 1800; time < 1810; time += 1) {
-    for (var color = 1; color < 4; color++) {
-      csv.data.push(["name-" + color, color, time,
-        i * color, i * i * color, i * i * i * color]);
-    }
-    i += 1;
-  }
+  var chart;
 
   var color = d3.scale.category20c();
 
-  var defaults =
-  {
+  var defaults = {
     // The parent container of this chart.
-    'parent': null,
+    'parent': '#MotionBarChartParent',
     // Set these when you need to CSS style components independently.
-    'id': 'MotionBarhart',
-    'class': 'MotionBarChart',
+    'id': 'MotionBarhartId',
+    'class': 'MotionBarChartClass',
     // Our data...
-    'csv': csv,
-
+    'csv': undefined,
+    'resizable': true,
     // Tells us which columns represent what.
     'index': {
       'name': 0,
@@ -36,13 +21,13 @@ var motionbarchart = function (userConfig) {
       'y': 2
     },
     // Chart dimensions.
-    'width': 600,
-    'height': 400,
+    'width': '100%',
+    'height': '100%',
     'margin': {
-      top: 20,
+      top: 50,
       right: 120,
-      bottom: 80,
-      left: 50
+      bottom: 180,
+      left: 150
     },
 
     'bar': dex.config.rectangle({
@@ -73,9 +58,9 @@ var motionbarchart = function (userConfig) {
     'label.y': function (d) {
       return chart.config.margin.top;
     },
-    'label.dy' : '.50em',
+    'label.dy': '.50em',
     'label.x': function (d) {
-      return chart.config.margin.left + (chart.config.width / 2);
+      return (chart.config.width - chart.config.margin.left - chart.config.margin.right) / 2;
     },
 
     'transform': '',
@@ -86,9 +71,11 @@ var motionbarchart = function (userConfig) {
       'orient': 'bottom',
       'label': dex.config.text({
         'anchor': 'start',
-        'writingMode' : 'tb',
-        'dx' : function(d) { return chart.config.bar.width - (chart.config.xaxis.label.font.size / 2); },
-        'dy' : '.5em'
+        'writingMode': 'tb',
+        'dx': function (d) {
+          return (chart.config.bar.width) / 2;
+        },
+        'dy': '.5em'
       }),
       'tick.stroke.color': 'black',
       'tick.stroke.width': 1,
@@ -103,7 +90,7 @@ var motionbarchart = function (userConfig) {
       'orient': 'left',
       'label': dex.config.text({
         'anchor': 'end',
-        'dx' : '-.5em' //function(d) { return chart.config.margin.left; },
+        'dx': '-.5em' //function(d) { return chart.config.margin.left; },
       }),
       'title': dex.config.text(),
       'tick.stroke.width': 1,
@@ -116,33 +103,22 @@ var motionbarchart = function (userConfig) {
   };
 
   var chart = new dex.component(userConfig, defaults);
-  var config = chart.config;
 
   chart.render = function render() {
     d3 = dex.charts.d3.d3v3;
-    window.onresize = this.resize;
-    this.resize();
-  };
-
-  chart.resize = function resize() {
-    d3 = dex.charts.d3.d3v3;
-    var width = d3.select(chart.config.parent).property("clientWidth");
-    var height = d3.select(chart.config.parent).property("clientHeight");
-    chart
-      .attr("width", width - chart.config.margin.left - chart.config.margin.right)
-      .attr("height", height - chart.config.margin.top - chart.config.margin.bottom)
-      .update();
+    return chart.resize();
   };
 
   chart.update = function update() {
     d3 = dex.charts.d3.d3v3;
-    // If we need to call super:
-    //DexComponent.prototype.update.call(this);
-    var chart = this.chart;
-    var config = this.config;
+    var config = chart.config;
+    var margin = config.margin;
     var csv = config.csv;
 
-    d3.selectAll('#' + config.id).remove();
+    var width = config.width - margin.left - margin.right;
+    var height = config.height - margin.top - margin.bottom;
+
+    d3.selectAll(config.parent).selectAll('*').remove();
 
     var keyMap = {};
 
@@ -179,11 +155,11 @@ var motionbarchart = function (userConfig) {
     // Various scales. These domains make assumptions of data, naturally.
     var xScale = d3.scale.ordinal()
       .domain(uniques[config.index.name].sort())
-      .rangePoints([0, config.width]);
+      .rangePoints([0, width]);
 
     //  d3.scale.linear().domain(xExtents).range([0, width - 60]);
     var yScale = dex.config.createScale(config.yaxis.scale)
-      .domain([0, yExtents[1]]).range([config.height, 0]);
+      .domain([0, yExtents[1]]).range([height, 0]);
 
     // The x & y axes.
     var xAxis = dex.config.createAxis(config.xaxis)
@@ -193,42 +169,48 @@ var motionbarchart = function (userConfig) {
       .scale(yScale);
 
     var svg = d3.select(config.parent)
-      .append("g")
+      .append("svg")
       .attr("id", config["id"])
       .attr("class", config["class"])
-      .attr("height", config.height)
-      .attr("width", config.width)
-      .attr("transform", "translate(" + config.margin.left +
-        ", " + config.margin.top + ")")
+      .attr('width', config.width)
+      .attr('height', config.height);
+
+    var rootG = svg
+      .append('g')
+      .attr('transform', 'translate(' +
+        margin.left + ',' + margin.top + ') ' +
+        config.transform);
 
     // Add the x-axis.
-    svg.append("g")
+    rootG.append("g")
       .attr("class", "xaxis")
-      .attr("transform", "translate(0," + config.height + ")")
+      .attr('width', width)
+      .attr('height', height)
+      .attr("transform", "translate(0," + height + ")")
       .call(xAxis);
 
     // Add the y-axis.
-    svg.append("g")
+    rootG.append("g")
       .attr("class", "yaxis")
       .call(yAxis);
 
-    var xticks = svg.selectAll(".xaxis .tick");
+    var xticks = rootG.selectAll(".xaxis .tick");
 
     var xtickLines = xticks.selectAll("line")
       .call(dex.config.configureStroke, config.xaxis.tick.stroke)
       .call(dex.config.configureFill, config.xaxis.tick.fill);
 
-    var yticks = svg.selectAll(".yaxis .tick");
+    var yticks = rootG.selectAll(".yaxis .tick");
 
     var yTickLines = yticks.selectAll("line")
       .call(dex.config.configureStroke, config.yaxis.tick.stroke)
       .call(dex.config.configureFill, config.yaxis.tick.fill);
 
-    svg.selectAll(".xaxis path")
+    rootG.selectAll(".xaxis path")
       .call(dex.config.configureStroke, config.xaxis.axisLine.stroke)
       .call(dex.config.configureFill, config.xaxis.axisLine.fill);
 
-    svg.selectAll(".yaxis path")
+    rootG.selectAll(".yaxis path")
       .call(dex.config.configureStroke, config.yaxis.axisLine.stroke)
       .call(dex.config.configureFill, config.yaxis.axisLine.fill);
 
@@ -244,7 +226,7 @@ var motionbarchart = function (userConfig) {
     //  .call(dex.config.configureText, config.xaxis.label);
 
     // Add a y-axis label.
-    svg.append("text")
+    rootG.append("text")
       .attr("class", "yLabel")
       .call(dex.config.configureText, config.yaxis.title)
       .text(config.csv.header[config.index.y]);
@@ -253,7 +235,7 @@ var motionbarchart = function (userConfig) {
       .call(dex.config.configureText, config.yaxis.label);
 
     // Add the year label; the value is set on transition.
-    var label = svg.append("text")
+    var label = rootG.append("text")
       .attr("class", "timeLabel")
       .attr("text-anchor", "end")
       .call(dex.config.configureText, config.label)
@@ -268,7 +250,7 @@ var motionbarchart = function (userConfig) {
     });
 
     // Add a bar per nation. Initialize the data at min year value, and set the colors.
-    var bars = svg.append("g")
+    var bars = rootG.append("g")
       .attr("class", "bars")
       .selectAll(".bar")
       .data(interpolateData(timeExtents[0]))
@@ -292,7 +274,7 @@ var motionbarchart = function (userConfig) {
     // Add an overlay for the year label.
     var box = label.node().getBBox();
 
-    var overlay = svg.append("rect")
+    var overlay = rootG.append("rect")
       .attr("class", "overlay")
       .attr("x", box.x)
       .attr("y", box.y)
@@ -304,7 +286,7 @@ var motionbarchart = function (userConfig) {
       .on("mouseover", enableInteraction);
 
     // Start a transition that interpolates the data based on year.
-    svg.transition()
+    rootG.transition()
       .duration(config.duration)
       .ease("linear")
       .tween("year", tweenYear)
@@ -312,7 +294,7 @@ var motionbarchart = function (userConfig) {
 
     // Positions the dots based on data.
     function position(bar) {
-      var barWidth = Math.floor(config.width / bar.size() - 8);
+      var barWidth = Math.floor(width / bar.size() - 8);
 
       bar
         .attr("x", function (d, i) {
@@ -341,7 +323,7 @@ var motionbarchart = function (userConfig) {
         .clamp(true);
 
       // Cancel the current transition, if any.
-      svg.transition().duration(0);
+      rootG.transition().duration(0);
 
       overlay
         .on("mouseover", mouseover)
@@ -430,10 +412,6 @@ var motionbarchart = function (userConfig) {
       },
       track: true
     });
-
-    // Make the entire chart draggable.
-    $(chart.config.parent).draggable();
-    $(chart.config.parent).find("rect").draggable();
   });
 
   return chart;

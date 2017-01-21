@@ -2,82 +2,87 @@ var chord = function (userConfig) {
   d3 = dex.charts.d3.d3v3;
   var chart;
 
-  var defaults =
-    {
-      // The parent container of this chart.
-      'parent': '#ChordDiagram',
-      // Set these when you need to CSS style components independently.
-      'id': 'Chord',
-      'class': 'Chord',
-      'resizable': true,
-      // Our data...
-      'csv': {
-        // Give folks without data something to look at anyhow.
-        'header': ["X", "Y", "Z"],
-        'data': [
-          [0, 0, 0],
-          [1, 1, 1],
-          [2, 2, 2]
-        ]
-      },
-      'width': "100%",
-      'height': "100%",
-      'transform': "translate(0 0)",
-      'padding': 0.05,
-      'nodes': {
-        'mouseout': dex.config.link({
-          'stroke.color': "black",
-          //'stroke.dasharray': '5 5',
-          'stroke.width': 1,
-          'fill.fillColor': function (d, i) {
-            //dex.console.log("COLORD", d);
-            return (chart.config.color(d.index));
-          },
-          'fill.fillOpacity': 0.5,
-          'fill.fill': 'none',
-          'd': d3.svg.arc(),
-          'transform': ''
-        }),
-        'mouseover': dex.config.link({
-          'stroke.color': "red",
-          //'stroke.dasharray': '5 5',
-          'stroke.width': 1,
-          'fill.fillColor': function (d, i) {
-            //dex.console.log("COLORD", d);
-            return (chart.config.color(d.index));
-          },
-          'fill.fillOpacity': 1,
-          'fill.fill': 'none',
-          'd': d3.svg.arc(),
-          'transform': ''
-        })
-      },
-      'links': {
-        'mouseout': dex.config.link({
-          'stroke.color': "grey",
-          'stroke.dasharray': '',
-          'stroke.width': 1,
-          'fill.fillColor': function (d, i) {
-            return (chart.config.color(d.target.index));
-          },
-          'fill.fillOpacity': 0.3,
-          'fill.fill': 'none',
-          'd': d3.svg.chord(),
-          'transform': ''
-        }),
-        'mouseover': dex.config.link({
-          'stroke.color': "black",
-          'stroke.dasharray': '',
-          'stroke.width': 2,
-          'fill.fillColor': function (d, i) {
-            return (chart.config.color(d.target.index));
-          },
-          'transform': "",
-          'fill.fillOpacity': 1,
-          'fill.fill': 'none',
-          'd': d3.svg.chord()
-        })
-      },
+  var defaults = {
+    // The parent container of this chart.
+    'parent': '#ChordParent',
+    // Set these when you need to CSS style components independently.
+    'id': 'ChordId',
+    'class': 'ChordClass',
+    'resizable': true,
+    // Our data...
+    'csv': {
+      // Give folks without data something to look at anyhow.
+      'header': ["X", "Y", "Z"],
+      'data': [
+        [0, 0, 0],
+        [1, 1, 1],
+        [2, 2, 2]
+      ]
+    },
+    'width': "100%",
+    'height': "100%",
+    'margin': {
+      'left': 20,
+      'right': 20,
+      'top': 50,
+      'bottom': 50
+    },
+    'transform': "",
+    'padding': 0.05,
+    'nodes': {
+      'mouseout': dex.config.link({
+        'stroke.color': "black",
+        //'stroke.dasharray': '5 5',
+        'stroke.width': 0,
+        'fill.fillColor': function (d, i) {
+          //dex.console.log("COLORD", d);
+          return (chart.config.color(d.index));
+        },
+        'fill.fillOpacity': 0.5,
+        'fill.fill': 'none',
+        'd': d3.svg.arc(),
+        'transform': ''
+      }),
+      'mouseover': dex.config.link({
+        'stroke.color': "red",
+        //'stroke.dasharray': '5 5',
+        'stroke.width': 1,
+        'fill.fillColor': function (d, i) {
+          //dex.console.log("COLORD", d);
+          return (chart.config.color(d.index));
+        },
+        'fill.fillOpacity': 1,
+        'fill.fill': 'none',
+        'd': d3.svg.arc(),
+        'transform': ''
+      })
+    },
+    'links': {
+      'mouseout': dex.config.link({
+        'stroke.color': "grey",
+        'stroke.dasharray': '',
+        'stroke.width': 0,
+        'fill.fillColor': function (d, i) {
+          return (chart.config.color(d.target.index));
+        },
+        'fill.fillOpacity': 0.1,
+        'fill.fill': 'none',
+        'd': d3.svg.chord(),
+        'transform': ''
+      }),
+      'mouseover': dex.config.link({
+        'stroke.color': "black",
+        'stroke.dasharray': '',
+        'stroke.width': 0,
+        'fill.fillColor': function (d, i) {
+          return (chart.config.color(d.target.index));
+        },
+        'transform': "",
+        'fill.fillOpacity': 1,
+        'fill.fill': 'none',
+        'd': d3.svg.chord()
+      })
+    },
 //                .style("fill", function (d) {
 //        return chart.config.color(d.index);
 //      })
@@ -103,8 +108,6 @@ var chord = function (userConfig) {
 
   chart.render = function render() {
     d3 = dex.charts.d3.d3v3;
-    chart.resize = this.resize(chart);
-    window.onresize = chart.resize;
     return chart.resize();
   };
 
@@ -113,11 +116,14 @@ var chord = function (userConfig) {
     var chart = this;
     var config = chart.config;
     var csv = config.csv;
+    var margin = config.margin;
+    var width = config.width - margin.left - margin.right;
+    var height = config.height - margin.top - margin.bottom;
 
     d3.selectAll(config.parent).selectAll("*").remove();
 
-    var minDimension = Math.min(config.width, config.height);
-    var outer = Math.min(config.width, config.height) / 3;
+    var minDimension = Math.min(width, height);
+    var outer = Math.min(width, height) / 3;
 
     var inner = Math.max(outer - 20, 10);
     config.innerRadius = inner;
@@ -129,32 +135,27 @@ var chord = function (userConfig) {
     config.links.mouseover.d.radius(config.innerRadius);
     config.links.mouseout.d.radius(config.innerRadius);
 
-    chart.attr("transform", "translate(" + (config.width / 2) + "," + (config.height / 2) + ")");
-
-    //console.log("LONGEST: " + longest + ", FONT-SIZE: " + config.label.font.size + ", INNER: " + inner + ", OUTER: " + outer);
-    if (config.debug) {
-      console.log("===== Chord#" + config.id + "." + config.class +
-        " Configuration =====");
-      console.dir(config);
-    }
-
-    var chartContainer = d3.select(config.parent)
-      .append("g")
-      .attr("class", config["id"])
+    var svg = d3.select(config.parent)
+      .append("svg")
       .attr("id", config["id"])
-      .attr("transform", config.transform);
+      .attr("class", config["class"])
+      .attr('width', config.width)
+      .attr('height', config.height);
+
+    var rootG = svg.append('g')
+      .attr('transform', 'translate(' +
+        (margin.left + config.width/2) + ',' +
+        (margin.top + config.height/2) + ') ' +
+        config.transform);
 
     chordData = dex.csv.getConnectionMatrix(csv);
-    //dex.console.log("Connection Matrix:", chordData);
-    //dex.console.log("CSV", csv);
+
     var chord = d3.layout.chord()
       .padding(config.padding)
       .sortSubgroups(d3.descending)
       .matrix(chordData.connections);
 
-    //dex.console.log("LINKS", config.links);
-
-    chartContainer.append("g")
+    rootG.append("g")
       .attr("class", "arcs")
       .selectAll("path")
       .data(chord.groups)
@@ -164,11 +165,10 @@ var chord = function (userConfig) {
       .on("mouseover", function (activeChord) {
         d3.select(this)
           .call(dex.config.configureLink, config.nodes.mouseover);
-        //dex.console.log("F", activeChord);
-        chartContainer.selectAll("g.chord path")
+
+        rootG.selectAll("g.chord path")
           .filter(function (d) {
-            //return false;
-            //dex.console.log("ACTIVE D", d);
+
             return d.source.index == activeChord.index || d.target.index == activeChord.index;
           })
           //.call("opacity", config.links.mouseover.fill.fillOpacity);
@@ -178,18 +178,15 @@ var chord = function (userConfig) {
         d3.select(this)
           .call(dex.config.configureLink, config.nodes.mouseout)
         //dex.console.log("INACTIVE", inactiveChord);
-        chartContainer.selectAll("g.chord path")
+        rootG.selectAll("g.chord path")
           .filter(function (d) {
-            //return false;
-            //dex.console.log("INACTIVE D", d);
             return d.source.index == inactiveChord.index || d.target.index == inactiveChord.index;
           })
           .call(dex.config.configureLink, config.links.mouseout);
-        //.style("opacity", config.links.mouseout.fill.fillOpacity);
       });
 
     // REM: Used to be svg.
-    var ticks = chartContainer.append("g")
+    var ticks = rootG.append("g")
       .attr("id", "ChordTicks")
       .selectAll("g")
       .data(chord.groups)
@@ -214,12 +211,6 @@ var chord = function (userConfig) {
 
     ticks.append("line")
       .call(dex.config.configureLine, config.tick);
-    //.attr("x1", 1)
-    //.attr("y1", 0)
-    //.attr("x2", config.tickLength)
-    //.attr("y2", 0)
-    //.attr("stroke-width", config.strokeWidth)
-    //.style("stroke", "#000");
 
     ticks.append("text")
       .attr("x", config.tick.padding + (config.tick.padding / 4))
@@ -236,7 +227,7 @@ var chord = function (userConfig) {
         return d.label;
       });
 
-    chartContainer.append("g")
+    rootG.append("g")
       .attr("class", "chord")
       .selectAll("path")
       .data(chord.chords)
@@ -251,7 +242,7 @@ var chord = function (userConfig) {
           .call(dex.config.configureLink, config.links.mouseout);
       });
 
-    var chartTitle = chartContainer.append("text").call(dex.config.configureText, config.title,
+    var chartTitle = rootG.append("text").call(dex.config.configureText, config.title,
       config.title.text);
 
     /** Returns an array of tick angles and labels, given a group. */

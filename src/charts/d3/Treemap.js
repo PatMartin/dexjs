@@ -3,10 +3,10 @@ var treemap = function (userConfig) {
   var chart = null;
 
   var defaults = {
-    'parent': '#Treemap',
+    'parent': '#TreemapParent',
     // Set these when you need to CSS style components independently.
-    'id': 'Treemap',
-    'class': 'Treemap',
+    'id': 'TreemapId',
+    'class': 'TreemapClass',
     'resizable': true,
     // Our data...
     'csv': undefined,

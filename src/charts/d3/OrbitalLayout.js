@@ -1,14 +1,14 @@
 var orbitallayout = function (userConfig) {
   d3 = dex.charts.d3.d3v3;
   var chart;
+  var colors = d3.scale.category10();
 
-  var defaults =
-  {
+  var defaults = {
     // The parent container of this chart.
-    'parent': '#ChordDiagram',
+    'parent': '#OrbitalLayoutParent',
     // Set these when you need to CSS style components independently.
-    'id': 'Chord',
-    'class': 'Chord',
+    'id': 'OrbitalLayoutId',
+    'class': 'OrbitalLayoutClass',
     'resizable': true,
     // Our data...
     'csv': {
@@ -22,10 +22,31 @@ var orbitallayout = function (userConfig) {
     },
     'width': "100%",
     'height': "100%",
-    'transform': "translate(0 0)",
+    'margin': {
+      'left': 10,
+      'right': 10,
+      'top': 10,
+      'bottom': 10
+    },
+    'transform': "",
     'title': dex.config.text(),
     'label': dex.config.text(),
-    'circles': dex.config.circle(),
+    'radiusScale' : d3.scale.linear()
+      .domain([0, 1, 2, 3, 4])
+      .range([60, 20, 5, 2, 1])
+      .clamp(true),
+    'orbitScale' : d3.scale.linear()
+      .domain([0, 5])
+      .range([4.5, .3])
+      .clamp(true),
+    'circles': dex.config.circle({
+      "r": function (d) {
+        return chart.config.radiusScale(d.depth)
+      },
+      "fill.fillColor": function (d) {
+        return colors(d.depth);
+      }
+    }),
     'orbits': dex.config.circle({
       'r': 5,
       'fill': {
@@ -39,38 +60,28 @@ var orbitallayout = function (userConfig) {
         'dasharray': "2 2"
       })
     }),
-    'refreshFrequencyMs' :50,
-    'tickRadianStep' : 0.004363323129985824
+    'refreshFrequencyMs': 50,
+    'tickRadianStep': 0.004363323129985824
   };
 
   var chart = new dex.component(userConfig, defaults);
 
   chart.render = function render() {
     d3 = dex.charts.d3.d3v3;
-    window.onresize = this.resize;
-    chart.resize();
-  };
-
-  chart.resize = function resize() {
-    d3 = dex.charts.d3.d3v3;
-    if (chart.config.resizable) {
-      var width = d3.select(chart.config.parent).property("clientWidth");
-      var height = d3.select(chart.config.parent).property("clientHeight");
-      dex.console.log(chart.config.id + ": resize(" + width + "," + height + ")");
-      chart.attr("width", width).attr("height", height).update();
-    }
-    else {
-      chart.update();
-    }
+    return chart.resize();
   };
 
   chart.update = function () {
     d3 = dex.charts.d3.d3v3;
-    var chart = this;
     var config = chart.config;
+    var margin = config.margin;
     var csv = config.csv;
 
-    d3.selectAll("#" + config.id).remove();
+    var width = config.width - margin.left - margin.right;
+    var height = config.height - margin.top - margin.bottom;
+
+    d3.selectAll(config.parent).selectAll("*").remove();
+
     var data = dex.csv.toNestedJson(dex.csv.copy(csv));
 
     d3.layout.orbit = function () {
@@ -175,8 +186,6 @@ var orbitallayout = function (userConfig) {
         //Probably should use d3.functor to turn a string into an object key
         childrenAccessor = _function;
         return this;
-
-
       }
 
       d3.rebind(_orbitLayout, orbitDispatch, "on");
@@ -244,16 +253,9 @@ var orbitallayout = function (userConfig) {
           }
         }
       }
-
     }
 
-    //down with category20a()!!
-    colors = d3.scale.category20();
-
-    orbitScale = d3.scale.linear().domain([1, 3]).range([3.8, 1.5]).clamp(true);
-    radiusScale = d3.scale.linear().domain([0, 1, 2, 3]).range([20, 10, 3, 1]).clamp(true);
-
-    var minSize = Math.min(config.width, config.height);
+    var minSize = Math.min(width, height);
 
     orbit = d3.layout.orbit().size([minSize, minSize])
       .children(function (d) {
@@ -263,18 +265,26 @@ var orbitallayout = function (userConfig) {
         return d.depth
       })
       .orbitSize(function (d) {
-        return orbitScale(d.depth)
+        return config.orbitScale(d.depth)
       })
       .speed(.1)
       .nodes(data);
 
-    var chartContainer = d3.select(config.parent)
-      .append("g")
-      .attr("class", config["id"])
+    var svg = d3.select(config.parent)
+      .append("svg")
       .attr("id", config["id"])
-      .attr("transform", config.transform);
+      .attr("class", config["class"])
+      .attr('width', config.width)
+      .attr('height', config.height);
 
-    chartContainer.selectAll("g.node").data(orbit.nodes())
+    var rootG = svg
+      .append('g')
+      .attr('transform', 'translate(' +
+        margin.left + ',' + margin.top + ') ' +
+        config.transform);
+
+    rootG.selectAll("g.node")
+      .data(orbit.nodes())
       .enter()
       .append("g")
       .attr("class", "node")
@@ -288,14 +298,8 @@ var orbitallayout = function (userConfig) {
       .append("circle");
 
     circles.call(dex.config.configureCircle, config.circles);
-    circles.attr("r", function (d) {
-        return radiusScale(d.depth)
-      })
-      .style("fill", function (d) {
-        return colors(d.depth)
-      });
 
-    chartContainer.selectAll("circle.orbits")
+    rootG.selectAll("circle.orbits")
       .data(orbit.orbitalRings())
       .enter()
       .insert("circle", "g")
@@ -330,13 +334,18 @@ var orbitallayout = function (userConfig) {
 
     function nodeOver(d) {
       orbit.stop();
-      d3.select(this).append("text").text(d.name).style("text-anchor", "middle").attr("y", 35);
-      d3.select(this).select("circle").style("stroke", "black").style("stroke-width", 3);
+      var circle = d3.select(this).select("circle");
+      circle.style("stroke", "black").style("stroke-width", 3);
+      d3.select(this)
+        .append("text")
+        .text(d.name)
+        .style("text-anchor", "middle")
+        .attr("y", -config.radiusScale(d.depth) - 5);
     }
 
     function nodeOut() {
       orbit.start();
-      //d3.selectAll("text").remove();
+      d3.selectAll("text").remove();
       d3.selectAll("g.node > circle").style("stroke", "none").style("stroke-width", 0);
     }
   };

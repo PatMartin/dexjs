@@ -1,12 +1,18 @@
 var clusteredforce = function (userConfig) {
   d3 = dex.charts.d3.d3v3;
-  var defaults =
-  {
+  var defaults = {
     'parent': '#ClusteredForceParent',
-    'id': "ClusteredForce",
-    'class': "ClusteredForce",
+    'id': "ClusteredForceId",
+    'class': "ClusteredForceClass",
     'height': "100%",
     'width': "100%",
+    'resizable': true,
+    'margin': {
+      'left': 100,
+      'right': 100,
+      'top': 50,
+      'bottom': 50
+    },
     'csv': {
       'header': ["X", "Y"],
       'data': [
@@ -79,38 +85,16 @@ var clusteredforce = function (userConfig) {
 
   chart.render = function () {
     d3 = dex.charts.d3.d3v3;
-    window.onresize = this.resize;
-    chart.resize();
-  };
-
-  chart.resize = function () {
-    d3 = dex.charts.d3.d3v3;
-    d3.selectAll("#" + chart.config.id).remove();
-    var width = d3.select(chart.config.parent).property("clientWidth");
-    var height = d3.select(chart.config.parent).property("clientHeight");
-    chart.attr("width", width).attr("height", height).update();
+    return chart.resize();
   };
 
   chart.update = function () {
     d3 = dex.charts.d3.d3v3;
     var config = chart.config;
-
+    var margin = config.margin;
     var csv = config.csv;
 
     var radius = d3.scale.sqrt().range([0, 12]);
-
-    /*
-    var minValue, maxValue;
-
-    if (!config.scaleColumns) {
-      minValue = dex.matrix.min(csv.data, numericIndices[0]);
-      maxValue = dex.matrix.max(csv.data, numericIndices[0]);
-      for (i = 0; i < numericIndices.length; i++) {
-        minValue = Math.min(minValue, dex.matrix.min(csv.data, numericIndices[i]));
-        maxValue = Math.max(maxValue, dex.matric.max(csv.data, numericIndices[i]));
-      }
-    }
-*/
 
     var nodes = [];
 
@@ -125,7 +109,7 @@ var clusteredforce = function (userConfig) {
         nodes.push({
           'category': row[group.category],
           'value': +value,
-          'color' : config.color(row[group.category]),
+          'color': config.color(row[group.category]),
           'text': "<table><tr><td>Label</td></td><td>" + row[group.label] +
           "</td></tr><tr><td>Category</td><td>" + row[group.category] + "</td></tr>" +
           "<tr><td>Value</td><td>" + row[group.value] +
@@ -150,7 +134,7 @@ var clusteredforce = function (userConfig) {
       node.radius = radiusScale(+node.value);
     });
 
-    dex.console.log("NODES", nodes, "VALUES", values, "EXTENTS", min, max);
+    //dex.console.log("NODES", nodes, "VALUES", values, "EXTENTS", min, max);
 
     force = d3.layout.force()
       .nodes(nodes)
@@ -160,17 +144,22 @@ var clusteredforce = function (userConfig) {
       .on("tick", tick)
       .start();
 
-    var chartContainer = d3.select(config.parent);
-
-    chartContainer.append('defs')
-      .attr('id', 'gradients');
-
-    chartContainer.append("g")
+    var svg = d3.select(config.parent)
+      .append("svg")
       .attr("id", config["id"])
       .attr("class", config["class"])
+      .attr('width', config.width)
+      .attr('height', config.height);
+
+    svg.append('defs')
+      .attr('id', 'gradients');
+
+    var rootG = svg.append('g')
+      .attr('transform', 'translate(' +
+        margin.left + ',' + margin.top + ')')
       .attr("transform", config.transform);
 
-    var circle = chartContainer.selectAll("circle")
+    var circle = rootG.selectAll("circle")
       .data(nodes)
       .enter().append("circle")
       .call(dex.config.configureCircle, config.circle)

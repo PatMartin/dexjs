@@ -1,65 +1,51 @@
 var motionchart = function (userConfig) {
   d3 = dex.charts.d3.d3v3;
-  var defaultColor = d3.scale.category20();
+  var chart;
 
-  var csv = {
-    'header' : ['name', 'color', 'time', 'x', 'y', 'size'],
-    'data'   : []
-  }
-
-  var i = 0;
-  for (var time = 1800; time < 1810; time += 1) {
-    for (var color = 1; color < 4; color++) {
-      csv.data.push(["name-" + color, color, time,
-                     i * color, i * i * color, i * i * i * color]);
-    }
-    i += 1;
-  }
-
-  var defaults =
-  {
+  var defaults = {
     // The parent container of this chart.
-    'parent' : null,
+    'parent': '#MotionChartParent',
     // Set these when you need to CSS style components independently.
-    'id'     : 'MotionChart',
-    'class'  : 'MotionChart',
+    'id': 'MotionChartId',
+    'class': 'MotionChartClass',
     // Our data...
-    'csv'    : csv,
+    'csv': csv,
 
     // Tells us which columns represent what.
-    'index'  : {
-      'name'  : 0,
-      'color' : 1,
-      'time'  : 2,
-      'x'     : 3,
-      'y'     : 4,
-      'size'  : 5
+    'index': {
+      'name': 0,
+      'color': 1,
+      'time': 2,
+      'x': 3,
+      'y': 4,
+      'size': 5
     },
     // Chart dimensions.
-    'width'  : 600,
-    'height' : 400,
-    'margin' : {top : 50, right : 50, bottom : 50, left : 50},
+    'width': '100%',
+    'height': '100%',
+    'resizable': true,
+    'margin': {top: 50, right: 50, bottom: 50, left: 50},
 
     // Configuration for drawing the data-circles.
-    'circle' : dex.config.circle({
-      'colorscale'       : d3.scale.category10(),
+    'circle': dex.config.circle({
+      'colorscale': d3.scale.category10(),
       //'stroke.dasharray' : "1 1",
-      'stroke.width'     : 1,
-      'stroke.color'     : 'black',
-      'fill.fillColor'   : function (d) {
+      'stroke.width': 1,
+      'stroke.color': 'black',
+      'fill.fillColor': function (d) {
         //dex.console.log("color(", d, ")=");
         return chart.config.circle.colorscale(d.name);
       },
-      'fill.fillOpacity' : .4,
-      'sizeScale.type'   : 'linear',
-      'events'           : {
-        'mouseover' : function () {
+      'fill.fillOpacity': .4,
+      'sizeScale.type': 'linear',
+      'events': {
+        'mouseover': function () {
           d3.select(this)
             .style("stroke", 'red')
             .style("stroke-width", 4)
             .style("fill-opacity", 1);
         },
-        'mouseout'  : function () {
+        'mouseout': function () {
           d3.select(this)
             .style("stroke", chart.config.circle.stroke.color)
             .style("stroke-width", chart.config.circle.stroke.width)
@@ -69,106 +55,92 @@ var motionchart = function (userConfig) {
     }),
 
     // Main label configuration
-    'label.font.size'        : 128,
-    'label.fill.fillColor'   : 'steelblue',
-    'label.fill.fillOpacity' : 0.4,
-    'label.y'                : function (d) {
-      return chart.config.height * .5;
+    'label.font.size': 128,
+    'label.fill.fillColor': 'steelblue',
+    'label.fill.fillOpacity': 0.4,
+    'label.y': function (d) {
+      return (chart.config.height + chart.config.margin.top - chart.config.margin.bottom) / 2;
     },
-    'label.x'                : function (d) {
-      return chart.config.width * .8;
+    'label.x': function (d) {
+      return (chart.config.width - chart.config.margin.left) * .8;
     },
 
-    'transform' : 'translate(0,0)',
-    'duration'  : 10000,
+    'transform': '',
+    'duration': 10000,
 
-    'xaxis' : dex.config.axis({
-      'scale.type'              : 'linear',
-      'orient'                  : 'bottom',
+    'xaxis': dex.config.axis({
+      'scale.type': 'linear',
+      'orient': 'bottom',
       'label': dex.config.text({
         'anchor': 'middle',
-        'writingMode' : 'lr',
-        'dx' : 0,
-        'dy' : '1.5em'
+        'writingMode': 'lr',
+        'dx': 0,
+        'dy': '1.5em'
       }),
       'title': dex.config.text({
-        'anchor' : 'middle',
-        'font.size' : '16',
+        'anchor': 'middle',
+        'font.size': '16',
         'x': function (d) {
-          return (chart.config.width - chart.config.margin.left) / 2; },
-        'y': function(d) {
-          return chart.config.height - chart.config.margin.bottom - 12;
+          return (chart.config.width - chart.config.margin.left - chart.config.margin.right) / 2;
+        },
+        'y': function (d) {
+          return chart.config.height - 12;
         }
       }),
-      'tick.stroke.width'       : 1,
-      'tick.fill.fillColor'     : 'none',
-      'axisLine.stroke.color'   : 'black',
-      'axisLine.stroke.width'   : 1,
-      'axisLine.fill.fillColor' : 'none'
+      'tick.stroke.width': 1,
+      'tick.fill.fillColor': 'none',
+      'axisLine.stroke.color': 'black',
+      'axisLine.stroke.width': 1,
+      'axisLine.fill.fillColor': 'none'
     }),
-    'yaxis' : dex.config.axis({
-      'scale.type'              : 'linear',
-      'orient'                  : 'left',
+    'yaxis': dex.config.axis({
+      'scale.type': 'linear',
+      'orient': 'left',
       'label': dex.config.text({
         'anchor': 'middle',
-        'writingMode' : 'tb',
-        'dx' : '-1em',
-        'dy' : '-.5em'
+        'writingMode': 'tb',
+        'dx': '-1em',
+        'dy': '-.5em'
       }),
       'title': dex.config.text({
-        'anchor' : 'start',
-        'writingMode' : 'tb',
+        'anchor': 'start',
+        'writingMode': 'tb',
         //'transform' : 'rotate(90)',
-        'font.size' : '16',
-        'x': function (d) { return 0; },
-        'dx' : '1em',
-        'y': function(d) {
+        'font.size': '16',
+        'x': function (d) {
+          return 0;
+        },
+        'dx': '1em',
+        'y': function (d) {
           return config.margin.top;
         },
-        'dy' : '2em'
+        'dy': '2em'
       }),
-      'tick.stroke.width'       : 3,
-      'tick.fill.fillColor'     : 'red',
-      'axisLine.stroke.color'   : 'black',
-      'axisLine.stroke.width'   : 1,
-      'axisLine.fill.fillColor' : 'none'
+      'tick.stroke.width': 3,
+      'tick.fill.fillColor': 'red',
+      'axisLine.stroke.color': 'black',
+      'axisLine.stroke.width': 1,
+      'axisLine.fill.fillColor': 'none'
     })
   };
 
-  var chart = new dex.component(userConfig, defaults);
-  var config = chart.config;
+  chart = new dex.component(userConfig, defaults);
 
   chart.render = function render() {
     d3 = dex.charts.d3.d3v3;
-    window.onresize = this.resize;
-    this.resize();
-  };
-
-  chart.resize = function resize() {
-    d3 = dex.charts.d3.d3v3;
-    var width = d3.select(chart.config.parent).property("clientWidth");
-    var height = d3.select(chart.config.parent).property("clientHeight");
-    chart
-      .attr("width", width)
-      .attr("height", height)
-      .update();
+    return chart.resize();
   };
 
   chart.update = function update() {
     d3 = dex.charts.d3.d3v3;
-    // If we need to call super:
-    //DexComponent.prototype.update.call(this);
-    var chart = this.chart;
-    var config = this.config;
+    var config = chart.config;
+    var margin = config.margin;
     var csv = config.csv;
 
-    d3.selectAll('#' + config.id).remove();
+    var width = config.width - margin.left - margin.right;
+    var height = config.height - margin.top - margin.bottom;
 
-    if (config.debug) {
-      console.log("===== Motion Chart Configuration =====");
-      console.dir(config);
-    }
-
+    d3.selectAll(config.parent).selectAll("*").remove();
     var keyMap = {};
 
     csv.data.forEach(function (row) {
@@ -181,12 +153,12 @@ var motionchart = function (userConfig) {
 
       if (!keyMap[curName]) {
         keyMap[curName] = {
-          'name'  : curName,
-          'color' : curColor,
-          'time'  : curTime,
-          'x'     : [[curTime, curX]],
-          'y'     : [[curTime, curY]],
-          'size'  : [[curTime, curSize]]
+          'name': curName,
+          'color': curColor,
+          'time': curTime,
+          'x': [[curTime, curX]],
+          'y': [[curTime, curY]],
+          'size': [[curTime, curSize]]
         };
       }
       else {
@@ -222,19 +194,14 @@ var motionchart = function (userConfig) {
     var yExtents = dex.matrix.extent(csv.data, [config.index.y]);
     var sizeExtents = dex.matrix.extent(csv.data, [config.index.size]);
 
-    //dex.console.log("EXTENTS: X", xExtents, "Y", yExtents, "RADIUS", sizeExtents);
-
-    var width = config.width - config.margin.right;
-    var height = config.height - config.margin.top - config.margin.bottom;
-
     // Various scales. These domains make assumptions of data, naturally.
     var xScale =
       dex.config.createScale(config.xaxis.scale)
-        .domain(xExtents).range([0, width - 60]);
+        .domain(xExtents).range([0, width]);
 
     //  d3.scale.linear().domain(xExtents).range([0, width - 60]);
     var yScale = dex.config.createScale(config.yaxis.scale)
-      .domain(yExtents).range([height, 60]);
+      .domain(yExtents).range([height]);
 
     //d3.scale.linear().domain(yExtents).range([height, 60]);
     var radiusScale = dex.config.createScale(config.circle.sizeScale)
@@ -249,44 +216,53 @@ var motionchart = function (userConfig) {
       .scale(yScale);
 
     var svg = d3.select(config.parent)
-      .append("g")
+      .append("svg")
       .attr("id", config["id"])
       .attr("class", config["class"])
-      .attr("transform", config.transform);
+      .attr('width', config.width)
+      .attr('height', config.height);
+
+    var rootG = svg
+      .append('g')
+      .attr('transform', 'translate(' +
+        margin.left + ',' + margin.top + ') ' +
+        config.transform);
 
     // Add the x-axis.
-    svg.append("g")
+    rootG.append("g")
       .attr("class", "xaxis")
       .attr("transform", "translate(0," + height + ")")
       .call(xAxis);
 
     // Add the y-axis.
-    svg.append("g")
+    rootG.append("g")
       .attr("class", "yaxis")
       .call(yAxis);
 
-    var xticks = svg.selectAll(".xaxis .tick");
+    var xticks = rootG.selectAll(".xaxis .tick");
 
     xticks.selectAll("line")
       .call(dex.config.configureStroke, config.xaxis.tick.stroke)
       .call(dex.config.configureFill, config.xaxis.tick.fill);
 
-    var yticks = svg.selectAll(".yaxis .tick");
+    var yticks = rootG.selectAll(".yaxis .tick");
 
     yticks.selectAll("line")
       .call(dex.config.configureStroke, config.yaxis.tick.stroke)
       .call(dex.config.configureFill, config.yaxis.tick.fill);
 
-    svg.selectAll(".xaxis path")
+    /*
+    rootG.selectAll(".xaxis path")
       .call(dex.config.configureStroke, config.xaxis.axisLine.stroke)
       .call(dex.config.configureFill, config.xaxis.axisLine.fill);
 
-    svg.selectAll(".yaxis path")
+    rootG.selectAll(".yaxis path")
       .call(dex.config.configureStroke, config.yaxis.axisLine.stroke)
       .call(dex.config.configureFill, config.yaxis.axisLine.fill);
+*/
 
     // Add an x-axis label.
-    svg.append("text")
+    rootG.append("text")
       .attr("class", "xLabel")
       .call(dex.config.configureText, config.xaxis.title)
       //.attr("dx", width)
@@ -294,7 +270,7 @@ var motionchart = function (userConfig) {
       .text(config.csv.header[config.index.x]);
 
     // Add a y-axis label.
-    svg.append("text")
+    rootG.append("text")
       .attr("class", "yLabel")
       .call(dex.config.configureText, config.yaxis.title)
       .text(config.csv.header[config.index.y]);
@@ -306,7 +282,7 @@ var motionchart = function (userConfig) {
       .call(dex.config.configureText, config.yaxis.label);
 
     // Add the year label; the value is set on transition.
-    var label = svg.append("text")
+    var label = rootG.append("text")
       .attr("class", "timeLabel")
       .attr("text-anchor", "end")
       .attr("y", height - 24)
@@ -323,7 +299,7 @@ var motionchart = function (userConfig) {
     });
 
     // Add a dot per nation. Initialize the data at min year value, and set the colors.
-    var dot = svg.append("g")
+    var dot = rootG.append("g")
       .attr("class", "dots")
       .selectAll(".dot")
       .data(interpolateData(timeExtents[0]))
@@ -350,7 +326,7 @@ var motionchart = function (userConfig) {
     // Add an overlay for the year label.
     var box = label.node().getBBox();
 
-    var overlay = svg.append("rect")
+    var overlay = rootG.append("rect")
       .attr("class", "overlay")
       .attr("x", box.x)
       .attr("y", box.y)
@@ -362,7 +338,7 @@ var motionchart = function (userConfig) {
       .on("mouseover", enableInteraction);
 
     // Start a transition that interpolates the data based on year.
-    svg.transition()
+    rootG.transition()
       .duration(config.duration)
       .ease("linear")
       .tween("year", tweenYear)
@@ -406,7 +382,7 @@ var motionchart = function (userConfig) {
         .clamp(true);
 
       // Cancel the current transition, if any.
-      svg.transition().duration(0);
+      rootG.transition().duration(0);
 
       overlay
         .on("mouseover", mouseover)
@@ -455,12 +431,12 @@ var motionchart = function (userConfig) {
 
           //dex.console.log("ENTRY-DATA", entry);
           timeData.push({
-            time  : year,
-            name  : entry.name,
-            color : entry.color,
-            x     : interpolateValues(entry.x, year),
-            y     : interpolateValues(entry.y, year),
-            size  : interpolateValues(entry.size, year)
+            time: year,
+            name: entry.name,
+            color: entry.color,
+            x: interpolateValues(entry.x, year),
+            y: interpolateValues(entry.y, year),
+            size: interpolateValues(entry.size, year)
           });
         }
       }
@@ -486,11 +462,11 @@ var motionchart = function (userConfig) {
 
     // Add tooltips
     $(document).tooltip({
-      items   : "circle",
-      content : function () {
+      items: "circle",
+      content: function () {
         return $(this).find("tooltip-content").text();
       },
-      track   : true
+      track: true
     });
 
     // Make the entire chart draggable.

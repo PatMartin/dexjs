@@ -3,10 +3,10 @@ var dendrogram = function Dendrogram(userConfig) {
   var defaults =
   {
     // The parent container of this chart.
-    'parent': null,
+    'parent': 'DendrogramParent',
     // Set these  when you need to CSS style components independently.
-    'id': 'Dendrogram',
-    'class': 'Dendrogram',
+    'id': 'DendrogramId',
+    'class': 'DendrogramClass',
     'resizable': true,
     'margin': {
       'top': 10,
@@ -14,6 +14,7 @@ var dendrogram = function Dendrogram(userConfig) {
       'left': 10,
       'right': 10
     },
+    'transform' : '',
     // diagonal, elbow
     'connectionType': 'diagonal',
     // Our data...
@@ -96,46 +97,22 @@ var dendrogram = function Dendrogram(userConfig) {
 
   chart.render = function render() {
     d3 = dex.charts.d3.d3v3;
-    var chart = this;
-    window.onresize = chart.resize;
-    chart.resize();
-  };
-
-  chart.resize = function resize() {
-    d3 = dex.charts.d3.d3v3;
-    dex.console.log("PARENT: '" + chart.config.parent + "'");
-    if (chart.config.resizable) {
-      var width = $("" + chart.config.parent).width();
-      var height = $("" + chart.config.parent).height();
-      dex.console.log("RESIZE: " + width + "x" + height);
-      chart.attr("width", width)
-        .attr("height", height)
-        .update();
-    }
-    else {
-      chart.update();
-    }
+    return chart.resize();
   };
 
   chart.update = function update() {
     d3 = dex.charts.d3.d3v3;
     var chart = this;
     var config = chart.config;
-
+    var margin = config.margin;
     var csv = config.csv;
     var json;
+    var width = config.width - margin.left - margin.right;
+    var height = config.height - margin.top - margin.bottom;
 
     d3.selectAll(config.parent).selectAll("*").remove();
 
-    if (config.debug) {
-      console.log("===== Dendrogram Configuration =====");
-      console.dir(config);
-    }
-
     var i = 0, root;
-
-    var width = config.width - config.margin.left - config.margin.right;
-    var height = config.height - config.margin.top - config.margin.bottom;
 
     var tree = d3.layout.tree()
       .size([height, width]);
@@ -167,34 +144,17 @@ var dendrogram = function Dendrogram(userConfig) {
         });
     }
 
-    var chartContainer = d3.select(config.parent)
-      .append("g")
-      .attr("transform", "translate(" + config.margin.left +
-        ", " + config.margin.top + ")")
-      .append("g")
+    var svg = d3.select(config.parent)
+      .append("svg")
       .attr("id", config["id"])
       .attr("class", config["class"])
-      .attr("transform", config.transform);
-/*
-    var gradient = chartContainer.append("defs")
-      .append("linearGradient")
-      .attr("id", "gradient")
-      .attr("x1", "0%")
-      .attr("y1", "0%")
-      .attr("x2", "100%")
-      .attr("y2", "100%")
-      .attr("spreadMethod", "pad");
+      .attr('width', config.width)
+      .attr('height', config.height);
 
-    gradient.append("stop")
-      .attr("offset", "0%")
-      .attr("stop-color", "#0c0")
-      .attr("stop-opacity", 1);
-
-    gradient.append("stop")
-      .attr("offset", "100%")
-      .attr("stop-color", "#c00")
-      .attr("stop-opacity", 1);
-*/
+    var rootG = svg.append('g')
+      .attr('transform', 'translate(' +
+        margin.left + ',' + margin.top + ') ' +
+        config.transform);
 
     json =
     {
@@ -281,7 +241,7 @@ var dendrogram = function Dendrogram(userConfig) {
       });
 
       // Update the nodes…
-      var node = chartContainer.selectAll("g.node")
+      var node = rootG.selectAll("g.node")
         .data(nodes, function (d) {
           return d.id || (d.id = ++i);
         });
@@ -356,7 +316,7 @@ var dendrogram = function Dendrogram(userConfig) {
         .style("fill-opacity", 1e-6);
 
       // Update the links…
-      var link = chartContainer.selectAll("path.link")
+      var link = rootG.selectAll("path.link")
         .data(layout.links(nodes), function (d) {
           return d.target.id;
         });
