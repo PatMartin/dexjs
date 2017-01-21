@@ -1,96 +1,39 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 <style>
-  html,body{
-         height:100%;
-         min-height: 100%;
-         width : 100%;
-         min-width : 100%;
-     }
-
-  #ChartArea{
-      height:100%;
-      min-height: 100%;
-      width : 100%;
-      min-width : 100%;
-  }
-
-  .parcoords > svg, .parcoords > canvas {
-      font: 14px sans-serif;
-      position: absolute;
-  }
-  .parcoords > canvas {
-      pointer-events: none;
-  }
-
-  .parcoords text.label {
-      cursor: default;
-  }
-
-  .parcoords rect.background {
-      fill: transparent;
-  }
-  .parcoords rect.background:hover {
-      fill: rgba(120,120,120,0.2);
-  }
-  .parcoords .resize rect {
-      fill: rgba(0,0,0,0.1);
-  }
-  .parcoords rect.extent {
-      fill: rgba(255,255,255,0.25);
-      stroke: rgba(0,0,0,0.6);
-  }
-  .parcoords .axis line, .parcoords .axis path {
-      fill: none;
-      stroke: #222;
-      shape-rendering: crispEdges;
-  }
-  .parcoords canvas {
-      opacity: 1;
-      -moz-transition: opacity 0.3s;
-      -webkit-transition: opacity 0.3s;
-      -o-transition: opacity 0.3s;
-  }
-  .parcoords canvas.faded {
-      opacity: 0.25;
-  }
-  .parcoords {
-      -webkit-touch-callout: none;
-      -webkit-user-select: none;
-      -khtml-user-select: none;
-      -moz-user-select: none;
-      -ms-user-select: none;
-      user-select: none;
-      background-color: white;
-  }
+    html, body, #ParallelCoordinatesParent {
+        height: 100%;
+        min-height: 100%;
+        width: 100%;
+        min-width: 100%;
+    }
 </style>
 <body>
-<div id="ChartArea" class="parcoords"></div>
+<div id="ParallelCoordinatesParent"></div>
 <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
 <script src="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
 <script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
 <script src="../../dist/dex.js"></script>
 <script>
-    var color = d3.scale.category10();
+  var color = d3.scale.category10();
 
-    var csv = {
-        'header': [ 'Name', 'Age' ],
-        'data': [
-            [ 'ma', 66],
-            ['pa', 64],
-            ['wife', 38],
-            ['me', 45]
-        ]
-    };
+  var csv = {
+    'header': ['Name', 'Age'],
+    'data': [
+      ['ma', 66],
+      ['pa', 64],
+      ['wife', 38],
+      ['me', 45]
+    ]
+  };
 
-    // Configure a chart.
-    var pcChart = new dex.charts.d3.ParallelCoordinates(
-            {
-                'parent': "#ChartArea",
-                'csv': csv,
-                'normalize': false
-            }
-    );
+  // Configure a chart.
+  var pcChart = new dex.charts.d3.ParallelCoordinates({
+      'parent': "#ChartArea",
+      'csv': csv,
+      'normalize': false
+    }
+  );
 
-    pcChart.render();
+  pcChart.render();
 </script>

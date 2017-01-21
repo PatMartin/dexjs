@@ -22,10 +22,8 @@ var parallelcoordinates = function (userConfig) {
       ]
     },
     'rows': 0,
-    //'transform'       : function (d) {
-    //  return 'scale(.95, .95) translate(50, 50)'
-    //},
     'normalize': false,
+    'transform': '',
     'margin': {
       'left': 80,
       'right': 60,
@@ -177,6 +175,7 @@ var parallelcoordinates = function (userConfig) {
   };
 
   chart = new dex.component(userConfig, defaults);
+
   chart.render = function render() {
     d3 = dex.charts.d3.d3v3;
     return chart.resize();
@@ -187,6 +186,10 @@ var parallelcoordinates = function (userConfig) {
     var chart = this;
     var config = chart.config;
     var csv = config.csv;
+    var margin = config.margin;
+
+    var width = config.width - margin.left - margin.right;
+    var height = config.height - margin.top - margin.bottom;
 
     d3.selectAll(chart.config.parent).selectAll('*').remove();
 
@@ -210,13 +213,18 @@ var parallelcoordinates = function (userConfig) {
     var dimensions;
     var key;
 
-    //dex.console.log("TRANSFORM:", config.transform, "HEIGHT: ", config.height, "WIDTH:", config.width);
-    var chartContainer = d3.select(config.parent).append("g")
+    var svg = d3.select(config.parent)
+      .append("svg")
       .attr("id", config["id"])
       .attr("class", config["class"])
-      //.attr("width", config.width)
-      //.attr("height", config.height)
-      .attr("transform", config.transform);
+      .attr('width', config.width)
+      .attr('height', config.height);
+
+    var rootG = svg
+      .append('g')
+      .attr('transform', 'translate(' +
+        margin.left + ',' + margin.top + ') ' +
+        config.transform);
 
     // Extract the list of dimensions and create a scale for each.
     //x.domain(dimensions = d3.keys(cars[0]).filter(function(d)
@@ -264,7 +272,7 @@ var parallelcoordinates = function (userConfig) {
     }));
 
     // Add grey background lines for context.
-    background = chartContainer.append("g")
+    background = rootG.append("g")
       .attr("class", "background")
       .selectAll("path")
       .data(jsonData)
@@ -273,7 +281,7 @@ var parallelcoordinates = function (userConfig) {
       .attr("d", path)
       .attr("id", "fillpath");
 
-    foreground = chartContainer.append("g")
+    foreground = rootG.append("g")
       .selectAll("path")
       .data(jsonData)
       .enter().append("path")
@@ -301,7 +309,7 @@ var parallelcoordinates = function (userConfig) {
 //      });
 
     // Add a group element for each dimension.
-    var g = chartContainer.selectAll(".dimension")
+    var g = rootG.selectAll(".dimension")
       .data(dimensions)
       .enter().append("g")
       .attr("class", "dimension")
