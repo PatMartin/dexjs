@@ -26,7 +26,6 @@ d3.MotionBarChart = require("./MotionBarChart");
 //d3.MotionLineChart = require("./MotionLineChart");
 d3.OrbitalLayout = require("./OrbitalLayout");
 d3.ParallelCoordinates = require("./ParallelCoordinates");
-d3.PieChart = require("./PieChart");
 d3.RadarChart = require("./RadarChart");
 d3.RadialTree = require("./RadialTree");
 d3.Sankey = require("./Sankey");

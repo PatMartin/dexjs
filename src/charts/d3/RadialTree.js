@@ -23,7 +23,7 @@ var radialtree = function (userConfig) {
     'labelColorScheme': d3.scaleOrdinal(d3.schemeCategory10),
     'width': "100%",
     'height': "100%",
-    'transform': "translate(0 0)",
+    'transform': "",
     'label': dex.config.text({
         'dy': '.31em',
         "x": function (d) {
@@ -80,52 +80,30 @@ var radialtree = function (userConfig) {
     },
     'connectionLength': 80,
     'maxAngle': 360,
-    'radius': 300,
-    'margin': {
-      'left': 10,
-      'right': 10,
-      'top': 25,
-      'bottom': 10
+    'radius': function() {
+    return Math.min(
+      (chart.config.width - chart.config.margin.left -
+       chart.config.margin.right) / 2,
+      (chart.config.height - chart.config.margin.top -
+       chart.config.margin.bottom)/2);
     },
-
+    'margin': {
+      'left': 30,
+      'right': 30,
+      'top': 60,
+      'bottom': 60
+    }
   };
 
   var chart = new dex.component(userConfig, defaults);
 
   chart.render = function render() {
     d3 = dex.charts.d3.d3v4;
-    var chart = this;
-    var config = chart.config;
-    chart.resize = chart.resize(chart);
-    window.onresize = function () {
-      chart.resize().update();
-    }
-    chart.resize();
-
-    d3.selectAll(config.parent).selectAll('*').remove();
-
-    var margin = config.margin;
-    var width = config.width - margin.left - margin.right;
-    var height = config.height - margin.top - margin.bottom;
-
-    var svg = d3.select(config.parent)
-      .append("svg")
-      .attr("id", config["id"])
-      .attr("class", config["class"])
-      .attr('width', config.width)
-      .attr('height', config.height)
-      .attr("transform", config.transform);
-
-    var g = svg.append("g")
-      .attr("transform", "translate(" + (width / 2 + margin.left) + "," +
-        (height / 2 + margin.top) + ")");
-
-    return chart.update();
+    return chart.resize();
   };
 
   chart.update = function () {
     d3 = dex.charts.d3.d3v4;
-    var chart = this;
     var config = chart.config;
     var csv = config.csv;
     var margin = config.margin;
@@ -133,7 +111,20 @@ var radialtree = function (userConfig) {
     var width = config.width - margin.left - margin.right;
     var height = config.height - margin.top - margin.bottom;
 
+    d3.selectAll(config.parent).selectAll('*').remove();
+
     var data = dex.csv.toNestedJson(dex.csv.copy(csv));
+
+    var svg = d3.select(config.parent)
+      .append("svg")
+      .attr("id", config["id"])
+      .attr("class", config["class"])
+      .attr('width', config.width)
+      .attr('height', config.height);
+
+    var g = svg.append("g")
+      .attr("transform", "translate(" + (width / 2 + margin.left) + "," +
+        (height / 2 + margin.top) + ") " + config.transform);
 
     chart.internalUpdate(data);
 
@@ -142,7 +133,6 @@ var radialtree = function (userConfig) {
 
   chart.internalUpdate = function (source) {
     d3 = dex.charts.d3.d3v4;
-    var chart = this;
     var config = chart.config;
     var csv = config.csv;
     var margin = config.margin;
@@ -151,7 +141,7 @@ var radialtree = function (userConfig) {
     var g = svg.select("g");
 
     var tree = d3.tree()
-      .size([config.maxAngle, config.radius])
+      .size([config.maxAngle, config.radius()])
       .separation(config.separationModel);
 
     var hier = d3.hierarchy(source);

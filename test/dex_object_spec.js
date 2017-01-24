@@ -96,10 +96,4 @@ describe("dex.object", function () {
     expect(dex.object.isFunction('a')).toBe(false);
   });
 
-  it("connect", function() {
-    //var map = {
-    //  .datagen.identityMatrix({rows:3, columns:3});
-    //expect(dex.object.connect(matrix, [ 'C1' ] )).toEqual(3);
-  });
-
 });

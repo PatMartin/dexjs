@@ -25,9 +25,9 @@ var parallelcoordinates = function (userConfig) {
     'normalize': false,
     'transform': '',
     'margin': {
-      'left': 80,
-      'right': 60,
-      'top': 60,
+      'left': 20,
+      'right': 20,
+      'top': 20,
       'bottom': 20
     },
     'axis': {

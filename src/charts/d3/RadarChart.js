@@ -4,10 +4,10 @@ var radarchart = function (userConfig) {
 
   var defaults = {
     // The parent container of this chart.
-    'parent': '#RadarChart',
+    'parent': '#RadarChartParent',
     // Set these when you need to CSS style components independently.
-    'id': 'RadarChart',
-    'class': 'RadarChart',
+    'id': 'RadarChartId',
+    'class': 'RadarChartClass',
     'resizable': true,
     // Our data...
     'csv': {

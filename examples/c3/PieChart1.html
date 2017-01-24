@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+  html, body, #PieChartParent {
+    height: 100%;
+    min-height: 100%;
+    width: 100%;
+    min-width: 100%;
+  }
+
+</style>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.10/c3.min.css"/>
+<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.css">
+<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.theme.min.css">
+
+<body>
+
+<script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+<script src="../../dist/dex.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.10/c3.min.js"></script>
+
+<body>
+<div id="PieChartParent"></div>
+
+<script>
+  var csv = {
+    'header' : ["NAME", "SALE", ],
+    'data'   : [
+      ["Bob", Math.random() * 1000],
+      ["Sue", Math.random() * 1000],
+      ["Pat", Math.random() * 1000],
+      ["Jimmy", Math.random() * 1000],
+      ["Mike", Math.random() * 1000],
+      ["Janet", Math.random() * 1000],
+      ["Rodney", Math.random() * 1000],
+      ["Willie", Math.random() * 1000]
+    ]
+  };
+
+  var piechart = new dex.charts.c3.PieChart({
+            'parent'      : '#PieChartParent',
+            'csv'         : csv
+          }
+  ).render();
+</script>
+

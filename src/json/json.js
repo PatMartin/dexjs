@@ -90,6 +90,14 @@ module.exports = function json(dex) {
       }
 
       return keys;
+    },
+
+    'toString' : function(json) {
+      return JSON.stringify(json);
+    },
+
+    'log' : function(json) {
+      dex.console.log(dex.json.toString(json));
     }
   };
 };

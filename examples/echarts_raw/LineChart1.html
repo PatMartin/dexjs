@@ -1,0 +1,82 @@
+<!doctype html>
+<html>
+<head>
+    <title>ECharts Sample</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/3.4.0/echarts.min.js"></script>
+</head>
+<style>
+    html, body, #EChartParent {
+        height: 100%;
+        min-height: 100%;
+        width: 100%;
+        min-width: 100%;
+    }
+</style>
+<body>
+<div id="EChartParent"></div>
+<script>
+  var chart = document.getElementById('EChartParent');
+  var myChart = echarts.init(chart);
+  var option = {
+    title: {
+      text: 'Line Chart',
+      subtext: 'demo'
+    },
+    tooltip: {
+      trigger: 'axis'
+    },
+    legend: {
+      data: ['Series 1', 'Series 2', 'Series 3']
+    },
+    toolbox: {
+      show: true,
+      feature: {
+        mark: {show: true},
+        dataView: {show: true, readOnly: false},
+        magicType: {show: true, type: ['line', 'bar', 'stack', 'tiled']},
+        restore: {show: true},
+        saveAsImage: {show: true}
+      }
+    },
+    calculable: true,
+    xAxis: [
+      {
+        type: 'category',
+        boundaryGap: false,
+        data: ['1', 'Two', 'Three', '4', '(5)', '6', '7']
+      }
+    ],
+    yAxis: [
+      {
+        type: 'value'
+      }
+    ],
+    series: [
+      {
+        name: 'Series 1',
+        type: 'line',
+        smooth: true,
+        itemStyle: {normal: {areaStyle: {type: 'default'}}},
+        data: [10, 12, 21, 54, 260, 830, 710]
+      },
+      {
+        name: 'Series 2',
+        type: 'line',
+        smooth: true,
+        itemStyle: {normal: {areaStyle: {type: 'default'}}},
+        data: [30, 182, 434, 791, 390, 30, 10]
+      },
+      {
+        name: 'Series 3',
+        type: 'line',
+        smooth: true,
+        itemStyle: {normal: {areaStyle: {type: 'default'}}},
+        data: [1320, 1132, 601, 234, 120, 90, 20]
+      }
+    ]
+  };
+
+  myChart.setOption(option);
+</script>
+</body>
+</html>

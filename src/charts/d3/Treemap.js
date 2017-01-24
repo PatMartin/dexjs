@@ -57,7 +57,6 @@ var treemap = function (userConfig) {
   };
 
   var chart = new dex.component(userConfig, defaults);
-  var color = config.color;
 
   chart.render = function render() {
     d3 = dex.charts.d3.d3v3;
@@ -71,6 +70,7 @@ var treemap = function (userConfig) {
     var config = chart.config;
     var margin = config.margin;
     var csv = config.csv;
+    var color = config.color;
 
     var width = config.width - margin.left - margin.right;
     var height = config.height - margin.top - margin.bottom;

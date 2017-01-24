@@ -89,23 +89,28 @@ describe("dex.csv", function () {
     );
   });
 
+  it("createMap", function () {
+    dex.console.log("createMap");
+    dex.json.log(dex.csv.createMap(ages));
+    expect(dex.csv.createMap(csv, 'GDP')).toEqual(
+      {}
+    );
+  })
+
   it("toNestedJson", function () {
-    /*
+
     expect(dex.csv.toNestedJson(csv)).toEqual(
       {
-        "name": "C1",
+        "name": "GENDER",
         "children": [{
-          "name": "R1C1",
-          "children": [{"name": "R1C2", "children": [{"name": "R1C3", "size": 1000}]}]
-        }, {
-          "name": "R2C1",
-          "children": [{"name": "R2C2", "children": [{"name": "R2C3", "size": 1000}]}]
-        }, {"name": "R3C1", "children": [{"name": "R3C2", "children": [{"name": "R3C3", "size": 1000}]}]}]
+          "name": "Male",
+          "children": [{"name": "Todd", "size": 42}, {"name": "Bobby", "size": 48}]
+        }, {"name": "Female", "children": [{"name": "Jenny", "size": 41}]}]
       }
     );
-    */
-    dex.console.log("AGES:::::",
-      JSON.stringify(dex.csv.toNestedJson(ages, true)));
+
+    //dex.console.log("AGES:::::",
+    //  JSON.stringify(dex.csv.toNestedJson(ages, true)));
 
     expect(dex.csv.toNestedJson(ages, true)).toEqual(
       {

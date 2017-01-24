@@ -17,6 +17,8 @@ module.exports = function charts() {
     'dygraphs': require("./dygraphs/dygraphs"),
     'google'  : require("./google/google"),
     'threejs' : require("./threejs/threejs"),
-    'vis'     : require("./vis/vis")
+    'vis'     : require("./vis/vis"),
+    'nvd3'    : require("./nvd3/nvd3"),
+    'echarts' : require("./echarts/echarts")
   };
 };

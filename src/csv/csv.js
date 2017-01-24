@@ -19,11 +19,10 @@ module.exports = function csv(dex) {
      * @returns {{header: *, data: *}}
      */
     'csv': function (header, data) {
-      var csv =
-        {
-          "header": header,
-          "data": data
-        };
+      var csv = {
+        "header": header,
+        "data": data
+      };
 
       return csv;
     },
@@ -106,25 +105,24 @@ module.exports = function csv(dex) {
     /**
      *
      * @param csv
-     * @param keyIndex
+     * @param keyIndex - Numerical header index or name.
      * @returns {{}}
      */
     'createMap': function (csv, keyIndex) {
-      var ri, ci, rowMap, map =
-        {};
-
-      for (ri = 0; ri < csv.data.length; ri += 1) {
-        if (csv.data[ri].length === csv.header.length) {
-          rowMap =
-            {};
-
-          for (ci = 0; ci < csv.header.length; ci += 1) {
-            rowMap[csv.header[ci]] = csv.data[ri][ci];
-          }
-          map[csv.data[ri][keyIndex]] = rowMap;
-        }
+      // CSV undefined
+      if (csv === undefined) {
+        throw "dex.csv.createMap(csv, keyIndex) : csv is undefined.";
       }
-      return map;
+      if (keyIndex === undefined) {
+        keyIndex = 0;
+      }
+      else {
+        // 0 : number
+        // [0] : object
+        // '0' : string
+        dex.console.log("TYPE", typeof(keyIndex));
+      }
+      return {};
     },
 
     'json2Csv': function (json) {

@@ -9,6 +9,7 @@
  */
 var c3 = {};
 
+c3.PieChart = require("./PieChart");
 c3.AreaChart = require("./AreaChart");
 c3.BarChart = require("./BarChart");
 c3.LineChart = require("./LineChart");
