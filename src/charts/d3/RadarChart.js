@@ -146,8 +146,6 @@ var radarchart = function (userConfig) {
 
   chart.render = function render() {
     d3 = dex.charts.d3.d3v3;
-    chart.resize = this.resize(chart);
-    window.onresize = chart.resize;
     return chart.resize();
   };
 
@@ -156,10 +154,9 @@ var radarchart = function (userConfig) {
     var chart = this;
     var config = chart.config;
     var margin = config.margin;
-    var csv = config.csv;
-
     var width = config.width - margin.left - margin.right;
     var height = config.height - margin.top - margin.bottom;
+    var csv = config.csv;
 
     // Remove the old, build from scratch.
     d3.selectAll(config.parent).selectAll('*').remove();
@@ -207,26 +204,25 @@ var radarchart = function (userConfig) {
     //////////// Create the container SVG and g /////////////
     /////////////////////////////////////////////////////////
 
-    var chartContainer = d3.select(config.parent)
-      .append("g")
+    var svg = d3.select(config.parent)
+      .append("svg")
       .attr("id", config["id"])
       .attr("class", config["class"])
       .attr('width', config.width)
-      .attr('height', config.height)
-      .attr("transform", config.transform);
+      .attr('height', config.height);
 
-    var chartG = chartContainer
-      .append('g')
+    var rootG = svg.append('g')
       .attr('transform', 'translate(' +
-        margin.left + ',' + margin.top + ') translate(' +
-        width / 2 + ' ' + height / 2 + ")");
+        (margin.left + config.width/2) + ',' +
+        (margin.top + config.height/2) + ') ' +
+        config.transform);
 
     /////////////////////////////////////////////////////////
     ////////// Glow filter for some extra pizzazz ///////////
     /////////////////////////////////////////////////////////
 
     //Filter for the outside glow
-    var filter = chartG.append('defs').append('filter').attr('id', 'glow'),
+    var filter = rootG.append('defs').append('filter').attr('id', 'glow'),
       feGaussianBlur = filter.append('feGaussianBlur').attr('stdDeviation', '2.5').attr('result', 'coloredBlur'),
       feMerge = filter.append('feMerge'),
       feMergeNode_1 = feMerge.append('feMergeNode').attr('in', 'coloredBlur'),
@@ -237,7 +233,7 @@ var radarchart = function (userConfig) {
     /////////////////////////////////////////////////////////
 
     //Wrapper for the grid & axes
-    var axisGrid = chartG.append("g").attr("class", "axisWrapper");
+    var axisGrid = rootG.append("g").attr("class", "axisWrapper");
 
     //Draw the background circles, broken in WebView
     axisGrid.selectAll(".levels")
@@ -326,7 +322,7 @@ var radarchart = function (userConfig) {
     }
 
     //Create a wrapper for the blobs
-    var blobWrapper = chartG.selectAll(".radarWrapper")
+    var blobWrapper = rootG.selectAll(".radarWrapper")
       .data(data)
       .enter().append("g")
       .attr("class", "radarWrapper");
@@ -396,7 +392,7 @@ var radarchart = function (userConfig) {
     /////////////////////////////////////////////////////////
 
     //Wrapper for the invisible circles on top
-    var blobCircleWrapper = chartG.selectAll(".radarCircleWrapper")
+    var blobCircleWrapper = rootG.selectAll(".radarCircleWrapper")
       .data(data)
       .enter().append("g")
       .attr("class", "radarCircleWrapper");
@@ -434,7 +430,7 @@ var radarchart = function (userConfig) {
       });
 
     //Set up the small tooltip for when you hover over a circle
-    var tooltip = chartG.append("text")
+    var tooltip = rootG.append("text")
       .attr("class", "tooltip")
       .style("opacity", 0);
 
