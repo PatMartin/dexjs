@@ -1,12 +1,13 @@
-var c3hart = function (userConfig) {
+var genericc3hart = function (userConfig) {
   var chart;
+  var internalChart;
 
   var defaults = {
     // The parent container of this chart.
-    'parent': '#LineChart',
+    'parent': '#C3ChartParent',
     // Set these when you need to CSS style components independently.
-    'id': 'LineChart',
-    'class': 'LineChart',
+    'id': 'C3ChartId',
+    'class': 'C3ChartClass',
     'resizable': true,
     'width': "100%",
     'height': "100%",
@@ -20,13 +21,13 @@ var c3hart = function (userConfig) {
       'header': [],
       'data': []
     },
-    'dataAdapter' : function(csv) { return csv; },
-    'options' : {
-    }
+    'dataAdapter': function (csv) {
+      return csv;
+    },
+    'options': {}
   };
 
-  var chart = new dex.component(userConfig, defaults);
-  var internalChart;
+  chart = new dex.component(userConfig, defaults);
 
   chart.render = function render() {
     d3 = dex.charts.d3.d3v3;
@@ -38,25 +39,28 @@ var c3hart = function (userConfig) {
       config.width = d3.select(chart.config.parent).property("clientWidth");
       config.height = d3.select(chart.config.parent).property("clientHeight");
     }
-
     var width = config.width - margin.left - margin.right;
     var height = config.height - margin.top - margin.bottom;
 
     d3.select(config.parent).selectAll("*").remove();
-
+    config.options.data = config.dataAdapter(csv);
+    config.options.bindto = config.parent;
     internalChart = c3.generate(config.options);
+    return chart;
   };
 
   chart.update = function () {
-    var chart = this;
     var config = chart.config;
     var csv = config.csv;
 
     var c3config = {
-      'columns': config.dataAdapter(csv)
+      'bindto' : config.parent,
+      'data': config.dataAdapter(csv)
     };
 
+    dex.console.log("c3 config", c3config);
     internalChart.load(c3config);
+    return chart;
   };
 
   $(document).ready(function () {
@@ -67,4 +71,4 @@ var c3hart = function (userConfig) {
   return chart;
 };
 
-module.exports = linechart;
+module.exports = genericc3hart;
