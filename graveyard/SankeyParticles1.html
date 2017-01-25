@@ -40,6 +40,10 @@
 
   canvas {
     position: absolute;
+      height: 100%;
+      min-height: 100%;
+      width: 100%;
+      min-width: 100%;
   }
 
 </style>
@@ -54,9 +58,7 @@
 <script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
 <script src="../../dist/dex.js"></script>
 <script>
-
-  var csv =
-  {
+  var csv = {
     'header' : ["NAME", "GENDER", "Vehicle"],
     'data'   : [
       ["Patrick", "M", "Truck"],
@@ -69,9 +71,7 @@
   var sankey = new dex.charts.d3.SankeyParticles({
     'parent' : "#ChartArea",
     'csv'    : csv
-  });
-
-  sankey.render();
+  }).render();
 
 </script>
 </body>

@@ -521,8 +521,7 @@ var sankeyparticles = function (userConfig) {
     }
 
     function particleEdgeCanvasPath(elapsed) {
-      var context = chartContainer.select("canvas")
-        .node().getContext("2d")
+      var context = chartContainer.select("canvas")[0][0].getContext("2d")
 
       context.clearRect(0, 0, 1000, 1000);
 
