@@ -1,80 +1,38 @@
 var sankey = function (userConfig) {
   d3 = dex.charts.d3.d3v3;
   var defaultColor = d3.scale.category20c();
+  var chart;
 
-  var defaults =
-    {
-      // The parent container of this chart.
-      'parent': null,
-      // Set these when you need to CSS style components independently.
-      'id': 'Sankey',
-      'class': 'Sankey',
-      // Our data...
-      'csv': {
-        // Give folks without data something to look at anyhow.
-        'header': ["X", "Y", "WEIGHT"],
-        'data': [
-          ["A1", "A2", 1],
-          ["B1", "B2", 2],
-          ["C1", "C2", 2],
-          ["C2", "C3", 4]
-        ]
-      },
-      'relationships': null,
-      // width and height of our bar chart.
-      'width': "100%",
-      'height': "100%",
-      // The x an y indexes to chart.
-      "transform": "translate(5,0) scale(.95)",
-      'layoutIterations': 32,
-      'columnTitle': dex.config.text({
-          'fill.fillColor': 'black',
-          'x': function (d) {
-            var center = window.innerWidth / 2;
-            //var center = (typeof userConfig.width !== 'undefined' ?
-            //  userConfig.width : defaults.width) / 2;
-
-            var nodeWidth = (userConfig.mouseout && userConfig.mouseout.node &&
-            userConfig.mouseout.node.rectangle && userConfig.mouseout.node.rectangle.width) ?
-              userConfig.mouseout.node.rectangle.width : defaults.mouseout.node.rectangle.width;
-
-            var nodePadding = (userConfig.mouseout && userConfig.mouseout.node &&
-            userConfig.mouseout.node.padding) ?
-              userConfig.mouseout.node.padding : defaults.mouseout.node.padding;
-
-            //dex.console.log("d.x=" + d.x + ", width=" + window.innerWidth + ", nodeWidth=" + nodeWidth +
-            //  ", nodePadding=" + nodePadding + ", center=" + center);
-            if (+d > center) {
-              //return +d-nodePadding-nodeWidth;
-              return +d + nodeWidth / 2;
-            }
-            else {
-              //return +d + nodeWidth + nodePadding;
-              return +d + nodeWidth / 2;
-            }
-          },
-          "y": 10,
-          "writingMode": "tb",
-          "glyphOrientationVertical": 0,
-          "anchor": function (d, i) {
-            //var center = (typeof userConfig.width !== 'undefined' ?
-            // userConfig.width : defaults.width) / 2;
-            var center = window.innerWidth / 2;
-
-            if (+d > center) {
-              // End if horizontal
-              return "start";
-            }
-            else {
-              return "start";
-            }
-          },
-          "text": function (d, i) {
-            return d + ", i" + i;
-          }
-        }
-      ),
-      'label': dex.config.text({
+  var defaults = {
+    // The parent container of this chart.
+    'parent': '#SankeyParent',
+    // Set these when you need to CSS style components independently.
+    'id': 'SankeyId',
+    'class': 'SankeyClass',
+    'resizable': true,
+    'width': "100%",
+    'height': "100%",
+    'margin': {
+      'left': 100,
+      'right': 100,
+      'top': 50,
+      'bottom': 50
+    },
+    'transform': "",
+    // Our data...
+    'csv': {
+      // Give folks without data something to look at anyhow.
+      'header': ["X", "Y", "WEIGHT"],
+      'data': [
+        ["A1", "A2", 1],
+        ["B1", "B2", 2],
+        ["C1", "C2", 2],
+        ["C2", "C3", 4]
+      ]
+    },
+    'relationships': null,
+    'layoutIterations': 32,
+    'columnTitle': dex.config.text({
         'fill.fillColor': 'black',
         'x': function (d) {
           var center = window.innerWidth / 2;
@@ -82,8 +40,7 @@ var sankey = function (userConfig) {
           //  userConfig.width : defaults.width) / 2;
 
           var nodeWidth = (userConfig.mouseout && userConfig.mouseout.node &&
-          userConfig.mouseout.node.rectangle &&
-          userConfig.mouseout.node.rectangle.width) ?
+          userConfig.mouseout.node.rectangle && userConfig.mouseout.node.rectangle.width) ?
             userConfig.mouseout.node.rectangle.width : defaults.mouseout.node.rectangle.width;
 
           var nodePadding = (userConfig.mouseout && userConfig.mouseout.node &&
@@ -92,108 +49,105 @@ var sankey = function (userConfig) {
 
           //dex.console.log("d.x=" + d.x + ", width=" + window.innerWidth + ", nodeWidth=" + nodeWidth +
           //  ", nodePadding=" + nodePadding + ", center=" + center);
-          if (d.x > center) {
-            return -nodePadding;
+          if (+d > center) {
+            //return +d-nodePadding-nodeWidth;
+            return +d + nodeWidth / 2;
           }
           else {
-            return nodeWidth + nodePadding;
+            //return +d + nodeWidth + nodePadding;
+            return +d + nodeWidth / 2;
           }
         },
-        'y': function (d) {
-          return d.dy / 2;
-        },
-        'transform': null,
-        'dy': '.35em',
-        'anchor': function (d, i) {
+        "y": 10,
+        "writingMode": "tb",
+        "glyphOrientationVertical": 0,
+        "anchor": function (d, i) {
           //var center = (typeof userConfig.width !== 'undefined' ?
           // userConfig.width : defaults.width) / 2;
           var center = window.innerWidth / 2;
 
-          if (d.x > center) {
-            return "end";
+          if (+d > center) {
+            // End if horizontal
+            return "start";
           }
           else {
             return "start";
           }
         },
-        'font': {
-          'size': 14
-        },
-        'color': "black",
-        'opacity': 1,
-        'text': function (d) {
-          return d.name;
+        "text": function (d, i) {
+          return d + ", i" + i;
         }
-      }),
-      //'columnLayout' : function(node, nodeMap) { return nodeMap[node.name].column },
-      'mouseout': {
-        'link': {
-          'stroke': dex.config.stroke({
-            'opacity': .2,
-            'color': function (d) {
-              return defaultColor(d.category);
-            },
-            'width': function (d) {
-              //return 0;
-              return Math.max(1, d.dy);
-            }
-          }),
-          'fill': dex.config.fill({
-            'fillColor': 'none',
-            'fillOpacity': .4
-          }),
-          'curvature': 0.5
-        },
-        'node': {
-          'padding': 4,
-          'rectangle': dex.config.rectangle(
-            {
-              'width': 32,
-              'color': function (d) {
-                return defaultColor(d.name.replace(/ .*/, ""));
-              },
-              'height': function (d) {
-                return d.dy;
-              },
-              'stroke': dex.config.stroke({
-                'color': function (d) {
-                  return d3.rgb(d.color).darker(2);
-                }
-              })
-            })
+      }
+    ),
+    'label': dex.config.text({
+      'fill.fillColor': 'black',
+      'x': function (d) {
+        var center = window.innerWidth / 2;
+        //var center = (typeof userConfig.width !== 'undefined' ?
+        //  userConfig.width : defaults.width) / 2;
+
+        var nodeWidth = (userConfig.mouseout && userConfig.mouseout.node &&
+        userConfig.mouseout.node.rectangle &&
+        userConfig.mouseout.node.rectangle.width) ?
+          userConfig.mouseout.node.rectangle.width : defaults.mouseout.node.rectangle.width;
+
+        var nodePadding = (userConfig.mouseout && userConfig.mouseout.node &&
+        userConfig.mouseout.node.padding) ?
+          userConfig.mouseout.node.padding : defaults.mouseout.node.padding;
+
+        //dex.console.log("d.x=" + d.x + ", width=" + window.innerWidth + ", nodeWidth=" + nodeWidth +
+        //  ", nodePadding=" + nodePadding + ", center=" + center);
+        if (d.x > center) {
+          return -nodePadding;
+        }
+        else {
+          return nodeWidth + nodePadding;
         }
       },
-      'mouseover': {
-        'link': {
-          'stroke': dex.config.stroke({
-            'opacity': .8,
-            'width': function (d) {
-              return Math.max(1, d.dy);
-            },
-            'color': function (d) {
-              return defaultColor(d.category);
-            }
-          }),
-          'fill': dex.config.fill({
-            'fillColor': 'none',
-            'fillOpacity': .8
-          }),
-        },
-        'node': {
-          'stroke': dex.config.stroke({
-            'opacity': .8,
-            'width': function (d) {
-              return Math.max(1, d.dy);
-            },
-            'color': function (d) {
-              return defaultColor(d.category);
-            }
-          }),
-          'fill': dex.config.fill({
-            'fillColor': 'none',
-            'fillOpacity': .8
-          })
+      'y': function (d) {
+        return d.dy / 2;
+      },
+      'transform': null,
+      'dy': '.35em',
+      'anchor': function (d, i) {
+        //var center = (typeof userConfig.width !== 'undefined' ?
+        // userConfig.width : defaults.width) / 2;
+        var center = window.innerWidth / 2;
+
+        if (d.x > center) {
+          return "end";
         }
+        else {
+          return "start";
+        }
+      },
+      'font': {
+        'size': 14
+      },
+      'color': "black",
+      'opacity': 1,
+      'text': function (d) {
+        return d.name;
+      }
+    }),
+    //'columnLayout' : function(node, nodeMap) { return nodeMap[node.name].column },
+    'mouseout': {
+      'link': {
+        'stroke': dex.config.stroke({
+          'opacity': .2,
+          'color': function (d) {
+            return defaultColor(d.category);
+          },
+          'width': function (d) {
+            //return 0;
+            return Math.max(1, d.dy);
+          }
+        }),
+        'fill': dex.config.fill({
+          'fillColor': 'none',
+          'fillOpacity': .4
+        }),
+        'curvature': 0.5
       },
       'node': {
         'padding': 4,
@@ -212,26 +166,75 @@ var sankey = function (userConfig) {
               }
             })
           })
+      }
+    },
+    'mouseover': {
+      'link': {
+        'stroke': dex.config.stroke({
+          'opacity': .8,
+          'width': function (d) {
+            return Math.max(1, d.dy);
+          },
+          'color': function (d) {
+            return defaultColor(d.category);
+          }
+        }),
+        'fill': dex.config.fill({
+          'fillColor': 'none',
+          'fillOpacity': .8
+        }),
       },
-      "manualColumnLayout": false
-    };
+      'node': {
+        'stroke': dex.config.stroke({
+          'opacity': .8,
+          'width': function (d) {
+            return Math.max(1, d.dy);
+          },
+          'color': function (d) {
+            return defaultColor(d.category);
+          }
+        }),
+        'fill': dex.config.fill({
+          'fillColor': 'none',
+          'fillOpacity': .8
+        })
+      }
+    },
+    'node': {
+      'padding': 4,
+      'rectangle': dex.config.rectangle({
+        'width': 32,
+        'color': function (d) {
+          return defaultColor(d.name.replace(/ .*/, ""));
+        },
+        'height': function (d) {
+          return d.dy;
+        },
+        'stroke': dex.config.stroke({
+          'color': function (d) {
+            return d3.rgb(d.color).darker(2);
+          }
+        })
+      })
+    },
+    "manualColumnLayout": false
+  };
 
-  //dex.console.log("USER-CONFIG", userConfig, "DEFAULTS:", defaults);
-  var config = dex.object.overlay(dex.config.expand(userConfig), dex.config.expand(defaults));
+  var chart = new dex.component(userConfig, defaults);
 
   // If we do not have specifically defined relationship fields, then lets
   // try to make an educated guess about what to do with them.  If the last
   // column is numeric, we will assume that this is to be used as a weight.
   // Otherwise, we will use a uniform weighting of 1 for each link.
-  if (!config.relationships) {
+  if (!chart.config.relationships) {
     // If we have less than 3 columns or the last column does not contain
     // numerics then we will create a set of relationships for each column
     // with a standard weight of 1 and a single category of 1.
-    if (config.csv.header.length < 3 || !dex.csv.isColumnNumeric(config.csv, config.csv.header.length - 1)) {
-      config.relationships = [];
+    if (chart.config.csv.header.length < 3 || !dex.csv.isColumnNumeric(chart.config.csv, chart.config.csv.header.length - 1)) {
+      chart.config.relationships = [];
 
-      for (i = 1; i < config.csv.header.length; i++) {
-        config.relationships.push(
+      for (i = 1; i < chart.config.csv.header.length; i++) {
+        chart.config.relationships.push(
           {
             'source': i - 1,
             'target': i,
@@ -250,10 +253,10 @@ var sankey = function (userConfig) {
     // If we fall through here, then the last column is numeric.  We will
     // use this for our weight.
     else {
-      config.relationships = [];
+      chart.config.relationships = [];
 
-      for (i = 1; i < config.csv.header.length - 1; i++) {
-        config.relationships.push(
+      for (i = 1; i < chart.config.csv.header.length - 1; i++) {
+        chart.config.relationships.push(
           {
             'source': i - 1,
             'target': i,
@@ -271,54 +274,34 @@ var sankey = function (userConfig) {
     }
   }
 
-  var chart = new dex.component(userConfig, config);
-
-  // TODO: Figure out how I want to do this.  Partial implementation.
-  chart.renderGui = function () {
+  chart.render = function render() {
     d3 = dex.charts.d3.d3v3;
-    dex.console.log("SETTINGS", d3.select("#settings").select("#" + chart.config.id).selectAll("#setting"));
-    d3.select("#settings").select("#" + chart.config.id).selectAll("#setting").each(function (d) {
-      dex.console.log("SETTING", d);
-    });
-  };
-
-  chart.render = function () {
-    d3 = dex.charts.d3.d3v3;
-    window.onresize = this.resize;
-    this.update();
-  };
-
-  chart.resize = function () {
-    d3 = dex.charts.d3.d3v3;
-    var width = window.innerWidth;
-    var height = window.innerHeight;
-
-    //dex.console.log(config.id + " RESIZING: " + width + "x" + height);
-    d3.selectAll(config.parent).selectAll('*').remove();
-
-    chart.attr("width", width)
-      .attr("height", height)
-      .update();
+    return chart.resize();
   };
 
   chart.update = function () {
     d3 = dex.charts.d3.d3v3;
     var config = chart.config;
-    //dex.console.log("UPDATING CHART....");
-    //dex.console.log("-- WIDTH : " + config.width);
-    //dex.console.log("-- HEIGHT: " + config.height);
-    var width = d3.select(config.parent).property("clientWidth");
-    var height = d3.select(config.parent).property("clientHeight");
+    var margin = config.margin;
     var csv = config.csv;
+
+    var width = config.width - margin.left - margin.right;
+    var height = config.height - margin.top - margin.bottom;
 
     d3.selectAll(config.parent).selectAll('*').remove();
 
-    var chartContainer = d3.select(config.parent).append("g")
-      .attr("class", config["id"])
+    var svg = d3.select(config.parent)
+      .append("svg")
       .attr("id", config["id"])
-      .attr("width", config.width)
-      .attr("height", config.height)
-      .attr("transform", config.transform);
+      .attr("class", config["class"])
+      .attr('width', config.width)
+      .attr('height', config.height);
+
+    var rootG = svg
+      .append('g')
+      .attr('transform', 'translate(' +
+        margin.left + ',' + margin.top + ') ' +
+        config.transform);
 
     var sankeyData = [];
 
@@ -401,8 +384,6 @@ var sankey = function (userConfig) {
         return formatNumber(d) + " " + units;
       };
 
-    chartContainer.onresize = chart.resize;
-
     function manualColumnLayout(nodes, nodeWidth, size) {
       var numSinks = 1;
 
@@ -474,7 +455,7 @@ var sankey = function (userConfig) {
       .layout(config.layoutIterations);
 
     // add in the links
-    var link = chartContainer.append("g").selectAll(".link")
+    var link = rootG.append("g").selectAll(".link")
       .data(graph.links)
       .enter().append("path")
       .attr("class", "link")
@@ -487,11 +468,11 @@ var sankey = function (userConfig) {
         return b.dy - a.dy;
       })
       .on("mouseover", function (d) {
-        chartContainer.selectAll("#" + d.linkid)//.style("stroke-opacity", 1)
+        rootG.selectAll("#" + d.linkid)//.style("stroke-opacity", 1)
           .call(dex.config.configureLink, config.mouseover.link);
       })
       .on("mouseout", function (d) {
-        chartContainer.selectAll("#" + d.linkid)//.style("stroke-opacity", config.link.stroke.opacity);
+        rootG.selectAll("#" + d.linkid)//.style("stroke-opacity", config.link.stroke.opacity);
           .call(dex.config.configureLink, config.mouseout.link);
       });
 
@@ -503,7 +484,7 @@ var sankey = function (userConfig) {
       });
 
     // add in the nodes
-    var node = chartContainer.append("g").selectAll(".node")
+    var node = rootG.append("g").selectAll(".node")
       .data(graph.nodes)
       .enter().append("g")
       .attr("class", "node")
@@ -527,7 +508,7 @@ var sankey = function (userConfig) {
           d.sourceLinks : d.targetLinks;
 
         links.forEach(function (link) {
-          chartContainer.selectAll("#" + link.linkid)
+          rootG.selectAll("#" + link.linkid)
             .call(dex.config.configureLink, config.mouseover.node);
         });
       })
@@ -536,7 +517,7 @@ var sankey = function (userConfig) {
         var links = (d.sourceLinks.length > 0) ?
           d.sourceLinks : d.targetLinks;
         links.forEach(function (link) {
-          chartContainer.selectAll("#" + link.linkid)
+          rootG.selectAll("#" + link.linkid)
             .call(dex.config.configureLink, config.mouseout.link);
         });
       })
@@ -551,7 +532,7 @@ var sankey = function (userConfig) {
 
     /////////// A HACK TO ADD TITLE LABELS
     var locations = {};
-    var rects = chartContainer.selectAll("rect").each(function (rect) {
+    var rects = rootG.selectAll("rect").each(function (rect) {
       locations[rect.x] = true;
     });
 
@@ -563,7 +544,7 @@ var sankey = function (userConfig) {
 
     //orderedLocations = orderedLocations.map(function(d) { return +d + locationWidth});
 
-    var titles = chartContainer.append("g").selectAll("text")
+    var titles = rootG.append("g").selectAll("text")
       .data(orderedLocations)
       .enter()
       .append("text")
