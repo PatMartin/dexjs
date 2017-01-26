@@ -9,7 +9,7 @@
  */
 var c3 = {};
 
-c3.C3Chart = require("./GenericC3Chart");
+c3.C3Chart = require("./C3Chart");
 c3.PieChart = require("./PieChart");
 c3.AreaChart = require("./AreaChart");
 c3.BarChart = require("./BarChart");

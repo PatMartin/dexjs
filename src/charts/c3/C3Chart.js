@@ -1,4 +1,4 @@
-var genericc3hart = function (userConfig) {
+var c3hart = function (userConfig) {
   var chart;
   var internalChart;
 
@@ -43,7 +43,6 @@ var genericc3hart = function (userConfig) {
     var height = config.height - margin.top - margin.bottom;
 
     d3.select(config.parent).selectAll("*").remove();
-    config.options.data = config.dataAdapter(csv);
     config.options.bindto = config.parent;
     internalChart = c3.generate(config.options);
     return chart;
@@ -53,12 +52,7 @@ var genericc3hart = function (userConfig) {
     var config = chart.config;
     var csv = config.csv;
 
-    var c3config = {
-      'bindto' : config.parent,
-      'data': config.dataAdapter(csv)
-    };
-
-    dex.console.log("c3 config", c3config);
+    dex.console.log("c3 config", config.options);
     internalChart.load(c3config);
     return chart;
   };
@@ -71,4 +65,4 @@ var genericc3hart = function (userConfig) {
   return chart;
 };
 
-module.exports = genericc3hart;
+module.exports = c3hart;
