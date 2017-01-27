@@ -60,8 +60,6 @@ var treemap = function (userConfig) {
 
   chart.render = function render() {
     d3 = dex.charts.d3.d3v3;
-    chart.resize = this.resize(chart);
-    window.onresize = chart.resize;
     return chart.resize();
   };
 
@@ -77,18 +75,18 @@ var treemap = function (userConfig) {
 
     d3.selectAll(config.parent).selectAll("*").remove();
 
-    var chartContainer = d3.select(config.parent)
-      .append("g")
+    var svg = d3.select(config.parent)
+      .append("svg")
       .attr("id", config["id"])
       .attr("class", config["class"])
       .attr('width', config.width)
-      .attr('height', config.height)
-      .attr("transform", config.transform);
+      .attr('height', config.height);
 
-    var chartG = chartContainer
+    var rootG = svg
       .append('g')
       .attr('transform', 'translate(' +
-        margin.left + ',' + margin.top + ')');
+        margin.left + ',' + margin.top + ') ' +
+        config.transform);
 
     var formatNumber = d3.format(",d");
     var transitioning;
@@ -114,7 +112,7 @@ var treemap = function (userConfig) {
       .ratio(height / width * 0.5 * (1 + Math.sqrt(5)))
       .round(false);
 
-    var grandparent = chartG.append("g")
+    var grandparent = rootG.append("g")
       .attr("class", "grandparent");
 
     grandparent.append("rect")
@@ -179,7 +177,7 @@ var treemap = function (userConfig) {
         .select("text")
         .text(config.title + name(d));
 
-      var g1 = chartG.insert("g", ".grandparent")
+      var g1 = rootG.insert("g", ".grandparent")
         .datum(d)
         .attr("class", "depth");
 
@@ -257,10 +255,10 @@ var treemap = function (userConfig) {
         y.domain([d.y, d.y + d.dy]);
 
         // Enable anti-aliasing during the transition.
-        chartG.style("shape-rendering", null);
+        rootG.style("shape-rendering", null);
 
         // Draw child nodes on top of parent nodes.
-        chartG.selectAll(".depth").sort(function (a, b) {
+        rootG.selectAll(".depth").sort(function (a, b) {
           return a.depth - b.depth;
         });
 
@@ -276,7 +274,7 @@ var treemap = function (userConfig) {
 
         // Remove the old node when the transition is finished.
         t1.remove().each("end", function () {
-          chartG.style("shape-rendering", "crispEdges");
+          rootG.style("shape-rendering", "crispEdges");
           transitioning = false;
         });
 

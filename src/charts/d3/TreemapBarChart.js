@@ -4,10 +4,10 @@ var treemapBarChart = function (userConfig) {
 
   var defaults = {
     // The parent container of this chart.
-    'parent': '#TreemapBarChart',
+    'parent': '#TreemapBarChartParent',
     // Set these when you need to CSS style components independently.
-    'id': 'TreemapBarChart',
-    'class': 'TreemapBarChart',
+    'id': 'TreemapBarChartId',
+    'class': 'TreemapBarChartClass',
     'resizable': true,
     // Our data...
     'csv': {
@@ -38,7 +38,7 @@ var treemapBarChart = function (userConfig) {
     },
     'width': "100%",
     'height': "100%",
-    'transform': "translate(0 0)",
+    'transform': "",
     'colorScheme': d3.schemeCategory20,
     // <text fill="#000" y="9" x="0.5" dy="0.71em">Property Crime</text>
     // <text fill="#000" y="9" x="0.5" dy=".71em" dx="0" font-family="sans-serif" font-size="14" font-weight="normal" font-style="normal" text-decoration="none" word-spacing="normal" letter-spacing="normal" variant="normal" transform="" style="text-anchor: start; fill: grey; fill-opacity: 1;">Violent Crime</text>
@@ -69,30 +69,35 @@ var treemapBarChart = function (userConfig) {
   };
 
   var chart = new dex.component(userConfig, defaults);
-  var config = chart.config;
 
   chart.render = function render() {
-    d3 = dex.charts.d3.d3v4;
-    chart.resize = this.resize(chart);
-    window.onresize = chart.resize;
+    d3 = dex.charts.d3.d3v3;
     return chart.resize();
   };
 
   chart.update = function update() {
     d3 = dex.charts.d3.d3v4;
+    var config = chart.config;
     var margin = config.margin;
+    var csv = config.csv;
+
     var width = config.width - margin.left - margin.right;
     var height = config.height - margin.top - margin.bottom;
 
     d3.selectAll(config.parent).selectAll("*").remove();
 
-    var chartContainer = d3.select(config.parent)
-      .append("g")
+    var svg = d3.select(config.parent)
+      .append("svg")
       .attr("id", config["id"])
       .attr("class", config["class"])
-      .attr("transform", config.transform)
       .attr('width', config.width)
       .attr('height', config.height);
+
+    var rootG = svg
+      .append('g')
+      .attr('transform', 'translate(' +
+        margin.left + ',' + margin.top + ') ' +
+        config.transform);
 
     var colorDomain = dex.csv.uniqueArray(config.csv, config.index.color);
     var categoryDomain = dex.csv.uniqueArray(config.csv, config.index.category);
@@ -166,7 +171,7 @@ var treemapBarChart = function (userConfig) {
       return a.data.x - b.data.x
     })
 
-    var svg = chartContainer
+    var svg = rootG
       .append('g')
       .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
 
@@ -175,14 +180,12 @@ var treemapBarChart = function (userConfig) {
         return d.data.x
       }).sort())
       .range([0, width])
-      .padding(0.15)
-
-    // REM
+      .padding(0.15);
 
     var x1 = d3.scaleBand()
       .domain(categoryDomain)
       .rangeRound([0, x0.bandwidth()])
-      .paddingInner(0.1)
+      .paddingInner(0.1);
 
     var y = d3.scaleLinear()
       .domain([0, d3.max(xData, function (d) {
@@ -190,28 +193,28 @@ var treemapBarChart = function (userConfig) {
           return e.value
         })
       })]).nice()
-      .range([0, height])
+      .range([0, height]);
 
     var x0Axis = d3.axisBottom()
       .scale(x0)
-      .tickSize(0)
+      .tickSize(0);
 
     var x1Axis = d3.axisBottom()
-      .scale(x1)
+      .scale(x1);
 
     var yAxis = d3.axisLeft()
       .tickSize(-width)
       //.tickFormat(tickFormat)
-      .scale(y.copy().range([height, 0]))
+      .scale(y.copy().range([height, 0]));
 
     svg.append('g')
       .attr('class', 'x0 axis')
       .attr('transform', 'translate(0,' + (height + 22) + ')')
-      .call(x0Axis)
+      .call(x0Axis);
 
     var gy = svg.append('g')
       .attr('class', 'y axis')
-      .call(yAxis)
+      .call(yAxis);
 
     var xs = svg.selectAll('.x')
       .data(xData, function (d) {
@@ -221,17 +224,17 @@ var treemapBarChart = function (userConfig) {
       .attr('class', 'x')
       .attr('transform', function (d) {
         return 'translate(' + x0(d.data.x) + ',0)'
-      })
+      });
 
     xs.append('g')
       .attr('class', 'x1 axis')
       .attr('transform', 'translate(0,' + height + ')')
-      .call(x1Axis)
+      .call(x1Axis);
 
     d3.select('#inflation-adjusted').on('change', function () {
       options.key = this.checked ? 'adj_value' : 'value';
       tmUpdate();
-    })
+    });
 
     tmUpdate();
 

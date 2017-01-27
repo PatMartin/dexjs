@@ -1,47 +1,72 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 <style>
-  html, body {
-    height: 100%;
-    min-height: 100%;
-    width: 100%;
-    min-width: 100%;
-  }
+    html, body , #TreemapBarChartParent {
+        height: 100%;
+        min-height: 100%;
+        width: 100%;
+        min-width: 100%;
+    }
 
-  #ChartArea {
-    height: 100%;
-    min-height: 100%;
-    width: 100%;
-    min-width: 100%;
-  }
+    label {
+        font-family: sans-serif;
+        font-size: 14px;
+        position: absolute;
+        left: 92px;
+        top: 26px;
+    }
 
-  label {
-      font-family: sans-serif;
-      font-size: 14px;
-      position: absolute;
-      left: 92px; top: 26px;
-  }
-  .axis .domain { display: none; }
-  .axis line { stroke: #ccc; }
-  .axis.x0 text { font-weight: 700; }
-  .hover-active rect { opacity: .75; }
-  .hover-active rect.hover { opacity: 1; }
+    .axis .domain {
+        display: none;
+    }
+
+    .axis line {
+        stroke: #ccc;
+    }
+
+    .axis.x0 text {
+        font-weight: 700;
+    }
+
+    .hover-active rect {
+        opacity: .75;
+    }
+
+    .hover-active rect.hover {
+        opacity: 1;
+    }
 </style>
 <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.css">
 <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.theme.min.css">
 <body>
-<svg id="ChartArea"></svg>
+<div id="TreemapBarChartParent"></div>
 <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
 <script src="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
 <script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
 <script src="../../dist/dex.js"></script>
 
 <script>
+  var csv = {
+    'header': ["State", "Type of Crime", "Crime", "Year", "Count"],
+    'data': [
+      ["Alabama", "Violent Crime", "Murder", "2003", "299"],
+      ["Alabama", "Violent Crime", "Murder", "2004", "254"],
+      ["Alabama", "Violent Crime", "Murder", "2005", "374"],
+      ["Alaska", "Violent Crime", "Murder", "2003", "39"],
+      ["Alaska", "Violent Crime", "Murder", "2004", "37"],
+      ["Alaska", "Violent Crime", "Murder", "2005", "32"],
+      ["Arizona", "Violent Crime", "Murder", "2003", "441"],
+      ["Arizona", "Violent Crime", "Murder", "2004", "414"],
+      ["Arizona", "Violent Crime", "Murder", "2005", "445"],
+      ["Arkansas", "Violent Crime", "Murder", "2003", "180"],
+      ["Arkansas", "Violent Crime", "Murder", "2004", "176"],
+      ["Arkansas", "Violent Crime", "Murder", "2005", "186"]]
+  };
 
   var treemapBarChart = new dex.charts.d3.TreemapBarChart({
-        'parent'      : '#ChartArea'
-      }
-  );
-  treemapBarChart.render();
+      'parent': '#TreemapBarChartParent',
+      'csv': csv
+    }
+  ).render();
 
 </script>
