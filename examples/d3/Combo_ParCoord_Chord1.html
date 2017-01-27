@@ -1,13 +1,19 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 <style>
-  html, body, #ParallelCoordinatesParent, #ChordParent, table {
-    height: 100%;
-    min-height: 100%;
-    width: 100%;
-    min-width: 100%;
-  }
+    html, body, #ParallelCoordinatesParent, #ChordParent, table {
+        height: 100%;
+        min-height: 100%;
+        width: 100%;
+        min-width: 100%;
+    }
 
+    td {
+        height: 100%;
+        min-height: 100%;
+        width: 50%;
+        min-width: 50%;
+    }
 </style>
 <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.css">
 <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.theme.min.css">
@@ -19,21 +25,20 @@
 <script src="../../dist/dex.js"></script>
 
 <table>
-  <tr>
-    <td>
-      <svg id="ParallelCoordinatesParent"></svg>
-    </td>
-    <td>
-      <svg id="ChordParent"></svg>
-    </td>
-  </tr>
+    <tr>
+        <td>
+            <div id="ParallelCoordinatesParent"></div>
+        </td>
+        <td>
+            <div id="ChordParent"></div>
+        </td>
+    </tr>
 </table>
 
 <script>
-  var csv =
-  {
-    'header' : ["Presidency", "President", "Party", "Home State"],
-    'data'   : [
+  var csv = {
+    'header': ["Presidency", "President", "Party", "Home State"],
+    'data': [
       ["1", "George Washington", "Independent", "Virginia"],
       ["2", "John Adams", "Federalist", "Massachusetts"],
       ["3", "Thomas Jefferson", "Dem-Rep", "Virginia"],
@@ -81,39 +86,29 @@
     ]
   };
 
-  var csv2 =
-  {
-    'header' : dex.array.slice(csv.header, [1, 2, 3]),
-    'data'   : dex.matrix.slice(csv.data, [1, 2, 3])
-  };
+  var csv2 = dex.csv.columnSlice(csv, [1, 2, 3]);
 
   var pcChart = new dex.charts.d3.ParallelCoordinates({
-        'parent'    : "#ParallelCoordinatesParent",
-        'id'        : "PC",
-        'class'     : 'PC',
-        'width'     : 500,
-        'height'    : 500,
-        'transform' : 'translate(100 10)',
-        'csv'       : csv2
-      }
+      'parent': "#ParallelCoordinatesParent",
+      'margin': {'top': 40, 'bottom': 0, 'left': 50, 'right': 0},
+      'transform': 'scale(.8)',
+      'csv': csv2
+    }
   );
 
   // Configure a chart.
   var chord = new dex.charts.d3.Chord({
-        'parent'      : '#ChordParent',
-        'height'      : 800,
-        'width'       : 800,
-        'transform'   : 'translate(760 260)',
-        'innerRadius' : 150,
-        'outerRadius' : 160,
-        'color'       : d3.scale.category20c(),
-        'csv'         : csv2,
-        'label'       : {
-          'font' : {
-            'size' : 12
-          }
+      'parent': '#ChordParent',
+      'transform': 'scale(.8)',
+      'color': d3.scale.category20c(),
+      'margin': {'top': 0, 'bottom': 0, 'left': 0, 'right': 0},
+      'csv': csv2,
+      'label': {
+        'font': {
+          'size': 12
         }
       }
+    }
   );
 
   csv2 = dex.csv.columnSlice(csv2, [1, 2]);

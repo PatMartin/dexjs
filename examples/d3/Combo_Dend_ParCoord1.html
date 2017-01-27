@@ -1,78 +1,21 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 <style>
-  html, body {
-    height: 100%;
-    min-height: 100%;
-    width: 100%;
-    min-width: 100%;
-  }
+    html, body, #ParallelCoordinatesParent, #DendrogramParent, table {
+        height: 100%;
+        min-height: 100%;
+        width: 100%;
+        min-width: 100%;
+    }
 
-  .arc path {
-    stroke: #fff;
-  }
-
-  #ParChart textarea {
-    width: 100%;
-  }
-
-  #ParChart .textwrapper {
-    border: 1px solid #999999;
-    margin: 5px 0;
-    padding: 5px;
-  }
-
-  #ParChart path {
-    fill: none;
-    /*stroke: #ccc;*/
-    stroke-opacity: .9;
-    shape-rendering: crispEdges;
-  }
-
-  #ParChart .foreground path {
-    fill: none;
-    stroke: steelblue;
-    stroke-opacity: .9;
-  }
-
-  #ParChart .brush .extent {
-    fill-opacity: .3;
-    stroke: #fff;
-    shape-rendering: crispEdges;
-  }
-
-  #ParChart .axis line, #ParChart .axis path {
-    fill: none;
-    stroke: #000;
-    shape-rendering: crispEdges;
-  }
-
-  #ParChart .axis text {
-    text-shadow: 0 1px 0 #fff;
-  }
-
-  .node circle {
-    cursor: pointer;
-    fill: #fff;
-    stroke: black;
-    stroke-width: 1px;
-  }
-
-  .node text {
-    font-size: 11px;
-  }
-
-  path.link {
-    fill: none;
-    stroke: #ccc;
-    stroke-width: 1px;
-  }
-
-  table, svg {
-    height: 100%;
-    width: 100%;
-  }
+    td {
+        height: 100%;
+        width: 50%;
+    }
 </style>
+<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.css">
+<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.theme.min.css">
+
 <body>
 <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
 <script src="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
@@ -81,21 +24,20 @@
 <script src="../../dist/dex.js"></script>
 
 <table>
-  <tr>
-    <td>
-      <svg id="ParallelCoordinatesArea"></svg>
-    </td>
-    <td>
-      <svg id="DendrogramArea"></svg>
-    </td>
-  </tr>
+    <tr>
+        <td>
+            <div id="ParallelCoordinatesParent"></div>
+        </td>
+        <td>
+            <div id="DendrogramParent"></div>
+        </td>
+    </tr>
 </table>
 
 <script>
-  var csv =
-  {
-    'header' : ["Presidency", "President", "Party", "Home State"],
-    'data'   : [
+  var csv = {
+    'header': ["Presidency", "President", "Party", "Home State"],
+    'data': [
       ["1", "George Washington", "Independent", "Virginia"],
       ["2", "John Adams", "Federalist", "Massachusetts"],
       ["3", "Thomas Jefferson", "Dem-Rep", "Virginia"],
@@ -143,54 +85,29 @@
     ]
   };
 
-  var csv2 =
-  {
-    'header' : dex.array.slice(csv.header, [2, 3, 1]),
-    'data'   : dex.matrix.slice(csv.data, [2, 3, 1])
-  };
+  var csv2 = dex.csv.columnSlice(csv, [2, 3, 1]);
 
   var pcChart = new dex.charts.d3.ParallelCoordinates({
-        'parent' : "#ParallelCoordinatesArea",
-        'id'     : "PC",
-        'class'  : "PC",
-        'csv'    : csv2
-      }
+      'parent': "#ParallelCoordinatesParent",
+      'csv': csv2,
+      'margin.top': 20,
+      'margin.left' : 30,
+    'transform' : 'scale(.8)'
+    }
   );
 
   var dendrogram = new dex.charts.d3.Dendrogram({
-        'parent'        : "#DendrogramArea",
-        'id'            : "Dendrogram",
-        'root.name'     : 'President',
-        'root.category' : 'Category1',
-
-        // Fully expanded nodes
-        /*
-         'node.expanded.circle.fill.fillColor'   : 'steelblue',
-         'node.expanded.circle.fill.fillOpacity' : 0.9,
-         'node.expanded.circle.r'                : 4,
-         'node.expanded.label.text-anchor'       : 'end',
-         'node.expanded.label.x'                 : 8,
-         'node.expanded.label.y'                 : 2,
-         'node.expanded.label.fill.fillColor'    : 'blue',
-
-         // Collapsed nodes.
-         'node.collapsed.circle.fill.fillColor'  : 'lightgreen',
-         'node.collapsed.circle.r'               : 8,
-         //'node.expanded.label.font.weight' : 'bold',
-
-         // Link config
-         'link.fill.color'                       : 'red',
-         'link.stroke.width'                     : 1,
-         'link.stroke.opacity'                   : .3,
-         'link.stroke.dasharray'                 : "5 5",
-         */
-        'csv' : csv2
-      }
+      'parent': "#DendrogramParent",
+      'id': "Dendrogram",
+      'root.name': 'President',
+      'root.category': 'Category1',
+      'csv': csv2,
+      'connection.length': 'fit-text',
+      'transform' : 'scale(.8)'
+    }
   );
 
-  var handle = dendrogram.subscribe(pcChart, "select", function (msg) {
-    dex.console.log("dendogram received", msg);
-    d3.select("#Dendrogram").remove();
+  dendrogram.subscribe(pcChart, "select", function (msg) {
     dendrogram.attr('csv', msg.selected).update();
   });
 
