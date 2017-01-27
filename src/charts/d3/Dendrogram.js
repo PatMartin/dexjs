@@ -38,7 +38,6 @@ var dendrogram = function Dendrogram(userConfig) {
         'stroke': dex.config.stroke()
       }
     },
-    //'transform': 'translate(20,0)',
     'root': {
       'name': "ROOT",
       'category': "ROOT"
