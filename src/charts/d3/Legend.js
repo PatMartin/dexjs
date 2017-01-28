@@ -32,12 +32,12 @@ var legend = function (userConfig) {
   var chart = new dex.component(userConfig, defaults);
 
   chart.render = function render() {
-    d3 = dex.charts.d3.d3v3;
+    d3 = dex.charts.d3.d3v4;
     return chart.resize();
   };
 
   chart.update = function () {
-    d3 = dex.charts.d3.d3v3;
+    d3 = dex.charts.d3.d3v4;
     var chart = this;
     var config = chart.config;
     var csv = config.csv;
@@ -47,6 +47,15 @@ var legend = function (userConfig) {
 
     d3.selectAll(config.parent).selectAll("*").remove();
 
+    var quantize = d3.scaleQuantize()
+      .domain([ 0, 0.15 ])
+      .range(d3.range(9).map(function(i) { return "q" + i + "-9"; }));
+
+    var thresholdScale = d3.scaleThreshold()
+      .domain([ 0, 1000, 2500, 5000, 10000 ])
+      .range(d3.range(6)
+        .map(function(i) { return "q" + i + "-9"}));
+
     var svg = d3.select(config.parent)
       .append("svg")
       .attr("id", config["id"])
@@ -55,19 +64,27 @@ var legend = function (userConfig) {
       .attr('height', config.height);
 
     var rootG = svg.append('g')
+      .attr("class", chart.config.class)
       .attr('transform', 'translate(' +
-        (margin.left + config.width / 2) + ',' +
-        (margin.top + config.height / 2) + ') ' +
+        (margin.left) + ',' +
+        (margin.top) + ') ' +
         config.transform);
 
-    var quantize = d3.scale.quantize()
-      .domain([ 0, 0.15 ])
-      .range(d3.range(9).map(function(i) { return "q" + i + "-9"; }));
-
-    var legend = d3.legend.color()
+    var quantizeLegend = d3.legendColor()
       .labelFormat(d3.format(".2f"))
       .useClass(true)
+      .title("title")
+      .titleWidth(100)
       .scale(quantize);
+
+    var thresholdLegend = d3.legendColor()
+      .labelFormat(d3.format(".2f"))
+      .labels(d3.legendHelpers.thresholdLabels)
+      .useClass(true)
+      .scale(thresholdScale)
+
+    svg.select("." + chart.config.class)
+      .call(thresholdLegend);
 
     // Allow method chaining
     return chart;
