@@ -46,9 +46,8 @@ var chord = function (userConfig) {
       'mouseover': dex.config.link({
         'stroke.color': "red",
         //'stroke.dasharray': '5 5',
-        'stroke.width': 1,
+        'stroke.width': 0,
         'fill.fillColor': function (d, i) {
-          //dex.console.log("COLORD", d);
           return (chart.config.color(d.index));
         },
         'fill.fillOpacity': 1,
@@ -83,10 +82,7 @@ var chord = function (userConfig) {
         'd': d3.svg.chord()
       })
     },
-//                .style("fill", function (d) {
-//        return chart.config.color(d.index);
-//      })
-    'color': d3.scale.category20(),
+    'color': d3.scale.category20c(),
     'innerRadius': 130,
     'outerRadius': 200,
     'tick.start.x': 1,
@@ -94,12 +90,11 @@ var chord = function (userConfig) {
     'tick.end.x': 5,
     'tick.end.y': 0,
     'tick.padding': 10,
-    'tick.stroke': dex.config.stroke(
-      {
-        'width': 2,
-        'color': 'black'
-        //'dasharray' : '1 2'
-      }),
+    'tick.stroke': dex.config.stroke({
+      'width': 2,
+      'color': 'black'
+      //'dasharray' : '1 2'
+    }),
     'title': dex.config.text(),
     'label': dex.config.text()
   };
@@ -144,8 +139,8 @@ var chord = function (userConfig) {
 
     var rootG = svg.append('g')
       .attr('transform', 'translate(' +
-        (margin.left + config.width/2) + ',' +
-        (margin.top + config.height/2) + ') ' +
+        (margin.left + config.width / 2) + ',' +
+        (margin.top + config.height / 2) + ') ' +
         config.transform);
 
     chordData = dex.csv.getConnectionMatrix(csv);
