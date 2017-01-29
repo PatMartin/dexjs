@@ -2,17 +2,15 @@ var ringnetwork = function (userConfig) {
   d3 = dex.charts.d3.d3v3;
   var chart;
 
-  var defaults =
-  {
+  var defaults = {
     // The parent container of this chart.
-    'parent': '#RingNetwork',
+    'parent': '#RingNetworkParent',
     // Set these when you need to CSS style components independently.
-    'id': 'RingNetwork',
-    'class': 'RingNetwork',
+    'id': 'RingNetworkId',
+    'class': 'RingNetworkClass',
     'resizable': true,
-    // Our data...
+    // Sample default data...
     'csv': {
-      // Give folks without data something to look at anyhow.
       'header': ["NAME", "GENDER", "VEHICLE"],
       'data': [
         ["JIM", "M", "CAR"],
@@ -21,33 +19,25 @@ var ringnetwork = function (userConfig) {
         ["SALLY", "F", "TRUCK"]
       ]
     },
-    'type' : "rings",
+    'type': "rings",
     'connect': 'last',
     //'connect' : 'all',
     'width': "100%",
     'height': "100%",
-    'transform': "translate(0 0)",
+    'transform': "",
+    'margin': {
+      'left': 100,
+      'right': 100,
+      'top': 50,
+      'bottom': 50
+    }
   };
 
   var chart = new dex.component(userConfig, defaults);
 
   chart.render = function render() {
     d3 = dex.charts.d3.d3v3;
-    window.onresize = this.resize;
-    chart.resize();
-  };
-
-  chart.resize = function resize() {
-    d3 = dex.charts.d3.d3v3;
-    if (chart.config.resizable) {
-      var width = d3.select(chart.config.parent).property("clientWidth");
-      var height = d3.select(chart.config.parent).property("clientHeight");
-      dex.console.log(chart.config.id + ": resize(" + width + "," + height + ")");
-      chart.attr("width", width).attr("height", height).update();
-    }
-    else {
-      chart.update();
-    }
+    return chart.resize();
   };
 
   chart.update = function () {
@@ -55,6 +45,9 @@ var ringnetwork = function (userConfig) {
     var chart = this;
     var config = chart.config;
     var csv = config.csv;
+
+    // Nuke the old one
+    d3.selectAll(config.parent).selectAll("*").remove();
 
     var connections = [];
 
@@ -81,7 +74,7 @@ var ringnetwork = function (userConfig) {
       }
     }
 
-    //dex.console.log("Connections", connections);
+    dex.console.debug("Connections", connections);
 
     // instantiate d3plus
     var viz = d3plus.viz()
