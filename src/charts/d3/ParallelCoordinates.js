@@ -422,6 +422,8 @@ var parallelcoordinates = function (userConfig) {
       //dex.console.log("Selected: ", dex.json.toCsv(activeData, dimensions));
       chart.publish({"type": "select", "selected": dex.json.toCsv(activeData, dimensions)});
     }
+
+    return chart;
   };
 
   $(document).ready(function () {
