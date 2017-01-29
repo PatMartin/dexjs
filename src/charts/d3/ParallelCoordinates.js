@@ -158,7 +158,7 @@ var parallelcoordinates = function (userConfig) {
             return chart.config.color(i);
           },
           'width': .8,
-          //'dasharray': "10 10"
+          'dasharray': "1 2"
         }),
       'fill': {
         'fillColor': "none",
@@ -199,7 +199,7 @@ var parallelcoordinates = function (userConfig) {
     var jsonData = dex.csv.toJson(csv);
 
     var x = d3.scale.ordinal()
-      .rangePoints([0, config.width], 1);
+      .rangePoints([0, width], 1);
 
     var y = {};
 
@@ -257,7 +257,7 @@ var parallelcoordinates = function (userConfig) {
 
         y[d] = d3.scale.linear()
           .domain(extent)
-          .range([config.height, 0]);
+          .range([height, 0]);
         allExtents.concat(extent);
       }
       else {
@@ -265,7 +265,7 @@ var parallelcoordinates = function (userConfig) {
           .domain(jsonData.map(function (p) {
             return p[d];
           }))
-          .rangePoints([config.height, 0]);
+          .rangePoints([height, 0]);
       }
 
       return true;
