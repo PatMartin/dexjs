@@ -1,0 +1,81 @@
+<!doctype html>
+<html>
+<head>
+    <title>ECharts Sample</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/3.4.0/echarts.min.js"></script>
+
+</head>
+<style>
+    html, body, #EChartParent {
+        height: 100%;
+        min-height: 100%;
+        width: 100%;
+        min-width: 100%;
+    }
+</style>
+<body>
+<div id="EChartParent"></div>
+<script>
+  var chart = document.getElementById('EChartParent');
+  var myChart = echarts.init(chart);
+  var option;
+
+  var uploadedDataURL = "../../data/echarts/airports.json";
+
+  myChart.showLoading();
+
+  $.getJSON(uploadedDataURL, function(data) {
+
+    myChart.hideLoading();
+
+    function getAirportCoord(idx) {
+      return [data.airports[idx][3], data.airports[idx][4]];
+    }
+    // var routes = data.routes.map(function (airline) {
+    //     return [
+    //         getAirportCoord(airline[1]),
+    //         getAirportCoord(airline[2])
+    //     ];
+    // });
+    console.log(data);
+    var points = data.airports.map(function (airport) {
+      return [airport[3], airport[4]];
+    });
+
+    myChart.setOption(option = {
+      backgroundColor: '#003',
+      geo: {
+        map: 'world',
+        left: 0,
+        right: 0,
+        silent: true,
+        itemStyle: {
+          normal: {
+            borderColor: '#003',
+            color: '#005'
+          }
+        }
+      },
+      series: [{
+        type: 'scatter',
+        coordinateSystem: 'geo',
+        data: points,
+        symbolSize: 3,
+        // large: true,
+        largeThreshold: 100,
+        itemStyle: {
+          normal: {
+            opacity: 0.4
+          }
+        },
+        // 设置混合模式为叠加
+        blendMode: 'lighter'
+      }]
+    });
+  });
+
+  myChart.setOption(option);
+</script>
+</body>
+</html>

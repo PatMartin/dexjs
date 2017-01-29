@@ -1,0 +1,43 @@
+<!doctype html>
+<html>
+<head>
+    <title>ECharts Sample</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/3.4.0/echarts.min.js"></script>
+    <script src="../../lib/echarts/echarts-x.js"></script>
+    <script src="../../lib/echarts/zrender.js"></script>
+    <script src="../../lib/echarts/qtek.min.js"></script>
+    <script src="../../lib/echarts/map3d.js"></script>
+</head>
+<style>
+    html, body, #EChartParent {
+        height: 100%;
+        min-height: 100%;
+        width: 100%;
+        min-width: 100%;
+    }
+</style>
+<body>
+<div id="EChartParent"></div>
+<script>
+  var chart = document.getElementById('EChartParent');
+  var myChart = echarts.init(chart);
+  var option;
+
+  var chart = echarts.init(document.getElementById('main'));
+
+  chart.setOption({
+    title: {
+      text: 'A Simple Example'
+    },
+    series: [{
+      type: 'map3d',
+      // Empty data
+      data: [{}]
+    }]
+  });
+
+  myChart.setOption(option);
+</script>
+</body>
+</html>
