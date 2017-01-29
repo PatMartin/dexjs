@@ -1,15 +1,13 @@
 var diffbarchart = function (userConfig) {
 
   var defaults = {
-    // The parent container of this chart.
-    'parent'     : "#GoogleDiffBarChart",
-    // Set these when you need to CSS style components independently.
-    'id'         : 'GoogleDiffBarChart',
-    'class'      : 'GoogleDiffBarChart',
-    // Our data...
-    'csv'        : {
-      'header' : ['Category', 'Major', 'Degrees'],
-      'data'   : [
+    'parent': "#DiffBarChartParent",
+    'id': 'DiffBarChartId',
+    'class': 'DiffBarChartClass',
+    // Sample data...
+    'csv': {
+      'header': ['Category', 'Major', 'Degrees'],
+      'data': [
         ['old', 'Business', 256070],
         ['old', 'Education', 108034],
         ['old', 'Social Sciences & History', 127101],
@@ -21,52 +19,37 @@ var diffbarchart = function (userConfig) {
         ['new', 'Health', 129634],
         ['new', 'Psychology', 97216]]
     },
-    'resizable' : true,
-    'diff'       : {
-      'compare'       : 'Category',
-      'compareGroups' : ['old', 'new']
+    'resizable': true,
+    'diff': {
+      'compare': 'Category',
+      'compareGroups': ['old', 'new']
     },
-    'options'    : {
-      'bars' : 'horizontal',
-      'hAxis.viewWindowMode' : 'maximized',
-      'vAxis.viewWindowMode' : 'maximized',
-      'chartArea.width' : function() { return chart.config.width * 0.8; },
-      'chartArea.height' : function() { return chart.config.height * 0.8; }
+    'options': {
+      'bars': 'horizontal',
+      'hAxis.viewWindowMode': 'maximized',
+      'vAxis.viewWindowMode': 'maximized',
+      'chartArea.width': function () {
+        return chart.config.width * 0.8;
+      },
+      'chartArea.height': function () {
+        return chart.config.height * 0.8;
+      }
     }
   };
-
+/*
+ chart.attr("options.chart.title", 'title')
+ .attr("options.chart.subtitle", 'subtitle')
+ .attr("options.colors", [
+ 'steelblue', 'red', 'blue', 'green',
+ 'orange', 'purple', 'grey', 'brown',
+ 'cyan', 'magenta']);
+ */
   var chart = new dex.component(userConfig, defaults);
 
   chart.render = function render() {
-    window.onresize = this.resize;
-    chart.attr("options.chart.title", 'title')
-      .attr("options.chart.subtitle", 'subtitle')
-      .attr("options.colors", [
-        'steelblue', 'red', 'blue', 'green',
-        'orange', 'purple', 'grey', 'brown',
-        'cyan', 'magenta']);
-    chart.resize();
-  };
-
-  chart.resize = function resize() {
-    if (chart.config.resizable) {
-      var config = chart.config;
-      var target = (config.parent && config.parent[0] == '#') ?
-        config.parent.substring(1) : config.parent;
-      var targetElt = document.getElementById(target);
-
-      var width = targetElt.clientWidth;
-      var height = targetElt.clientHeight;
-      dex.console.log("google.DiffBarChart Resize: " + width + "x" + height);
-
-      chart
-        .attr("width", width)
-        .attr("height", height)
-        .update();
-    }
-    else {
-      chart.update();
-    }
+    google.load("visualization", '1.1', {packages: ['corechart']});
+    google.setOnLoadCallback(chart.resize());
+    return chart;
   };
 
   chart.update = function update() {
