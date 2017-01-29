@@ -36,7 +36,7 @@ var chord = function (userConfig) {
         'stroke.width': 0,
         'fill.fillColor': function (d, i) {
           //dex.console.log("COLORD", d);
-          return (chart.config.color(d.index));
+          return (chart.config.color(chart.config.chordData.header[d.index]));
         },
         'fill.fillOpacity': 0.5,
         'fill.fill': 'none',
@@ -44,11 +44,12 @@ var chord = function (userConfig) {
         'transform': ''
       }),
       'mouseover': dex.config.link({
-        'stroke.color': "red",
+        'stroke.color': "white",
         //'stroke.dasharray': '5 5',
-        'stroke.width': 0,
+        'stroke.width': 2,
         'fill.fillColor': function (d, i) {
-          return (chart.config.color(d.index));
+          dex.console.log("D", d)
+          return (chart.config.color(chart.config.chordData.header[d.index]));
         },
         'fill.fillOpacity': 1,
         'fill.fill': 'none',
@@ -58,11 +59,11 @@ var chord = function (userConfig) {
     },
     'links': {
       'mouseout': dex.config.link({
-        'stroke.color': "grey",
+        'stroke.color': "white",
         'stroke.dasharray': '',
         'stroke.width': 0,
         'fill.fillColor': function (d, i) {
-          return (chart.config.color(d.target.index));
+          return (chart.config.color(chart.config.chordData.header[d.source.index]));
         },
         'fill.fillOpacity': 0.1,
         'fill.fill': 'none',
@@ -70,11 +71,11 @@ var chord = function (userConfig) {
         'transform': ''
       }),
       'mouseover': dex.config.link({
-        'stroke.color': "black",
+        'stroke.color': "white",
         'stroke.dasharray': '',
-        'stroke.width': 0,
+        'stroke.width': 1,
         'fill.fillColor': function (d, i) {
-          return (chart.config.color(d.target.index));
+          return (chart.config.color(chart.config.chordData.header[d.source.index]));
         },
         'transform': "",
         'fill.fillOpacity': 1,
@@ -144,6 +145,7 @@ var chord = function (userConfig) {
         config.transform);
 
     chordData = dex.csv.getConnectionMatrix(csv);
+    config.chordData = chordData;
 
     var chord = d3.layout.chord()
       .padding(config.padding)

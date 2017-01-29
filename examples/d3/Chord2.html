@@ -1,5 +1,13 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
+<style>
+    html, body, #ChordParent {
+        height: 100%;
+        min-height: 100%;
+        width: 100%;
+        min-width: 100%;
+    }
+</style>
 <body>
 <div id="ChordParent"></div>
 <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
@@ -25,7 +33,7 @@
       ["Millard Fillmore", "Whig", "New York"],
       ["Franklin Pierce", "Democratic", "New Hampshire"],
       ["James Buchanan", "Democratic", "Pennsylvania"],
-      ["Abraham Lincoln", "Rep/Ntnl-Union", "Illinois"],
+      ["Abraham Lincoln", "Rep/Natl-Union", "Illinois"],
       ["Andrew Johnson", "Dem/Natl-Union", "Tennessee"],
       ["Ulysses S. Grant", "Republican", "Ohio"],
       ["Rutherford B. Hayes", "Republican", "Ohio"],
@@ -57,18 +65,30 @@
     ]
   };
 
+  // Assign meaningful colors where known.
+  var colorPresets = {
+    'Democratic': 'blue',
+    'Republican': 'red',
+    // Whigs were blue and buff
+    'Whig': '#F0DC82',
+    // They were black and white.
+    'Federalist' : 'black',
+    // Red, white, blue, so going with purple
+    'Dem-Rep' : 'purple'
+  };
+
+  // Color each state steelblue
+  dex.matrix.uniques(csv.data, 2).forEach(function (stateName) {
+    colorPresets[stateName] = 'steelblue';
+  });
+
   // Configure a chart.
   var chord = dex.charts.d3.Chord({
       'parent': '#ChordParent',
-      'height': 600,
-      'width': 600,
-      'resizable' : false,
-      'color': d3.scale.category10(),
-      'csv': dex.csv.columnSlice(csv, [1, 2]),
-      'nodes.mouseover.stroke.color': 'red',
-      'nodes.mouseout.stroke.color': 'black',
-      'links.mouseover.stroke.width': 2,
-      'links.mouseout.stroke.width': 1
+      'color': dex.util.d3.colormap(['green', 'orange', 'yellow', 'brown', 'pink',
+          'cyan', 'olive', 'crimson', 'magenta', 'salmon', 'grey', 'turquoise'],
+        colorPresets),
+      'csv': dex.csv.columnSlice(csv, [1, 2])
     }
   ).render();
 </script>
