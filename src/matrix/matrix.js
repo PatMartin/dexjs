@@ -49,12 +49,23 @@ module.exports = function matrix(dex) {
      * column.
      *
      * @param {matrix} matrix The matrix to evaluate.
+     * @param columns The column or array of columns indexes to slice.
      *
      * @returns {Array.<Array.<Object>>} The unique values relative to each column. In the form
      * of [[ column 1 unique values], [column 2 unique values], ...]]
      *
      */
-    'uniques': function (matrix) {
+    'uniques': function (matrix, columns) {
+
+      if (arguments.length === 2) {
+        if (dex.object.isNumeric(columns)) {
+          return dex.matrix.uniques(dex.matrix.slice(matrix, [columns]))[0];
+        }
+        else {
+          return dex.matrix.uniques(dex.matrix.slice(matrix, columns));
+        }
+      }
+
       var ci;
       var uniques = [];
       var tmatrix = dex.matrix.transpose(matrix);
