@@ -19,8 +19,8 @@
 <script>
 
   var csv = {
-    'header' : ["DEGREES", "RADIANS", "SIN(X)", "COS(X)", "TAN(X)"],
-    'data'   : []
+    'header': ["DEGREES", "RADIANS", "SIN(X)", "COS(X)", "TAN(X)"],
+    'data': []
   };
 
   for (x = -360; x < 360; x += 10) {
@@ -30,9 +30,13 @@
 
   // Configure a chart.
   var pcChart = dex.charts.d3.ParallelCoordinates({
-    'parent' : "#ParallelCoordinatesParent",
-    'color': dex.util.d3.color.hueHard128(),
-    'csv'    : csv
+    'parent': "#ParallelCoordinatesParent",
+    //'color': dex.util.d3.color.colorbrewer('RdBu', 11),
+    'color': dex.util.d3.color.crayola120(),
+    //'color': dex.util.d3.color.interpolateCategorical(
+    //  dex.matrix.slice(csv.data, 0),
+    //  ['red', 'green']),
+    'csv': csv
   });
 
   pcChart.render();
