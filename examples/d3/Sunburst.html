@@ -69,7 +69,8 @@
 
   var sunburst = dex.charts.d3.Sunburst({
       'parent': '#SunburstParent',
-      'color': d3.scale.category20c(),
+      //'color': d3.scale.category20(),
+      'color': dex.util.d3.color.c64Dark(),
       'csv': dex.csv.columnSlice(csv, [2, 3])
     }
   ).render();

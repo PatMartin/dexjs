@@ -56,8 +56,8 @@
 <script src="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
 <script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
 <script src="../../dist/dex.js"></script>
-<script>
 
+<script>
   var crime = {
     'header': ["State", "Crime", "Type of Crime", "Year", "Count"],
     'data': [["Alabama", "Murder and nonnegligent Manslaughter", "Violent Crime", "2000", "329"],
@@ -2203,8 +2203,6 @@
       ["Wyoming", "Motor vehicle theft", "Property Crime", "2004", "799"],
       ["Wyoming", "Motor vehicle theft", "Property Crime", "2005", "739"]]
   };
-
-
   var treemap = new dex.charts.d3.Treemap({
       'parent': '#TreemapParent',
       'csv': dex.csv.columnSlice(crime, [3, 0, 2, 1, 4]),
@@ -2212,7 +2210,5 @@
       'shader': {'type': 'darken', 'increment': .05},
       'manualSizing': true
     }
-  );
-  treemap.render();
-
+  ).render();
 </script>

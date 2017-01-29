@@ -1,19 +1,21 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 <style>
-    html, body, #ParallelCoordinatesParent, #ChordParent, table {
+    html, body {
         height: 100%;
         min-height: 100%;
         width: 100%;
         min-width: 100%;
     }
 
-    td {
+    #ParallelCoordinatesParent, #ChordParent {
+        display: inline-block;
         height: 100%;
         min-height: 100%;
-        width: 50%;
-        min-width: 50%;
+        width: 49%;
+        min-width: 49%;
     }
+
 </style>
 <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.css">
 <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.theme.min.css">
@@ -24,16 +26,8 @@
 <script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
 <script src="../../dist/dex.js"></script>
 
-<table>
-    <tr>
-        <td>
-            <div id="ParallelCoordinatesParent"></div>
-        </td>
-        <td>
-            <div id="ChordParent"></div>
-        </td>
-    </tr>
-</table>
+<div id="ParallelCoordinatesParent"></div>
+<div id="ChordParent"></div>
 
 <script>
   var csv = {
@@ -90,24 +84,16 @@
 
   var pcChart = new dex.charts.d3.ParallelCoordinates({
       'parent': "#ParallelCoordinatesParent",
-      'margin': {'top': 40, 'bottom': 0, 'left': 50, 'right': 0},
-      'transform': 'scale(.8)',
+      'margin': {'top': 40, 'bottom': 30, 'left': 50, 'right': 50},
       'csv': csv2
     }
   );
 
   // Configure a chart.
-  var chord = new dex.charts.d3.Chord({
+  var chord = dex.charts.d3.Chord({
       'parent': '#ChordParent',
-      'transform': 'scale(.8)',
-      'color': d3.scale.category20c(),
-      'margin': {'top': 0, 'bottom': 0, 'left': 0, 'right': 0},
-      'csv': csv2,
-      'label': {
-        'font': {
-          'size': 12
-        }
-      }
+      'margin': {'top': 10, 'bottom': 20, 'left': 10, 'right': 10},
+      'csv': csv2
     }
   );
 

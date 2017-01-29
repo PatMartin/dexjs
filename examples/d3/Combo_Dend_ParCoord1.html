@@ -90,9 +90,11 @@
   var pcChart = new dex.charts.d3.ParallelCoordinates({
       'parent': "#ParallelCoordinatesParent",
       'csv': csv2,
-      'margin.top': 20,
-      'margin.left' : 30,
-    'transform' : 'scale(.8)'
+      'margin.top': 40,
+      'margin.left': 60,
+      'margin.bottom': 30,
+      'margin.right': 50,
+      'transform': 'scale(1)'
     }
   );
 
@@ -103,7 +105,7 @@
       'root.category': 'Category1',
       'csv': csv2,
       'connection.length': 'fit-text',
-      'transform' : 'scale(.8)'
+      'transform': 'scale(1)'
     }
   );
 

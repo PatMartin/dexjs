@@ -23,7 +23,7 @@
     'data'   : []
   };
 
-  for (x = -360; x < 360; x += 30) {
+  for (x = -360; x < 360; x += 10) {
     var rad = x * Math.PI / 180;
     csv.data.push([x, rad, Math.sin(rad), Math.cos(rad), Math.tan(rad)]);
   }
@@ -31,6 +31,7 @@
   // Configure a chart.
   var pcChart = dex.charts.d3.ParallelCoordinates({
     'parent' : "#ParallelCoordinatesParent",
+    'color': dex.util.d3.color.hueHard128(),
     'csv'    : csv
   });
 
