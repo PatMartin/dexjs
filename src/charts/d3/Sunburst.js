@@ -31,7 +31,8 @@ var sunburst = function (userConfig) {
     'title': dex.config.text(),
     'label': dex.config.text({
       'fill.fillColor': 'white'
-    })
+    }),
+    'color' : d3.scale.category20c()
   };
 
   chart = new dex.component(userConfig, defaults);
@@ -61,8 +62,6 @@ var sunburst = function (userConfig) {
 
     var y = d3.scale.linear()
       .range([0, radius]);
-
-    var color = d3.scale.category20c();
 
     var svg = d3.select(config.parent)
       .append("svg")
@@ -106,7 +105,9 @@ var sunburst = function (userConfig) {
     var path = g.append("path")
       .attr("d", arc)
       .style("fill", function (d) {
-        return color((d.children ? d : d.parent).name);
+        dex.console.log("COLOR", (d.children ? d : d.parent).name,
+          config.color((d.children ? d : d.parent).name));
+        return config.color((d.children ? d : d.parent).name);
       })
       .on("click", click);
 
