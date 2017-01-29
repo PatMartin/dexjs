@@ -68,13 +68,12 @@ module.exports = function util(dex) {
           return colorScheme(i);
         });
       },
-      'colormap': function (palette) {
+      'colormap': function (palette, presets) {
         var numColors = palette.length;
-        var data2Color = {};
+        var data2Color = presets || {};
         var currentColor = 0;
 
         return function (d) {
-          dex.console.log("HELLO COLOR FOR", d);
           if (data2Color[d]) {
             dex.console.log("Existing Color: " + d + " = " + data2Color[d]);
             return data2Color[d];
