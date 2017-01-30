@@ -484,6 +484,10 @@ module.exports = function csv(dex) {
         dex.matrix.slice(csv.data, [columnIndex])));
     },
 
+    'uniques': function (csv, columns) {
+      return dex.matrix.uniques(csv.data, columns);
+    },
+
     'selectRows': function (csv, fn) {
       var subset = [];
       csv.data.forEach(function (row) {
@@ -493,6 +497,10 @@ module.exports = function csv(dex) {
       });
 
       return {'header': csv.header, 'data': subset};
+    },
+
+    'extent' : function(csv, columns) {
+       return dex.matrix.extent(csv.data, columns);
     },
 
     /**

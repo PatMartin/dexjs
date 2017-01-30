@@ -13,6 +13,7 @@ d3.d3v4 = require("../../../lib/d3.v4.4.0.min");
 d3.d3v3 = require("../../../lib/d3.v3.5.17.min");
 
 //d3.Axis = require("./Axis");
+d3.BumpChart = require("./BumpChart");
 d3.Chord = require("./Chord");
 d3.ClusteredForce = require("./ClusteredForce");
 d3.Dendrogram = require("./Dendrogram");

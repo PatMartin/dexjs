@@ -146,8 +146,14 @@ module.exports = function matrix(dex) {
      */
     'extent': function (matrix, indices) {
       var values = matrix;
+
       if (arguments.length === 2) {
-        values = dex.matrix.flatten(dex.matrix.slice(matrix, indices));
+        if (dex.object.isNumeric(indices)) {
+          values = dex.matrix.flatten(dex.matrix.slice(matrix, [indices]));
+        }
+        else {
+          values = dex.matrix.flatten(dex.matrix.slice(matrix, indices));
+        }
         var max = Math.max.apply(null, values);
         var min = Math.min.apply(null, values);
         return [min, max];

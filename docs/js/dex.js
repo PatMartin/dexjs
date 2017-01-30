@@ -1268,7 +1268,293 @@ module.exports = function charts() {
     //'google'  : require("./google/google"),
   };
 };
-},{"./c3/c3":12,"./d3/d3":30,"./d3plus/d3plus":32,"./echarts/echarts":35,"./nvd3/nvd3":38,"./threejs/threejs":40,"./vis/vis":42}],14:[function(require,module,exports){
+},{"./c3/c3":12,"./d3/d3":31,"./d3plus/d3plus":33,"./echarts/echarts":36,"./nvd3/nvd3":39,"./threejs/threejs":41,"./vis/vis":43}],14:[function(require,module,exports){
+var bumpchart = function (userConfig) {
+  d3 = dex.charts.d3.d3v3;
+  var chart;
+
+  var defaults = {
+    'parent': '#BumpChartParent',
+    'id': 'BumpChartId',
+    'class': 'BumpChartClass',
+    'resizable': true,
+    // Sample data...
+    'csv': {
+      'header': ["category", "sequence", "rank"],
+      'data': [
+        ["Team 1", 1, 1],
+        ["Team 1", 2, 2],
+        ["Team 1", 3, 3],
+        ["Team 2", 1, 2],
+        ["Team 2", 2, 1],
+        ["Team 2", 3, 2],
+        ["Team 3", 1, 3],
+        ["Team 3", 2, 3],
+        ["Team 3", 3, 1],
+      ]
+    },
+    'width': "100%",
+    'height': "100%",
+    'margin': {
+      'left': 40,
+      'right': 160,
+      'top': 50,
+      'bottom': 50
+    },
+    'transform': "",
+    'color': d3.scale.category10()
+  };
+
+  var chart = new dex.component(userConfig, defaults);
+
+  chart.render = function render() {
+    d3 = dex.charts.d3.d3v3;
+    return chart.resize();
+  };
+
+  chart.update = function () {
+    d3 = dex.charts.d3.d3v3;
+    var chart = this;
+    var config = chart.config;
+    var csv = config.csv;
+    var margin = config.margin;
+    var width = config.width - margin.left - margin.right;
+    var height = config.height - margin.top - margin.bottom;
+
+    d3.selectAll(config.parent).selectAll("*").remove();
+
+    var svg = d3.select(config.parent)
+      .append("svg")
+      .attr("id", config["id"])
+      .attr("class", config["class"])
+      .attr('width', config.width)
+      .attr('height', config.height);
+
+    var rootG = svg.append('g')
+      .attr('transform', 'translate(' +
+        (margin.left) + ',' +
+        (margin.top) + ') ' +
+        config.transform);
+
+    var data = dex.csv.toJson(csv);
+    dex.console.log("JSON", JSON.stringify(data));
+
+    data = [
+      {
+        category: "category1",
+        series: [
+          {x: 1, y: 1},
+          {x: 2, y: 2},
+          {x: 3, y: 1}]
+      },
+      {
+        category: "category2",
+        series: [
+          {x: 1, y: 2},
+          {x: 2, y: 1},
+          {x: 3, y: 2}]
+      }
+    ];
+
+    var speed = 50;
+
+    var x = d3.scale.linear()
+      .range([0, width]);
+
+    var y = d3.scale.ordinal()
+      .rangeRoundBands([height, 0], .1);
+
+    var xAxis = d3.svg.axis()
+      .scale(x)
+      .tickSize(0)
+      .orient("bottom");
+
+    var xAxis1 = d3.svg.axis()
+      .scale(x)
+      .tickSize(0)
+      // REM: Assumption
+      .ticks(3)
+      .orient("top");
+
+    var yAxis = d3.svg.axis()
+      .scale(y)
+      .tickSize(-width)
+      .tickPadding(10)
+      .orient("left");
+
+    var line = d3.svg.line()
+      .x(function (d) {
+        return x(d.x);
+      })
+      .y(function (d) {
+        return y(d.y) + y.rangeBand() / 2;
+      });
+
+    var clip = rootG.append("clipPath")
+      .attr("id", "clip")
+      .append("rect")
+      .attr("width", 0)
+      .attr("height", height);
+
+    // REM: Assumption
+    y.domain([2,1]);
+
+    // REM: Assumption
+    xAxis.tickValues([1, 2, 3]);
+
+    // REM: Assumption
+    x.domain([1, 3]);
+
+    //set y axis
+    rootG.append("g")
+      .attr("class", "y axis")
+      .call(yAxis);
+
+    //set bottom axis position
+    rootG.append("g")
+      .attr("class", "x axis")
+      .attr("transform", "translate(" + 0 + "," + height + ")")
+      .call(xAxis);
+
+    //set top axis
+    rootG.append("g")
+      .attr("class", "x axis")
+      .call(xAxis1);
+
+    var category = rootG.selectAll(".category")
+      .data(data)
+      .enter().append("g")
+      .attr("class", "category");
+
+    var path = category.append("path")
+      .attr("class", "line")
+      .style("stroke", function (d) {
+        return config.color(d.category);
+      })
+      .style("stroke-width", 4)
+      .style("fill", "none")
+      .attr("clip-path", function (d) {
+        return "url(#clip)";
+      })
+       .attr("d", function (d) {
+       dex.console.log("D", d, "LINE", line(d.series));
+       return line(d.series);
+       })
+      .on("mouseover", function (d) {
+        category.style("opacity", 0.2);
+        category.filter(function (path) {
+          return path.category === d.category;
+        }).style("opacity", 1);
+      })
+      .on("mouseout", function (d) {
+        category.style("opacity", 1);
+      });
+
+    var circles = category
+      .selectAll("circle")
+      .data(function(d) { return d.series; })
+      .enter()
+      .append("circle")
+      .attr("cx", function (d) {
+        return x(d.x);
+      })
+      .attr("cy", function (d) {
+        return y(d.y) + y.rangeBand() / 2;
+      })
+      .attr("r", 6)
+      .style("stroke", function (d) {
+        return config.color(d.category);
+      })
+      .style("stroke-width", 4)
+      .style("fill", "white")
+      .on("mouseover", function (d) {
+        category.style("opacity", 0.2);
+        category.filter(function (path) {
+          return path.category === d.category;
+        }).style("opacity", 1);
+      })
+      .on("mouseout", function (d) {
+        category.style("opacity", 1);
+      });
+
+    // text label for the x axis
+    rootG.append("text")
+      .attr("x", width / 2)
+      .attr("y", height + (margin.bottom / 1.5))
+      .attr("style", "font-size:16px;") // to bold title
+      .style("text-anchor", "middle")
+      .text("Game in Season");
+
+    var label = category.append("text")
+      .attr("transform", function (d) {
+        return "translate(" + x(d.x) + "," + (y(d.y) +
+          y.rangeBand() / 2) + ")";
+      })
+      .attr("x", 8)
+      .attr("dy", ".31em")
+      .on("mouseover", function (d) {
+        category.style("opacity", 0.2);
+        category.filter(function (path) {
+          return path.category === d.category;
+        }).style("opacity", 1);
+      })
+      .on("mouseout", function (d) {
+        category.style("opacity", 1);
+      })
+      .style("cursor", "pointer")
+      .style("fill", function (d) {
+        return config.color(d.category);
+      })
+      .style("font-weight", "bold")
+      .text(function (d) {
+        return "" + d.y + " " + d.category;
+      });
+
+    var sequence = 1;
+
+    var transition = d3.transition()
+      .duration(speed)
+      .each("start", function start() {
+
+        label.transition()
+          .duration(speed)
+          .ease('linear')
+          .attr("transform", function (d) {
+            return "translate(" + x(d.x) + "," +
+              (y(d.y) + y.rangeBand() / 2) + ")";
+          })
+          .text(function (d) {
+            return " " + " " + d.category;
+          });
+
+        clip.transition()
+          .duration(speed)
+          .ease('linear')
+          .attr("width", x(sequence + 1))
+          .attr("height", height);
+
+        sequence += 1;
+
+        // REM: Figure this out, i think it's an assumption
+        if (sequence !== data.series.length) {
+          transition = transition.transition().each("start", start);
+        }
+      });
+
+    // Allow method chaining
+    return chart;
+  };
+
+  $(document).ready(function () {
+    // Make the entire chart draggable.
+    //$(chart.config.parent).draggable();
+  });
+
+  return chart;
+}
+
+module.exports = bumpchart;
+},{}],15:[function(require,module,exports){
 var chord = function (userConfig) {
   d3 = dex.charts.d3.d3v3;
   var chart;
@@ -1538,7 +1824,7 @@ var chord = function (userConfig) {
 }
 
 module.exports = chord;
-},{}],15:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 var clusteredforce = function (userConfig) {
   d3 = dex.charts.d3.d3v3;
   var defaults = {
@@ -1811,7 +2097,7 @@ var clusteredforce = function (userConfig) {
 };
 
 module.exports = clusteredforce;
-},{}],16:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 var dendrogram = function Dendrogram(userConfig) {
   d3 = dex.charts.d3.d3v3;
   var defaults =
@@ -2201,7 +2487,7 @@ var dendrogram = function Dendrogram(userConfig) {
 };
 
 module.exports = dendrogram;
-},{}],17:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 var horizontallegend = function (userConfig) {
   var defaults = {
     'parent'     : null,
@@ -2309,7 +2595,7 @@ var horizontallegend = function (userConfig) {
 };
 
 module.exports = horizontallegend;
-},{}],18:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 var motionbarchart = function (userConfig) {
   d3 = dex.charts.d3.d3v3;
   var chart;
@@ -2730,7 +3016,7 @@ var motionbarchart = function (userConfig) {
 };
 
 module.exports = motionbarchart;
-},{}],19:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 var orbitallayout = function (userConfig) {
   d3 = dex.charts.d3.d3v3;
   var chart;
@@ -3092,7 +3378,7 @@ var orbitallayout = function (userConfig) {
 };
 
 module.exports = orbitallayout;
-},{}],20:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 var parallelcoordinates = function (userConfig) {
   d3 = dex.charts.d3.d3v3;
   var chart;
@@ -3535,7 +3821,7 @@ var parallelcoordinates = function (userConfig) {
 };
 
 module.exports = parallelcoordinates;
-},{}],21:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 var radarchart = function (userConfig) {
   d3 = dex.charts.d3.d3v3;
   var chart;
@@ -4018,7 +4304,7 @@ var radarchart = function (userConfig) {
 
 module.exports = radarchart;
 
-},{}],22:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 var radialtree = function (userConfig) {
   d3 = dex.charts.d3.d3v4;
   var chart;
@@ -4245,7 +4531,7 @@ var radialtree = function (userConfig) {
 
 module.exports = radialtree;
 
-},{}],23:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 var sankey = function (userConfig) {
   d3 = dex.charts.d3.d3v3;
   var defaultColor = d3.scale.category20c();
@@ -5162,7 +5448,7 @@ d3sankey = function () {
 };
 
 module.exports = sankey;
-},{}],24:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 var scatterplot = function (userConfig) {
   d3 = dex.charts.d3.d3v3;
   var chart = new dex.component(userConfig,
@@ -5373,7 +5659,7 @@ var scatterplot = function (userConfig) {
 };
 
 module.exports = scatterplot;
-},{}],25:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 var sunburst = function (userConfig) {
   d3 = dex.charts.d3.d3v3;
   var chart;
@@ -5561,7 +5847,7 @@ var sunburst = function (userConfig) {
 };
 
 module.exports = sunburst;
-},{}],26:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 var topojsonmap = function (userConfig) {
   d3 = dex.charts.d3.d3v3;
   var chart = null;
@@ -5787,7 +6073,7 @@ var topojsonmap = function (userConfig) {
 };
 
 module.exports = topojsonmap;
-},{}],27:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 var treemap = function (userConfig) {
   d3 = dex.charts.d3.d3v3;
   var chart = null;
@@ -6156,7 +6442,7 @@ var treemap = function (userConfig) {
 };
 
 module.exports = treemap;
-},{}],28:[function(require,module,exports){
+},{}],29:[function(require,module,exports){
 var treemapBarChart = function (userConfig) {
   d3 = dex.charts.d3.d3v4;
   var chart;
@@ -6606,7 +6892,7 @@ var treemapBarChart = function (userConfig) {
 };
 
 module.exports = treemapBarChart;
-},{}],29:[function(require,module,exports){
+},{}],30:[function(require,module,exports){
 var verticallegend = function (userConfig) {
 
   var defaults = {
@@ -6825,7 +7111,7 @@ var verticallegend = function (userConfig) {
 };
 
 module.exports = verticallegend;
-},{}],30:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 /**
  *
  * This module provides D3 based visualization components.
@@ -6841,6 +7127,7 @@ d3.d3v4 = require("../../../lib/d3.v4.4.0.min");
 d3.d3v3 = require("../../../lib/d3.v3.5.17.min");
 
 //d3.Axis = require("./Axis");
+d3.BumpChart = require("./BumpChart");
 d3.Chord = require("./Chord");
 d3.ClusteredForce = require("./ClusteredForce");
 d3.Dendrogram = require("./Dendrogram");
@@ -6867,7 +7154,7 @@ d3.TreemapBarChart = require("./TreemapBarChart");
 d3.TopoJsonMap = require("./TopoJsonMap");
 
 module.exports = d3;
-},{"../../../lib/d3.v3.5.17.min":1,"../../../lib/d3.v4.4.0.min":2,"./Chord":14,"./ClusteredForce":15,"./Dendrogram":16,"./HorizontalLegend":17,"./MotionBarChart":18,"./OrbitalLayout":19,"./ParallelCoordinates":20,"./RadarChart":21,"./RadialTree":22,"./Sankey":23,"./ScatterPlot":24,"./Sunburst":25,"./TopoJsonMap":26,"./Treemap":27,"./TreemapBarChart":28,"./VerticalLegend":29}],31:[function(require,module,exports){
+},{"../../../lib/d3.v3.5.17.min":1,"../../../lib/d3.v4.4.0.min":2,"./BumpChart":14,"./Chord":15,"./ClusteredForce":16,"./Dendrogram":17,"./HorizontalLegend":18,"./MotionBarChart":19,"./OrbitalLayout":20,"./ParallelCoordinates":21,"./RadarChart":22,"./RadialTree":23,"./Sankey":24,"./ScatterPlot":25,"./Sunburst":26,"./TopoJsonMap":27,"./Treemap":28,"./TreemapBarChart":29,"./VerticalLegend":30}],32:[function(require,module,exports){
 var ringnetwork = function (userConfig) {
   d3 = dex.charts.d3.d3v3;
   var chart;
@@ -6969,7 +7256,7 @@ var ringnetwork = function (userConfig) {
 };
 
 module.exports = ringnetwork;
-},{}],32:[function(require,module,exports){
+},{}],33:[function(require,module,exports){
 /**
  *
  * This module provides d3plus based visualizations.
@@ -6984,7 +7271,7 @@ var d3plus = {};
 d3plus.RingNetwork = require("./RingNetwork");
 
 module.exports = d3plus;
-},{"./RingNetwork":31}],33:[function(require,module,exports){
+},{"./RingNetwork":32}],34:[function(require,module,exports){
 var bubblechart = function (userConfig) {
   d3 = dex.charts.d3.d3v3;
   var chart;
@@ -7136,7 +7423,7 @@ var bubblechart = function (userConfig) {
 };
 
 module.exports = bubblechart;
-},{}],34:[function(require,module,exports){
+},{}],35:[function(require,module,exports){
 var echart = function (userConfig) {
   d3 = dex.charts.d3.d3v3;
   var echart;
@@ -7185,7 +7472,7 @@ var echart = function (userConfig) {
 };
 
 module.exports = echart;
-},{}],35:[function(require,module,exports){
+},{}],36:[function(require,module,exports){
 /**
  *
  * This module provides ECharts 3.0 based visualization components.
@@ -7201,7 +7488,7 @@ echarts.EChart = require("./EChart");
 echarts.BubbleChart = require("./BubbleChart");
 
 module.exports = echarts;
-},{"./BubbleChart":33,"./EChart":34}],36:[function(require,module,exports){
+},{"./BubbleChart":34,"./EChart":35}],37:[function(require,module,exports){
 var bubblechart = function (userConfig) {
   d3 = dex.charts.d3.d3v3;
   var chart;
@@ -7290,7 +7577,7 @@ var bubblechart = function (userConfig) {
 };
 
 module.exports = bubblechart;
-},{}],37:[function(require,module,exports){
+},{}],38:[function(require,module,exports){
 var stackedareachart = function (userConfig) {
   d3 = dex.charts.d3.d3v3;
   var chart;
@@ -7383,7 +7670,7 @@ var stackedareachart = function (userConfig) {
 };
 
 module.exports = stackedareachart;
-},{}],38:[function(require,module,exports){
+},{}],39:[function(require,module,exports){
 /**
  *
  * This module provides NVD3 based visualization components.
@@ -7399,7 +7686,7 @@ nvd3.StackedAreaChart = require("./StackedAreaChart");
 nvd3.BubbleChart = require("./BubbleChart");
 
 module.exports = nvd3;
-},{"./BubbleChart":36,"./StackedAreaChart":37}],39:[function(require,module,exports){
+},{"./BubbleChart":37,"./StackedAreaChart":38}],40:[function(require,module,exports){
 var scatterplot = function (userConfig) {
   var defaults = {
     // The parent container of this chart.
@@ -7765,7 +8052,7 @@ var scatterplot = function (userConfig) {
 };
 
 module.exports = scatterplot;
-},{}],40:[function(require,module,exports){
+},{}],41:[function(require,module,exports){
 /**
  *
  * This module provides ThreeJS/WebGL based visualization components.
@@ -7780,7 +8067,7 @@ var threejs = {};
 threejs.ScatterPlot = require("./ScatterPlot");
 
 module.exports = threejs;
-},{"./ScatterPlot":39}],41:[function(require,module,exports){
+},{"./ScatterPlot":40}],42:[function(require,module,exports){
 var network = function (userConfig) {
   var chart;
 
@@ -8004,7 +8291,7 @@ var network = function (userConfig) {
 };
 
 module.exports = network;
-},{}],42:[function(require,module,exports){
+},{}],43:[function(require,module,exports){
 /**
  *
  * This module provides routines for dealing with arrays.
@@ -8019,7 +8306,7 @@ var vis = {};
 vis.Network = require("./Network");
 
 module.exports = vis;
-},{"./Network":41}],43:[function(require,module,exports){
+},{"./Network":42}],44:[function(require,module,exports){
 "use strict";
 
 /**
@@ -8278,7 +8565,7 @@ module.exports = function color(dex) {
   };
 };
 
-},{}],44:[function(require,module,exports){
+},{}],45:[function(require,module,exports){
 module.exports = function (dex) {
 
   return function (userConfig, defaultConfig) {
@@ -8486,7 +8773,7 @@ module.exports = function (dex) {
     return this;
   };
 };
-},{}],45:[function(require,module,exports){
+},{}],46:[function(require,module,exports){
 /**
  *
  * Config module.
@@ -9773,7 +10060,7 @@ module.exports = function config(dex) {
     }
   };
 };
-},{}],46:[function(require,module,exports){
+},{}],47:[function(require,module,exports){
 /**
  *
  * This module provides console logging capabilities.
@@ -9912,7 +10199,7 @@ module.exports = function (dex) {
     }
   };
 };
-},{}],47:[function(require,module,exports){
+},{}],48:[function(require,module,exports){
 /**
  *
  * This module provides support for dealing with csv structures.  This
@@ -10399,6 +10686,10 @@ module.exports = function csv(dex) {
         dex.matrix.slice(csv.data, [columnIndex])));
     },
 
+    'uniques': function (csv, columns) {
+      return dex.matrix.uniques(csv.data, columns);
+    },
+
     'selectRows': function (csv, fn) {
       var subset = [];
       csv.data.forEach(function (row) {
@@ -10408,6 +10699,10 @@ module.exports = function csv(dex) {
       });
 
       return {'header': csv.header, 'data': subset};
+    },
+
+    'extent' : function(csv, columns) {
+       return dex.matrix.extent(csv.data, columns);
     },
 
     /**
@@ -10825,7 +11120,7 @@ module.exports = function csv(dex) {
     ;
 }
 ;
-},{}],48:[function(require,module,exports){
+},{}],49:[function(require,module,exports){
 /**
  *
  * This module provides support for creating various datasets.
@@ -11228,7 +11523,7 @@ module.exports = function datagen(dex) {
   };
 };
 
-},{}],49:[function(require,module,exports){
+},{}],50:[function(require,module,exports){
 // Allow user to override, but define this by default:
 
 /**
@@ -11429,7 +11724,7 @@ $.widget.bridge('uitooltip', $.ui.tooltip);
 $.widget.bridge('uibutton', $.ui.button);
 
 module.exports = dex;
-},{"../lib/pubsub":3,"./array/array":4,"./charts/charts":13,"./color/color":43,"./component/component":44,"./config/config":45,"./console/console":46,"./csv/csv":47,"./datagen/datagen":48,"./json/json":50,"./matrix/matrix":51,"./object/object":52,"./ui/ui":62,"./util/util":63}],50:[function(require,module,exports){
+},{"../lib/pubsub":3,"./array/array":4,"./charts/charts":13,"./color/color":44,"./component/component":45,"./config/config":46,"./console/console":47,"./csv/csv":48,"./datagen/datagen":49,"./json/json":51,"./matrix/matrix":52,"./object/object":53,"./ui/ui":63,"./util/util":64}],51:[function(require,module,exports){
 /**
  *
  * This module provides routines dealing with json data.
@@ -11534,7 +11829,7 @@ module.exports = function json(dex) {
   };
 };
 
-},{}],51:[function(require,module,exports){
+},{}],52:[function(require,module,exports){
 /**
  *
  * This module provides routines dealing with matrices.
@@ -11683,8 +11978,14 @@ module.exports = function matrix(dex) {
      */
     'extent': function (matrix, indices) {
       var values = matrix;
+
       if (arguments.length === 2) {
-        values = dex.matrix.flatten(dex.matrix.slice(matrix, indices));
+        if (dex.object.isNumeric(indices)) {
+          values = dex.matrix.flatten(dex.matrix.slice(matrix, [indices]));
+        }
+        else {
+          values = dex.matrix.flatten(dex.matrix.slice(matrix, indices));
+        }
         var max = Math.max.apply(null, values);
         var min = Math.min.apply(null, values);
         return [min, max];
@@ -11845,7 +12146,7 @@ module.exports = function matrix(dex) {
   };
 };
 
-},{}],52:[function(require,module,exports){
+},{}],53:[function(require,module,exports){
 /**
  *
  * This module provides routines dealing with javascript objects.
@@ -12169,7 +12470,7 @@ module.exports = function object(dex) {
 };
 
 
-},{}],53:[function(require,module,exports){
+},{}],54:[function(require,module,exports){
 /**
  *
  * This class creates and attaches a SqlQuery user interface onto the
@@ -12268,7 +12569,7 @@ var sqlquery = function (userConfig) {
 };
 
 module.exports = sqlquery;
-},{}],54:[function(require,module,exports){
+},{}],55:[function(require,module,exports){
 /**
  *
  * @constructor
@@ -12368,7 +12669,7 @@ var table = function (userConfig) {
 };
 
 module.exports = table;
-},{}],55:[function(require,module,exports){
+},{}],56:[function(require,module,exports){
 var typestable = function (userConfig) {
 
   var defaults =
@@ -12449,7 +12750,7 @@ var typestable = function (userConfig) {
 };
 
 module.exports = typestable;
-},{}],56:[function(require,module,exports){
+},{}],57:[function(require,module,exports){
 var configurationbox = function (userConfig) {
 
   var defaults =
@@ -12535,7 +12836,7 @@ var configurationbox = function (userConfig) {
 };
 
 module.exports = configurationbox;
-},{}],57:[function(require,module,exports){
+},{}],58:[function(require,module,exports){
 var player = function (userConfig) {
 
   var defaults = {
@@ -12734,7 +13035,7 @@ var player = function (userConfig) {
 };
 
 module.exports = player;
-},{}],58:[function(require,module,exports){
+},{}],59:[function(require,module,exports){
 var selectable = function (userConfig) {
 
   var defaults =
@@ -12831,7 +13132,7 @@ var selectable = function (userConfig) {
 };
 
 module.exports = selectable;
-},{}],59:[function(require,module,exports){
+},{}],60:[function(require,module,exports){
 var slider = function (userConfig) {
 
   var defaults = {
@@ -12923,7 +13224,7 @@ var slider = function (userConfig) {
 };
 
 module.exports = slider;
-},{}],60:[function(require,module,exports){
+},{}],61:[function(require,module,exports){
 var tabs = function (userConfig) {
   var defaults = {
     // The parent container of this chart.
@@ -13027,7 +13328,7 @@ var tabs = function (userConfig) {
 };
 
 module.exports = tabs;
-},{}],61:[function(require,module,exports){
+},{}],62:[function(require,module,exports){
 /**
  *
  * This module provides ui components based upon jquery-ui.
@@ -13047,7 +13348,7 @@ module.exports = function jqueryui(dex) {
     'Tabs': require("./Tabs")
   };
 };
-},{"./ConfigurationBox":56,"./Player":57,"./Selectable":58,"./Slider":59,"./Tabs":60}],62:[function(require,module,exports){
+},{"./ConfigurationBox":57,"./Player":58,"./Selectable":59,"./Slider":60,"./Tabs":61}],63:[function(require,module,exports){
 /**
  *
  * This module provides ui components from a variety of sources.
@@ -13075,7 +13376,7 @@ module.exports = function ui(dex) {
     'TypesTable': require("./TypesTable")
   };
 };
-},{"./SqlQuery":53,"./Table":54,"./TypesTable":55,"./jqueryui/jqueryui":61}],63:[function(require,module,exports){
+},{"./SqlQuery":54,"./Table":55,"./TypesTable":56,"./jqueryui/jqueryui":62}],64:[function(require,module,exports){
 "use strict";
 
 /**
@@ -13701,5 +14002,5 @@ module.exports = function util(dex) {
     }
   };
 };
-},{}]},{},[49])(49)
+},{}]},{},[50])(50)
 });
