@@ -102,6 +102,40 @@ module.exports = function csv(dex) {
       return connectionMatrix;
     },
 
+    'getColumnNumber' : function (csv, colIndex) {
+      if (colIndex === undefined) {
+        return -1;
+      }
+
+      var colNum = csv.header.indexOf(colIndex);
+
+      if (colNum >= 0) {
+        return colNum;
+      }
+
+      if (colIndex >= 0 && colIndex < csv.header.length) {
+        return colIndex;
+      }
+
+      return -1;
+    },
+
+    'getColumnName' : function (csv, colIndex) {
+      if (colIndex === undefined) {
+        return null;
+      }
+
+      if (colIndex >= 0 && colIndex < csv.header.length) {
+        return csv.header[colIndex];
+      }
+
+      if (csv.header.indexOf(colIndex) >= 0) {
+        return colIndex;
+      }
+
+      return null;
+    },
+
     /**
      *
      * @param csv
@@ -772,10 +806,6 @@ module.exports = function csv(dex) {
       return dex.csv.columnSlice(csv, dex.csv.getCategoricalIndices(csv));
     },
 
-    /*
-     var data =
-
-     */
     'toJsonHierarchy': function (csv, ci) {
       // If 1 argument, then setup and call with 2.
       if (arguments.length == 1) {
@@ -914,7 +944,5 @@ module.exports = function csv(dex) {
 
       return rootMap;
     }
-  }
-    ;
-}
-;
+  };
+};
