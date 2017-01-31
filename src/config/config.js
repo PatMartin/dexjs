@@ -776,17 +776,16 @@ module.exports = function config(dex) {
      *
      */
     'circle': function circle(custom) {
-      var config =
-        {
-          'cx': 0,
-          'cy': 0,
-          'r': 10,
-          'fill': dex.config.fill(),
-          'stroke': dex.config.stroke(),
-          'transform': '',
-          'title': '',
-          'events': dex.config.events()
-        };
+      var config = {
+        'cx': 0,
+        'cy': 0,
+        'r': 10,
+        'fill': dex.config.fill(),
+        'stroke': dex.config.stroke(),
+        'transform': '',
+        'title': '',
+        'events': dex.config.events()
+      };
       if (custom) {
         config = dex.object.overlay(custom, config);
       }
@@ -807,37 +806,6 @@ module.exports = function config(dex) {
       return node;
     },
 
-    /*
-     exports.configureAxis_deprecated = function configureAxis_deprecated(config) {
-     var axis;
-
-     if (config) {
-     var axis = d3.svg.axis()
-     .ticks(config.tick.count)
-     .tickSubdivide(config.tick.subdivide)
-     .tickSize(config.tick.size.major, config.tick.size.minor,
-     config.tick.size.end)
-     .tickPadding(config.tick.padding);
-
-     // REM: Horrible way of doing this.  Need a function which
-     // is more generic and smarter to short circuit stuff like
-     // this.  But...for now it does what I want.
-     if (!dex.object.isFunction(config.tick.format)) {
-     axis.tickFormat(config.tick.format);
-     }
-
-     axis
-     .orient(config.orient)
-     .scale(config.scale);
-     }
-     else {
-     axis = d3.svg.axis();
-     }
-     //axis.scale = config.scale;
-     return axis;
-     };
-     */
-
     /**
      *
      * Construct an tick specification which allows the user to override any
@@ -850,56 +818,24 @@ module.exports = function config(dex) {
      *
      */
     'tick': function tick(custom) {
-      var config =
-        {
-          'count': 5,
-          //'tickValues'  : undefined,
-          'subdivide': 3,
-          'size': {
-            'major': 5,
-            'minor': 3,
-            'end': 5
-          },
-          'padding': 5,
-          'format': d3.format(",d"),
-          'label': dex.config.text()
-        };
+      var config = {
+        'count': 5,
+        //'tickValues'  : undefined,
+        'subdivide': 3,
+        'size': {
+          'major': 5,
+          'minor': 3,
+          'end': 5
+        },
+        'padding': 5,
+        'format': d3.format(",d"),
+        'label': dex.config.text()
+      };
       if (custom) {
         config = dex.object.overlay(custom, config);
       }
       return config;
     },
-
-    /*
-     exports.xaxis_deprecate = function (custom) {
-     var config =
-     {
-     'scale'  : d3.scale.linear(),
-     'orient' : "bottom",
-     'tick'   : this.tick(),
-     'label'  : dex.config.text()
-     };
-     if (custom) {
-     config = dex.object.overlay(custom, config);
-     }
-     return config;
-     };
-
-     exports.yaxis_deprecate = function (custom) {
-     var config =
-     {
-     'scale'  : d3.scale.linear(),
-     'orient' : 'left',
-     'tick'   : this.tick(),
-     'label'  : dex.config.text({'transform' : 'rotate(-90)'})
-     };
-     if (custom) {
-     config = dex.object.overlay(custom, config);
-     }
-     return config;
-     };
-     */
-
     'callConditionally': function callConditionally(fn, value, i) {
       //dex.console.log("- FN:" + fn);
       //dex.console.log("- VALUE:" + value);
@@ -929,22 +865,21 @@ module.exports = function config(dex) {
      *
      */
     'axis': function axis(custom) {
-      var defaults =
-        {
-          'scale': dex.config.scale({'type': 'linear'}),
-          'orient': 'bottom',
-          'ticks': undefined,
-          'tickValues': undefined,
-          'tickSize': undefined,
-          'innerTickSize': undefined,
-          'outerTickSize': undefined,
-          'tickPadding': undefined,
-          'tickFormat': undefined
-          //'label'         : dex.config.text()
-        };
+      var defaults = {
+        'scale': dex.config.scale({'type': 'linear'}),
+        'orient': 'bottom',
+        'ticks': undefined,
+        'tickValues': undefined,
+        'tickSize': undefined,
+        'innerTickSize': undefined,
+        'outerTickSize': undefined,
+        'tickPadding': undefined,
+        'tickFormat': undefined
+        //'label'         : dex.config.text()
+      };
 
-      var axisSpec = dex.config.expandAndOverlay(custom, defaults);
-      return axisSpec;
+      var config = dex.config.expandAndOverlay(custom, defaults);
+      return config;
     },
 
     /**
@@ -970,7 +905,7 @@ module.exports = function config(dex) {
           'tickPadding',
           'tickFormat'
         ].forEach(function (fn) {
-          //dex.console.log("Calling: " + fn);
+          dex.console.log("Calling: " + fn);
           dex.config.callConditionally(axis[fn], config[fn], i);
         });
       }
