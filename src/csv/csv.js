@@ -520,9 +520,7 @@ module.exports = function csv(dex) {
 
     'uniques': function (csv, columns) {
       return dex.matrix.uniques(csv.data, columns);
-    },
-
-    'selectRows': function (csv, fn) {
+    },    'selectRows': function (csv, fn) {
       var subset = [];
       csv.data.forEach(function (row) {
         if (fn(row)) {
