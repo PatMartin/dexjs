@@ -93,7 +93,7 @@ module.exports = function (dex) {
       }
       else {
         channel = this.config.channel + '/' + event.type;
-        dex.console.log("publish to " + channel);
+        dex.console.debug("publish to " + channel);
         dex.bus.publish(channel, event);
       }
       return this;
