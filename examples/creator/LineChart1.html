@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+    html, body {
+        height: 100%;
+        min-height: 100%;
+        width: 100%;
+        min-width: 100%;
+    }
+
+    #LineChartParent {
+        height: 100%;
+        min-height: 100%;
+        width: 100%;
+        min-width: 100%;
+    }
+</style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.10/c3.min.css"/>
+<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.css">
+<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.theme.min.css">
+
+<body>
+
+<script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+<script src="../../dist/dex.js"></script>
+<script src="http://www.d3plus.org/js/d3plus.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.10/c3.min.js"></script>
+
+<body>
+<svg id="LineChartParent"></svg>
+
+<script>
+  var config = {
+    "components": [{
+      "name": "linechart",
+      "class": "dex.charts.c3.LineChart",
+      "config": {
+        "parent": "#LineChartParent",
+        "csv": {
+          "header": ["X", "Y", "Z"],
+          "data": [
+            [1, 31.93052373837486, 48.941877217796815],
+            [2, 51.07129504875834, 91.55305786166316],
+            [3, 16.715309074952422, 83.04184027546097],
+            [4, 48.60108545079653, 90.56791959115291],
+            [5, 37.78590238940962, 81.87255744243717],
+            [6, 29.157294409398958, 50.83620570965775],
+            [7, 63.01346545519757, 69.79413564376829],
+            [8, 75.34582835991392, 72.876946304813],
+            [9, 99.46024426093743, 84.46642588086199],
+            [10, 68.62260351350422, 49.99868559971252],
+            [11, 99.6517040695991, 19.625500647183337],
+            [12, 42.21015332808857, 63.52564600047983],
+            [13, 26.40435647650459, 65.44691327532337],
+            [14, 62.926444426031345, 37.87081069994935],
+            [15, 62.31208875891665, 7.339946997326008],
+            [16, 12.533839132004942, 7.505881146290738],
+            [17, 52.753131392075005, 17.261403599265556],
+            [18, 78.84135989063495, 30.53582063187752],
+            [19, 65.81796305693376, 96.9595935281671],
+            [20, 48.06220386176319, 43.58668234822807]
+          ]
+        }
+      }
+    }]
+  };
+
+  var components = dex.create(config);
+  dex.console.log("components", components);
+  components.forEach(function(component) {
+    component.render();
+  });
+</script>
+
