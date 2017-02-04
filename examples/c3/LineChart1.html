@@ -1,19 +1,19 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 <style>
-  html, body {
-    height: 100%;
-    min-height: 100%;
-    width: 100%;
-    min-width: 100%;
-  }
+    html, body {
+        height: 100%;
+        min-height: 100%;
+        width: 100%;
+        min-width: 100%;
+    }
 
-  #ChartArea {
-    height: 100%;
-    min-height: 100%;
-    width: 100%;
-    min-width: 100%;
-  }
+    #LineChartParent {
+        height: 100%;
+        min-height: 100%;
+        width: 100%;
+        min-width: 100%;
+    }
 </style>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.10/c3.min.css"/>
 <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.css">
@@ -29,22 +29,20 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.10/c3.min.js"></script>
 
 <body>
-<svg id="ChartArea"></svg>
+<svg id="LineChartParent"></svg>
 
 <script>
   var csv = {
-    'header' : ["X", "Y", "Z"],
-    'data'   : dex.datagen.randomIndexedMatrix({rows:20, columns: 3, min: 0, max:100})
+    'header': ["X", "Y", "Z"],
+    'data': dex.datagen.randomIndexedMatrix({rows: 20, columns: 3, min: 0, max: 100})
   };
 
-  dex.console.log(csv);
+  dex.console.log(JSON.stringify(csv));
 
   var linechart = new dex.charts.c3.LineChart({
-            'parent'      : '#ChartArea',
-            'resizable'  : true,
-            'color'       : d3.scale.category20c(),
-            'csv'         : csv
-          }
+      'parent': '#LineChartParent',
+      'csv': csv
+    }
   );
   linechart.render();
 </script>
