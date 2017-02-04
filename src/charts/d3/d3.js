@@ -3,8 +3,6 @@
  * This module provides D3 based visualization components.
  *
  * @module dex/charts/d3
- * @name d3
- * @memberOf dex.charts
  *
  */
 var d3 = {};

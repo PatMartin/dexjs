@@ -3,8 +3,6 @@
  * This module provides console logging capabilities.
  *
  * @module dex/console
- * @name console
- * @memberOf dex
  *
  */
 

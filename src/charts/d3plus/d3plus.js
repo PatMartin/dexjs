@@ -3,8 +3,6 @@
  * This module provides d3plus based visualizations.
  *
  * @module dex/charts/d3plus
- * @name d3plus
- * @memberOf dex.charts
  *
  */
 var d3plus = {};

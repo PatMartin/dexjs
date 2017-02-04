@@ -2,9 +2,7 @@
  *
  * This module provides routines dealing with javascript objects.
  *
- * @module dex:object
- * @name object
- * @memberOf dex
+ * @module dex/object
  *
  */
 

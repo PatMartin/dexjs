@@ -4,9 +4,7 @@
  *
  * This module provides routines for dealing with arrays.
  *
- * @module dex:array
- * @name array
- * @memberOf dex
+ * @module dex/array
  *
  */
 

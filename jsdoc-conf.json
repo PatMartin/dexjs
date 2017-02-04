@@ -4,35 +4,29 @@
 //
 ////
 {
+  "tags": {
+    "allowUnknownTags": true,
+    "dictionaries": ["jsdoc"]
+  },
   "opts": {
     "encoding": "utf8",           // same as -e utf8
     "destination": "./jsdocs",    // same as -d ./out/
-    "recurse": true               // same as -r
+    "recurse": true,              // same as -r
+    "template": "node_modules/minami"
   },
   "tags": {
     "allowUnknownTags": true,
     "dictionaries": ["jsdoc", "closure"]
   },
   "source": {
-    "include" : "src",
+    "include" : [ "src", "OVERViEW.md" ],
     "includePattern": ".+\\.js$",
     "excludePattern": "((^|\\/|\\\\)_|^dex.maps.js$)"
   },
-  "plugins": [],
+  "plugins": ["plugins/markdown"],
   "templates": {
-    "systemName"            : "dex.js",
-    "footer"                : "dex.labs",
-    "copyright"             :  "",
-    "includeDate"           : "true",
-    "navType"               : "inline",
-    "theme"                 : "readable",
-    "linenums"              : "true",
-    "collapseSymbols"       : "true",
-    "inverseNav"            : "false",
-    "outputSourceFiles"     : "true" ,
-    "outputSourcePath"      : "true",
-    "dateFormat"            : "dddd, MMMM Do YYYY, h:mm:ss a",
-    "syntaxTheme"           : "default",
-    "sort"                  : "true"
+    "cleverLinks": false,
+    "monospaceLinks": true,
+    "useLongnameInNav": false
   }
 }

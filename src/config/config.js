@@ -2,8 +2,6 @@
  *
  * Config module.
  * @module dex/config
- * @name config
- * @memberOf dex
  *
  */
 
@@ -905,7 +903,7 @@ module.exports = function config(dex) {
           'tickPadding',
           'tickFormat'
         ].forEach(function (fn) {
-          dex.console.log("Calling: " + fn);
+          //dex.console.log("Calling: " + fn);
           dex.config.callConditionally(axis[fn], config[fn], i);
         });
       }

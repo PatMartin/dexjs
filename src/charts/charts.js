@@ -5,8 +5,13 @@
  * D3 to three.js and WebGL.
  *
  * @module dex/charts
- * @name charts
- * @memberOf dex
+ * @property {module:dex/charts/c3} c3           - The C3 charting module.
+ * @property {module:dex/charts/d3} d3           - The D3 charting module.
+ * @property {module:dex/charts/d3plus} d3plus   - The D3Plus charting module.
+ * @property {module:dex/charts/echarts} echarts - The ECharts charting module.
+ * @property {module:dex/charts/nvd3} nvd3       - The NVD3 charting module.
+ * @property {module:dex/charts/threejs} threejs - The WebGL/ThreeJS charting module.
+ * @property {module:dex/charts/vis} vis         - The Vis.js charting module.
  *
  */
 module.exports = function charts() {
@@ -14,13 +19,9 @@ module.exports = function charts() {
     'c3'      : require("./c3/c3"),
     'd3'      : require("./d3/d3"),
     'd3plus'  : require("./d3plus/d3plus"),
-    'threejs' : require("./threejs/threejs"),
-    'vis'     : require("./vis/vis"),
+    'echarts' : require("./echarts/echarts"),
     'nvd3'    : require("./nvd3/nvd3"),
-    'echarts' : require("./echarts/echarts")
-
-    // Graveyard
-    //'dygraph' : require("./dygraph/dygraph"),
-    //'google'  : require("./google/google"),
+    'threejs' : require("./threejs/threejs"),
+    'vis'     : require("./vis/vis")
   };
 };

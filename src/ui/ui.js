@@ -2,9 +2,7 @@
  *
  * This module provides ui components from a variety of sources.
  *
- * @module dex/ui
- * @name ui
- * @memberOf dex
+ @module dex/ui
  *
  */
 

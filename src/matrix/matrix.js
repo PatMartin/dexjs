@@ -3,8 +3,6 @@
  * This module provides routines dealing with matrices.
  *
  * @module dex/matrix
- * @name matrix
- * @memberOf dex
  *
  */
 

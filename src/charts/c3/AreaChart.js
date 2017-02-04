@@ -1,9 +1,9 @@
 /**
  *
- * @name AreaChart
+ * @name dex/charts/c3/AreaChart
  * @constructor
  * @classdesc This class constructs a c3 area chart.
- * @memberOf dex.charts.c3
+ * @memberOf dex/charts/c3
  * @implements {dex/component}
  *
  * @example {@lang javascript}

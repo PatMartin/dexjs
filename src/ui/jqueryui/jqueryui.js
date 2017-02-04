@@ -3,8 +3,6 @@
  * This module provides ui components based upon jquery-ui.
  *
  * @module dex/ui/jqueryui
- * @name jqueryui
- * @memberOf dex.ui
  *
  */
 

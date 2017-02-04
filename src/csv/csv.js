@@ -4,8 +4,6 @@
  * is the core datatype on which dexjs components operate.
  *
  * @module dex/csv
- * @name csv
- * @memberOf dex
  *
  */
 
