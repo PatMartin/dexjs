@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>matrix/matrix.js - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="dex.charts.c3.BarChart.html">BarChart</a></li><li><a href="dex.charts.c3.LineChart.html">LineChart</a></li><li><a href="dex.charts.c3.StackedAreaChart.html">StackedAreaChart</a></li><li><a href="dex.charts.c3.StackedBarChart.html">StackedBarChart</a></li><li><a href="dex.ui.SqlQuery.html">SqlQuery</a></li><li><a href="dex_charts_c3.dex_charts_c3_AreaChart.html">dex/charts/c3/AreaChart</a></li><li><a href="dex_ui.table.html">table</a></li></ul><h3>Modules</h3><ul><li><a href="module-dex.html">dex</a></li><li><a href="module-dex_array.html">dex/array</a><ul class='methods'><li data-type='method'><a href="module-dex_array.html#~copy">copy</a></li><li data-type='method'><a href="module-dex_array.html#~extent">extent</a></li><li data-type='method'><a href="module-dex_array.html#~slice">slice</a></li></ul></li><li><a href="module-dex_charts.html">dex/charts</a></li><li><a href="module-dex_charts_c3.html">dex/charts/c3</a></li><li><a href="module-dex_charts_d3.html">dex/charts/d3</a></li><li><a href="module-dex_charts_d3plus.html">dex/charts/d3plus</a></li><li><a href="module-dex_charts_echarts.html">dex/charts/echarts</a></li><li><a href="module-dex_charts_nvd3.html">dex/charts/nvd3</a></li><li><a href="module-dex_charts_threejs.html">dex/charts/threejs</a></li><li><a href="module-dex_charts_vis.html">dex/charts/vis</a></li><li><a href="module-dex_color.html">dex/color</a><ul class='methods'><li data-type='method'><a href="module-dex_color.html#~blendColors">blendColors</a></li><li data-type='method'><a href="module-dex_color.html#~colormap">colormap</a></li><li data-type='method'><a href="module-dex_color.html#~colormaps">colormaps</a></li><li data-type='method'><a href="module-dex_color.html#~getColormap">getColormap</a></li><li data-type='method'><a href="module-dex_color.html#~interpolateCategorical">interpolateCategorical</a></li><li data-type='method'><a href="module-dex_color.html#~shadeColor">shadeColor</a></li></ul></li><li><a href="module-dex_config.html">dex/config</a><ul class='methods'><li data-type='method'><a href="module-dex_config.html#~axis">axis</a></li><li data-type='method'><a href="module-dex_config.html#~callIfDefined">callIfDefined</a></li><li data-type='method'><a href="module-dex_config.html#~circle">circle</a></li><li data-type='method'><a href="module-dex_config.html#~configureAxis">configureAxis</a></li><li data-type='method'><a href="module-dex_config.html#~configureFill">configureFill</a></li><li data-type='method'><a href="module-dex_config.html#~configureFont">configureFont</a></li><li data-type='method'><a href="module-dex_config.html#~configureLink">configureLink</a></li><li data-type='method'><a href="module-dex_config.html#~configureStroke">configureStroke</a></li><li data-type='method'><a href="module-dex_config.html#~configureText">configureText</a></li><li data-type='method'><a href="module-dex_config.html#~createScale">createScale</a></li><li data-type='method'><a href="module-dex_config.html#~events">events</a></li><li data-type='method'><a href="module-dex_config.html#~expand">expand</a></li><li data-type='method'><a href="module-dex_config.html#~expandAndOverlay">expandAndOverlay</a></li><li data-type='method'><a href="module-dex_config.html#~fill">fill</a></li><li data-type='method'><a href="module-dex_config.html#~font">font</a></li><li data-type='method'><a href="module-dex_config.html#~line">line</a></li><li data-type='method'><a href="module-dex_config.html#~linearScale">linearScale</a></li><li data-type='method'><a href="module-dex_config.html#~link">link</a></li><li data-type='method'><a href="module-dex_config.html#~logScale">logScale</a></li><li data-type='method'><a href="module-dex_config.html#~ordinalScale">ordinalScale</a></li><li data-type='method'><a href="module-dex_config.html#~path">path</a></li><li data-type='method'><a href="module-dex_config.html#~point">point</a></li><li data-type='method'><a href="module-dex_config.html#~powScale">powScale</a></li><li data-type='method'><a href="module-dex_config.html#~rectangle">rectangle</a></li><li data-type='method'><a href="module-dex_config.html#~scale">scale</a></li><li data-type='method'><a href="module-dex_config.html#~sqrtScale">sqrtScale</a></li><li data-type='method'><a href="module-dex_config.html#~stroke">stroke</a></li><li data-type='method'><a href="module-dex_config.html#~text">text</a></li><li data-type='method'><a href="module-dex_config.html#~tick">tick</a></li></ul></li><li><a href="module-dex_console.html">dex/console</a><ul class='methods'><li data-type='method'><a href="module-dex_console.html#~debug">debug</a></li><li data-type='method'><a href="module-dex_console.html#~fatal">fatal</a></li><li data-type='method'><a href="module-dex_console.html#~log">log</a></li><li data-type='method'><a href="module-dex_console.html#~logLevel">logLevel</a></li><li data-type='method'><a href="module-dex_console.html#~logWithLevel">logWithLevel</a></li><li data-type='method'><a href="module-dex_console.html#~trace">trace</a></li><li data-type='method'><a href="module-dex_console.html#~warn">warn</a></li></ul></li><li><a href="module-dex_csv.html">dex/csv</a><ul class='methods'><li data-type='method'><a href="module-dex_csv.html#~columnSlice">columnSlice</a></li><li data-type='method'><a href="module-dex_csv.html#~connections">connections</a></li><li data-type='method'><a href="module-dex_csv.html#~copy">copy</a></li><li data-type='method'><a href="module-dex_csv.html#~createMap">createMap</a></li><li data-type='method'><a href="module-dex_csv.html#~createRowMap">createRowMap</a></li><li data-type='method'><a href="module-dex_csv.html#~csv">csv</a></li><li data-type='method'><a href="module-dex_csv.html#~getConnectionMatrix">getConnectionMatrix</a></li><li data-type='method'><a href="module-dex_csv.html#~getFramesByIndex">getFramesByIndex</a></li><li data-type='method'><a href="module-dex_csv.html#~getNumericColumnNames">getNumericColumnNames</a></li><li data-type='method'><a href="module-dex_csv.html#~getNumericIndices">getNumericIndices</a></li><li data-type='method'><a href="module-dex_csv.html#~group">group</a></li><li data-type='method'><a href="module-dex_csv.html#~guessTypes">guessTypes</a></li><li data-type='method'><a href="module-dex_csv.html#~isColumnNumeric">isColumnNumeric</a></li><li data-type='method'><a href="module-dex_csv.html#~longestWord">longestWord</a></li><li data-type='method'><a href="module-dex_csv.html#~numericSubset">numericSubset</a></li><li data-type='method'><a href="module-dex_csv.html#~strictTypes">strictTypes</a></li><li data-type='method'><a href="module-dex_csv.html#~toColumnArrayJson">toColumnArrayJson</a></li><li data-type='method'><a href="module-dex_csv.html#~toHierarchicalJson">toHierarchicalJson</a></li><li data-type='method'><a href="module-dex_csv.html#~toJson">toJson</a></li><li data-type='method'><a href="module-dex_csv.html#~transpose">transpose</a></li><li data-type='method'><a href="module-dex_csv.html#~visitCells">visitCells</a></li></ul></li><li><a href="module-dex_datagen.html">dex/datagen</a><ul class='methods'><li data-type='method'><a href="module-dex_datagen.html#~identityCsv">identityCsv</a></li><li data-type='method'><a href="module-dex_datagen.html#~identityHeader">identityHeader</a></li><li data-type='method'><a href="module-dex_datagen.html#~identityMatrix">identityMatrix</a></li><li data-type='method'><a href="module-dex_datagen.html#~randomMatrix">randomMatrix</a></li></ul></li><li><a href="module-dex_json.html">dex/json</a><ul class='methods'><li data-type='method'><a href="module-dex_json.html#~keys">keys</a></li><li data-type='method'><a href="module-dex_json.html#~toCsv">toCsv</a></li></ul></li><li><a href="module-dex_matrix.html">dex/matrix</a><ul class='methods'><li data-type='method'><a href="module-dex_matrix.html#~addIndex">addIndex</a></li><li data-type='method'><a href="module-dex_matrix.html#~combine">combine</a></li><li data-type='method'><a href="module-dex_matrix.html#~copy">copy</a></li><li data-type='method'><a href="module-dex_matrix.html#~extent">extent</a></li><li data-type='method'><a href="module-dex_matrix.html#~flatten">flatten</a></li><li data-type='method'><a href="module-dex_matrix.html#~isColumnNumeric">isColumnNumeric</a></li><li data-type='method'><a href="module-dex_matrix.html#~max">max</a></li><li data-type='method'><a href="module-dex_matrix.html#~min">min</a></li><li data-type='method'><a href="module-dex_matrix.html#~slice">slice</a></li><li data-type='method'><a href="module-dex_matrix.html#~transpose">transpose</a></li><li data-type='method'><a href="module-dex_matrix.html#~uniques">uniques</a></li></ul></li><li><a href="module-dex_object.html">dex/object</a><ul class='methods'><li data-type='method'><a href="module-dex_object.html#~clone">clone</a></li><li data-type='method'><a href="module-dex_object.html#~connect">connect</a></li><li data-type='method'><a href="module-dex_object.html#~contains">contains</a></li><li data-type='method'><a href="module-dex_object.html#~isElement">isElement</a></li><li data-type='method'><a href="module-dex_object.html#~isEmpty">isEmpty</a></li><li data-type='method'><a href="module-dex_object.html#~isFunction">isFunction</a></li><li data-type='method'><a href="module-dex_object.html#~isNode">isNode</a></li><li data-type='method'><a href="module-dex_object.html#~isNumeric">isNumeric</a></li><li data-type='method'><a href="module-dex_object.html#~keys">keys</a></li><li data-type='method'><a href="module-dex_object.html#~overlay">overlay</a></li><li data-type='method'><a href="module-dex_object.html#~setHierarchical">setHierarchical</a></li></ul></li><li><a href="module-dex_ui.html">dex/ui</a></li><li><a href="module-dex_ui_jqueryui.html">dex/ui/jqueryui</a></li><li><a href="module-dex_util.html">dex/util</a></li><li><a href="module-dex_util_d3.html">dex/util/d3</a></li></ul>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">matrix/matrix.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ *
+ * This module provides routines dealing with matrices.
+ *
+ * @module dex/matrix
+ *
+ */
+
+module.exports = function matrix(dex) {
+
+  return {
+    /**
+     *
+     * Return the specified slice of the matrix.  The original matrix is
+     * not altered.
+     *
+     * @param {matrix} matrix The matrix to be sliced.
+     * @param {Array.&lt;number>} columns - An array of column indices to include within the slice.
+     * @param {number} [rows] If supplied, the slice will consist only of the specified
+     * number of rows.
+     *
+     * @returns {matrix}
+     */
+    'slice': function (matrix, columns, rows) {
+      var matrixSlice = new Array(0);
+      //dex.console.log("PRE-SLICE (matrixSlize):" + matrixSlice);
+      var ri;
+
+      if (arguments.length === 3) {
+        for (ri = 0; ri &lt; rows.length; ri++) {
+          matrixSlice.push(dex.array.slice(matrix[rows[ri]]));
+        }
+      }
+      else {
+        for (ri = 0; ri &lt; matrix.length; ri++) {
+          //dex.console.log("MATRIX-SLICE-BEFORE[" + ri + "]:" + matrixSlice);
+          matrixSlice.push(dex.array.slice(matrix[ri], columns));
+          //dex.console.log("MATRIX-SLICE-AFTER[" + ri + "]" + matrixSlice);
+        }
+      }
+      return matrixSlice;
+    },
+
+    /**
+     *
+     * Returns a matrix consisting of unique values relative to each
+     * column.
+     *
+     * @param {matrix} matrix The matrix to evaluate.
+     * @param columns The column or array of columns indexes to slice.
+     *
+     * @returns {Array.&lt;Array.&lt;Object>>} The unique values relative to each column. In the form
+     * of [[ column 1 unique values], [column 2 unique values], ...]]
+     *
+     */
+    'uniques': function (matrix, columns) {
+
+      if (arguments.length === 2) {
+        if (dex.object.isNumeric(columns)) {
+          return dex.matrix.uniques(dex.matrix.slice(matrix, [columns]))[0];
+        }
+        else {
+          return dex.matrix.uniques(dex.matrix.slice(matrix, columns));
+        }
+      }
+
+      var ci;
+      var uniques = [];
+      var tmatrix = dex.matrix.transpose(matrix);
+      var ncol = tmatrix.length;
+
+      for (ci = 0; ci &lt; ncol; ci += 1) {
+        uniques.push(_.uniq(tmatrix[ci]));
+      }
+      return uniques;
+    },
+
+    /**
+     *
+     * Returns a transposed matrix where the rows of the new matrix are transposed
+     * with it's columns.
+     *
+     * @param {matrix} matrix - The matrix to transpose.
+     *
+     * @returns {matrix} The transposed matrix, leaving the original matrix untouched.
+     *
+     * @example {@lang javascript}
+     * // Returns [['R1C1', 'R2C1', 'R3C1'], ['R1C2', 'R2C2', 'R3C2' ]]
+     * transpose([['R1C1', 'R1C2'], ['R2C1', 'R2C2], ['R3C1', 'R3C2']]);
+     *
+     */
+    'transpose': function (matrix) {
+      var ci;
+      var ncols;
+      var transposedMatrix = [];
+      //dex.console.log("Transposing:", matrix);
+
+      if (!matrix || matrix.length &lt;= 0 || !matrix[0] || matrix[0].length &lt;= 0) {
+        return [];
+      }
+
+      ncols = matrix[0].length;
+
+      for (ci = 0; ci &lt; ncols; ci++) {
+        transposedMatrix.push(matrix.map(function (row) {
+          return row[ci];
+        }));
+      }
+
+      return transposedMatrix;
+    },
+
+    /**
+     *
+     * Return a flattened version of the matrix.
+     *
+     * @param {matrix} matrix - The matrix to flatten.
+     *
+     * @returns {Array.&lt;Object>} A flattened version of the matrix.
+     *
+     * @example {@lang javascript}
+     * // Define a simple matrix.
+     * var matrix = [['r1c1', 'r1c2'], ['r2c1', 'r2c2']]
+     *
+     * // Returns: ['r1c1', 'r1c2', 'r2c1', 'r2c2']
+     * flatten(matrix);
+     *
+     */
+    'flatten': function (matrix) {
+      return _.flatten(matrix);
+    },
+
+    /**
+     *
+     * Returns an array of the minimum and maximum value in the form of: [min,max]
+     * from the specified subset of the matrix.
+     *
+     * @param {matrix} matrix - The matrix to scan.
+     * @param {Array.&lt;number>|number] [indices] - When supplied, will contrain the extent
+ * search to just those columns specified by this list of indices.
+ *
+     * @returns {Array.&lt;number>} An array of two elements: [ min, max ]
+     *
+     */
+    'extent': function (matrix, indices) {
+      var values = matrix;
+
+      if (arguments.length === 2) {
+        if (dex.object.isNumeric(indices)) {
+          values = dex.matrix.flatten(dex.matrix.slice(matrix, [indices]));
+        }
+        else {
+          values = dex.matrix.flatten(dex.matrix.slice(matrix, indices));
+        }
+        var max = Math.max.apply(null, values);
+        var min = Math.min.apply(null, values);
+        return [min, max];
+      }
+    },
+
+    /**
+     *
+     * Combine each column in matrix1 with each column in matrix2.
+     *
+     * @param {matrix} matrix1 The first matrix to combine.
+     * @param {matrix} matrix2 The second matrix to combine.
+     *
+     * @returns {matrix} The combined matrix.
+     *
+     * @example {@lang javascript}
+     * var matrix1 = [['m1r1c1', 'm1r1c2'], ['m1r2c1', 'm1r2c2']]
+     * var matrix2 = [['m2r1c1', 'm2r1c2'], ['m2r2c1', 'm2r2c2']]
+     *
+     * // Returns: [['m1r1c1', 'm1r1c2', 'm2r1c1', 'm2r1c2'], ['m1r2c1', 'm1r2c2', 'm2r2c1', 'm2r2c2']]
+     * var result = combine(matrix1, matrix2);
+     *
+     */
+    'combine': function (matrix1, matrix2) {
+      var result = _.clone(matrix1);
+
+      var ri;
+
+      for (ri = 0; ri &lt; matrix2.length; ri++) {
+        result[ri] = result[ri].concat(matrix2[ri]);
+      }
+
+      return result;
+    },
+
+    /**
+     *
+     * Return a copy of the supplied matrix.
+     *
+     * @param {matrix} matrix The matrix to copy.
+     *
+     * @returns {Array} A copy of the original matrix.
+     *
+     */
+    'copy': function (matrix) {
+      return matrix.map(function (row) {
+        return _.clone(row);
+      });
+    },
+
+    /**
+     *
+     * Insert a new column at position 0 within this matrix which will contain
+     * integer values starting at 1, 2, 3, ...  This is useful if your dataset
+     * lacks an existing unique index.
+     *
+     * @param {matrix} matrix - The matrix to index.
+     * @returns {matrix} A copy of the original matrix with the index inserted.
+     *
+     */
+    'addIndex': function (matrix) {
+      var indexMatrix = dex.matrix.copy(matrix);
+
+      for (var ri = 0; ri &lt; matrix.length; ri++) {
+        indexMatrix[ri].unshift(ri + 1);
+      }
+
+      return indexMatrix;
+    },
+
+    /**
+     *
+     * Determine whether the supplied columnNum within the supplied matrix is
+     * numeric or not.
+     *
+     * @param {matrix} matrix - The matrix to evaluate.
+     * @param {number} columnNum - The column within the matrix to evaluate.
+     *
+     * @returns {boolean} True if the column is numeric, false otherwise.
+     *
+     */
+    'isColumnNumeric': function (matrix, columnNum) {
+      for (var i = 0; i &lt; matrix.length; i++) {
+        if (!_.isNumber(matrix[i][columnNum])) {
+          return false;
+        }
+      }
+      return true;
+    },
+
+    /**
+     *
+     * Return the maximum value of the specified columnNum within the
+     * supplied matrix.
+     *
+     * @param matrix The matrix to evaluate.
+     * @param columnNum The column number within the matrix to evaluate.
+     * @returns {*} The maximum value of the specified column within the
+     * supplied matrix.
+     *
+     */
+    'max': function (matrix, columnNum) {
+      var maxValue = matrix[0][columnNum];
+      var i;
+
+      if (dex.matrix.isColumnNumeric(matrix, columnNum)) {
+        maxValue = parseFloat(matrix[0][columnNum]);
+        for (i = 1; i &lt; matrix.length; i++) {
+          if (maxValue &lt; parseFloat(matrix[i][columnNum])) {
+            maxValue = parseFloat(matrix[i][columnNum]);
+          }
+        }
+      }
+      else {
+        for (i = 1; i &lt; matrix.length; i++) {
+          if (maxValue &lt; matrix[i][columnNum]) {
+            maxValue = matrix[i][columnNum];
+          }
+        }
+      }
+
+      return maxValue;
+    },
+
+    /**
+     *
+     * Return the minimum value of the specified columnNum within the
+     * supplied matrix.
+     *
+     * @param {matrix} matrix - The matrix to evaluate.
+     * @param {number} columnNum - The column number within the matrix to evaluate.
+     * @returns {number} The minimum value of the specified column within the
+     * supplied matrix.
+     *
+     */
+    'min': function (matrix, columnNum) {
+      var minValue = matrix[0][columnNum];
+      var i;
+
+      if (dex.matrix.isColumnNumeric(matrix, columnNum)) {
+        minValue = parseFloat(matrix[0][columnNum]);
+        for (i = 1; i &lt; matrix.length; i++) {
+          if (minValue > parseFloat(matrix[i][columnNum])) {
+            minValue = parseFloat(matrix[i][columnNum]);
+          }
+        }
+      }
+      else {
+        for (i = 1; i &lt; matrix.length; i++) {
+          if (minValue > matrix[i][columnNum]) {
+            minValue = matrix[i][columnNum];
+          }
+        }
+      }
+
+      return minValue;
+    }
+  };
+};
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Thu Feb 02 2017 17:13:30 GMT-0500 (Eastern Standard Time) using the Minami theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>

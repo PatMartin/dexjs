@@ -1,0 +1,1647 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>color - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="dex.charts.c3.AreaChart.html">AreaChart</a></li><li><a href="dex.charts.c3.BarChart.html">BarChart</a></li><li><a href="dex.charts.c3.LineChart.html">LineChart</a></li><li><a href="dex.charts.c3.StackedAreaChart.html">StackedAreaChart</a></li><li><a href="dex.charts.c3.StackedBarChart.html">StackedBarChart</a></li><li><a href="dex.ui.SqlQuery.html">SqlQuery</a></li><li><a href="dex_ui.table.html">table</a></li></ul><h3>Modules</h3><ul><li><a href="dex.charts.module_c3.html">c3</a></li><li><a href="dex.charts.module_d3.html">d3</a></li><li><a href="dex.charts.module_d3plus.html">d3plus</a></li><li><a href="dex.charts.module_echarts.html">echarts</a></li><li><a href="dex.charts.module_nvd3.html">nvd3</a></li><li><a href="dex.charts.module_vis.html">vis</a></li><li><a href="dex.module_array.html">array</a><ul class='methods'><li data-type='method'><a href="dex.module_array.html#~copy">copy</a></li><li data-type='method'><a href="dex.module_array.html#~extent">extent</a></li><li data-type='method'><a href="dex.module_array.html#~slice">slice</a></li></ul></li><li><a href="dex.module_charts.html">charts</a></li><li><a href="dex.module_config.html">config</a><ul class='methods'><li data-type='method'><a href="dex.module_config.html#~axis">axis</a></li><li data-type='method'><a href="dex.module_config.html#~callIfDefined">callIfDefined</a></li><li data-type='method'><a href="dex.module_config.html#~circle">circle</a></li><li data-type='method'><a href="dex.module_config.html#~configureAxis">configureAxis</a></li><li data-type='method'><a href="dex.module_config.html#~configureFill">configureFill</a></li><li data-type='method'><a href="dex.module_config.html#~configureFont">configureFont</a></li><li data-type='method'><a href="dex.module_config.html#~configureLink">configureLink</a></li><li data-type='method'><a href="dex.module_config.html#~configureStroke">configureStroke</a></li><li data-type='method'><a href="dex.module_config.html#~configureText">configureText</a></li><li data-type='method'><a href="dex.module_config.html#~createScale">createScale</a></li><li data-type='method'><a href="dex.module_config.html#~events">events</a></li><li data-type='method'><a href="dex.module_config.html#~expand">expand</a></li><li data-type='method'><a href="dex.module_config.html#~expandAndOverlay">expandAndOverlay</a></li><li data-type='method'><a href="dex.module_config.html#~fill">fill</a></li><li data-type='method'><a href="dex.module_config.html#~font">font</a></li><li data-type='method'><a href="dex.module_config.html#~line">line</a></li><li data-type='method'><a href="dex.module_config.html#~linearScale">linearScale</a></li><li data-type='method'><a href="dex.module_config.html#~link">link</a></li><li data-type='method'><a href="dex.module_config.html#~logScale">logScale</a></li><li data-type='method'><a href="dex.module_config.html#~ordinalScale">ordinalScale</a></li><li data-type='method'><a href="dex.module_config.html#~path">path</a></li><li data-type='method'><a href="dex.module_config.html#~point">point</a></li><li data-type='method'><a href="dex.module_config.html#~powScale">powScale</a></li><li data-type='method'><a href="dex.module_config.html#~rectangle">rectangle</a></li><li data-type='method'><a href="dex.module_config.html#~scale">scale</a></li><li data-type='method'><a href="dex.module_config.html#~sqrtScale">sqrtScale</a></li><li data-type='method'><a href="dex.module_config.html#~stroke">stroke</a></li><li data-type='method'><a href="dex.module_config.html#~text">text</a></li><li data-type='method'><a href="dex.module_config.html#~tick">tick</a></li></ul></li><li><a href="dex.module_console.html">console</a><ul class='methods'><li data-type='method'><a href="dex.module_console.html#~debug">debug</a></li><li data-type='method'><a href="dex.module_console.html#~fatal">fatal</a></li><li data-type='method'><a href="dex.module_console.html#~log">log</a></li><li data-type='method'><a href="dex.module_console.html#~logLevel">logLevel</a></li><li data-type='method'><a href="dex.module_console.html#~logWithLevel">logWithLevel</a></li><li data-type='method'><a href="dex.module_console.html#~trace">trace</a></li><li data-type='method'><a href="dex.module_console.html#~warn">warn</a></li></ul></li><li><a href="dex.module_csv.html">csv</a><ul class='methods'><li data-type='method'><a href="dex.module_csv.html#~columnSlice">columnSlice</a></li><li data-type='method'><a href="dex.module_csv.html#~connections">connections</a></li><li data-type='method'><a href="dex.module_csv.html#~copy">copy</a></li><li data-type='method'><a href="dex.module_csv.html#~createMap">createMap</a></li><li data-type='method'><a href="dex.module_csv.html#~createRowMap">createRowMap</a></li><li data-type='method'><a href="dex.module_csv.html#~csv">csv</a></li><li data-type='method'><a href="dex.module_csv.html#~getConnectionMatrix">getConnectionMatrix</a></li><li data-type='method'><a href="dex.module_csv.html#~getFramesByIndex">getFramesByIndex</a></li><li data-type='method'><a href="dex.module_csv.html#~getNumericColumnNames">getNumericColumnNames</a></li><li data-type='method'><a href="dex.module_csv.html#~getNumericIndices">getNumericIndices</a></li><li data-type='method'><a href="dex.module_csv.html#~group">group</a></li><li data-type='method'><a href="dex.module_csv.html#~guessTypes">guessTypes</a></li><li data-type='method'><a href="dex.module_csv.html#~isColumnNumeric">isColumnNumeric</a></li><li data-type='method'><a href="dex.module_csv.html#~longestWord">longestWord</a></li><li data-type='method'><a href="dex.module_csv.html#~numericSubset">numericSubset</a></li><li data-type='method'><a href="dex.module_csv.html#~strictTypes">strictTypes</a></li><li data-type='method'><a href="dex.module_csv.html#~toColumnArrayJson">toColumnArrayJson</a></li><li data-type='method'><a href="dex.module_csv.html#~toHierarchicalJson">toHierarchicalJson</a></li><li data-type='method'><a href="dex.module_csv.html#~toJson">toJson</a></li><li data-type='method'><a href="dex.module_csv.html#~transpose">transpose</a></li><li data-type='method'><a href="dex.module_csv.html#~visitCells">visitCells</a></li></ul></li><li><a href="dex.module_datagen.html">datagen</a><ul class='methods'><li data-type='method'><a href="dex.module_datagen.html#~identityCsv">identityCsv</a></li><li data-type='method'><a href="dex.module_datagen.html#~identityHeader">identityHeader</a></li><li data-type='method'><a href="dex.module_datagen.html#~identityMatrix">identityMatrix</a></li><li data-type='method'><a href="dex.module_datagen.html#~randomMatrix">randomMatrix</a></li></ul></li><li><a href="dex.module_json.html">json</a><ul class='methods'><li data-type='method'><a href="dex.module_json.html#~keys">keys</a></li><li data-type='method'><a href="dex.module_json.html#~toCsv">toCsv</a></li></ul></li><li><a href="dex.module_matrix.html">matrix</a><ul class='methods'><li data-type='method'><a href="dex.module_matrix.html#~addIndex">addIndex</a></li><li data-type='method'><a href="dex.module_matrix.html#~combine">combine</a></li><li data-type='method'><a href="dex.module_matrix.html#~copy">copy</a></li><li data-type='method'><a href="dex.module_matrix.html#~extent">extent</a></li><li data-type='method'><a href="dex.module_matrix.html#~flatten">flatten</a></li><li data-type='method'><a href="dex.module_matrix.html#~isColumnNumeric">isColumnNumeric</a></li><li data-type='method'><a href="dex.module_matrix.html#~max">max</a></li><li data-type='method'><a href="dex.module_matrix.html#~min">min</a></li><li data-type='method'><a href="dex.module_matrix.html#~slice">slice</a></li><li data-type='method'><a href="dex.module_matrix.html#~transpose">transpose</a></li><li data-type='method'><a href="dex.module_matrix.html#~uniques">uniques</a></li></ul></li><li><a href="dex.module_object.html">object</a><ul class='methods'><li data-type='method'><a href="dex.module_object.html#~clone">clone</a></li><li data-type='method'><a href="dex.module_object.html#~connect">connect</a></li><li data-type='method'><a href="dex.module_object.html#~contains">contains</a></li><li data-type='method'><a href="dex.module_object.html#~isElement">isElement</a></li><li data-type='method'><a href="dex.module_object.html#~isEmpty">isEmpty</a></li><li data-type='method'><a href="dex.module_object.html#~isFunction">isFunction</a></li><li data-type='method'><a href="dex.module_object.html#~isNode">isNode</a></li><li data-type='method'><a href="dex.module_object.html#~isNumeric">isNumeric</a></li><li data-type='method'><a href="dex.module_object.html#~keys">keys</a></li><li data-type='method'><a href="dex.module_object.html#~overlay">overlay</a></li><li data-type='method'><a href="dex.module_object.html#~setHierarchical">setHierarchical</a></li></ul></li><li><a href="dex.module_ui.html">ui</a></li><li><a href="dex.module_util.html">util</a></li><li><a href="dex.ui.module_jqueryui.html">jqueryui</a></li><li><a href="module-dex.html">dex</a></li><li><a href="module-dex.dex.module_color.html">color</a><ul class='methods'><li data-type='method'><a href="module-dex.dex.module_color.html#~blend">blend</a></li><li data-type='method'><a href="module-dex.dex.module_color.html#~blendColors">blendColors</a></li><li data-type='method'><a href="module-dex.dex.module_color.html#~blendRGBColors">blendRGBColors</a></li><li data-type='method'><a href="module-dex.dex.module_color.html#~colorScheme">colorScheme</a></li><li data-type='method'><a href="module-dex.dex.module_color.html#~gradient">gradient</a></li><li data-type='method'><a href="module-dex.dex.module_color.html#~shade">shade</a></li><li data-type='method'><a href="module-dex.dex.module_color.html#~shadeColor">shadeColor</a></li><li data-type='method'><a href="module-dex.dex.module_color.html#~shadeRGBColor">shadeRGBColor</a></li><li data-type='method'><a href="module-dex.dex.module_color.html#~toHex">toHex</a></li></ul></li></ul>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">color</h1>
+    
+
+    
+
+
+
+
+<section>
+
+<header>
+    
+        
+            
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+            <div class="description">This module provides routines for dealing with colors.</div>
+        
+
+        
+            
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="color_color.js.html">color/color.js</a>, <a href="color_color.js.html#line3">line 3</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+    
+    </div>
+
+    
+
+    
+
+    
+
+     
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        
+            
+
+    
+
+    <h4 class="name" id="~blend"><span class="type-signature">(inner) </span>blend<span class="signature">(color1, color2, percent)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>color1</code></td>
+            
+
+            <td class="type">
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>color2</code></td>
+            
+
+            <td class="type">
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>percent</code></td>
+            
+
+            <td class="type">
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="color_color.js.html">color/color.js</a>, <a href="color_color.js.html#line181">line 181</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="~blendColors"><span class="type-signature">(inner) </span>blendColors<span class="signature">(color1, color2, percent)</span><span class="type-signature"> &rarr; {string}</span></h4>
+
+    
+
+
+
+<div class="description">
+    Given two colors, blend them together.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>color1</code></td>
+            
+
+            <td class="type">
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>color2</code></td>
+            
+
+            <td class="type">
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>percent</code></td>
+            
+
+            <td class="type">
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="color_color.js.html">color/color.js</a>, <a href="color_color.js.html#line123">line 123</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">string</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="~blendRGBColors"><span class="type-signature">(inner) </span>blendRGBColors<span class="signature">(color1, color2, percent)</span><span class="type-signature"> &rarr; {string}</span></h4>
+
+    
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>color1</code></td>
+            
+
+            <td class="type">
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>color2</code></td>
+            
+
+            <td class="type">
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>percent</code></td>
+            
+
+            <td class="type">
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="color_color.js.html">color/color.js</a>, <a href="color_color.js.html#line156">line 156</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">string</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="~colorScheme"><span class="type-signature">(inner) </span>colorScheme<span class="signature">(colorScheme, numColors)</span><span class="type-signature"> &rarr; {*}</span></h4>
+
+    
+
+
+
+<div class="description">
+    This routine returns the requested named color scheme with
+the requested number of colors.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>colorScheme</code></td>
+            
+
+            <td class="type">
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The named color schemes: cat10, cat20, cat20b, cat20c, HiContrast or
+any of the named colors from colorbrewer.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>numColors</code></td>
+            
+
+            <td class="type">
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The number of colors being requested.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="color_color.js.html">color/color.js</a>, <a href="color_color.js.html#line50">line 50</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    The array of colors.
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">*</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="~gradient"><span class="type-signature">(inner) </span>gradient<span class="signature">(color, percent)</span><span class="type-signature"> &rarr; {string}</span></h4>
+
+    
+
+
+
+<div class="description">
+    Given a color and a percent to lighten or darken it.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>color</code></td>
+            
+
+            <td class="type">
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The base color.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>percent</code></td>
+            
+
+            <td class="type">
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The pecentage to lighten (negative) or darken (positive) the color.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="color_color.js.html">color/color.js</a>, <a href="color_color.js.html#line218">line 218</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    The computed color.
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">string</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="~shade"><span class="type-signature">(inner) </span>shade<span class="signature">(color, percent)</span><span class="type-signature"> &rarr; {*}</span></h4>
+
+    
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>color</code></td>
+            
+
+            <td class="type">
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>percent</code></td>
+            
+
+            <td class="type">
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="color_color.js.html">color/color.js</a>, <a href="color_color.js.html#line170">line 170</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">*</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="~shadeColor"><span class="type-signature">(inner) </span>shadeColor<span class="signature">(color, percent)</span><span class="type-signature"> &rarr; {string}</span></h4>
+
+    
+
+
+
+<div class="description">
+    Given a color, lighten or darken it by the requested percent.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>color</code></td>
+            
+
+            <td class="type">
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The color to modify.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>percent</code></td>
+            
+
+            <td class="type">
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">A floating point number in the range of [-1.0, 1.0].  Negative
+values will lighten the color, positive values will darken it.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="color_color.js.html">color/color.js</a>, <a href="color_color.js.html#line105">line 105</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    The lightened or darkened color in the form of #ffffff.
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">string</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="~shadeRGBColor"><span class="type-signature">(inner) </span>shadeRGBColor<span class="signature">(color, percent)</span><span class="type-signature"> &rarr; {string}</span></h4>
+
+    
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>color</code></td>
+            
+
+            <td class="type">
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>percent</code></td>
+            
+
+            <td class="type">
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="color_color.js.html">color/color.js</a>, <a href="color_color.js.html#line140">line 140</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">string</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="~toHex"><span class="type-signature">(inner) </span>toHex<span class="signature">(color)</span><span class="type-signature"> &rarr; {*}</span></h4>
+
+    
+
+
+
+<div class="description">
+    This routine converts a rgb(red, green, blue) color to it's
+equivalent #ffffff hexadecimal form.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>color</code></td>
+            
+
+            <td class="type">
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The color we wish to convert to hex.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="color_color.js.html">color/color.js</a>, <a href="color_color.js.html#line24">line 24</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">*</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Thu Feb 02 2017 00:59:11 GMT-0500 (Eastern Standard Time) using the Minami theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>

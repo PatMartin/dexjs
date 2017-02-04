@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>dex.js - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="dex.charts.c3.BarChart.html">BarChart</a></li><li><a href="dex.charts.c3.LineChart.html">LineChart</a></li><li><a href="dex.charts.c3.StackedAreaChart.html">StackedAreaChart</a></li><li><a href="dex.charts.c3.StackedBarChart.html">StackedBarChart</a></li><li><a href="dex.ui.SqlQuery.html">SqlQuery</a></li><li><a href="dex_charts_c3.dex_charts_c3_AreaChart.html">dex/charts/c3/AreaChart</a></li><li><a href="dex_ui.table.html">table</a></li></ul><h3>Modules</h3><ul><li><a href="module-dex.html">dex</a></li><li><a href="module-dex_array.html">dex/array</a><ul class='methods'><li data-type='method'><a href="module-dex_array.html#~copy">copy</a></li><li data-type='method'><a href="module-dex_array.html#~extent">extent</a></li><li data-type='method'><a href="module-dex_array.html#~slice">slice</a></li></ul></li><li><a href="module-dex_charts.html">dex/charts</a></li><li><a href="module-dex_charts_c3.html">dex/charts/c3</a></li><li><a href="module-dex_charts_d3.html">dex/charts/d3</a></li><li><a href="module-dex_charts_d3plus.html">dex/charts/d3plus</a></li><li><a href="module-dex_charts_echarts.html">dex/charts/echarts</a></li><li><a href="module-dex_charts_nvd3.html">dex/charts/nvd3</a></li><li><a href="module-dex_charts_threejs.html">dex/charts/threejs</a></li><li><a href="module-dex_charts_vis.html">dex/charts/vis</a></li><li><a href="module-dex_color.html">dex/color</a><ul class='methods'><li data-type='method'><a href="module-dex_color.html#~blendColors">blendColors</a></li><li data-type='method'><a href="module-dex_color.html#~colormap">colormap</a></li><li data-type='method'><a href="module-dex_color.html#~colormaps">colormaps</a></li><li data-type='method'><a href="module-dex_color.html#~getColormap">getColormap</a></li><li data-type='method'><a href="module-dex_color.html#~interpolateCategorical">interpolateCategorical</a></li><li data-type='method'><a href="module-dex_color.html#~shadeColor">shadeColor</a></li></ul></li><li><a href="module-dex_config.html">dex/config</a><ul class='methods'><li data-type='method'><a href="module-dex_config.html#~axis">axis</a></li><li data-type='method'><a href="module-dex_config.html#~callIfDefined">callIfDefined</a></li><li data-type='method'><a href="module-dex_config.html#~circle">circle</a></li><li data-type='method'><a href="module-dex_config.html#~configureAxis">configureAxis</a></li><li data-type='method'><a href="module-dex_config.html#~configureFill">configureFill</a></li><li data-type='method'><a href="module-dex_config.html#~configureFont">configureFont</a></li><li data-type='method'><a href="module-dex_config.html#~configureLink">configureLink</a></li><li data-type='method'><a href="module-dex_config.html#~configureStroke">configureStroke</a></li><li data-type='method'><a href="module-dex_config.html#~configureText">configureText</a></li><li data-type='method'><a href="module-dex_config.html#~createScale">createScale</a></li><li data-type='method'><a href="module-dex_config.html#~events">events</a></li><li data-type='method'><a href="module-dex_config.html#~expand">expand</a></li><li data-type='method'><a href="module-dex_config.html#~expandAndOverlay">expandAndOverlay</a></li><li data-type='method'><a href="module-dex_config.html#~fill">fill</a></li><li data-type='method'><a href="module-dex_config.html#~font">font</a></li><li data-type='method'><a href="module-dex_config.html#~line">line</a></li><li data-type='method'><a href="module-dex_config.html#~linearScale">linearScale</a></li><li data-type='method'><a href="module-dex_config.html#~link">link</a></li><li data-type='method'><a href="module-dex_config.html#~logScale">logScale</a></li><li data-type='method'><a href="module-dex_config.html#~ordinalScale">ordinalScale</a></li><li data-type='method'><a href="module-dex_config.html#~path">path</a></li><li data-type='method'><a href="module-dex_config.html#~point">point</a></li><li data-type='method'><a href="module-dex_config.html#~powScale">powScale</a></li><li data-type='method'><a href="module-dex_config.html#~rectangle">rectangle</a></li><li data-type='method'><a href="module-dex_config.html#~scale">scale</a></li><li data-type='method'><a href="module-dex_config.html#~sqrtScale">sqrtScale</a></li><li data-type='method'><a href="module-dex_config.html#~stroke">stroke</a></li><li data-type='method'><a href="module-dex_config.html#~text">text</a></li><li data-type='method'><a href="module-dex_config.html#~tick">tick</a></li></ul></li><li><a href="module-dex_console.html">dex/console</a><ul class='methods'><li data-type='method'><a href="module-dex_console.html#~debug">debug</a></li><li data-type='method'><a href="module-dex_console.html#~fatal">fatal</a></li><li data-type='method'><a href="module-dex_console.html#~log">log</a></li><li data-type='method'><a href="module-dex_console.html#~logLevel">logLevel</a></li><li data-type='method'><a href="module-dex_console.html#~logWithLevel">logWithLevel</a></li><li data-type='method'><a href="module-dex_console.html#~trace">trace</a></li><li data-type='method'><a href="module-dex_console.html#~warn">warn</a></li></ul></li><li><a href="module-dex_csv.html">dex/csv</a><ul class='methods'><li data-type='method'><a href="module-dex_csv.html#~columnSlice">columnSlice</a></li><li data-type='method'><a href="module-dex_csv.html#~connections">connections</a></li><li data-type='method'><a href="module-dex_csv.html#~copy">copy</a></li><li data-type='method'><a href="module-dex_csv.html#~createMap">createMap</a></li><li data-type='method'><a href="module-dex_csv.html#~createRowMap">createRowMap</a></li><li data-type='method'><a href="module-dex_csv.html#~csv">csv</a></li><li data-type='method'><a href="module-dex_csv.html#~getConnectionMatrix">getConnectionMatrix</a></li><li data-type='method'><a href="module-dex_csv.html#~getFramesByIndex">getFramesByIndex</a></li><li data-type='method'><a href="module-dex_csv.html#~getNumericColumnNames">getNumericColumnNames</a></li><li data-type='method'><a href="module-dex_csv.html#~getNumericIndices">getNumericIndices</a></li><li data-type='method'><a href="module-dex_csv.html#~group">group</a></li><li data-type='method'><a href="module-dex_csv.html#~guessTypes">guessTypes</a></li><li data-type='method'><a href="module-dex_csv.html#~isColumnNumeric">isColumnNumeric</a></li><li data-type='method'><a href="module-dex_csv.html#~longestWord">longestWord</a></li><li data-type='method'><a href="module-dex_csv.html#~numericSubset">numericSubset</a></li><li data-type='method'><a href="module-dex_csv.html#~strictTypes">strictTypes</a></li><li data-type='method'><a href="module-dex_csv.html#~toColumnArrayJson">toColumnArrayJson</a></li><li data-type='method'><a href="module-dex_csv.html#~toHierarchicalJson">toHierarchicalJson</a></li><li data-type='method'><a href="module-dex_csv.html#~toJson">toJson</a></li><li data-type='method'><a href="module-dex_csv.html#~transpose">transpose</a></li><li data-type='method'><a href="module-dex_csv.html#~visitCells">visitCells</a></li></ul></li><li><a href="module-dex_datagen.html">dex/datagen</a><ul class='methods'><li data-type='method'><a href="module-dex_datagen.html#~identityCsv">identityCsv</a></li><li data-type='method'><a href="module-dex_datagen.html#~identityHeader">identityHeader</a></li><li data-type='method'><a href="module-dex_datagen.html#~identityMatrix">identityMatrix</a></li><li data-type='method'><a href="module-dex_datagen.html#~randomMatrix">randomMatrix</a></li></ul></li><li><a href="module-dex_json.html">dex/json</a><ul class='methods'><li data-type='method'><a href="module-dex_json.html#~keys">keys</a></li><li data-type='method'><a href="module-dex_json.html#~toCsv">toCsv</a></li></ul></li><li><a href="module-dex_matrix.html">dex/matrix</a><ul class='methods'><li data-type='method'><a href="module-dex_matrix.html#~addIndex">addIndex</a></li><li data-type='method'><a href="module-dex_matrix.html#~combine">combine</a></li><li data-type='method'><a href="module-dex_matrix.html#~copy">copy</a></li><li data-type='method'><a href="module-dex_matrix.html#~extent">extent</a></li><li data-type='method'><a href="module-dex_matrix.html#~flatten">flatten</a></li><li data-type='method'><a href="module-dex_matrix.html#~isColumnNumeric">isColumnNumeric</a></li><li data-type='method'><a href="module-dex_matrix.html#~max">max</a></li><li data-type='method'><a href="module-dex_matrix.html#~min">min</a></li><li data-type='method'><a href="module-dex_matrix.html#~slice">slice</a></li><li data-type='method'><a href="module-dex_matrix.html#~transpose">transpose</a></li><li data-type='method'><a href="module-dex_matrix.html#~uniques">uniques</a></li></ul></li><li><a href="module-dex_object.html">dex/object</a><ul class='methods'><li data-type='method'><a href="module-dex_object.html#~clone">clone</a></li><li data-type='method'><a href="module-dex_object.html#~connect">connect</a></li><li data-type='method'><a href="module-dex_object.html#~contains">contains</a></li><li data-type='method'><a href="module-dex_object.html#~isElement">isElement</a></li><li data-type='method'><a href="module-dex_object.html#~isEmpty">isEmpty</a></li><li data-type='method'><a href="module-dex_object.html#~isFunction">isFunction</a></li><li data-type='method'><a href="module-dex_object.html#~isNode">isNode</a></li><li data-type='method'><a href="module-dex_object.html#~isNumeric">isNumeric</a></li><li data-type='method'><a href="module-dex_object.html#~keys">keys</a></li><li data-type='method'><a href="module-dex_object.html#~overlay">overlay</a></li><li data-type='method'><a href="module-dex_object.html#~setHierarchical">setHierarchical</a></li></ul></li><li><a href="module-dex_ui.html">dex/ui</a></li><li><a href="module-dex_ui_jqueryui.html">dex/ui/jqueryui</a></li><li><a href="module-dex_util.html">dex/util</a></li><li><a href="module-dex_util_d3.html">dex/util/d3</a></li></ul>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">dex.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>// Allow user to override, but define this by default:
+
+/**
+ *
+ * The main dexjs module.
+ *
+ * @module dex
+ *
+ * @requires d3
+ * @requires jquery
+ * @requires jqueryui
+ * @requires underscore
+ *
+ * @property {string}              version   - Returns the version of dex.js being used.
+ * @property {module:dex/bus}      bus       - A module providing a communication bus for charts.
+ * @property {module:dex/array}    array     - A module for dealing with arrays.
+ * @property {module:dex/csv}      csv       - A module for dealing with csv.
+ * @property {module:dex/matrix}   matrix    - A module for dealing with matrices.
+ * @property {module:dex/object}   object    - A module for dealing with objects.
+ * @property {module:dex/charts}   charts    - The module which provides the various charts.
+ * @property {module:dex/color}    color     - A module for dealing with colors.
+ * @property {module:dex/datagen}  datagen   - A module for generating data.
+ * @property {module:dex/json}     json      - A module for dealing with json.
+ * @property {module:dex/charts}   ui        - A module providing ui components.
+ * @property {dex/component} component - The base class for all charting components.
+ *
+ */
+var dex = {};
+
+/**
+ *
+ * The version of dexjs.
+ *
+ * @name version
+ * @type {string}
+ *
+ */
+dex.version = "0.8.0.8";
+
+/**
+ * This routine will return an array [ start, ..., start + len ] using an increment of 1.
+ *
+ * @param {number} start - The starting index.
+ * @param {number} len - The number of integers to generate.
+ * @example {@lang javascript}
+ * // returns [ 0, 1, 2 ]
+ * range(0, 3)
+ *
+ * @returns {Array} An array consisting of elements [ start, ..., start + len ].
+ *
+ */
+dex.range = function (start, len) {
+  return _.range(start, start + len);
+};
+
+/**
+ *
+ * This routine is simply a convenience function as it
+ * simply wraps underscore's implementation of a shallow
+ * copy.  This method will create a shallow-copied clone
+ * of the provided plain object. Any nested objects or
+ * arrays will be copied by reference, not duplicated.
+ *
+ * @param obj
+ * @returns {*}
+ */
+dex.copy = function (obj) {
+  return _.copy(obj);
+};
+
+/**
+ *
+ * The pub/sub bus used by dex in order to publish and subscribe to events.
+ *
+ * @name bus
+ * @type {PubSub}
+ * @see https://github.com/federico-lox/pubsub.js
+ *
+ */
+dex.bus = require("../lib/pubsub");
+
+dex.util = require('./util/util')(dex);
+
+/**
+ *
+ * A module for dealing with arrays.
+ *
+ * @name array
+ * @type {module:dex.array}
+ *
+ */
+dex.array = require('./array/array')(dex);
+
+/**
+ * A module for dealing with colors.
+ *
+ * @name color
+ * @type {module:dex.color}
+ *
+ */
+dex.color = require("./color/color")(dex);
+
+/**
+ *
+ * A module for configuring things.
+ *
+ * @name config
+ * @type {module:dex.config}
+ *
+ */
+dex.config = require("./config/config")(dex);
+
+/**
+ *
+ * A module for logging to the console.
+ *
+ * @name console
+ * @type {module:dex.console}
+ *
+ */
+dex.console = require("./console/console")(dex);
+
+/**
+ *
+ * A module for handling CSV data structures.
+ *
+ * @name csv
+ * @type {module:dex.csv}
+ *
+ */
+dex.csv = require("./csv/csv")(dex);
+
+/**
+ *
+ * A module providing utilities for data generation.
+ *
+ * @name datagen
+ * @type {module:dex.datagen}
+ *
+ */
+dex.datagen = require("./datagen/datagen")(dex);
+
+/**
+ *
+ * A module for dealing with JSON data.
+ *
+ * @name json
+ * @type {module:dex.json}
+ *
+ */
+dex.json = require("./json/json")(dex);
+
+/**
+ * A module for dealing with matrices.
+ *
+ * @name matrix
+ * @type {module:dex.matrix}
+ *
+ */
+dex.matrix = require("./matrix/matrix")(dex);
+
+/**
+ * @name object
+ * @type {module:object}
+ *
+ */
+dex.object = require("./object/object")(dex);
+
+/**
+ *
+ * A module for creating ui components such as players and sliders.
+ *
+ * @name ui
+ * @type {module:ui}
+ *
+ */
+dex.ui = require("./ui/ui")(dex);
+
+/**
+ *
+ * A module for dealing dex components.
+ *
+ * @name component
+ * @type {module:component}
+ *
+ */
+dex.component = require("./component/component")(dex);
+
+/**
+ *
+ * An overall charting module composed of many sub-modules.
+ *
+ * @name charts
+ * @type {module:charts}
+ *
+ */
+dex.charts = require("./charts/charts")(dex);
+
+d3 = dex.charts.d3.d3v3;
+
+// Allow jqueryui to play well with bootstrap.  This
+// also means we must include dex.js before bootstrap.
+$.widget.bridge('uitooltip', $.ui.tooltip);
+$.widget.bridge('uibutton', $.ui.button);
+
+module.exports = dex;</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Thu Feb 02 2017 17:13:30 GMT-0500 (Eastern Standard Time) using the Minami theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>
