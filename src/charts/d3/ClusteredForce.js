@@ -103,7 +103,6 @@ var clusteredforce = function (userConfig) {
     var max = null;
 
     config.groups.forEach(function (group) {
-      "use strict";
       config.csv.data.forEach(function (row) {
         var value = +(row[group.value]);
         nodes.push({
@@ -130,7 +129,6 @@ var clusteredforce = function (userConfig) {
       .range([config.minRadius, config.maxRadius]);
 
     nodes.forEach(function (node) {
-      "use strict";
       node.radius = radiusScale(+node.value);
     });
 

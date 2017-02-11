@@ -1,5 +1,3 @@
-"use strict";
-
 /**
  *
  * This module provides routines for dealing with arrays.

@@ -31,11 +31,11 @@ var player = function (userConfig) {
     frames = dex.csv.getFramesByIndex(config.csv, config.frameIndex);
     chart.attr("frames", frames);
 
-    //dex.console.log("FRAMES:", frames);
+    dex.console.log("FRAMES:", frames);
 
     $(config.parent)
       .append('<div><label>Frame:</label>' +
-        '<label id="frameNumber">1</label>')
+        '<label id="frameNumber">1 (' + frames.frames[0].header[config.frameIndex] + ')</label>')
       .css('display', 'block')
       .css('text-align', 'center');
     $(config.parent)
@@ -70,7 +70,7 @@ var player = function (userConfig) {
         },
         'slide': function (event, ui) {
           dex.console.log("VALUE", ui.value);
-          $("#frameNumber").html(ui.value)
+          $("#frameNumber").html(ui.value + "foobar")
           gotoFrame(ui.value - 1);
 
           // Stop playing
@@ -175,16 +175,16 @@ var player = function (userConfig) {
     frameNum = frameIndex;
     if ($("#slider").is(":ui-slider")) {
       $("#slider").slider({ "value" : frameNum + 1 });
-      $("#frameNumber").html(frameNum + 1);
+      $("#frameNumber").html("" + (frameNum + 1) + " (" + frames.frames[frameNum].data[0][config.frameIndex] + ")");
     }
     chart.publish({
         "type": "new-frame",
         "data": frames.frames[frameNum],
         "name": frames.frameIndices[frameNum],
-        "frameBy": csv.header[config.frameIndex]
+        "frameBy": chart.config.csv.header[config.frameIndex]
       }
     );
-    dex.console.log("Displaying frame: " + frameNum);
+    //dex.console.log("Displaying frame: " + frameNum);
   }
 
   $(document).ready(function () {

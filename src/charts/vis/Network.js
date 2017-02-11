@@ -100,7 +100,6 @@ var network = function (userConfig) {
   };
 
   chart.createData = function() {
-    "use strict";
 
     var nodes = null;
     var edges = null;

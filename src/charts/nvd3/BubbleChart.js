@@ -33,43 +33,51 @@ var bubblechart = function (userConfig) {
       return {
         'key': group.key,
         'values': group.csv.data.map(function (row) {
-          return { 'x' : +row[1], 'y' : +row[2], 'size' : +row[3] };
+          return {'x': +row[1], 'y': +row[2], 'size': +row[3]};
         })
       }
     });
 
     dex.console.log("NVDDATA", nvd3Data);
 
+    var nvd3Chart = nv.models.scatterChart()
+      .showDistX(true)
+      .showDistY(true)
+      .useVoronoi(true)
+      .color(d3.scale.category10().range())
+      .duration(300);
+
+    //nvd3Chart.xAxis.tickFormat(d3.format('.02f'));
+    nvd3Chart.yAxis.tickFormat(d3.format('.02f'));
+    nvd3Chart.xAxis
+      .showMaxMin(false)
+      .tickFormat(function (d) {
+        return d3.time.format('%x')(new Date(d))
+      });
+
+    var svg = d3.select(config.parent)
+      .append("svg")
+      .attr("id", config["id"])
+      .attr("class", config["class"])
+      .attr('width', config.width)
+      .attr('height', config.height)
+      .datum(nvd3Data)
+      .transition()
+      .duration(500)
+      .call(nvd3Chart);
+
+    nv.utils.windowResize(nvd3Chart.update);
+
     internalChart = nv.addGraph(function () {
-      var nvd3Chart = nv.models.scatterChart()
-        .showDistX(true)
-        .showDistY(true)
-        .useVoronoi(true)
-        .color(d3.scale.category10().range())
-        .duration(300);
-
-      //nvd3Chart.xAxis.tickFormat(d3.format('.02f'));
-      nvd3Chart.yAxis.tickFormat(d3.format('.02f'));
-      nvd3Chart.xAxis
-        .showMaxMin(false)
-        .tickFormat(function (d) {
-          return d3.time.format('%x')(new Date(d))
-        });
-
-      var svg = d3.select(config.parent)
-        .append("svg")
-        .attr("id", config["id"])
-        .attr("class", config["class"])
-        .attr('width', config.width)
-        .attr('height', config.height)
-        .datum(nvd3Data)
-        .transition()
-        .duration(500)
-        .call(nvd3Chart);
-
-      nv.utils.windowResize(nvd3Chart.update);
       return nvd3Chart;
+    }, function () {
+      d3.selectAll(".nv-legend-symbol").on('click',
+        function () {
+          dex.console.log("Clicked Legend Of", nvd3Chart.datum());
+        });
     });
+
+    return chart
   };
 
   chart.update = function () {

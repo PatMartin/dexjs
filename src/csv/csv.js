@@ -100,7 +100,7 @@ module.exports = function csv(dex) {
       return connectionMatrix;
     },
 
-    'getColumnNumber' : function (csv, colIndex) {
+    'getColumnNumber': function (csv, colIndex) {
       if (colIndex === undefined) {
         return -1;
       }
@@ -118,7 +118,7 @@ module.exports = function csv(dex) {
       return -1;
     },
 
-    'getColumnName' : function (csv, colIndex) {
+    'getColumnName': function (csv, colIndex) {
       if (colIndex === undefined) {
         return null;
       }
@@ -132,6 +132,11 @@ module.exports = function csv(dex) {
       }
 
       return null;
+    },
+
+    'getColumnData': function (csv, colIndex) {
+      return dex.csv.columnSlice(csv,
+        dex.csv.getColumnNumber(csv, colIndex));
     },
 
     /**
@@ -518,7 +523,7 @@ module.exports = function csv(dex) {
 
     'uniques': function (csv, columns) {
       return dex.matrix.uniques(csv.data, columns);
-    },    'selectRows': function (csv, fn) {
+    }, 'selectRows': function (csv, fn) {
       var subset = [];
       csv.data.forEach(function (row) {
         if (fn(row)) {
@@ -529,8 +534,8 @@ module.exports = function csv(dex) {
       return {'header': csv.header, 'data': subset};
     },
 
-    'extent' : function(csv, columns) {
-       return dex.matrix.extent(csv.data, columns);
+    'extent': function (csv, columns) {
+      return dex.matrix.extent(csv.data, columns);
     },
 
     /**
