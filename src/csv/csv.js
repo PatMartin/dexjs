@@ -118,6 +118,19 @@ module.exports = function csv(dex) {
       return -1;
     },
 
+    /**
+     *  Given a csv and a column index, return the name of the column.
+     *  If a string is supplied, return the string if it is the name
+     *  of a header.  If an integer is supplied, return the name of
+     *  the header if that header exists.  This allows us to enable
+     *  users to index columns via header name or by index.
+     *
+     * @param csv The csv for which we're retrieving the column name.
+     * @param colIndex The name of the column header or its index.
+     *
+     * @returns {*} Null if the column index does not exist, the name
+     * of the corresponding header otherwise.
+     */
     'getColumnName': function (csv, colIndex) {
       if (colIndex === undefined) {
         return null;
@@ -134,9 +147,21 @@ module.exports = function csv(dex) {
       return null;
     },
 
+    /**
+     *
+     * Retrieve the column referred to by the column index.  The
+     * column index can be a header name or a value column number.
+     *
+     * @param csv The csv we're retrieving the data from.
+     * @param colIndex The index of the column we wish to retrieve.
+     *
+     */
     'getColumnData': function (csv, colIndex) {
-      return dex.csv.columnSlice(csv,
-        dex.csv.getColumnNumber(csv, colIndex));
+      var i = dex.csv.getColumnNumber(csv, colIndex);
+
+      return csv.data.map(function (row) {
+        return row[i];
+      });
     },
 
     /**
@@ -243,8 +268,10 @@ module.exports = function csv(dex) {
 
     /**
      *
-     * @param csv
-     * @returns {{header: *, data: *}}
+     * Make a copy of this csv.
+     *
+     * @param {csv} csv The csv to copy.
+     * @returns {csv} A copy of the original csv.
      *
      */
     'copy': function (csv) {
@@ -605,6 +632,69 @@ module.exports = function csv(dex) {
         'frameIndices': frameIndices,
         'frames': frames
       }
+    },
+
+    /**
+     *
+     * Frame out a csv based on non-distinct permutations.  Exclude the
+     * column pointed to by groupIndex from the permutations.  This will
+     * be used to group and typically color the various series contained
+     * within the frames.  A set of frames suitable for SPLOM might be
+     * generated via a call of getPermutationFrames(csv, 2).  However, as
+     * this is written generically, it will also support higher order
+     * dimensions as well.
+     *
+     * @param csv The csv we wish to frame.
+     * @param permutationSize The length of the desired permutations.
+     * @param groupIndex The index of we are grouping upon.
+     * @returns {{frameIndices: Array, frames: Array}}
+     *
+     */
+
+    'getPermutationFrames': function (csv, permutationSize, groupIndex) {
+      var gi = dex.csv.getColumnNumber(csv, groupIndex);
+
+      var plist = dex.range(0, csv.header.length - 1);
+      if (gi >= 0) {
+        plist.splice(gi, 1);
+      }
+      var permutations = dex.array.getPermutations(plist, permutationSize);
+
+      return dex.csv.getFrames(csv, permutations, gi);
+    },
+
+    'getCombinationFrames': function (csv, comboFrames, groupIndex) {
+      var gi = dex.csv.getColumnNumber(csv, groupIndex);
+
+      var plist = dex.range(0, csv.header.length - 1);
+      if (gi >= 0) {
+        plist.splice(gi, 1);
+      }
+      var combos = dex.array.getCombinations(plist, comboFrames);
+
+      return dex.csv.getFrames(csv, combos, gi);
+    },
+
+    'getFrames': function (csv, permutations, groupIndex) {
+      var frameIndices = [];
+      var frames = [];
+      var gi = dex.csv.getColumnNumber(csv, groupIndex);
+
+      permutations.forEach(function (permutation) {
+
+        frameIndices.push(permutation.map(function (hi) {
+          return csv.header[hi];
+        }).join(" vs "));
+
+        var columnIndices = dex.array.copy(permutation);
+        if (gi >= 0) {
+          columnIndices.unshift(gi);
+        }
+
+        frames.push(dex.csv.columnSlice(csv, columnIndices));
+      });
+
+      return {'frameIndices': frameIndices, 'frames': frames};
     },
 
     /**
