@@ -53,7 +53,7 @@ var c3hart = function (userConfig) {
     var csv = config.csv;
 
     dex.console.log("c3 config", config.options);
-    internalChart.load(c3config);
+    internalChart.load(config.options);
     return chart;
   };
 
