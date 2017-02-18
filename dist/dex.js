@@ -265,6 +265,89 @@ module.exports = function array(dex) {
       return arraySlice;
     },
 
+    'getPermutations': function (list, maxLen) {
+      // Copy initial values as arrays
+      var perm = list.map(function (val) {
+        return [val];
+      });
+      // Our permutation generator
+      var generate = function (perm, maxLen, currLen) {
+        // Reached desired length
+        if (currLen === maxLen) {
+          return perm;
+        }
+        // For each existing permutation
+        for (var i = 0, len = perm.length; i < len; i++) {
+          var currPerm = perm.shift();
+          // Create new permutation
+          for (var k = 0; k < list.length; k++) {
+            perm.push(currPerm.concat(list[k]));
+          }
+        }
+        // Recurse
+        return generate(perm, maxLen, currLen + 1);
+      };
+      // Start with size 1 because of initial values
+      return generate(perm, maxLen, 1);
+    },
+
+    'getCombinations': function (list, comboLength) {
+      var i, j, combs, head, tailcombs;
+
+      // There is no way to take e.g. sets of 5 elements from
+      // a set of 4.
+      if (comboLength > list.length || comboLength <= 0) {
+        return [];
+      }
+
+      // K-sized set has only one K-sized subset.
+      if (comboLength == list.length) {
+        return [list];
+      }
+
+      // There is N 1-sized subsets in a N-sized set.
+      if (comboLength == 1) {
+        combs = [];
+        for (i = 0; i < list.length; i++) {
+          combs.push([list[i]]);
+        }
+        return combs;
+      }
+
+      // Assert {1 < k < set.length}
+
+      // Algorithm description:
+      // To get k-combinations of a set, we want to join each element
+      // with all (k-1)-combinations of the other elements. The set of
+      // these k-sized sets would be the desired result. However, as we
+      // represent sets with lists, we need to take duplicates into
+      // account. To avoid producing duplicates and also unnecessary
+      // computing, we use the following approach: each element i
+      // divides the list into three: the preceding elements, the
+      // current element i, and the subsequent elements. For the first
+      // element, the list of preceding elements is empty. For element i,
+      // we compute the (k-1)-computations of the subsequent elements,
+      // join each with the element i, and store the joined to the set of
+      // computed k-combinations. We do not need to take the preceding
+      // elements into account, because they have already been the i:th
+      // element so they are already computed and stored. When the length
+      // of the subsequent list drops below (k-1), we cannot find any
+      // (k-1)-combs, hence the upper limit for the iteration:
+      combs = [];
+      for (i = 0; i < list.length - comboLength + 1; i++) {
+        // head is a list that includes only our current element.
+        head = list.slice(i, i + 1);
+        // We take smaller combinations from the subsequent elements
+        tailcombs = dex.array.getCombinations(list.slice(i + 1), comboLength - 1);
+        // For each (k-1)-combination we join it with the current
+        // and store it to the set of k-combinations.
+        for (j = 0; j < tailcombs.length; j++) {
+          combs.push(head.concat(tailcombs[j]));
+        }
+      }
+      return combs;
+    },
+
     /**
      *
      * This method locates the array element whose id tag matches the supplied
@@ -400,7 +483,7 @@ module.exports = function array(dex) {
       // Deep copy:
       //return $.extend(true, {}, array);
     },
-    'isNumeric' : function(array) {
+    'isNumeric': function (array) {
       return array.every(dex.object.isNumeric);
     }
   };
@@ -708,7 +791,7 @@ var c3hart = function (userConfig) {
     var csv = config.csv;
 
     dex.console.log("c3 config", config.options);
-    internalChart.load(c3config);
+    internalChart.load(config.options);
     return chart;
   };
 
@@ -7556,12 +7639,30 @@ var scatterplot = function (userConfig) {
       'data': []
     },
     'series': [
-      { 'name' : 'series-1',
-        'coordinates' : { 'x' : 0, 'y' : 1, 'z': 2 },
-        'shape' : 'circle',
-        'size' : 1,
+      {
+        'name': 'series-1',
+        'coordinates': {'x': 0, 'y': 1, 'z': 2},
+        'group': undefined,
+        'shape': 'circle',
+        'size': 1,
       }
     ],
+    'stage': {
+      width: 700,
+      height: 530,
+      world_width: 500,
+      world_height: 500,
+      axis_labels: {x: "X", y: "Y", z: "Z"},
+      bg_color: 0xffffff,
+      player: false,
+      space_mode: 'wireframe',
+      range: {x: [0, 0], y: [0, 0], z: [0, 0]},
+      autorange: true,
+      grid: true,
+      perspective: true,
+      orbit: false,
+      save_image: false
+    },
     //'shapes': ["circle", "cross", "rect", "diamond", "circle", "circle"],
     'color': d3.scale.category10(),
     'width': "100%",
@@ -7582,24 +7683,42 @@ var scatterplot = function (userConfig) {
 
     chart.resize();
 
-    internalChart = new Elegans.Stage(d3.select(config.parent)[0][0]);
+    internalChart = new Elegans.Stage(d3.select(config.parent)[0][0], config.stage);
+    config.series.forEach(function (series) {
 
-    config.series.forEach(function(series) {
+      //dex.console.log("SERIES", series);
+      var groups;
+      if (series.group) {
+        //dex.console.log("GROUPING BY: " + series.group + " = " +
+        //  dex.csv.getColumnNumber(series.group));
+        groups = dex.csv.group(csv, [dex.csv.getColumnNumber(csv, series.group)]);
+        //dex.console.log("GROUP", group);
+        groups.forEach(function (group) {
+          group.name = group.key;
+        })
+      }
+      else {
+        groups = [series];
+      }
 
-      data = {
-        'x' : tcsv.data[dex.csv.getColumnNumber(csv, series.coordinates.x)],
-        'y' : tcsv.data[dex.csv.getColumnNumber(csv, series.coordinates.y)],
-        'z' : tcsv.data[dex.csv.getColumnNumber(csv, series.coordinates.z)]
-      };
+      //dex.console.log("GROUPS", csv, groups);
 
-      dex.console.log(data);
+      groups.forEach(function (group) {
+        data = {
+          'x': dex.csv.getColumnData(group.csv, series.coordinates.x),
+          'y': dex.csv.getColumnData(group.csv, series.coordinates.y),
+          'z': dex.csv.getColumnData(group.csv, series.coordinates.z)
+        };
 
-      internalChart.add(new Elegans.Scatter(data, {
-        fill_color: config.color(series.name),
-        shape: series.shape,
-        name: series.name,
-        size: series.size
-      }));
+        //dex.console.log("GROUP", group);
+
+        internalChart.add(new Elegans.Scatter(data, {
+          fill_color: config.color(group.name),
+          shape: series.shape,
+          name: group.name,
+          size: series.size
+        }));
+      });
     });
 
     internalChart.render();
@@ -10698,6 +10817,19 @@ module.exports = function csv(dex) {
       return -1;
     },
 
+    /**
+     *  Given a csv and a column index, return the name of the column.
+     *  If a string is supplied, return the string if it is the name
+     *  of a header.  If an integer is supplied, return the name of
+     *  the header if that header exists.  This allows us to enable
+     *  users to index columns via header name or by index.
+     *
+     * @param csv The csv for which we're retrieving the column name.
+     * @param colIndex The name of the column header or its index.
+     *
+     * @returns {*} Null if the column index does not exist, the name
+     * of the corresponding header otherwise.
+     */
     'getColumnName': function (csv, colIndex) {
       if (colIndex === undefined) {
         return null;
@@ -10714,9 +10846,21 @@ module.exports = function csv(dex) {
       return null;
     },
 
+    /**
+     *
+     * Retrieve the column referred to by the column index.  The
+     * column index can be a header name or a value column number.
+     *
+     * @param csv The csv we're retrieving the data from.
+     * @param colIndex The index of the column we wish to retrieve.
+     *
+     */
     'getColumnData': function (csv, colIndex) {
-      return dex.csv.columnSlice(csv,
-        dex.csv.getColumnNumber(csv, colIndex));
+      var i = dex.csv.getColumnNumber(csv, colIndex);
+
+      return csv.data.map(function (row) {
+        return row[i];
+      });
     },
 
     /**
@@ -10823,8 +10967,10 @@ module.exports = function csv(dex) {
 
     /**
      *
-     * @param csv
-     * @returns {{header: *, data: *}}
+     * Make a copy of this csv.
+     *
+     * @param {csv} csv The csv to copy.
+     * @returns {csv} A copy of the original csv.
      *
      */
     'copy': function (csv) {
@@ -11185,6 +11331,69 @@ module.exports = function csv(dex) {
         'frameIndices': frameIndices,
         'frames': frames
       }
+    },
+
+    /**
+     *
+     * Frame out a csv based on non-distinct permutations.  Exclude the
+     * column pointed to by groupIndex from the permutations.  This will
+     * be used to group and typically color the various series contained
+     * within the frames.  A set of frames suitable for SPLOM might be
+     * generated via a call of getPermutationFrames(csv, 2).  However, as
+     * this is written generically, it will also support higher order
+     * dimensions as well.
+     *
+     * @param csv The csv we wish to frame.
+     * @param permutationSize The length of the desired permutations.
+     * @param groupIndex The index of we are grouping upon.
+     * @returns {{frameIndices: Array, frames: Array}}
+     *
+     */
+
+    'getPermutationFrames': function (csv, permutationSize, groupIndex) {
+      var gi = dex.csv.getColumnNumber(csv, groupIndex);
+
+      var plist = dex.range(0, csv.header.length - 1);
+      if (gi >= 0) {
+        plist.splice(gi, 1);
+      }
+      var permutations = dex.array.getPermutations(plist, permutationSize);
+
+      return dex.csv.getFrames(csv, permutations, gi);
+    },
+
+    'getCombinationFrames': function (csv, comboFrames, groupIndex) {
+      var gi = dex.csv.getColumnNumber(csv, groupIndex);
+
+      var plist = dex.range(0, csv.header.length - 1);
+      if (gi >= 0) {
+        plist.splice(gi, 1);
+      }
+      var combos = dex.array.getCombinations(plist, comboFrames);
+
+      return dex.csv.getFrames(csv, combos, gi);
+    },
+
+    'getFrames': function (csv, permutations, groupIndex) {
+      var frameIndices = [];
+      var frames = [];
+      var gi = dex.csv.getColumnNumber(csv, groupIndex);
+
+      permutations.forEach(function (permutation) {
+
+        frameIndices.push(permutation.map(function (hi) {
+          return csv.header[hi];
+        }).join(" vs "));
+
+        var columnIndices = dex.array.copy(permutation);
+        if (gi >= 0) {
+          columnIndices.unshift(gi);
+        }
+
+        frames.push(dex.csv.columnSlice(csv, columnIndices));
+      });
+
+      return {'frameIndices': frameIndices, 'frames': frames};
     },
 
     /**
