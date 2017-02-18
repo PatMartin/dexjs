@@ -12,12 +12,30 @@ var scatterplot = function (userConfig) {
       'data': []
     },
     'series': [
-      { 'name' : 'series-1',
-        'coordinates' : { 'x' : 0, 'y' : 1, 'z': 2 },
-        'shape' : 'circle',
-        'size' : 1,
+      {
+        'name': 'series-1',
+        'coordinates': {'x': 0, 'y': 1, 'z': 2},
+        'group': undefined,
+        'shape': 'circle',
+        'size': 1,
       }
     ],
+    'stage': {
+      width: 700,
+      height: 530,
+      world_width: 500,
+      world_height: 500,
+      axis_labels: {x: "X", y: "Y", z: "Z"},
+      bg_color: 0xffffff,
+      player: false,
+      space_mode: 'wireframe',
+      range: {x: [0, 0], y: [0, 0], z: [0, 0]},
+      autorange: true,
+      grid: true,
+      perspective: true,
+      orbit: false,
+      save_image: false
+    },
     //'shapes': ["circle", "cross", "rect", "diamond", "circle", "circle"],
     'color': d3.scale.category10(),
     'width': "100%",
@@ -38,24 +56,42 @@ var scatterplot = function (userConfig) {
 
     chart.resize();
 
-    internalChart = new Elegans.Stage(d3.select(config.parent)[0][0]);
+    internalChart = new Elegans.Stage(d3.select(config.parent)[0][0], config.stage);
+    config.series.forEach(function (series) {
 
-    config.series.forEach(function(series) {
+      //dex.console.log("SERIES", series);
+      var groups;
+      if (series.group) {
+        //dex.console.log("GROUPING BY: " + series.group + " = " +
+        //  dex.csv.getColumnNumber(series.group));
+        groups = dex.csv.group(csv, [dex.csv.getColumnNumber(csv, series.group)]);
+        //dex.console.log("GROUP", group);
+        groups.forEach(function (group) {
+          group.name = group.key;
+        })
+      }
+      else {
+        groups = [series];
+      }
 
-      data = {
-        'x' : tcsv.data[dex.csv.getColumnNumber(csv, series.coordinates.x)],
-        'y' : tcsv.data[dex.csv.getColumnNumber(csv, series.coordinates.y)],
-        'z' : tcsv.data[dex.csv.getColumnNumber(csv, series.coordinates.z)]
-      };
+      //dex.console.log("GROUPS", csv, groups);
 
-      dex.console.log(data);
+      groups.forEach(function (group) {
+        data = {
+          'x': dex.csv.getColumnData(group.csv, series.coordinates.x),
+          'y': dex.csv.getColumnData(group.csv, series.coordinates.y),
+          'z': dex.csv.getColumnData(group.csv, series.coordinates.z)
+        };
 
-      internalChart.add(new Elegans.Scatter(data, {
-        fill_color: config.color(series.name),
-        shape: series.shape,
-        name: series.name,
-        size: series.size
-      }));
+        //dex.console.log("GROUP", group);
+
+        internalChart.add(new Elegans.Scatter(data, {
+          fill_color: config.color(group.name),
+          shape: series.shape,
+          name: group.name,
+          size: series.size
+        }));
+      });
     });
 
     internalChart.render();
