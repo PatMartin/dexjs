@@ -64,6 +64,11 @@ var linechart = function (userConfig) {
   };
 
   chart.render = function render() {
+    window.onresize = this.resize;
+    chart.resize();
+  };
+
+  chart.update = function render() {
 
     //var chart = this;
     var config = chart.config;
@@ -140,36 +145,6 @@ var linechart = function (userConfig) {
 
     //dex.console.log("CATEGORIES", c3config);
     internalChart = c3.generate(c3config);
-  };
-
-  chart.update = function () {
-    var chart = this;
-    var config = chart.config;
-    var csv = config.csv;
-
-    var gtypes = dex.csv.guessTypes(csv);
-
-    var ncsv = dex.csv.columnSlice(csv, selectedColumns);
-    var columns = dex.csv.transpose(ncsv);
-
-    for (var ci = 0; ci < columns.header.length; ci++) {
-      columns.data[ci].unshift(columns.header[ci]);
-    }
-
-    var types = {};
-    dex.range(1, ncsv.header.length)
-      .map(function (hi) {
-        types[ncsv.header[hi - 1]] = config.linktype;
-      });
-
-    var c3config = {
-      'columns': columns.data
-    };
-
-    //dex.console.log("C3CONFIG", c3config);
-
-    //internalChart.groups(config.groups);
-    internalChart.load(c3config);
   };
 
   $(document).ready(function () {
