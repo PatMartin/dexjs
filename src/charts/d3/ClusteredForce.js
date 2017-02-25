@@ -142,6 +142,8 @@ var clusteredforce = function (userConfig) {
       .on("tick", tick)
       .start();
 
+    d3.selectAll(config.parent).selectAll("*").remove();
+
     var svg = d3.select(config.parent)
       .append("svg")
       .attr("id", config["id"])
