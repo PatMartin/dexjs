@@ -1,0 +1,164 @@
+[
+  {
+    "image": "C3AreaChart.png",
+    "configuration": {
+      "name": "C3AreaChart",
+      "components": [
+        {
+          "name": "C3AreaChart",
+          "class": "dex.charts.c3.AreaChart",
+          "config": {}
+        }
+      ]
+    }
+  },
+  {
+    "image": "C3LineChart.png",
+    "configuration": {
+      "name": "C3LineChart",
+      "components": [
+        {
+          "name": "C3LineChart",
+          "class": "dex.charts.c3.LineChart",
+          "config": {}
+        }
+      ]
+    }
+  },
+  {
+    "image": "C3BarChart.png",
+    "configuration": {
+      "name": "C3BarChart",
+      "components": [
+        {
+          "name": "C3BarChart",
+          "class": "dex.charts.c3.BarChart",
+          "config": {}
+        }
+      ]
+    }
+  },
+  {
+    "image": "Chord.png",
+    "configuration": {
+      "name": "Chord",
+      "components": [
+        {
+          "name": "Chord",
+          "class": "dex.charts.d3.Chord",
+          "config": {
+            "margin": {
+              "top": 0,
+              "bottom": 0,
+              "left": 0,
+              "right": 0
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "image": "ParallelCoordinates.png",
+    "configuration": {
+      "name": "ParallelCoordinates",
+      "components": [
+        {
+          "name": "ParallelCoordinates",
+          "class": "dex.charts.d3.ParallelCoordinates",
+          "config": {
+            "margin.top": 50,
+            "margin.bottom": 25,
+            "margin.left": 50,
+            "margin.right": 50
+          }
+        }
+      ]
+    }
+  },
+  {
+    "image": "ClusteredForce.png",
+    "configuration": {
+      "name": "ClusteredForce",
+      "components": [
+        {
+          "name": "ClusteredForce",
+          "class": "dex.charts.d3.ClusteredForce",
+          "config": {}
+        }
+      ]
+    }
+  },
+  {
+    "image": "Treemap.png",
+    "configuration": {
+      "name": "Treemap",
+      "components": [
+        {
+          "name": "Treemap",
+          "class": "dex.charts.d3.Treemap",
+          "config": {}
+        }
+      ]
+    }
+  },
+  {
+    "image": "Dendrogram.png",
+    "configuration": {
+      "name": "Dendrogram",
+      "components": [
+        {
+          "name": "Dendrogram",
+          "class": "dex.charts.d3.Dendrogram",
+          "config": {}
+        }
+      ]
+    }
+  },
+  {
+    "image": "PC2Chord.png",
+    "configuration": {
+      "name": "PC2Chord",
+      "components": [
+        {
+          "name": "PC",
+          "class": "dex.charts.d3.ParallelCoordinates",
+          "config": {
+            "class": "PC2Chord",
+            "margin": {
+              "top": 50,
+              "bottom": 10,
+              "left": 20,
+              "right": 20
+            }
+          }
+        },
+        {
+          "name": "Chord",
+          "class": "dex.charts.d3.Chord",
+          "config": {
+            "class": "PC2Chord",
+            "margin": {
+              "top": 0,
+              "bottom": 0,
+              "left": 0,
+              "right": 0
+            }
+          }
+        }
+      ],
+      "interactions": [
+        {
+          "sources": [
+            "PC"
+          ],
+          "destinations": [
+            "Chord"
+          ],
+          "event": "select",
+          "action": "setSelected"
+        }
+      ]
+    }
+  }
+]
