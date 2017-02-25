@@ -86,6 +86,10 @@ dex.actions = {
   }
 };
 
+dex.createComponent = function (config) {
+    return dex.executeFunctionByName(config.class, window, config.config);
+};
+
 dex.create = function (config) {
   var components = [];
   var cmap = {};
