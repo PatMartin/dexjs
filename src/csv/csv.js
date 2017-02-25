@@ -426,8 +426,12 @@ module.exports = function csv(dex) {
      */
     'columnSlice': function (csv, columns) {
       var slice = {};
-      slice.header = dex.array.slice(csv.header, columns);
-      slice.data = dex.matrix.slice(csv.data, columns);
+      var columnNumbers = columns.map(function(column) {
+        return dex.csv.getColumnNumber(csv, column);
+      });
+
+      slice.header = dex.array.slice(csv.header, columnNumbers);
+      slice.data = dex.matrix.slice(csv.data, columnNumbers);
 
       return slice;
     },
@@ -550,7 +554,9 @@ module.exports = function csv(dex) {
 
     'uniques': function (csv, columns) {
       return dex.matrix.uniques(csv.data, columns);
-    }, 'selectRows': function (csv, fn) {
+    },
+
+    'selectRows': function (csv, fn) {
       var subset = [];
       csv.data.forEach(function (row) {
         if (fn(row)) {
