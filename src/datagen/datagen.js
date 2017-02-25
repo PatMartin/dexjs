@@ -54,6 +54,24 @@ module.exports = function datagen(dex) {
       return matrix;
     },
 
+
+    'randomIndexedIntegerMatrix': function (spec) {
+      var ri, ci;
+
+      //{rows:10, columns: 4, min, 0, max:100})
+      var matrix = [];
+      var range = spec.max - spec.min;
+      for (ri = 0; ri < spec.rows; ri++) {
+        var row = [];
+
+        row.push(ri + 1);
+        for (ci = 0; ci < spec.columns - 1; ci++) {
+          row.push(Math.round(Math.random() * range + spec.min));
+        }
+        matrix.push(row);
+      }
+      return matrix;
+    },
     'randomIntegerMatrix': function (spec) {
       var ri, ci;
 
