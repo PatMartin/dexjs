@@ -48,7 +48,7 @@ var chord = function (userConfig) {
         //'stroke.dasharray': '5 5',
         'stroke.width': 2,
         'fill.fillColor': function (d, i) {
-          dex.console.log("D", d)
+          //dex.console.log("D", d)
           return (chart.config.color(chart.config.chordData.header[d.index]));
         },
         'fill.fillOpacity': 1,
