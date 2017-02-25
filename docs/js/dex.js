@@ -871,6 +871,11 @@ var linechart = function (userConfig) {
   };
 
   chart.render = function render() {
+    window.onresize = this.resize;
+    chart.resize();
+  };
+
+  chart.update = function render() {
 
     //var chart = this;
     var config = chart.config;
@@ -947,36 +952,6 @@ var linechart = function (userConfig) {
 
     //dex.console.log("CATEGORIES", c3config);
     internalChart = c3.generate(c3config);
-  };
-
-  chart.update = function () {
-    var chart = this;
-    var config = chart.config;
-    var csv = config.csv;
-
-    var gtypes = dex.csv.guessTypes(csv);
-
-    var ncsv = dex.csv.columnSlice(csv, selectedColumns);
-    var columns = dex.csv.transpose(ncsv);
-
-    for (var ci = 0; ci < columns.header.length; ci++) {
-      columns.data[ci].unshift(columns.header[ci]);
-    }
-
-    var types = {};
-    dex.range(1, ncsv.header.length)
-      .map(function (hi) {
-        types[ncsv.header[hi - 1]] = config.linktype;
-      });
-
-    var c3config = {
-      'columns': columns.data
-    };
-
-    //dex.console.log("C3CONFIG", c3config);
-
-    //internalChart.groups(config.groups);
-    internalChart.load(c3config);
   };
 
   $(document).ready(function () {
@@ -1749,7 +1724,7 @@ var chord = function (userConfig) {
         //'stroke.dasharray': '5 5',
         'stroke.width': 2,
         'fill.fillColor': function (d, i) {
-          dex.console.log("D", d)
+          //dex.console.log("D", d)
           return (chart.config.color(chart.config.chordData.header[d.index]));
         },
         'fill.fillOpacity': 1,
@@ -2112,6 +2087,8 @@ var clusteredforce = function (userConfig) {
       .charge(config.charge / 100.0)
       .on("tick", tick)
       .start();
+
+    d3.selectAll(config.parent).selectAll("*").remove();
 
     var svg = d3.select(config.parent)
       .append("svg")
@@ -9265,10 +9242,11 @@ module.exports = function (dex) {
     this.resize = function (chart) {
       return function () {
         if (chart.config && chart.config.resizable) {
+          dex.console.log("Resize config: '" + chart.config.parent + "'");
           var width = d3.select(chart.config.parent).property("clientWidth");
           var height = d3.select(chart.config.parent).property("clientHeight");
 
-          dex.console.debug("Resizing: " + chart.config.parent + ">" + chart.config.id +
+          dex.console.log("Resizing: " + chart.config.parent + ">" + chart.config.id +
             "." + chart.config.class + " to (" +
             width + "w x " + height + "h)");
 
@@ -9278,6 +9256,16 @@ module.exports = function (dex) {
 
           if (!_.isNumber(width)) {
             width = "100%";
+          }
+
+          if (width == 0)
+          {
+            width = 200;
+          }
+
+          if (height == 0)
+          {
+            height = 200;
           }
 
           return chart.attr("width", width)
@@ -9290,6 +9278,20 @@ module.exports = function (dex) {
       };
     };
 
+    this.deleteChart = function (chart) {
+      return function () {
+        if (window.attachEvent) {
+          window.detachEvent('onresize', chart.resize);
+        }
+        else if (window.removeEventListener) {
+          dex.console.debug("window.removeEventListener");
+          window.removeEventListener('resize', chart.resize, true);
+        }
+        else {
+          dex.console.log("window does not support event binding");
+        }
+      };
+    };
     // Used for external entities to configure the chart.
     this.configure = function (config) {
       dex.console.log("Configuration", "new", config, "current", this.config);
@@ -9322,6 +9324,7 @@ module.exports = function (dex) {
       return this;
     };
 
+    this.deleteChart = this.deleteChart(this);
     this.resize = this.resize(this);
 
     if (window.attachEvent) {
@@ -11125,8 +11128,12 @@ module.exports = function csv(dex) {
      */
     'columnSlice': function (csv, columns) {
       var slice = {};
-      slice.header = dex.array.slice(csv.header, columns);
-      slice.data = dex.matrix.slice(csv.data, columns);
+      var columnNumbers = columns.map(function(column) {
+        return dex.csv.getColumnNumber(csv, column);
+      });
+
+      slice.header = dex.array.slice(csv.header, columnNumbers);
+      slice.data = dex.matrix.slice(csv.data, columnNumbers);
 
       return slice;
     },
@@ -11249,7 +11256,9 @@ module.exports = function csv(dex) {
 
     'uniques': function (csv, columns) {
       return dex.matrix.uniques(csv.data, columns);
-    }, 'selectRows': function (csv, fn) {
+    },
+
+    'selectRows': function (csv, fn) {
       var subset = [];
       csv.data.forEach(function (row) {
         if (fn(row)) {
@@ -11793,6 +11802,24 @@ module.exports = function datagen(dex) {
       return matrix;
     },
 
+
+    'randomIndexedIntegerMatrix': function (spec) {
+      var ri, ci;
+
+      //{rows:10, columns: 4, min, 0, max:100})
+      var matrix = [];
+      var range = spec.max - spec.min;
+      for (ri = 0; ri < spec.rows; ri++) {
+        var row = [];
+
+        row.push(ri + 1);
+        for (ci = 0; ci < spec.columns - 1; ci++) {
+          row.push(Math.round(Math.random() * range + spec.min));
+        }
+        matrix.push(row);
+      }
+      return matrix;
+    },
     'randomIntegerMatrix': function (spec) {
       var ri, ci;
 
@@ -12224,6 +12251,10 @@ dex.actions = {
       dest.attr('csv', msg.selected).update();
     }
   }
+};
+
+dex.createComponent = function (config) {
+    return dex.executeFunctionByName(config.class, window, config.config);
 };
 
 dex.create = function (config) {
