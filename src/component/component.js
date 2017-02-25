@@ -131,10 +131,11 @@ module.exports = function (dex) {
     this.resize = function (chart) {
       return function () {
         if (chart.config && chart.config.resizable) {
+          dex.console.log("Resize config: '" + chart.config.parent + "'");
           var width = d3.select(chart.config.parent).property("clientWidth");
           var height = d3.select(chart.config.parent).property("clientHeight");
 
-          dex.console.debug("Resizing: " + chart.config.parent + ">" + chart.config.id +
+          dex.console.log("Resizing: " + chart.config.parent + ">" + chart.config.id +
             "." + chart.config.class + " to (" +
             width + "w x " + height + "h)");
 
@@ -144,6 +145,16 @@ module.exports = function (dex) {
 
           if (!_.isNumber(width)) {
             width = "100%";
+          }
+
+          if (width == 0)
+          {
+            width = 200;
+          }
+
+          if (height == 0)
+          {
+            height = 200;
           }
 
           return chart.attr("width", width)
@@ -156,6 +167,20 @@ module.exports = function (dex) {
       };
     };
 
+    this.deleteChart = function (chart) {
+      return function () {
+        if (window.attachEvent) {
+          window.detachEvent('onresize', chart.resize);
+        }
+        else if (window.removeEventListener) {
+          dex.console.debug("window.removeEventListener");
+          window.removeEventListener('resize', chart.resize, true);
+        }
+        else {
+          dex.console.log("window does not support event binding");
+        }
+      };
+    };
     // Used for external entities to configure the chart.
     this.configure = function (config) {
       dex.console.log("Configuration", "new", config, "current", this.config);
@@ -188,6 +213,7 @@ module.exports = function (dex) {
       return this;
     };
 
+    this.deleteChart = this.deleteChart(this);
     this.resize = this.resize(this);
 
     if (window.attachEvent) {
