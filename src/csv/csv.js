@@ -182,7 +182,7 @@ module.exports = function csv(dex) {
         // 0 : number
         // [0] : object
         // '0' : string
-        dex.console.log("TYPE", typeof(keyIndex));
+        dex.console.log("UNKNOWN-TYPE", typeof(keyIndex));
       }
       return {};
     },
@@ -530,7 +530,6 @@ module.exports = function csv(dex) {
       for (var i = 0; i < types.length; i++) {
         if (types[i] == 'date') {
           csv.data.forEach(function (row, ri) {
-            dex.console.log("row[" + ri + "]=" + row[ri]);
             csv.data[ri][i] = new Date(csv.data[ri][i]);
           })
         }

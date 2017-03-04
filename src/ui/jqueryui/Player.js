@@ -31,7 +31,7 @@ var player = function (userConfig) {
     frames = dex.csv.getFramesByIndex(config.csv, config.frameIndex);
     chart.attr("frames", frames);
 
-    dex.console.log("FRAMES:", frames);
+    dex.console.debug("FRAMES:", frames);
 
     $(config.parent)
       .append('<div><label>Frame:</label>' +
@@ -69,7 +69,6 @@ var player = function (userConfig) {
           "ui-slider": "highlight"
         },
         'slide': function (event, ui) {
-          dex.console.log("VALUE", ui.value);
           $("#frameNumber").html(ui.value + "foobar")
           gotoFrame(ui.value - 1);
 

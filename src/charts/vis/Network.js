@@ -62,7 +62,7 @@ var network = function (userConfig) {
   var chart = new dex.component(userConfig, defaults);
 
   chart.resize = function resize() {
-    dex.console.log("PARENT: '" + chart.config.parent + "'");
+    //dex.console.log("PARENT: '" + chart.config.parent + "'");
     if (chart.config.resizable) {
       var width = $("" + chart.config.parent).width();
       var height = $("" + chart.config.parent).height();
@@ -208,7 +208,7 @@ var network = function (userConfig) {
         'font'  : {'align': 'middle'} });
     }
 
-    dex.console.log("NODES", nodes, "EDGES", edges);
+    //dex.console.log("NODES", nodes, "EDGES", edges);
 
     return {
       nodes: nodes,

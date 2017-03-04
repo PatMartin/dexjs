@@ -105,7 +105,7 @@ var bumpchart = function (userConfig) {
     var xKey = dex.csv.getColumnName(csv, config.key.x);
     var yKey = dex.csv.getColumnName(csv, config.key.y);
 
-    dex.console.log("cat", categoryKey, "x", xKey, "y", yKey);
+    //dex.console.log("cat", categoryKey, "x", xKey, "y", yKey);
 
     d3.selectAll(config.parent).selectAll("*").remove();
 
@@ -132,8 +132,6 @@ var bumpchart = function (userConfig) {
       .entries(data);
 
     data = dataNest;
-
-    dex.console.log("DATA", data);
 
     var speed = 100;
 

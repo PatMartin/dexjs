@@ -49,7 +49,7 @@ var radarchart = function (userConfig) {
       'font.size': '16px',
       'anchor': function (d, i) {
         var degreesPerSection = 360 / (chart.attr('csv').header.length - 1);
-        dex.console.log("Degrees Per Section", degreesPerSection, degreesPerSection * (i-1));
+        //dex.console.log("Degrees Per Section", degreesPerSection, degreesPerSection * (i-1));
         if (degreesPerSection * i < 10) {
           return "middle";
         }
@@ -59,7 +59,7 @@ var radarchart = function (userConfig) {
         else if (degreesPerSection * i < 185) {
           return "middle";
         }
-        dex.console.log("D", d, i);
+
         return "end";
       },
       'dy' : function(d, i) {

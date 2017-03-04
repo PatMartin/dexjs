@@ -69,7 +69,6 @@
 
   var rows = dex.matrix.copy(csv.data);
   rows.unshift(csv.header);
-  dex.console.log("ROWS", rows);
 
   // Chart types
   var lineChartOptions = {
@@ -400,7 +399,7 @@
   var chart = dex.charts.c3.C3Chart({
     'parent': '#C3ChartParent',
     'csv': csv,
-    //'options': lineChartOptions,
+    'options': lineChartOptions,
     //'options': timeSeriesOptions,
     //'options': splineChartOptions,
     //'options': xyLineChartOptions,
@@ -410,7 +409,7 @@
     //'options': stepChartOptions,
     //'options': barChartOptions,
     //'options': stackedBarChartOptions,
-    'options': scatterPlotOptions,
+    //'options': scatterPlotOptions,
     //'options': pieChartOptions,
     //'options': donutChartOptions,
     //'options': gaugeChartOptions,

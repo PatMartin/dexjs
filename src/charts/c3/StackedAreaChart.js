@@ -55,7 +55,6 @@ var stackedareachart = function (userConfig) {
         if (chart.config.resizable) {
             var width = d3.select(chart.config.parent).property("clientWidth");
             var height = d3.select(chart.config.parent).property("clientHeight");
-            dex.console.log(chart.config.id + ": resize(" + width + "," + height + ")");
             chart.attr("width", width).attr("height", height).update();
         }
         else {
@@ -83,6 +82,7 @@ var stackedareachart = function (userConfig) {
         var c3config = {
             'bindto' : config.parent,
             'data': {
+                'x': columns.header[0],
                 'columns': columns.data,
                 'types': types,
                 'groups' : [ columns.header ],

@@ -10,6 +10,7 @@ var piechart = function (userConfig) {
       'header': [],
       'data': []
     },
+    'type' : 'pie',
     'width': "100%",
     'height': "100%",
     'legend' : 'right'
@@ -29,7 +30,7 @@ var piechart = function (userConfig) {
       'bindto': config.parent,
       'data': {
         'columns': csv.data,
-        'type': 'pie'
+        'type': config.type
       },
       'legend' : { 'position' : config.legend }
     };

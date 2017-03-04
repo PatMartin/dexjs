@@ -131,11 +131,10 @@ module.exports = function (dex) {
     this.resize = function (chart) {
       return function () {
         if (chart.config && chart.config.resizable) {
-          dex.console.log("Resize config: '" + chart.config.parent + "'");
           var width = d3.select(chart.config.parent).property("clientWidth");
           var height = d3.select(chart.config.parent).property("clientHeight");
 
-          dex.console.log("Resizing: " + chart.config.parent + ">" + chart.config.id +
+          dex.console.debug("Resizing: " + chart.config.parent + ">" + chart.config.id +
             "." + chart.config.class + " to (" +
             width + "w x " + height + "h)");
 

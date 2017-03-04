@@ -105,8 +105,8 @@ var sunburst = function (userConfig) {
     var path = g.append("path")
       .attr("d", arc)
       .style("fill", function (d) {
-        dex.console.log("COLOR", (d.children ? d : d.parent).name,
-          config.color((d.children ? d : d.parent).name));
+        //dex.console.log("COLOR", (d.children ? d : d.parent).name,
+        //  config.color((d.children ? d : d.parent).name));
         return config.color((d.children ? d : d.parent).name);
       })
       .on("click", click);

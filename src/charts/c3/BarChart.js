@@ -55,7 +55,6 @@ var barchart = function (userConfig) {
         if (chart.config.resizable) {
             var width = d3.select(chart.config.parent).property("clientWidth");
             var height = d3.select(chart.config.parent).property("clientHeight");
-            dex.console.log(chart.config.id + ": resize(" + width + "," + height + ")");
             chart.attr("width", width).attr("height", height).update();
         }
         else {
@@ -79,6 +78,7 @@ var barchart = function (userConfig) {
         var c3config = {
             'bindto' : config.parent,
             'data': {
+                'x': columns.header[0],
                 'columns': columns.data,
                 'type': 'bar',
                 color : d3.scale.category20()

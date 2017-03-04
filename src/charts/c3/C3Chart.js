@@ -5,7 +5,6 @@ var c3hart = function (userConfig) {
   var defaults = {
     // The parent container of this chart.
     'parent': '#C3ChartParent',
-    // Set these when you need to CSS style components independently.
     'id': 'C3ChartId',
     'class': 'C3ChartClass',
     'resizable': true,
@@ -17,12 +16,10 @@ var c3hart = function (userConfig) {
       'top': 10,
       'bottom': 10
     },
+    "draggable" : false,
     'csv': {
       'header': [],
       'data': []
-    },
-    'dataAdapter': function (csv) {
-      return csv;
     },
     'options': {}
   };
@@ -30,36 +27,27 @@ var c3hart = function (userConfig) {
   chart = new dex.component(userConfig, defaults);
 
   chart.render = function render() {
-    d3 = dex.charts.d3.d3v3;
     var config = chart.config;
-    var margin = config.margin;
-    var csv = config.csv;
-
-    if (config.resizable) {
-      config.width = d3.select(chart.config.parent).property("clientWidth");
-      config.height = d3.select(chart.config.parent).property("clientHeight");
-    }
-    var width = config.width - margin.left - margin.right;
-    var height = config.height - margin.top - margin.bottom;
-
+    d3 = dex.charts.d3.d3v3;
     d3.select(config.parent).selectAll("*").remove();
+
     config.options.bindto = config.parent;
     internalChart = c3.generate(config.options);
-    return chart;
+    return chart.resize();
   };
 
   chart.update = function () {
     var config = chart.config;
     var csv = config.csv;
 
-    dex.console.log("c3 config", config.options);
     internalChart.load(config.options);
     return chart;
   };
 
   $(document).ready(function () {
-    // Make the entire chart draggable.
-    //$(chart.config.parent).draggable();
+    if (chart.config.draggable) {
+      $("#" + chart.config.id).draggable();
+    }
   });
 
   return chart;

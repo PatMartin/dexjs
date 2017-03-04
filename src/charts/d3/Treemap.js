@@ -347,7 +347,7 @@ var treemap = function (userConfig) {
     }
 
     function name(d) {
-      dex.console.log("NAME", d);
+      //dex.console.log("NAME", d);
       return d.parent
         ? name(d.parent) + " > " + d.name + " (" +
         formatNumber(d.size) + ")"
