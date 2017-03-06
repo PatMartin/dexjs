@@ -11,8 +11,8 @@ var c3hart = function (userConfig) {
     'width': "100%",
     'height': "100%",
     'margin': {
-      'left': 20,
-      'right': 20,
+      'left': 50,
+      'right': 50,
       'top': 20,
       'bottom': 20
     },
@@ -58,14 +58,12 @@ var c3hart = function (userConfig) {
     var ncsv = dex.csv.numericSubset(csv);
     var columns = dex.csv.transpose(csv);
 
-    dex.console.log("GTYPES", gtypes);
     ncsv.data.unshift(ncsv.header);
     // Categorical axis
     if (gtypes[0] == "string") {
-      return {
+      options = {
         data: {
           "rows": ncsv.data,
-          "type": chart.config.linkType,
           "color": chart.config.color
         },
         axis: {
@@ -75,17 +73,20 @@ var c3hart = function (userConfig) {
           }
         }
       };
+      if (chart.config.stack) {
+        options.data.groups = [ncsv.header];
+      }
+      return options;
     }
     else if (gtypes[0] == "date") {
       var numericIndices = dex.csv.getNumericIndices(csv);
       numericIndices.unshift(0);
       var tcsv = dex.csv.columnSlice(csv, numericIndices);
       tcsv.data.unshift(tcsv.header);
-      return {
+      options = {
         data: {
           "x"   : tcsv.header[0],
           "rows": tcsv.data,
-          "type": chart.config.linkType,
           "color": chart.config.color
         },
         axis: {
@@ -97,16 +98,26 @@ var c3hart = function (userConfig) {
           }
         }
       };
+
+      if (chart.config.stack) {
+        options.data.groups = [ncsv.header];
+      }
+      return options;
     }
     else {
-      return {
+      options = {
         data: {
           "x": ncsv.header[0],
           "rows": ncsv.data,
-          "type": chart.config.linkType,
           "color": chart.config.color
         }
       };
+
+      if (chart.config.stack) {
+        options.data.groups = [dex.array.copy(ncsv.header)];
+        options.data.groups[0].shift();
+      }
+      return options;
     }
   }
 

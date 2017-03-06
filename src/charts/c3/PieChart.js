@@ -1,53 +1,27 @@
+/**
+ *
+ * This module provides a C3 Pie Chart.
+ *
+ * @name dex/charts/c3/PieChart
+ *
+ * @param userConfig
+ * @returns PieChart
+ */
 var piechart = function (userConfig) {
-  var chart;
-
   var defaults = {
-    'parent': '#PieChartParent',
-    'id': 'PieChartId',
-    'class': 'PieChartClass',
+    'parent': '#C3_PieChart',
+    'id': 'C3_PieChart',
+    'class': 'C3_PieChart',
     'resizable': true,
-    'csv': {
-      'header': [],
-      'data': []
-    },
-    'type' : 'pie',
     'width': "100%",
     'height': "100%",
-    'legend' : 'right'
+    "options": {
+      "data.type": "pie"
+    }
   };
 
-  var chart = new dex.component(userConfig, defaults);
-  var internalChart;
-  var c3config;
-
-  chart.render = function render() {
-    var config = chart.config;
-    var csv = config.csv;
-
-    d3.select(config.parent).selectAll("*").remove();
-
-    c3config = {
-      'bindto': config.parent,
-      'data': {
-        'columns': csv.data,
-        'type': config.type
-      },
-      'legend' : { 'position' : config.legend }
-    };
-
-    internalChart = c3.generate(c3config);
-  };
-
-  chart.update = function () {
-    internalChart.load({'columns': chart.config.csv.data });
-  };
-
-  $(document).ready(function () {
-    // Make the entire chart draggable.
-    //$(chart.config.parent).draggable();
-  });
-
-  return chart;
+  var combinedConfig = dex.config.expandAndOverlay(userConfig, defaults);
+  return dex.charts.c3.C3Chart(combinedConfig);
 };
 
 module.exports = piechart;

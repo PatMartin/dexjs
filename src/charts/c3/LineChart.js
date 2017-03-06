@@ -1,18 +1,26 @@
+/**
+ *
+ * This module provides a C3 Line Chart.
+ *
+ * @name dex/charts/c3/LineChart
+ *
+ * @param userConfig
+ * @returns LineChart
+ */
 var linechart = function (userConfig) {
   var defaults = {
-    'parent': '#LineChart',
-    // Set these when you need to CSS style components independently.
-    'id': 'LineChart',
-    'class': 'LineChart',
+    'parent': '#C3_LineChart',
+    'id': 'C3_LineChart',
+    'class': 'C3_LineChart',
     'resizable': true,
-    "linkType" : "spline",
     'width': "100%",
     'height': "100%",
-    "options": {}
+    "options": {
+      "data.type": "line"
+    }
   };
 
   var combinedConfig = dex.config.expandAndOverlay(userConfig, defaults);
-  dex.console.log("COMBINED", combinedConfig);
   return dex.charts.c3.C3Chart(combinedConfig);
 };
 
