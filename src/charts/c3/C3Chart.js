@@ -76,6 +76,28 @@ var c3hart = function (userConfig) {
         }
       };
     }
+    else if (gtypes[0] == "date") {
+      var numericIndices = dex.csv.getNumericIndices(csv);
+      numericIndices.unshift(0);
+      var tcsv = dex.csv.columnSlice(csv, numericIndices);
+      tcsv.data.unshift(tcsv.header);
+      return {
+        data: {
+          "x"   : tcsv.header[0],
+          "rows": tcsv.data,
+          "type": chart.config.linkType,
+          "color": chart.config.color
+        },
+        axis: {
+          x: {
+            type: "timeseries",
+            tick: {
+              format: '%Y-%m-%d'
+            }
+          }
+        }
+      };
+    }
     else {
       return {
         data: {

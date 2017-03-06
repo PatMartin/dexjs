@@ -29,7 +29,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.10/c3.min.js"></script>
 
 <body>
-<svg id="LineChartParent"></svg>
+<div id="LineChartParent"></div>
 
 <script>
   var csv = {
@@ -37,11 +37,22 @@
     'data': dex.datagen.randomIndexedMatrix({rows: 20, columns: 3, min: 0, max: 100})
   };
 
+  var tcsv = {
+    "header" : [ "TIME", "X", "Y" ],
+    "data"   : [
+      [ "2014-01-01", 1, 50 ],
+      [ "2015-01-01", 10, 100 ],
+      [ "2016-01-01", 20, 200 ],
+      [ "2017-01-01", 40, 300 ]
+    ]
+  };
+
   dex.console.log(JSON.stringify(csv));
 
   var linechart = new dex.charts.c3.LineChart({
       'parent': '#LineChartParent',
-      'csv': csv
+      'csv': tcsv,
+    "options.axis.rotated" : true
     }
   ).render();
 </script>
