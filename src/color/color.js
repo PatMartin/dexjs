@@ -148,7 +148,7 @@ module.exports = function color(dex) {
      * based upon the supplied range.
      *
      * @param {string[]} domain 2 or more items in a categorical domain.
-     * @param {string[2]} range An array of 2 colors.
+     * @param {string[]} range An array of 2 colors.
      * @returns {Function} A colormap function.
      *
      */
