@@ -5,6 +5,7 @@ var linechart = function (userConfig) {
     'id': 'LineChart',
     'class': 'LineChart',
     'resizable': true,
+    "linkType" : "spline",
     'width': "100%",
     'height': "100%",
     "options": {}
@@ -12,7 +13,7 @@ var linechart = function (userConfig) {
 
   var combinedConfig = dex.config.expandAndOverlay(userConfig, defaults);
   dex.console.log("COMBINED", combinedConfig);
-  return dex.charts.c3.C3Chart(combinedConfig, defaults);
+  return dex.charts.c3.C3Chart(combinedConfig);
 };
 
 module.exports = linechart;
