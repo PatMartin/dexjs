@@ -23,7 +23,7 @@ var c3hart = function (userConfig) {
       'data': []
     },
     'options': {
-      "tooltip.show" : true,
+      "tooltip.show": true,
       "subchart.show": false,
       "zoom.enabled": true,
       "point.show": true,
@@ -43,6 +43,7 @@ var c3hart = function (userConfig) {
       config.options.padding || config.margin;
     config.options.bindto = config.parent;
     var dataOptions = getDataOptions(csv);
+    //dex.console.log("PRE-OPTS", config.options);
     config.options =
       dex.config.expandAndOverlay(config.options,
         getDataOptions(csv));
@@ -60,22 +61,39 @@ var c3hart = function (userConfig) {
     ncsv.data.unshift(ncsv.header);
     // Categorical axis
     if (gtypes[0] == "string") {
-      options = {
-        data: {
-          "rows": ncsv.data,
-          "color": chart.config.color
-        },
-        axis: {
-          x: {
-            type: "category",
-            categories: columns.data[0]
+      // Donut an pie charts are a special case
+      if (chart.config && chart.config.options &&
+        chart.config.options.data && (
+          chart.config.options.data.type == "pie" ||
+          chart.config.options.data.type == "donut"
+        )) {
+        var summary = dex.csv.summary(csv, [0]);
+
+        return {
+          data: {
+            "columns": summary.data,
+            "color": chart.config.color
           }
         }
-      };
-      if (chart.config.stack) {
-        options.data.groups = [ncsv.header];
       }
-      return options;
+      else {
+        options = {
+          data: {
+            "rows": ncsv.data,
+            "color": chart.config.color
+          },
+          axis: {
+            x: {
+              type: "category",
+              categories: columns.data[0]
+            }
+          }
+        };
+        if (chart.config.stack) {
+          options.data.groups = [ncsv.header];
+        }
+        return options;
+      }
     }
     else if (gtypes[0] == "date") {
       var numericIndices = dex.csv.getNumericIndices(csv);
@@ -84,7 +102,7 @@ var c3hart = function (userConfig) {
       tcsv.data.unshift(tcsv.header);
       options = {
         data: {
-          "x"   : tcsv.header[0],
+          "x": tcsv.header[0],
           "rows": tcsv.data,
           "color": chart.config.color
         },
