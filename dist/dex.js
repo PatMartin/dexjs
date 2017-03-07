@@ -570,7 +570,7 @@ var c3hart = function (userConfig) {
       'data': []
     },
     'options': {
-      "tooltip.show" : true,
+      "tooltip.show": true,
       "subchart.show": false,
       "zoom.enabled": true,
       "point.show": true,
@@ -590,6 +590,7 @@ var c3hart = function (userConfig) {
       config.options.padding || config.margin;
     config.options.bindto = config.parent;
     var dataOptions = getDataOptions(csv);
+    //dex.console.log("PRE-OPTS", config.options);
     config.options =
       dex.config.expandAndOverlay(config.options,
         getDataOptions(csv));
@@ -607,22 +608,39 @@ var c3hart = function (userConfig) {
     ncsv.data.unshift(ncsv.header);
     // Categorical axis
     if (gtypes[0] == "string") {
-      options = {
-        data: {
-          "rows": ncsv.data,
-          "color": chart.config.color
-        },
-        axis: {
-          x: {
-            type: "category",
-            categories: columns.data[0]
+      // Donut an pie charts are a special case
+      if (chart.config && chart.config.options &&
+        chart.config.options.data && (
+          chart.config.options.data.type == "pie" ||
+          chart.config.options.data.type == "donut"
+        )) {
+        var summary = dex.csv.summary(csv, [0]);
+
+        return {
+          data: {
+            "columns": summary.data,
+            "color": chart.config.color
           }
         }
-      };
-      if (chart.config.stack) {
-        options.data.groups = [ncsv.header];
       }
-      return options;
+      else {
+        options = {
+          data: {
+            "rows": ncsv.data,
+            "color": chart.config.color
+          },
+          axis: {
+            x: {
+              type: "category",
+              categories: columns.data[0]
+            }
+          }
+        };
+        if (chart.config.stack) {
+          options.data.groups = [ncsv.header];
+        }
+        return options;
+      }
     }
     else if (gtypes[0] == "date") {
       var numericIndices = dex.csv.getNumericIndices(csv);
@@ -631,7 +649,7 @@ var c3hart = function (userConfig) {
       tcsv.data.unshift(tcsv.header);
       options = {
         data: {
-          "x"   : tcsv.header[0],
+          "x": tcsv.header[0],
           "rows": tcsv.data,
           "color": chart.config.color
         },
@@ -10683,7 +10701,7 @@ module.exports = function csv(dex) {
      */
     'columnSlice': function (csv, columns) {
       var slice = {};
-      var columnNumbers = columns.map(function(column) {
+      var columnNumbers = columns.map(function (column) {
         return dex.csv.getColumnNumber(csv, column);
       });
 
@@ -11039,6 +11057,71 @@ module.exports = function csv(dex) {
         }
       }
       return true;
+    },
+
+    /**
+     *
+     * Given a series of categorical indices into a csv which
+     * contains some numeric data, create a new CSV where the
+     * first column is the aggregated categorical indices and
+     * the contents are the sum of numeric columns matching the
+     * aggregated categories.
+     *
+     * @param csv The csv to summarize.
+     * @param columnIndexes The indices to be used in summarization.
+     *
+     * @returns {{header, data: Array}}
+     */
+    'summary': function (csv, columnIndexes) {
+      // Create summary data groups csv.
+      var summaryGroups = dex.csv.columnSlice(csv, columnIndexes);
+
+      // Calculate the indices we will be summarizing.  Omit any
+      // numeric indices contained in the grouping.
+      var summaryIndices = dex.csv.getNumericIndices(csv)
+        .filter(function (el) {
+          return columnIndexes.indexOf(el) < 0;
+        });
+
+      // Extract a csv containing only what we are summarizing.
+      var ncsv = dex.csv.columnSlice(csv, summaryIndices);
+
+      // Initialize a name value pair structure where the key is
+      // the aggregated group values.
+      var summaryMap = {};
+      summaryGroups.data.forEach(function (row) {
+        if (!summaryMap[row.join(":")]) {
+          summaryMap[row.join(":")] =
+            Array.apply(null, Array(summaryIndices.length))
+              .map(Number.prototype.valueOf, 0);
+        }
+      });
+
+      // Add up the summary.
+      for (var i = 0; i < ncsv.data.length; i++) {
+        var key = summaryGroups.data[i].join(":");
+        for (var j = 0; j < ncsv.data[i].length; j++) {
+          summaryMap[key][j] += ncsv.data[i][j];
+        }
+      }
+
+      // Create the base summary csv.
+      var summary = {
+        "header": ncsv.header,
+        "data": []
+      };
+      // Prepend the aggregated summary name to the csv header.
+      summary.header.unshift(summaryGroups.header.join(":"));
+
+      // Iterate over each summary entry creating a row for each.
+      for (key in summaryMap) {
+        var data = summaryMap[key];
+        data.unshift(key);
+        summary.data.push(data);
+      }
+
+      // Return it back to the user.
+      return summary;
     },
 
     /**
