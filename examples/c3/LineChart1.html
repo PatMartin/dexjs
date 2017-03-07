@@ -38,21 +38,21 @@
   };
 
   var tcsv = {
-    "header" : [ "TIME", "X", "Y" ],
-    "data"   : [
-      [ "2014-01-01", 1, 50 ],
-      [ "2015-01-01", 10, 100 ],
-      [ "2016-01-01", 20, 200 ],
-      [ "2017-01-01", 40, 300 ]
+    "header": ["TIME", "X", "Y"],
+    "data": [
+      ["2014-01-01", 1, 50],
+      ["2015-01-01", 10, 100],
+      ["2016-01-01", 20, 200],
+      ["2017-01-01", 40, 300]
     ]
   };
 
   dex.console.log(JSON.stringify(csv));
 
-  var linechart = new dex.charts.c3.LineChart({
+  var linechart = dex.charts.c3.StackedAreaChart({
       'parent': '#LineChartParent',
       'csv': tcsv,
-    "options.axis.rotated" : true
+      //"options.axis.rotated": true
     }
   ).render();
 </script>
