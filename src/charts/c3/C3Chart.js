@@ -16,7 +16,6 @@ var c3hart = function (userConfig) {
       'top': 20,
       'bottom': 20
     },
-    "linkType": "spline",
     "color": d3.scale.category10(),
     "draggable": false,
     'csv': {
@@ -25,7 +24,7 @@ var c3hart = function (userConfig) {
     },
     'options': {
       "tooltip.show" : true,
-      "subchart.show": true,
+      "subchart.show": false,
       "zoom.enabled": true,
       "point.show": true,
       "legend.position": "right"
