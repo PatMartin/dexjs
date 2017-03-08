@@ -103,15 +103,19 @@ var clusteredforce = function (userConfig) {
     var max = null;
 
     config.groups.forEach(function (group) {
+      var valIndex = dex.csv.getColumnNumber(csv, group.value);
+      var catIndex = dex.csv.getColumnNumber(csv, group.category);
+      var labelIndex = dex.csv.getColumnNumber(csv, group.label);
+
       config.csv.data.forEach(function (row) {
-        var value = +(row[group.value]);
+        var value = +(row[valIndex]);
         nodes.push({
-          'category': row[group.category],
+          'category': row[catIndex],
           'value': +value,
-          'color': config.color(row[group.category]),
-          'text': "<table><tr><td>Label</td></td><td>" + row[group.label] +
-          "</td></tr><tr><td>Category</td><td>" + row[group.category] + "</td></tr>" +
-          "<tr><td>Value</td><td>" + row[group.value] +
+          'color': config.color(row[catIndex]),
+          'text': "<table><tr><td>Label</td></td><td>" + row[labelIndex] +
+          "</td></tr><tr><td>Category</td><td>" + row[catIndex] + "</td></tr>" +
+          "<tr><td>Value</td><td>" + row[valIndex] +
           "</td></tr></table>"
         });
         if (min == null || min > +value) {
