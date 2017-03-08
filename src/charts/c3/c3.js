@@ -9,6 +9,7 @@ c3.DonutChart = require("./DonutChart");
 c3.AreaChart = require("./AreaChart");
 c3.BarChart = require("./BarChart");
 c3.LineChart = require("./LineChart");
+c3.ScatterPlot = require("./ScatterPlot");
 c3.StackedAreaChart = require("./StackedAreaChart");
 c3.StackedBarChart = require("./StackedBarChart");
 
