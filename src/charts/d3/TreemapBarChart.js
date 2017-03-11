@@ -53,7 +53,7 @@ var treemapBarChart = function (userConfig) {
     'margin': {
       'top': 25,
       'right': 15,
-      'bottom': 50,
+      'bottom': 100,
       'left': 60
     },
     // <text fill="#000" y="3" x="0.5" dy="0.71em">2000</text>
