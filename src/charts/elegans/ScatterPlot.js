@@ -72,11 +72,13 @@ var scatterplot = function (userConfig) {
       }
       else {
         groups = [series];
+        groups[0].csv = csv;
       }
 
       //dex.console.log("GROUPS", csv, groups);
 
       groups.forEach(function (group) {
+        //dex.console.log("GROUP", group);
         data = {
           'x': dex.csv.getColumnData(group.csv, series.coordinates.x),
           'y': dex.csv.getColumnData(group.csv, series.coordinates.y),
