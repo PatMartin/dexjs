@@ -11,23 +11,31 @@ var topojsonmap = function (userConfig) {
     'projection': d3.geo.albers(),
     'width': '100%',
     'height': '100%',
+    'resizable': true,
     'transform': 'translate(0,0)',
+    'feature' : {
+      "topology" : undefined,
+      "path" : dex.config.path({
+        "fill.fillColor" : "lightgrey",
+        "stroke.color" : "white"
+      })
+    },
     'margin': {
-      'left': 10,
-      'right': 10,
-      'top': 10,
-      'bottom': 10
+      'left': 0,
+      'right': 0,
+      'top': 0,
+      'bottom': 0
     },
     "selectedColor": "steelblue",
-    "unselectedColor": "grey",
+    "unselectedColor": "lightgrey",
   };
 
   chart = new dex.component(userConfig, defaults);
 
+  var selected = {};
+
   chart.render = function render() {
     d3 = dex.charts.d3.d3v3;
-    chart.resize = this.resize(chart);
-    window.onresize = chart.resize;
     return chart.resize();
   };
 
@@ -40,18 +48,24 @@ var topojsonmap = function (userConfig) {
     var width = config.width - margin.left - margin.right;
     var height = config.height - margin.top - margin.bottom;
 
+    dex.console.log("WIDTH", config.width, width, config.height, height);
+
     d3.selectAll(config.parent).selectAll("*").remove();
 
-    var chartContainer = d3.select(config.parent)
-      .append("g")
+    var svg = d3.select(config.parent)
+      .append("svg")
       .attr("id", config["id"])
       .attr("class", config["class"])
-      .attr("transform", config.transform)
       .attr('width', config.width)
       .attr('height', config.height);
 
+    var rootG = svg.append('g')
+      .attr('transform', 'translate(' +
+        (margin.left) + ',' +
+        (margin.top) + ') ' +
+        config.transform);
+
     var featureBounds,
-      geoParent,
       geo,
       geoLayer = {},
       slast,
@@ -70,9 +84,6 @@ var topojsonmap = function (userConfig) {
       .center([width / 2, height / 2])
       .scaleExtent([1, 8])
       .on("zoom", zoomed);
-
-    var svg = chartContainer;
-
 
     function getFeaturesBox() {
       return {
@@ -108,7 +119,7 @@ var topojsonmap = function (userConfig) {
       tlast = trans;
       slast = scale;
 
-      geoParent.attr('transform', [
+      rootG.attr('transform', [
         'translate(' + trans + ')',
         'scale(' + scale + ')'
       ].join(' '));
@@ -176,12 +187,27 @@ var topojsonmap = function (userConfig) {
       fitGeoInside();
     }
 
-    // load topojson & make map
+    function passThru(d) {
+      var e = d3.event;
 
-    dex.console.log("CONFIG", config);
+      var prev = this.style.pointerEvents;
+      this.style.pointerEvents = 'none';
+
+      var el = document.elementFromPoint(d3.event.x, d3.event.y);
+
+      var e2 = document.createEvent('MouseEvent');
+      e2.initMouseEvent(e.type, e.bubbles, e.cancelable, e.view, e.detail, e.screenX, e.screenY, e.clientX, e.clientY, e.ctrlKey, e.altKey, e.shiftKey, e.metaKey, e.button, e.relatedTarget);
+
+      el.dispatchEvent(e2);
+
+      this.style.pointerEvents = prev;
+    }
+
+    // load topojson & make map
     var topology = chart.config.toplogy;
 
-    var features = topojson.feature(config.topology, config.feature).features;
+    var features = topojson.feature(
+      config.topology, config.feature.topology).features;
 
     var collection = {
       'type': 'FeatureCollection',
@@ -190,9 +216,7 @@ var topojsonmap = function (userConfig) {
 
     featureBounds = path.bounds(collection);
 
-    geoParent = svg.append("g");
-
-    geoParent
+    rootG
       .append('rect')
       .attr('class', 'bg')
       .attr('pointer-events', 'none')
@@ -200,24 +224,51 @@ var topojsonmap = function (userConfig) {
       .attr('width', width)
       .attr('height', height);
 
-    geo = geoParent.append("g");
+    geo = rootG.append("g");
 
     geo.selectAll('.feature')
       .data(features)
       .enter()
       .append("path")
       .attr("class", "feature")
-      .attr("d", path);
-
+      .attr("d", path)
+      .call(dex.config.configurePath, config.feature.path)
+      .on("mouseover", function (d) {
+        chart.publish({
+          "type": "mouseover",
+          "target": d
+        });
+      })
+      .on("mousedown", function (d) {
+        if (selected[d.id]) {
+          chart.publish({
+            "type": "unselect",
+            "target": d
+          });
+          selected[d.id] = false;
+          d3.select(this).style("fill", config.unselectedColor);
+        }
+        else {
+          chart.publish({
+            "type": "select",
+            "target": d
+          });
+          selected[d.id] = true;
+          d3.select(this).style("fill", config.selectedColor);
+        }
+      });
 
     svg.append("rect")
       .attr("class", "overlay")
       .attr("width", width)
       .attr("height", height)
+      .style("pointer-events", "all")
+      .style("fill", "none")
+      .on("mousedown", passThru)
+      .on("mouseover", passThru)
       .call(zoom);
 
     initialize();
-
   };
   return chart;
 };
