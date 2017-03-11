@@ -122,12 +122,18 @@ var motionbarchart = function (userConfig) {
 
     var keyMap = {};
 
+    var nameIndex = dex.csv.getColumnNumber(csv, config.index.name);
+    var colorIndex = dex.csv.getColumnNumber(csv, config.index.color);
+    var timeIndex = dex.csv.getColumnNumber(csv, config.index.time);
+    var yIndex = dex.csv.getColumnNumber(csv, config.index.y);
+    var sizeIndex = dex.csv.getColumnNumber(csv, config.index.size);
+
     csv.data.forEach(function (row) {
-      var curName = row[config.index.name];
-      var curColor = row[config.index.color];
-      var curTime = row[config.index.time];
-      var curY = row[config.index.y];
-      var curSize = +row[config.index.size];
+      var curName = row[nameIndex];
+      var curColor = row[colorIndex];
+      var curTime = row[timeIndex];
+      var curY = row[yIndex];
+      var curSize = +row[sizeIndex];
 
       if (!keyMap[curName]) {
         keyMap[curName] = {
@@ -146,15 +152,15 @@ var motionbarchart = function (userConfig) {
 
     var uniques = dex.matrix.uniques(csv.data);
 
-    var timeExtents = dex.matrix.extent(csv.data, [config.index.time]);
-    //var xExtents = [0, uniques[config.index.name].length-1];
-    var yExtents = dex.matrix.extent(csv.data, [config.index.y]);
+    var timeExtents = dex.matrix.extent(csv.data, [timeIndex]);
+    //var xExtents = [0, uniques[nameIndex].length-1];
+    var yExtents = dex.matrix.extent(csv.data, [yIndex]);
 
-    //dex.console.log("EXTENTS: Y", yExtents, "UNIQUES", uniques[config.index.name]);
+    //dex.console.log("EXTENTS: Y", yExtents, "UNIQUES", uniques[nameIndex]);
 
     // Various scales. These domains make assumptions of data, naturally.
     var xScale = d3.scale.ordinal()
-      .domain(uniques[config.index.name].sort())
+      .domain(uniques[nameIndex].sort())
       .rangePoints([0, width]);
 
     //  d3.scale.linear().domain(xExtents).range([0, width - 60]);
@@ -216,7 +222,7 @@ var motionbarchart = function (userConfig) {
 
     //var xTickLabels = xticks
     //  .append("text")
-    //  .text("P" + config.csv.header[config.index.name]);
+    //  .text("P" + config.csv.header[nameIndex]);
 
     //dex.console.log("XTICK-LABELS", xTickLabels);
     xticks.selectAll("text")
@@ -229,7 +235,7 @@ var motionbarchart = function (userConfig) {
     rootG.append("text")
       .attr("class", "yLabel")
       .call(dex.config.configureText, config.yaxis.title)
-      .text(config.csv.header[config.index.y]);
+      .text(config.csv.header[yIndex]);
 
     yticks.selectAll("text")
       .call(dex.config.configureText, config.yaxis.label);
