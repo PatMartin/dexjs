@@ -2446,12 +2446,18 @@ var motionbarchart = function (userConfig) {
 
     var keyMap = {};
 
+    var nameIndex = dex.csv.getColumnNumber(csv, config.index.name);
+    var colorIndex = dex.csv.getColumnNumber(csv, config.index.color);
+    var timeIndex = dex.csv.getColumnNumber(csv, config.index.time);
+    var yIndex = dex.csv.getColumnNumber(csv, config.index.y);
+    var sizeIndex = dex.csv.getColumnNumber(csv, config.index.size);
+
     csv.data.forEach(function (row) {
-      var curName = row[config.index.name];
-      var curColor = row[config.index.color];
-      var curTime = row[config.index.time];
-      var curY = row[config.index.y];
-      var curSize = +row[config.index.size];
+      var curName = row[nameIndex];
+      var curColor = row[colorIndex];
+      var curTime = row[timeIndex];
+      var curY = row[yIndex];
+      var curSize = +row[sizeIndex];
 
       if (!keyMap[curName]) {
         keyMap[curName] = {
@@ -2470,15 +2476,15 @@ var motionbarchart = function (userConfig) {
 
     var uniques = dex.matrix.uniques(csv.data);
 
-    var timeExtents = dex.matrix.extent(csv.data, [config.index.time]);
-    //var xExtents = [0, uniques[config.index.name].length-1];
-    var yExtents = dex.matrix.extent(csv.data, [config.index.y]);
+    var timeExtents = dex.matrix.extent(csv.data, [timeIndex]);
+    //var xExtents = [0, uniques[nameIndex].length-1];
+    var yExtents = dex.matrix.extent(csv.data, [yIndex]);
 
-    //dex.console.log("EXTENTS: Y", yExtents, "UNIQUES", uniques[config.index.name]);
+    //dex.console.log("EXTENTS: Y", yExtents, "UNIQUES", uniques[nameIndex]);
 
     // Various scales. These domains make assumptions of data, naturally.
     var xScale = d3.scale.ordinal()
-      .domain(uniques[config.index.name].sort())
+      .domain(uniques[nameIndex].sort())
       .rangePoints([0, width]);
 
     //  d3.scale.linear().domain(xExtents).range([0, width - 60]);
@@ -2540,7 +2546,7 @@ var motionbarchart = function (userConfig) {
 
     //var xTickLabels = xticks
     //  .append("text")
-    //  .text("P" + config.csv.header[config.index.name]);
+    //  .text("P" + config.csv.header[nameIndex]);
 
     //dex.console.log("XTICK-LABELS", xTickLabels);
     xticks.selectAll("text")
@@ -2553,7 +2559,7 @@ var motionbarchart = function (userConfig) {
     rootG.append("text")
       .attr("class", "yLabel")
       .call(dex.config.configureText, config.yaxis.title)
-      .text(config.csv.header[config.index.y]);
+      .text(config.csv.header[yIndex]);
 
     yticks.selectAll("text")
       .call(dex.config.configureText, config.yaxis.label);
@@ -5587,23 +5593,31 @@ var topojsonmap = function (userConfig) {
     'projection': d3.geo.albers(),
     'width': '100%',
     'height': '100%',
+    'resizable': true,
     'transform': 'translate(0,0)',
+    'feature' : {
+      "topology" : undefined,
+      "path" : dex.config.path({
+        "fill.fillColor" : "lightgrey",
+        "stroke.color" : "white"
+      })
+    },
     'margin': {
-      'left': 10,
-      'right': 10,
-      'top': 10,
-      'bottom': 10
+      'left': 0,
+      'right': 0,
+      'top': 0,
+      'bottom': 0
     },
     "selectedColor": "steelblue",
-    "unselectedColor": "grey",
+    "unselectedColor": "lightgrey",
   };
 
   chart = new dex.component(userConfig, defaults);
 
+  var selected = {};
+
   chart.render = function render() {
     d3 = dex.charts.d3.d3v3;
-    chart.resize = this.resize(chart);
-    window.onresize = chart.resize;
     return chart.resize();
   };
 
@@ -5616,18 +5630,24 @@ var topojsonmap = function (userConfig) {
     var width = config.width - margin.left - margin.right;
     var height = config.height - margin.top - margin.bottom;
 
+    dex.console.log("WIDTH", config.width, width, config.height, height);
+
     d3.selectAll(config.parent).selectAll("*").remove();
 
-    var chartContainer = d3.select(config.parent)
-      .append("g")
+    var svg = d3.select(config.parent)
+      .append("svg")
       .attr("id", config["id"])
       .attr("class", config["class"])
-      .attr("transform", config.transform)
       .attr('width', config.width)
       .attr('height', config.height);
 
+    var rootG = svg.append('g')
+      .attr('transform', 'translate(' +
+        (margin.left) + ',' +
+        (margin.top) + ') ' +
+        config.transform);
+
     var featureBounds,
-      geoParent,
       geo,
       geoLayer = {},
       slast,
@@ -5646,9 +5666,6 @@ var topojsonmap = function (userConfig) {
       .center([width / 2, height / 2])
       .scaleExtent([1, 8])
       .on("zoom", zoomed);
-
-    var svg = chartContainer;
-
 
     function getFeaturesBox() {
       return {
@@ -5684,7 +5701,7 @@ var topojsonmap = function (userConfig) {
       tlast = trans;
       slast = scale;
 
-      geoParent.attr('transform', [
+      rootG.attr('transform', [
         'translate(' + trans + ')',
         'scale(' + scale + ')'
       ].join(' '));
@@ -5752,12 +5769,27 @@ var topojsonmap = function (userConfig) {
       fitGeoInside();
     }
 
-    // load topojson & make map
+    function passThru(d) {
+      var e = d3.event;
 
-    dex.console.log("CONFIG", config);
+      var prev = this.style.pointerEvents;
+      this.style.pointerEvents = 'none';
+
+      var el = document.elementFromPoint(d3.event.x, d3.event.y);
+
+      var e2 = document.createEvent('MouseEvent');
+      e2.initMouseEvent(e.type, e.bubbles, e.cancelable, e.view, e.detail, e.screenX, e.screenY, e.clientX, e.clientY, e.ctrlKey, e.altKey, e.shiftKey, e.metaKey, e.button, e.relatedTarget);
+
+      el.dispatchEvent(e2);
+
+      this.style.pointerEvents = prev;
+    }
+
+    // load topojson & make map
     var topology = chart.config.toplogy;
 
-    var features = topojson.feature(config.topology, config.feature).features;
+    var features = topojson.feature(
+      config.topology, config.feature.topology).features;
 
     var collection = {
       'type': 'FeatureCollection',
@@ -5766,9 +5798,7 @@ var topojsonmap = function (userConfig) {
 
     featureBounds = path.bounds(collection);
 
-    geoParent = svg.append("g");
-
-    geoParent
+    rootG
       .append('rect')
       .attr('class', 'bg')
       .attr('pointer-events', 'none')
@@ -5776,24 +5806,51 @@ var topojsonmap = function (userConfig) {
       .attr('width', width)
       .attr('height', height);
 
-    geo = geoParent.append("g");
+    geo = rootG.append("g");
 
     geo.selectAll('.feature')
       .data(features)
       .enter()
       .append("path")
       .attr("class", "feature")
-      .attr("d", path);
-
+      .attr("d", path)
+      .call(dex.config.configurePath, config.feature.path)
+      .on("mouseover", function (d) {
+        chart.publish({
+          "type": "mouseover",
+          "target": d
+        });
+      })
+      .on("mousedown", function (d) {
+        if (selected[d.id]) {
+          chart.publish({
+            "type": "unselect",
+            "target": d
+          });
+          selected[d.id] = false;
+          d3.select(this).style("fill", config.unselectedColor);
+        }
+        else {
+          chart.publish({
+            "type": "select",
+            "target": d
+          });
+          selected[d.id] = true;
+          d3.select(this).style("fill", config.selectedColor);
+        }
+      });
 
     svg.append("rect")
       .attr("class", "overlay")
       .attr("width", width)
       .attr("height", height)
+      .style("pointer-events", "all")
+      .style("fill", "none")
+      .on("mousedown", passThru)
+      .on("mouseover", passThru)
       .call(zoom);
 
     initialize();
-
   };
   return chart;
 };
@@ -6224,7 +6281,7 @@ var treemapBarChart = function (userConfig) {
     'margin': {
       'top': 25,
       'right': 15,
-      'bottom': 50,
+      'bottom': 100,
       'left': 60
     },
     // <text fill="#000" y="3" x="0.5" dy="0.71em">2000</text>
@@ -7283,11 +7340,13 @@ var scatterplot = function (userConfig) {
       }
       else {
         groups = [series];
+        groups[0].csv = csv;
       }
 
       //dex.console.log("GROUPS", csv, groups);
 
       groups.forEach(function (group) {
+        //dex.console.log("GROUP", group);
         data = {
           'x': dex.csv.getColumnData(group.csv, series.coordinates.x),
           'y': dex.csv.getColumnData(group.csv, series.coordinates.y),
@@ -7362,7 +7421,7 @@ var bubblechart = function (userConfig) {
 
     d3.select(config.parent).selectAll("*").remove();
 
-    dex.console.log("CSV", csv, dex.csv.group(csv, [0]));
+    //dex.console.log("CSV", csv, dex.csv.group(csv, [0]));
     var groups = dex.csv.group(csv, [0]);
     var nvd3Data = groups.map(function (group) {
       //dex.console.log("KEY", group.key, group);
@@ -7374,7 +7433,7 @@ var bubblechart = function (userConfig) {
       }
     });
 
-    dex.console.log("NVDDATA", nvd3Data);
+    //dex.console.log("NVDDATA", nvd3Data);
 
     var nvd3Chart = nv.models.scatterChart()
       .showDistX(true)
@@ -7473,40 +7532,48 @@ var stackedareachart = function (userConfig) {
 
     //dex.console.log("NVDDATA", nvdData);
 
+    var nvd3Chart = nv.models.stackedAreaChart()
+      .x(function (d) {
+        return d[0]
+      })
+      .y(function (d) {
+        return d[1]
+      })
+      .clipEdge(true)
+      .useInteractiveGuideline(true);
+
+    nvd3Chart.xAxis
+      .showMaxMin(false)
+      .tickFormat(function (d) {
+        return d3.time.format('%x')(new Date(d))
+      });
+
+    nvd3Chart.yAxis
+      .tickFormat(d3.format(',.2f'));
+
+    var svg = d3.select(config.parent)
+      .append("svg")
+      .attr("id", config["id"])
+      .attr("class", config["class"])
+      .attr('width', config.width)
+      .attr('height', config.height)
+      .datum(nvd3Data)
+      .transition()
+      .duration(500)
+      .call(nvd3Chart);
+
+    nv.utils.windowResize(nvd3Chart.update);
+
     internalChart = nv.addGraph(function () {
-      var nvd3Chart = nv.models.stackedAreaChart()
-        .x(function (d) {
-          return d[0]
-        })
-        .y(function (d) {
-          return d[1]
-        })
-        .clipEdge(true)
-        .useInteractiveGuideline(true);
-
-      nvd3Chart.xAxis
-        .showMaxMin(false)
-        .tickFormat(function (d) {
-          return d3.time.format('%x')(new Date(d))
-        });
-
-      nvd3Chart.yAxis
-        .tickFormat(d3.format(',.2f'));
-
-      var svg = d3.select(config.parent)
-        .append("svg")
-        .attr("id", config["id"])
-        .attr("class", config["class"])
-        .attr('width', config.width)
-        .attr('height', config.height)
-        .datum(nvd3Data)
-        .transition()
-        .duration(500)
-        .call(nvd3Chart);
-
-      nv.utils.windowResize(nvd3Chart.update);
       return nvd3Chart;
+    }, function () {
+      d3.selectAll(".nv-legend-symbol").on('click',
+        function () {
+          dex.console.log("Clicked Legend Of", nvd3Chart.datum());
+        });
     });
+
+    return chart;
   };
 
   chart.update = function () {
@@ -7516,7 +7583,9 @@ var stackedareachart = function (userConfig) {
 
   $(document).ready(function () {
     // Make the entire chart draggable.
-    //$(chart.config.parent).draggable();
+    if (chart.config.draggable) {
+      $(chart.config.parent).draggable();
+    }
   });
 
   return chart;

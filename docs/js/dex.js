@@ -491,247 +491,56 @@ module.exports = function array(dex) {
 },{}],5:[function(require,module,exports){
 /**
  *
+ * This module provides a C3 Area Chart.
+ *
  * @name dex/charts/c3/AreaChart
- * @constructor
- * @classdesc This class constructs a c3 area chart.
- * @memberOf dex/charts/c3
- * @implements {dex/component}
  *
- * @example {@lang javascript}
- * var areachart = new dex.charts.c3.AreaChart({
- *   'parent' : "#AreaChart",
- *   'id'     : "AreaChart"
- *   'csv'    : { header : [ "X", "Y", "Z" ],
- *                data   : [[ 1, 2, 3 ], [4, 5, 6], [7, 8, 9]]}
- * });
- *
- * @param {object} userConfig - A user supplied configuration object which will override the defaults.
- * @param {string} userConfig.parent - The parent node to which this Axis will be attached.  Ex: #MyParent
- * will attach to a node with an id = "MyParent".
- * @param {string} [userConfig.id=Axis] - The id of this axis.
- * @param {string} [userConfig.class=Axis] - The class of this axis.
- * @param {csv} userConfig.csv - The user's CSV data.
- *
- *  @inherit module:dex/component
- *
+ * @param userConfig
+ * @returns AreaChart
  */
 var areachart = function (userConfig) {
-    var chart;
+  var defaults = {
+    'parent': '#C3_AreaChart',
+    'id': 'C3_AreaChart',
+    'class': 'C3_LineChart',
+    'resizable': true,
+    'width': "100%",
+    'height': "100%",
+    "options": {
+      "data.type" : "area-spline"
+    }
+  };
 
-    var defaults =
-    {
-        // The parent container of this chart.
-        'parent': '#AreaChart',
-        // Set these when you need to CSS style components independently.
-        'id': 'AreaChart',
-        'class': 'AreaChart',
-        'resizable': true,
-        'csv': {
-            'header': [],
-            'data': []
-        },
-        'linktype' : 'area-spline',
-        'width': "100%",
-        'height': "100%",
-        'transform': "translate(0 0)",
-    };
-
-    var chart = new dex.component(userConfig, defaults);
-
-    chart.render = function render() {
-        window.onresize = this.resize;
-        chart.resize();
-    };
-
-    chart.resize = function resize() {
-        if (chart.config.resizable) {
-            var width = d3.select(chart.config.parent).property("clientWidth");
-            var height = d3.select(chart.config.parent).property("clientHeight");
-            dex.console.log(chart.config.id + ": resize(" + width + "," + height + ")");
-            chart.attr("width", width).attr("height", height).update();
-        }
-        else {
-            chart.update();
-        }
-    };
-
-    chart.update = function () {
-        var chart = this;
-        var config = chart.config;
-        var csv = config.csv;
-
-        var gtypes = dex.csv.guessTypes(csv);
-        var ncsv = dex.csv.numericSubset(csv);
-        var columns = dex.csv.transpose(ncsv);
-
-        for (var ci = 0; ci < columns.header.length; ci++) {
-            columns.data[ci].unshift(columns.header[ci]);
-        }
-
-        var types = {};
-        dex.range(1, ncsv.header.length)
-            .map(function(hi) { types[ncsv.header[hi-1]] = config.linktype; });
-
-        var c3config = {
-            'bindto' : config.parent,
-            'data': {
-                'columns': columns.data,
-                'types': types,
-                color : d3.scale.category20()
-            },
-            subchart: {
-                show: true
-            },
-            zoom: {
-                enabled: true
-            },
-            legend: {
-                position : 'right'
-            }
-        };
-
-        // Set categorical axis if first column is a string.
-        if (gtypes[0] == "string")
-        {
-            c3config['axis'] = { 'x' : {
-                'type' : 'category',
-                'label' : { 'text' : csv.header[0],
-                'position' : 'outer-center' },
-                'categories': dex.csv.transpose(dex.csv.columnSlice(csv, [0])).data[0]
-            }};
-        }
-
-        var chart = c3.generate(c3config);
-    };
-
-    $(document).ready(function () {
-        // Make the entire chart draggable.
-        //$(chart.config.parent).draggable();
-    });
-
-    return chart;
+  var combinedConfig = dex.config.expandAndOverlay(userConfig, defaults);
+  return dex.charts.c3.C3Chart(combinedConfig);
 };
 
 module.exports = areachart;
-
 },{}],6:[function(require,module,exports){
 /**
  *
- * @constructor
- * @name BarChart
- * @classdesc This class constructs a c3 bar chart.
- * @memberOf dex.charts.c3
- * @implements {dex/component}
+ * This module provides a C3 Bar Chart.
  *
- * @example {@lang javascript}
- * var areachart = dex.charts.c3.BarChart({
- *   'parent' : "#AreaChart",
- *   'id'     : "AreaChart"
- *   'csv'    : { header : [ "X", "Y", "Z" ],
- *                data   : [[ 1, 2, 3 ], [4, 5, 6], [7, 8, 9]]}
- * });
+ * @name dex/charts/c3/BarChart
  *
- * @param {object} userConfig - A user supplied configuration object which will override the defaults.
- * @param {string} userConfig.parent - The parent node to which this Axis will be attached.  Ex: #MyParent
- * will attach to a node with an id = "MyParent".
- * @param {string} [userConfig.id=Axis] - The id of this axis.
- * @param {string} [userConfig.class=Axis] - The class of this axis.
- * @param {csv} userConfig.csv - The user's CSV data.
- *
- * @inherit module:dex/component
- *
+ * @param userConfig
+ * @returns BarChart
  */
 var barchart = function (userConfig) {
-    var chart;
+  var defaults = {
+    'parent': '#C3_BarChart',
+    'id': 'C3_BarChart',
+    'class': 'C3_BarChart',
+    'resizable': true,
+    'width': "100%",
+    'height': "100%",
+    "options": {
+      "data.type": "bar"
+    }
+  };
 
-    var defaults =
-    {
-        // The parent container of this chart.
-        'parent': '#BarChart',
-        // Set these when you need to CSS style components independently.
-        'id': 'BarChart',
-        'class': 'BarChart',
-        'resizable': true,
-        'csv': {
-            'header': [],
-            'data': []
-        },
-        'width': "100%",
-        'height': "100%",
-        'transform': "translate(0 0)",
-    };
-
-    var chart = new dex.component(userConfig, defaults);
-
-    chart.render = function render() {
-        window.onresize = this.resize;
-        chart.resize();
-    };
-
-    chart.resize = function resize() {
-        if (chart.config.resizable) {
-            var width = d3.select(chart.config.parent).property("clientWidth");
-            var height = d3.select(chart.config.parent).property("clientHeight");
-            dex.console.log(chart.config.id + ": resize(" + width + "," + height + ")");
-            chart.attr("width", width).attr("height", height).update();
-        }
-        else {
-            chart.update();
-        }
-    };
-
-    chart.update = function () {
-        var chart = this;
-        var config = chart.config;
-        var csv = config.csv;
-
-        var gtypes = dex.csv.guessTypes(csv);
-        var ncsv = dex.csv.numericSubset(csv);
-        var columns = dex.csv.transpose(ncsv);
-
-        for (var ci = 0; ci < columns.header.length; ci++) {
-            columns.data[ci].unshift(columns.header[ci]);
-        }
-
-        var c3config = {
-            'bindto' : config.parent,
-            'data': {
-                'columns': columns.data,
-                'type': 'bar',
-                color : d3.scale.category20()
-            },
-            'bar': {'width': { 'ratio': 0.9 }},
-            subchart: {
-                show: true
-            },
-            zoom: {
-                enabled: true
-            },
-            legend: {
-                position : 'right'
-            }
-        };
-
-        // Set categorical axis if first column is a string.
-        if (gtypes[0] == "string")
-        {
-            c3config['axis'] = { 'x' : {
-                'type' : 'category',
-                'label' : { 'text' : csv.header[0],
-                'position' : 'outer-center' },
-                'categories': dex.csv.transpose(dex.csv.columnSlice(csv, [0])).data[0]
-            }};
-        }
-
-        var chart = c3.generate(c3config);
-    };
-
-    $(document).ready(function () {
-        // Make the entire chart draggable.
-        //$(chart.config.parent).draggable();
-    });
-
-    return chart;
+  var combinedConfig = dex.config.expandAndOverlay(userConfig, defaults);
+  return dex.charts.c3.C3Chart(combinedConfig);
 };
 
 module.exports = barchart;
@@ -743,61 +552,154 @@ var c3hart = function (userConfig) {
   var defaults = {
     // The parent container of this chart.
     'parent': '#C3ChartParent',
-    // Set these when you need to CSS style components independently.
     'id': 'C3ChartId',
     'class': 'C3ChartClass',
     'resizable': true,
     'width': "100%",
     'height': "100%",
     'margin': {
-      'left': 10,
-      'right': 10,
-      'top': 10,
-      'bottom': 10
+      'left': 50,
+      'right': 50,
+      'top': 20,
+      'bottom': 20
     },
+    "color": d3.scale.category10(),
+    "draggable": false,
     'csv': {
       'header': [],
       'data': []
     },
-    'dataAdapter': function (csv) {
-      return csv;
+    'options': {
+      "tooltip.show": true,
+      "subchart.show": false,
+      "zoom.enabled": true,
+      "point.show": true,
+      "legend.position": "right"
     },
-    'options': {}
   };
 
   chart = new dex.component(userConfig, defaults);
 
   chart.render = function render() {
-    d3 = dex.charts.d3.d3v3;
     var config = chart.config;
-    var margin = config.margin;
     var csv = config.csv;
-
-    if (config.resizable) {
-      config.width = d3.select(chart.config.parent).property("clientWidth");
-      config.height = d3.select(chart.config.parent).property("clientHeight");
-    }
-    var width = config.width - margin.left - margin.right;
-    var height = config.height - margin.top - margin.bottom;
-
+    d3 = dex.charts.d3.d3v3;
     d3.select(config.parent).selectAll("*").remove();
+
+    config.options.padding =
+      config.options.padding || config.margin;
     config.options.bindto = config.parent;
+    var dataOptions = getDataOptions(csv);
+    //dex.console.log("PRE-OPTS", config.options);
+    config.options =
+      dex.config.expandAndOverlay(config.options,
+        getDataOptions(csv));
+    dex.console.log("OPTIONS", JSON.stringify(config.options));
     internalChart = c3.generate(config.options);
-    return chart;
+    return chart.resize();
   };
+
+  function getDataOptions(csv) {
+    var options = {};
+    var gtypes = dex.csv.guessTypes(csv);
+    var ncsv = dex.csv.numericSubset(csv);
+    var columns = dex.csv.transpose(csv);
+
+    ncsv.data.unshift(ncsv.header);
+    // Categorical axis
+    if (gtypes[0] == "string") {
+      // Donut an pie charts are a special case
+      if (chart.config && chart.config.options &&
+        chart.config.options.data && (
+          chart.config.options.data.type == "pie" ||
+          chart.config.options.data.type == "donut"
+        )) {
+        var summary = dex.csv.summary(csv, [0]);
+
+        return {
+          data: {
+            "columns": summary.data,
+            "color": chart.config.color
+          }
+        }
+      }
+      else {
+        options = {
+          data: {
+            "rows": ncsv.data,
+            "color": chart.config.color
+          },
+          axis: {
+            x: {
+              type: "category",
+              categories: columns.data[0]
+            }
+          }
+        };
+        if (chart.config.stack) {
+          options.data.groups = [ncsv.header];
+        }
+        return options;
+      }
+    }
+    else if (gtypes[0] == "date") {
+      var numericIndices = dex.csv.getNumericIndices(csv);
+      numericIndices.unshift(0);
+      var tcsv = dex.csv.columnSlice(csv, numericIndices);
+      tcsv.data.unshift(tcsv.header);
+      options = {
+        data: {
+          "x": tcsv.header[0],
+          "rows": tcsv.data,
+          "color": chart.config.color
+        },
+        axis: {
+          x: {
+            type: "timeseries",
+            tick: {
+              format: '%Y-%m-%d'
+            }
+          }
+        }
+      };
+
+      if (chart.config.stack) {
+        options.data.groups = [ncsv.header];
+      }
+      return options;
+    }
+    else {
+      options = {
+        data: {
+          "x": ncsv.header[0],
+          "rows": ncsv.data,
+          "color": chart.config.color
+        }
+      };
+
+      if (chart.config.stack) {
+        options.data.groups = [dex.array.copy(ncsv.header)];
+        options.data.groups[0].shift();
+      }
+      return options;
+    }
+  }
 
   chart.update = function () {
     var config = chart.config;
     var csv = config.csv;
-
-    dex.console.log("c3 config", config.options);
+    var dataOptions = getDataOptions(csv);
+    config.options =
+      dex.config.expandAndOverlay(config.options,
+        getDataOptions(config.csv));
     internalChart.load(config.options);
     return chart;
   };
 
   $(document).ready(function () {
-    // Make the entire chart draggable.
-    //$(chart.config.parent).draggable();
+    if (chart.config.draggable) {
+      $("#" + chart.config.id).draggable();
+    }
   });
 
   return chart;
@@ -807,473 +709,174 @@ module.exports = c3hart;
 },{}],8:[function(require,module,exports){
 /**
  *
- * @name LineChart
- * @constructor
- * @classdesc This class constructs a c3 line chart.
- * @memberOf dex.charts.c3
- * @implements {dex/component}
+ * This module provides a C3 Donut Chart.
  *
- * @example {@lang javascript}
- * var areachart = new dex.charts.c3.AreaChart({
- *   'parent' : "#AreaChart",
- *   'id'     : "AreaChart"
- *   'csv'    : { header : [ "X", "Y", "Z" ],
- *                data   : [[ 1, 2, 3 ], [4, 5, 6], [7, 8, 9]]}
- * });
+ * @name dex/charts/c3/DonutChart
  *
- * @param {object} userConfig - A user supplied configuration object which will override the defaults.
- * @param {string} userConfig.parent - The parent node to which this Axis will be attached.  Ex: #MyParent
- * will attach to a node with an id = "MyParent".
- * @param {string} [userConfig.id=Axis] - The id of this axis.
- * @param {string} [userConfig.class=Axis] - The class of this axis.
- * @param {csv} userConfig.csv - The user's CSV data.
- *
- * @inherit module:dex/component
- *
+ * @param userConfig
+ * @returns DonutChart
  */
-
-var linechart = function (userConfig) {
-  var chart;
-
+var donutchart = function (userConfig) {
   var defaults = {
-    // The parent container of this chart.
-    'parent': '#LineChart',
-    // Set these when you need to CSS style components independently.
-    'id': 'LineChart',
-    'class': 'LineChart',
+    'parent': '#C3_DonutChart',
+    'id': 'C3_DonutChart',
+    'class': 'C3_DonutChart',
     'resizable': true,
-    'csv': {
-      'header': [],
-      'data': []
-    },
-    'linktype': 'line',
     'width': "100%",
-    'height': "100%"
-  };
-
-  var chart = new dex.component(userConfig, defaults);
-  var internalChart;
-  var selectedColumns = [];
-
-  chart.resize = function resize() {
-    dex.console.log("PARENT: '" + chart.config.parent + "'");
-    if (chart.config.resizable) {
-      var width = $("" + chart.config.parent).width();
-      var height = $("" + chart.config.parent).height();
-      dex.console.log("RESIZE: " + width + "x" + height);
-      chart.attr("width", width)
-        .attr("height", height)
-        .update();
-    }
-    else {
-      chart.update();
+    'height': "100%",
+    "options": {
+      "data.type": "donut"
     }
   };
 
-  chart.render = function render() {
-    window.onresize = this.resize;
-    chart.resize();
+  var combinedConfig = dex.config.expandAndOverlay(userConfig, defaults);
+  return dex.charts.c3.C3Chart(combinedConfig);
+};
+
+module.exports = donutchart;
+},{}],9:[function(require,module,exports){
+/**
+ *
+ * This module provides a C3 Line Chart.
+ *
+ * @name dex/charts/c3/LineChart
+ *
+ * @param userConfig
+ * @returns LineChart
+ */
+var linechart = function (userConfig) {
+  var defaults = {
+    'parent': '#C3_LineChart',
+    'id': 'C3_LineChart',
+    'class': 'C3_LineChart',
+    'resizable': true,
+    'width': "100%",
+    'height': "100%",
+    "options": {
+      "data.type": "line"
+    }
   };
 
-  chart.update = function render() {
-
-    //var chart = this;
-    var config = chart.config;
-    var csv = config.csv;
-    window.onresize = this.resize;
-
-    d3.select(config.parent).selectAll("*").remove();
-    var gtypes = dex.csv.guessTypes(csv);
-    selectedColumns = dex.csv.getNumericIndices(csv);
-    if (gtypes[0] == "string") {
-      selectedColumns.unshift(0);
-    }
-    else if (gtypes[0] == "date") {
-      selectedColumns.unshift(0);
-    }
-
-    var ncsv = dex.csv.columnSlice(csv, selectedColumns);
-
-    var columns = dex.csv.transpose(ncsv);
-
-    for (var ci = 0; ci < columns.header.length; ci++) {
-      columns.data[ci].unshift(columns.header[ci]);
-    }
-
-    var types = {};
-    dex.range(1, ncsv.header.length)
-      .map(function (hi) {
-        types[ncsv.header[hi - 1]] = config.linktype;
-      });
-
-    var c3config = {
-      'bindto': config.parent,
-      'data': {
-        'x': columns.header[0],
-        'columns': columns.data,
-        'types': types
-      },
-      subchart: {
-        show: true
-      },
-      zoom: {
-        enabled: true
-      },
-      legend: {
-        position: 'right'
-      },
-      groups: config.groups
-    };
-
-    //dex.console.log("TYPES:", gtypes);
-
-    if (gtypes[0] == "string") {
-      c3config["axis"] = {
-        "x": {
-          "type": "category",
-          "categories": [].concat.apply([],
-            dex.matrix.uniques(dex.matrix.slice(csv.data, [0]))).sort()
-        }
-      }
-    }
-    else if (gtypes[0] == "date") {
-      //dex.console.log("DEALING WITH A DATE...");
-      c3config["axis"] = {
-        "x": {
-          "type": "timeseries",
-          "tick": {
-            format: '%Y-%m-%d'
-          }
-        }
-      }
-    }
-
-    //dex.console.log("RENDER C3CONFIG", c3config);
-
-    //dex.console.log("CATEGORIES", c3config);
-    internalChart = c3.generate(c3config);
-  };
-
-  $(document).ready(function () {
-    // Make the entire chart draggable.
-    //$(chart.config.parent).draggable();
-  });
-
-  return chart;
+  var combinedConfig = dex.config.expandAndOverlay(userConfig, defaults);
+  return dex.charts.c3.C3Chart(combinedConfig);
 };
 
 module.exports = linechart;
-},{}],9:[function(require,module,exports){
-var piechart = function (userConfig) {
-  var chart;
-
-  var defaults = {
-    'parent': '#PieChartParent',
-    'id': 'PieChartId',
-    'class': 'PieChartClass',
-    'resizable': true,
-    'csv': {
-      'header': [],
-      'data': []
-    },
-    'width': "100%",
-    'height': "100%",
-    'legend' : 'right'
-  };
-
-  var chart = new dex.component(userConfig, defaults);
-  var internalChart;
-  var c3config;
-
-  chart.render = function render() {
-    var config = chart.config;
-    var csv = config.csv;
-
-    d3.select(config.parent).selectAll("*").remove();
-
-    c3config = {
-      'bindto': config.parent,
-      'data': {
-        'columns': csv.data,
-        'type': 'pie'
-      },
-      'legend' : { 'position' : config.legend }
-    };
-
-    internalChart = c3.generate(c3config);
-  };
-
-  chart.update = function () {
-    internalChart.load({'columns': chart.config.csv.data });
-  };
-
-  $(document).ready(function () {
-    // Make the entire chart draggable.
-    //$(chart.config.parent).draggable();
-  });
-
-  return chart;
-};
-
-module.exports = piechart;
 },{}],10:[function(require,module,exports){
 /**
  *
- * @constructor
- * @name StackedAreaChart
- * @classdesc This class constructs a c3 stacked area chart.
- * @memberOf dex.charts.c3
- * @implements {dex/component}
+ * This module provides a C3 Pie Chart.
  *
- * @example {@lang javascript}
- * var areachart = dex.charts.c3.BarChart({
- *   'parent' : "#AreaChart",
- *   'id'     : "AreaChart"
- *   'csv'    : { header : [ "X", "Y", "Z" ],
- *                data   : [[ 1, 2, 3 ], [4, 5, 6], [7, 8, 9]]}
- * });
+ * @name dex/charts/c3/PieChart
  *
- * @param {object} userConfig - A user supplied configuration object which will override the defaults.
- * @param {string} userConfig.parent - The parent node to which this Axis will be attached.  Ex: #MyParent
- * will attach to a node with an id = "MyParent".
- * @param {string} [userConfig.id=Axis] - The id of this axis.
- * @param {string} [userConfig.class=Axis] - The class of this axis.
- * @param {csv} userConfig.csv - The user's CSV data.
- *
- * @inherit module:dex/component
- *
+ * @param userConfig
+ * @returns PieChart
  */
-var stackedareachart = function (userConfig) {
-    var chart;
+var piechart = function (userConfig) {
+  var defaults = {
+    'parent': '#C3_PieChart',
+    'id': 'C3_PieChart',
+    'class': 'C3_PieChart',
+    'resizable': true,
+    'width': "100%",
+    'height': "100%",
+    "options": {
+      "data.type": "pie"
+    }
+  };
 
-    var defaults =
-    {
-        // The parent container of this chart.
-        'parent': '#AreaChart',
-        // Set these when you need to CSS style components independently.
-        'id': 'AreaChart',
-        'class': 'AreaChart',
-        'resizable': true,
-        'csv': {
-            'header': [],
-            'data': []
-        },
-        'width': "100%",
-        'height': "100%",
-        'transform': "translate(0 0)",
-    };
-
-    var chart = new dex.component(userConfig, defaults);
-
-    chart.render = function render() {
-        window.onresize = this.resize;
-        chart.resize();
-    };
-
-    chart.resize = function resize() {
-        if (chart.config.resizable) {
-            var width = d3.select(chart.config.parent).property("clientWidth");
-            var height = d3.select(chart.config.parent).property("clientHeight");
-            dex.console.log(chart.config.id + ": resize(" + width + "," + height + ")");
-            chart.attr("width", width).attr("height", height).update();
-        }
-        else {
-            chart.update();
-        }
-    };
-
-    chart.update = function () {
-        var chart = this;
-        var config = chart.config;
-        var csv = config.csv;
-
-        var gtypes = dex.csv.guessTypes(csv);
-        var ncsv = dex.csv.numericSubset(csv);
-        var columns = dex.csv.transpose(ncsv);
-
-        for (var ci = 0; ci < columns.header.length; ci++) {
-            columns.data[ci].unshift(columns.header[ci]);
-        }
-
-        var types = {};
-        dex.range(1, ncsv.header.length)
-            .map(function(hi) { types[ncsv.header[hi-1]] = 'area-spline'; });
-
-        var c3config = {
-            'bindto' : config.parent,
-            'data': {
-                'columns': columns.data,
-                'types': types,
-                'groups' : [ columns.header ],
-                color : d3.scale.category20()
-            },
-            subchart: {
-                show: true
-            },
-            zoom: {
-                enabled: true
-            },
-            legend: {
-                position : 'right'
-            }
-        };
-
-        // Set categorical axis if first column is a string.
-        if (gtypes[0] == "string")
-        {
-            c3config['axis'] = { 'x' : {
-                'type' : 'category',
-                'label' : { 'text' : csv.header[0],
-                'position' : 'outer-center' },
-                'categories': dex.csv.transpose(dex.csv.columnSlice(csv, [0])).data[0]
-            }};
-        }
-
-        var chart = c3.generate(c3config);
-    };
-
-    $(document).ready(function () {
-        // Make the entire chart draggable.
-        //$(chart.config.parent).draggable();
-    });
-
-    return chart;
+  var combinedConfig = dex.config.expandAndOverlay(userConfig, defaults);
+  return dex.charts.c3.C3Chart(combinedConfig);
 };
 
-module.exports = stackedareachart;
+module.exports = piechart;
 },{}],11:[function(require,module,exports){
 /**
  *
- * @constructor
- * @name StackedBarChart
- * @classdesc This class constructs a c3 stacked bar chart.
- * @memberOf dex.charts.c3
- * @implements {dex/component}
+ * This module provides a C3 ScatterPlot
  *
- * @example {@lang javascript}
- * var areachart = dex.charts.c3.BarChart({
- *   'parent' : "#AreaChart",
- *   'id'     : "AreaChart"
- *   'csv'    : { header : [ "X", "Y", "Z" ],
- *                data   : [[ 1, 2, 3 ], [4, 5, 6], [7, 8, 9]]}
- * });
+ * @name dex/charts/c3/ScatterPlot
  *
- * @param {object} userConfig - A user supplied configuration object which will override the defaults.
- * @param {string} userConfig.parent - The parent node to which this Axis will be attached.  Ex: #MyParent
- * will attach to a node with an id = "MyParent".
- * @param {string} [userConfig.id=Axis] - The id of this axis.
- * @param {string} [userConfig.class=Axis] - The class of this axis.
- * @param {csv} userConfig.csv - The user's CSV data.
- *
- * @inherit module:dex/component
- *
+ * @param userConfig
+ * @returns ScatterPlot
  */
-var stackedbarchart = function (userConfig) {
-  var chart;
-
+var scatterplot = function (userConfig) {
   var defaults = {
-    // The parent container of this chart.
-    'parent': '#BarChart',
-    // Set these when you need to CSS style components independently.
-    'id': 'BarChart',
-    'class': 'BarChart',
+    'parent': '#C3_ScatterPlot',
+    'id': 'C3_ScatterPlot',
+    'class': 'C3_ScatterPlot',
     'resizable': true,
-    'csv': {
-      'header': [],
-      'data': []
-    },
-    'padding': {
-      'top': 10,
-      'bottom': 10,
-      'left': 50,
-      'right': 10
-    },
-    'order': 'desc',
     'width': "100%",
     'height': "100%",
-    'transform': "translate(0 0)",
-  };
-
-  var chart = new dex.component(userConfig, defaults);
-
-  chart.render = function render() {
-    window.onresize = this.resize;
-    chart.resize();
-  };
-
-  chart.resize = function resize() {
-    if (chart.config.resizable) {
-      var width = d3.select(chart.config.parent).property("clientWidth");
-      var height = d3.select(chart.config.parent).property("clientHeight");
-      dex.console.log(chart.config.id + ": resize(" + width + "," + height + ")");
-      chart.attr("width", width).attr("height", height).update();
-    }
-    else {
-      chart.update();
+    "options": {
+      "data.type": "scatter"
     }
   };
 
-  chart.update = function () {
-    var chart = this;
-    var config = chart.config;
-    var csv = config.csv;
+  var combinedConfig = dex.config.expandAndOverlay(userConfig, defaults);
+  return dex.charts.c3.C3Chart(combinedConfig);
+};
 
-    var gtypes = dex.csv.guessTypes(csv);
-    var ncsv = dex.csv.numericSubset(csv);
-    var columns = dex.csv.transpose(ncsv);
-
-    for (var ci = 0; ci < columns.header.length; ci++) {
-      columns.data[ci].unshift(columns.header[ci]);
+module.exports = scatterplot;
+},{}],12:[function(require,module,exports){
+/**
+ *
+ * This module provides a C3 StackedArea Chart.
+ *
+ * @name dex/charts/c3/StackedAreaChart
+ *
+ * @param userConfig
+ * @returns StackedAreaChart
+ */
+var stackedareachart = function (userConfig) {
+  var defaults = {
+    'parent': '#C3_StackedAreaChart',
+    'id': 'C3_StackedAreaChart',
+    'class': 'C3_StackedAreaChart',
+    'resizable': true,
+    'width': "100%",
+    'height': "100%",
+    "stack" : true,
+    "options": {
+      "data.type": "area"
     }
-
-    var c3config = {
-      'bindto': config.parent,
-      'data': {
-        'columns': columns.data,
-        'type': 'bar',
-        color: d3.scale.category20(),
-        'groups': [columns.header],
-        'order': config.order
-      },
-      'bar': {'width': {'ratio': 0.9}},
-      subchart: {
-        show: true
-      },
-      zoom: {
-        enabled: true
-      },
-      legend: {
-        position: 'right'
-      }
-    };
-
-    // Set categorical axis if first column is a string.
-    if (gtypes[0] == "string") {
-      c3config['axis'] = {
-        'x': {
-          'type': 'category',
-          'label': {
-            'text': csv.header[0],
-            'position': 'outer-center'
-          },
-          'categories': dex.csv.transpose(dex.csv.columnSlice(csv, [0])).data[0]
-        }
-      };
-    }
-
-    var chart = c3.generate(c3config);
   };
 
-  $(document).ready(function () {
-    // Make the entire chart draggable.
-    //$(chart.config.parent).draggable();
-  });
+  var combinedConfig = dex.config.expandAndOverlay(userConfig, defaults);
+  return dex.charts.c3.C3Chart(combinedConfig);
+};
 
-  return chart;
-}
+module.exports = stackedareachart;
+},{}],13:[function(require,module,exports){
+/**
+ *
+ * This module provides a C3 StackedBar Chart.
+ *
+ * @name dex/charts/c3/StackedBarChart
+ *
+ * @param userConfig
+ * @returns StackedBarChart
+ */
+var stackedbarchart = function (userConfig) {
+  var defaults = {
+    'parent': '#C3_StackedBarChart',
+    'id': 'C3_StackedBarChart',
+    'class': 'C3_StackedBarChart',
+    'resizable': true,
+    'width': "100%",
+    'height': "100%",
+    "stack" : true,
+    "options": {
+      "data.type": "bar"
+    }
+  };
+
+  var combinedConfig = dex.config.expandAndOverlay(userConfig, defaults);
+  return dex.charts.c3.C3Chart(combinedConfig);
+};
 
 module.exports = stackedbarchart;
-},{}],12:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 /**
  * @module dex/charts/c3
  */
@@ -1281,14 +884,16 @@ var c3 = {};
 
 c3.C3Chart = require("./C3Chart");
 c3.PieChart = require("./PieChart");
+c3.DonutChart = require("./DonutChart");
 c3.AreaChart = require("./AreaChart");
 c3.BarChart = require("./BarChart");
 c3.LineChart = require("./LineChart");
+c3.ScatterPlot = require("./ScatterPlot");
 c3.StackedAreaChart = require("./StackedAreaChart");
 c3.StackedBarChart = require("./StackedBarChart");
 
 module.exports = c3;
-},{"./AreaChart":5,"./BarChart":6,"./C3Chart":7,"./LineChart":8,"./PieChart":9,"./StackedAreaChart":10,"./StackedBarChart":11}],13:[function(require,module,exports){
+},{"./AreaChart":5,"./BarChart":6,"./C3Chart":7,"./DonutChart":8,"./LineChart":9,"./PieChart":10,"./ScatterPlot":11,"./StackedAreaChart":12,"./StackedBarChart":13}],15:[function(require,module,exports){
 /**
  *
  * This module provides visualization components for charting
@@ -1318,7 +923,7 @@ module.exports = function charts() {
     'vis'     : require("./vis/vis")
   };
 };
-},{"./c3/c3":12,"./d3/d3":31,"./d3plus/d3plus":33,"./echarts/echarts":36,"./elegans/elegans":38,"./nvd3/nvd3":41,"./threejs/threejs":43,"./vis/vis":45}],14:[function(require,module,exports){
+},{"./c3/c3":14,"./d3/d3":33,"./d3plus/d3plus":35,"./echarts/echarts":38,"./elegans/elegans":40,"./nvd3/nvd3":43,"./threejs/threejs":45,"./vis/vis":47}],16:[function(require,module,exports){
 var bumpchart = function (userConfig) {
   d3 = dex.charts.d3.d3v3;
   var chart;
@@ -1426,7 +1031,7 @@ var bumpchart = function (userConfig) {
     var xKey = dex.csv.getColumnName(csv, config.key.x);
     var yKey = dex.csv.getColumnName(csv, config.key.y);
 
-    dex.console.log("cat", categoryKey, "x", xKey, "y", yKey);
+    //dex.console.log("cat", categoryKey, "x", xKey, "y", yKey);
 
     d3.selectAll(config.parent).selectAll("*").remove();
 
@@ -1453,8 +1058,6 @@ var bumpchart = function (userConfig) {
       .entries(data);
 
     data = dataNest;
-
-    dex.console.log("DATA", data);
 
     var speed = 100;
 
@@ -1673,7 +1276,7 @@ var bumpchart = function (userConfig) {
 }
 
 module.exports = bumpchart;
-},{}],15:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 var chord = function (userConfig) {
   d3 = dex.charts.d3.d3v3;
   var chart;
@@ -1943,7 +1546,7 @@ var chord = function (userConfig) {
 }
 
 module.exports = chord;
-},{}],16:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 var clusteredforce = function (userConfig) {
   d3 = dex.charts.d3.d3v3;
   var defaults = {
@@ -2049,15 +1652,19 @@ var clusteredforce = function (userConfig) {
     var max = null;
 
     config.groups.forEach(function (group) {
+      var valIndex = dex.csv.getColumnNumber(csv, group.value);
+      var catIndex = dex.csv.getColumnNumber(csv, group.category);
+      var labelIndex = dex.csv.getColumnNumber(csv, group.label);
+
       config.csv.data.forEach(function (row) {
-        var value = +(row[group.value]);
+        var value = +(row[valIndex]);
         nodes.push({
-          'category': row[group.category],
+          'category': row[catIndex],
           'value': +value,
-          'color': config.color(row[group.category]),
-          'text': "<table><tr><td>Label</td></td><td>" + row[group.label] +
-          "</td></tr><tr><td>Category</td><td>" + row[group.category] + "</td></tr>" +
-          "<tr><td>Value</td><td>" + row[group.value] +
+          'color': config.color(row[catIndex]),
+          'text': "<table><tr><td>Label</td></td><td>" + row[labelIndex] +
+          "</td></tr><tr><td>Category</td><td>" + row[catIndex] + "</td></tr>" +
+          "<tr><td>Value</td><td>" + row[valIndex] +
           "</td></tr></table>"
         });
         if (min == null || min > +value) {
@@ -2216,7 +1823,7 @@ var clusteredforce = function (userConfig) {
 };
 
 module.exports = clusteredforce;
-},{}],17:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 var dendrogram = function Dendrogram(userConfig) {
   d3 = dex.charts.d3.d3v3;
   var defaults =
@@ -2606,7 +2213,7 @@ var dendrogram = function Dendrogram(userConfig) {
 };
 
 module.exports = dendrogram;
-},{}],18:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 var horizontallegend = function (userConfig) {
   var defaults = {
     'parent'     : null,
@@ -2714,7 +2321,7 @@ var horizontallegend = function (userConfig) {
 };
 
 module.exports = horizontallegend;
-},{}],19:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 var motionbarchart = function (userConfig) {
   d3 = dex.charts.d3.d3v3;
   var chart;
@@ -2839,12 +2446,18 @@ var motionbarchart = function (userConfig) {
 
     var keyMap = {};
 
+    var nameIndex = dex.csv.getColumnNumber(csv, config.index.name);
+    var colorIndex = dex.csv.getColumnNumber(csv, config.index.color);
+    var timeIndex = dex.csv.getColumnNumber(csv, config.index.time);
+    var yIndex = dex.csv.getColumnNumber(csv, config.index.y);
+    var sizeIndex = dex.csv.getColumnNumber(csv, config.index.size);
+
     csv.data.forEach(function (row) {
-      var curName = row[config.index.name];
-      var curColor = row[config.index.color];
-      var curTime = row[config.index.time];
-      var curY = row[config.index.y];
-      var curSize = +row[config.index.size];
+      var curName = row[nameIndex];
+      var curColor = row[colorIndex];
+      var curTime = row[timeIndex];
+      var curY = row[yIndex];
+      var curSize = +row[sizeIndex];
 
       if (!keyMap[curName]) {
         keyMap[curName] = {
@@ -2863,15 +2476,15 @@ var motionbarchart = function (userConfig) {
 
     var uniques = dex.matrix.uniques(csv.data);
 
-    var timeExtents = dex.matrix.extent(csv.data, [config.index.time]);
-    //var xExtents = [0, uniques[config.index.name].length-1];
-    var yExtents = dex.matrix.extent(csv.data, [config.index.y]);
+    var timeExtents = dex.matrix.extent(csv.data, [timeIndex]);
+    //var xExtents = [0, uniques[nameIndex].length-1];
+    var yExtents = dex.matrix.extent(csv.data, [yIndex]);
 
-    //dex.console.log("EXTENTS: Y", yExtents, "UNIQUES", uniques[config.index.name]);
+    //dex.console.log("EXTENTS: Y", yExtents, "UNIQUES", uniques[nameIndex]);
 
     // Various scales. These domains make assumptions of data, naturally.
     var xScale = d3.scale.ordinal()
-      .domain(uniques[config.index.name].sort())
+      .domain(uniques[nameIndex].sort())
       .rangePoints([0, width]);
 
     //  d3.scale.linear().domain(xExtents).range([0, width - 60]);
@@ -2933,7 +2546,7 @@ var motionbarchart = function (userConfig) {
 
     //var xTickLabels = xticks
     //  .append("text")
-    //  .text("P" + config.csv.header[config.index.name]);
+    //  .text("P" + config.csv.header[nameIndex]);
 
     //dex.console.log("XTICK-LABELS", xTickLabels);
     xticks.selectAll("text")
@@ -2946,7 +2559,7 @@ var motionbarchart = function (userConfig) {
     rootG.append("text")
       .attr("class", "yLabel")
       .call(dex.config.configureText, config.yaxis.title)
-      .text(config.csv.header[config.index.y]);
+      .text(config.csv.header[yIndex]);
 
     yticks.selectAll("text")
       .call(dex.config.configureText, config.yaxis.label);
@@ -3135,7 +2748,7 @@ var motionbarchart = function (userConfig) {
 };
 
 module.exports = motionbarchart;
-},{}],20:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 var orbitallayout = function (userConfig) {
   d3 = dex.charts.d3.d3v3;
   var chart;
@@ -3497,7 +3110,7 @@ var orbitallayout = function (userConfig) {
 };
 
 module.exports = orbitallayout;
-},{}],21:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 var parallelcoordinates = function (userConfig) {
   d3 = dex.charts.d3.d3v3;
   var chart;
@@ -3940,7 +3553,7 @@ var parallelcoordinates = function (userConfig) {
 };
 
 module.exports = parallelcoordinates;
-},{}],22:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 var radarchart = function (userConfig) {
   d3 = dex.charts.d3.d3v3;
   var chart;
@@ -3992,7 +3605,7 @@ var radarchart = function (userConfig) {
       'font.size': '16px',
       'anchor': function (d, i) {
         var degreesPerSection = 360 / (chart.attr('csv').header.length - 1);
-        dex.console.log("Degrees Per Section", degreesPerSection, degreesPerSection * (i-1));
+        //dex.console.log("Degrees Per Section", degreesPerSection, degreesPerSection * (i-1));
         if (degreesPerSection * i < 10) {
           return "middle";
         }
@@ -4002,7 +3615,7 @@ var radarchart = function (userConfig) {
         else if (degreesPerSection * i < 185) {
           return "middle";
         }
-        dex.console.log("D", d, i);
+
         return "end";
       },
       'dy' : function(d, i) {
@@ -4423,7 +4036,7 @@ var radarchart = function (userConfig) {
 
 module.exports = radarchart;
 
-},{}],23:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 var radialtree = function (userConfig) {
   d3 = dex.charts.d3.d3v4;
   var chart;
@@ -4650,7 +4263,7 @@ var radialtree = function (userConfig) {
 
 module.exports = radialtree;
 
-},{}],24:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 var sankey = function (userConfig) {
   d3 = dex.charts.d3.d3v3;
   var defaultColor = d3.scale.category20c();
@@ -5567,7 +5180,7 @@ d3sankey = function () {
 };
 
 module.exports = sankey;
-},{}],25:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 var scatterplot = function (userConfig) {
   d3 = dex.charts.d3.d3v3;
   var chart = new dex.component(userConfig,
@@ -5778,7 +5391,7 @@ var scatterplot = function (userConfig) {
 };
 
 module.exports = scatterplot;
-},{}],26:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 var sunburst = function (userConfig) {
   d3 = dex.charts.d3.d3v3;
   var chart;
@@ -5886,8 +5499,8 @@ var sunburst = function (userConfig) {
     var path = g.append("path")
       .attr("d", arc)
       .style("fill", function (d) {
-        dex.console.log("COLOR", (d.children ? d : d.parent).name,
-          config.color((d.children ? d : d.parent).name));
+        //dex.console.log("COLOR", (d.children ? d : d.parent).name,
+        //  config.color((d.children ? d : d.parent).name));
         return config.color((d.children ? d : d.parent).name);
       })
       .on("click", click);
@@ -5966,7 +5579,7 @@ var sunburst = function (userConfig) {
 };
 
 module.exports = sunburst;
-},{}],27:[function(require,module,exports){
+},{}],29:[function(require,module,exports){
 var topojsonmap = function (userConfig) {
   d3 = dex.charts.d3.d3v3;
   var chart = null;
@@ -5980,23 +5593,31 @@ var topojsonmap = function (userConfig) {
     'projection': d3.geo.albers(),
     'width': '100%',
     'height': '100%',
+    'resizable': true,
     'transform': 'translate(0,0)',
+    'feature' : {
+      "topology" : undefined,
+      "path" : dex.config.path({
+        "fill.fillColor" : "lightgrey",
+        "stroke.color" : "white"
+      })
+    },
     'margin': {
-      'left': 10,
-      'right': 10,
-      'top': 10,
-      'bottom': 10
+      'left': 0,
+      'right': 0,
+      'top': 0,
+      'bottom': 0
     },
     "selectedColor": "steelblue",
-    "unselectedColor": "grey",
+    "unselectedColor": "lightgrey",
   };
 
   chart = new dex.component(userConfig, defaults);
 
+  var selected = {};
+
   chart.render = function render() {
     d3 = dex.charts.d3.d3v3;
-    chart.resize = this.resize(chart);
-    window.onresize = chart.resize;
     return chart.resize();
   };
 
@@ -6009,18 +5630,24 @@ var topojsonmap = function (userConfig) {
     var width = config.width - margin.left - margin.right;
     var height = config.height - margin.top - margin.bottom;
 
+    dex.console.log("WIDTH", config.width, width, config.height, height);
+
     d3.selectAll(config.parent).selectAll("*").remove();
 
-    var chartContainer = d3.select(config.parent)
-      .append("g")
+    var svg = d3.select(config.parent)
+      .append("svg")
       .attr("id", config["id"])
       .attr("class", config["class"])
-      .attr("transform", config.transform)
       .attr('width', config.width)
       .attr('height', config.height);
 
+    var rootG = svg.append('g')
+      .attr('transform', 'translate(' +
+        (margin.left) + ',' +
+        (margin.top) + ') ' +
+        config.transform);
+
     var featureBounds,
-      geoParent,
       geo,
       geoLayer = {},
       slast,
@@ -6039,9 +5666,6 @@ var topojsonmap = function (userConfig) {
       .center([width / 2, height / 2])
       .scaleExtent([1, 8])
       .on("zoom", zoomed);
-
-    var svg = chartContainer;
-
 
     function getFeaturesBox() {
       return {
@@ -6077,7 +5701,7 @@ var topojsonmap = function (userConfig) {
       tlast = trans;
       slast = scale;
 
-      geoParent.attr('transform', [
+      rootG.attr('transform', [
         'translate(' + trans + ')',
         'scale(' + scale + ')'
       ].join(' '));
@@ -6145,12 +5769,27 @@ var topojsonmap = function (userConfig) {
       fitGeoInside();
     }
 
-    // load topojson & make map
+    function passThru(d) {
+      var e = d3.event;
 
-    dex.console.log("CONFIG", config);
+      var prev = this.style.pointerEvents;
+      this.style.pointerEvents = 'none';
+
+      var el = document.elementFromPoint(d3.event.x, d3.event.y);
+
+      var e2 = document.createEvent('MouseEvent');
+      e2.initMouseEvent(e.type, e.bubbles, e.cancelable, e.view, e.detail, e.screenX, e.screenY, e.clientX, e.clientY, e.ctrlKey, e.altKey, e.shiftKey, e.metaKey, e.button, e.relatedTarget);
+
+      el.dispatchEvent(e2);
+
+      this.style.pointerEvents = prev;
+    }
+
+    // load topojson & make map
     var topology = chart.config.toplogy;
 
-    var features = topojson.feature(config.topology, config.feature).features;
+    var features = topojson.feature(
+      config.topology, config.feature.topology).features;
 
     var collection = {
       'type': 'FeatureCollection',
@@ -6159,9 +5798,7 @@ var topojsonmap = function (userConfig) {
 
     featureBounds = path.bounds(collection);
 
-    geoParent = svg.append("g");
-
-    geoParent
+    rootG
       .append('rect')
       .attr('class', 'bg')
       .attr('pointer-events', 'none')
@@ -6169,30 +5806,57 @@ var topojsonmap = function (userConfig) {
       .attr('width', width)
       .attr('height', height);
 
-    geo = geoParent.append("g");
+    geo = rootG.append("g");
 
     geo.selectAll('.feature')
       .data(features)
       .enter()
       .append("path")
       .attr("class", "feature")
-      .attr("d", path);
-
+      .attr("d", path)
+      .call(dex.config.configurePath, config.feature.path)
+      .on("mouseover", function (d) {
+        chart.publish({
+          "type": "mouseover",
+          "target": d
+        });
+      })
+      .on("mousedown", function (d) {
+        if (selected[d.id]) {
+          chart.publish({
+            "type": "unselect",
+            "target": d
+          });
+          selected[d.id] = false;
+          d3.select(this).style("fill", config.unselectedColor);
+        }
+        else {
+          chart.publish({
+            "type": "select",
+            "target": d
+          });
+          selected[d.id] = true;
+          d3.select(this).style("fill", config.selectedColor);
+        }
+      });
 
     svg.append("rect")
       .attr("class", "overlay")
       .attr("width", width)
       .attr("height", height)
+      .style("pointer-events", "all")
+      .style("fill", "none")
+      .on("mousedown", passThru)
+      .on("mouseover", passThru)
       .call(zoom);
 
     initialize();
-
   };
   return chart;
 };
 
 module.exports = topojsonmap;
-},{}],28:[function(require,module,exports){
+},{}],30:[function(require,module,exports){
 var treemap = function (userConfig) {
   d3 = dex.charts.d3.d3v3;
   var chart = null;
@@ -6542,7 +6206,7 @@ var treemap = function (userConfig) {
     }
 
     function name(d) {
-      dex.console.log("NAME", d);
+      //dex.console.log("NAME", d);
       return d.parent
         ? name(d.parent) + " > " + d.name + " (" +
         formatNumber(d.size) + ")"
@@ -6561,7 +6225,7 @@ var treemap = function (userConfig) {
 };
 
 module.exports = treemap;
-},{}],29:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 var treemapBarChart = function (userConfig) {
   d3 = dex.charts.d3.d3v4;
   var chart;
@@ -6617,7 +6281,7 @@ var treemapBarChart = function (userConfig) {
     'margin': {
       'top': 25,
       'right': 15,
-      'bottom': 50,
+      'bottom': 100,
       'left': 60
     },
     // <text fill="#000" y="3" x="0.5" dy="0.71em">2000</text>
@@ -7011,7 +6675,7 @@ var treemapBarChart = function (userConfig) {
 };
 
 module.exports = treemapBarChart;
-},{}],30:[function(require,module,exports){
+},{}],32:[function(require,module,exports){
 var verticallegend = function (userConfig) {
 
   var defaults = {
@@ -7230,7 +6894,7 @@ var verticallegend = function (userConfig) {
 };
 
 module.exports = verticallegend;
-},{}],31:[function(require,module,exports){
+},{}],33:[function(require,module,exports){
 /**
  *
  * This module provides D3 based visualization components.
@@ -7271,7 +6935,7 @@ d3.TreemapBarChart = require("./TreemapBarChart");
 d3.TopoJsonMap = require("./TopoJsonMap");
 
 module.exports = d3;
-},{"../../../lib/d3.v3.5.17.min":1,"../../../lib/d3.v4.4.0.min":2,"./BumpChart":14,"./Chord":15,"./ClusteredForce":16,"./Dendrogram":17,"./HorizontalLegend":18,"./MotionBarChart":19,"./OrbitalLayout":20,"./ParallelCoordinates":21,"./RadarChart":22,"./RadialTree":23,"./Sankey":24,"./ScatterPlot":25,"./Sunburst":26,"./TopoJsonMap":27,"./Treemap":28,"./TreemapBarChart":29,"./VerticalLegend":30}],32:[function(require,module,exports){
+},{"../../../lib/d3.v3.5.17.min":1,"../../../lib/d3.v4.4.0.min":2,"./BumpChart":16,"./Chord":17,"./ClusteredForce":18,"./Dendrogram":19,"./HorizontalLegend":20,"./MotionBarChart":21,"./OrbitalLayout":22,"./ParallelCoordinates":23,"./RadarChart":24,"./RadialTree":25,"./Sankey":26,"./ScatterPlot":27,"./Sunburst":28,"./TopoJsonMap":29,"./Treemap":30,"./TreemapBarChart":31,"./VerticalLegend":32}],34:[function(require,module,exports){
 var ringnetwork = function (userConfig) {
   d3 = dex.charts.d3.d3v3;
   var chart;
@@ -7373,7 +7037,7 @@ var ringnetwork = function (userConfig) {
 };
 
 module.exports = ringnetwork;
-},{}],33:[function(require,module,exports){
+},{}],35:[function(require,module,exports){
 /**
  *
  * This module provides d3plus based visualizations.
@@ -7386,7 +7050,7 @@ var d3plus = {};
 d3plus.RingNetwork = require("./RingNetwork");
 
 module.exports = d3plus;
-},{"./RingNetwork":32}],34:[function(require,module,exports){
+},{"./RingNetwork":34}],36:[function(require,module,exports){
 var bubblechart = function (userConfig) {
   d3 = dex.charts.d3.d3v3;
   var chart;
@@ -7538,7 +7202,7 @@ var bubblechart = function (userConfig) {
 };
 
 module.exports = bubblechart;
-},{}],35:[function(require,module,exports){
+},{}],37:[function(require,module,exports){
 var echart = function (userConfig) {
   d3 = dex.charts.d3.d3v3;
   var echart;
@@ -7587,7 +7251,7 @@ var echart = function (userConfig) {
 };
 
 module.exports = echart;
-},{}],36:[function(require,module,exports){
+},{}],38:[function(require,module,exports){
 /**
  *
  * This module provides ECharts 3.0 based visualization components.
@@ -7601,7 +7265,7 @@ echarts.EChart = require("./EChart");
 echarts.BubbleChart = require("./BubbleChart");
 
 module.exports = echarts;
-},{"./BubbleChart":34,"./EChart":35}],37:[function(require,module,exports){
+},{"./BubbleChart":36,"./EChart":37}],39:[function(require,module,exports){
 var scatterplot = function (userConfig) {
   d3 = dex.charts.d3.d3v3;
   var chart;
@@ -7676,11 +7340,13 @@ var scatterplot = function (userConfig) {
       }
       else {
         groups = [series];
+        groups[0].csv = csv;
       }
 
       //dex.console.log("GROUPS", csv, groups);
 
       groups.forEach(function (group) {
+        //dex.console.log("GROUP", group);
         data = {
           'x': dex.csv.getColumnData(group.csv, series.coordinates.x),
           'y': dex.csv.getColumnData(group.csv, series.coordinates.y),
@@ -7717,7 +7383,7 @@ var scatterplot = function (userConfig) {
 };
 
 module.exports = scatterplot;
-},{}],38:[function(require,module,exports){
+},{}],40:[function(require,module,exports){
 /**
  * @module dex/charts/c3
  */
@@ -7726,7 +7392,7 @@ var elegans = {};
 elegans.ScatterPlot = require("./ScatterPlot");
 
 module.exports = elegans;
-},{"./ScatterPlot":37}],39:[function(require,module,exports){
+},{"./ScatterPlot":39}],41:[function(require,module,exports){
 var bubblechart = function (userConfig) {
   d3 = dex.charts.d3.d3v3;
   var chart;
@@ -7755,7 +7421,7 @@ var bubblechart = function (userConfig) {
 
     d3.select(config.parent).selectAll("*").remove();
 
-    dex.console.log("CSV", csv, dex.csv.group(csv, [0]));
+    //dex.console.log("CSV", csv, dex.csv.group(csv, [0]));
     var groups = dex.csv.group(csv, [0]);
     var nvd3Data = groups.map(function (group) {
       //dex.console.log("KEY", group.key, group);
@@ -7767,7 +7433,7 @@ var bubblechart = function (userConfig) {
       }
     });
 
-    dex.console.log("NVDDATA", nvd3Data);
+    //dex.console.log("NVDDATA", nvd3Data);
 
     var nvd3Chart = nv.models.scatterChart()
       .showDistX(true)
@@ -7823,7 +7489,7 @@ var bubblechart = function (userConfig) {
 };
 
 module.exports = bubblechart;
-},{}],40:[function(require,module,exports){
+},{}],42:[function(require,module,exports){
 var stackedareachart = function (userConfig) {
   d3 = dex.charts.d3.d3v3;
   var chart;
@@ -7866,40 +7532,48 @@ var stackedareachart = function (userConfig) {
 
     //dex.console.log("NVDDATA", nvdData);
 
+    var nvd3Chart = nv.models.stackedAreaChart()
+      .x(function (d) {
+        return d[0]
+      })
+      .y(function (d) {
+        return d[1]
+      })
+      .clipEdge(true)
+      .useInteractiveGuideline(true);
+
+    nvd3Chart.xAxis
+      .showMaxMin(false)
+      .tickFormat(function (d) {
+        return d3.time.format('%x')(new Date(d))
+      });
+
+    nvd3Chart.yAxis
+      .tickFormat(d3.format(',.2f'));
+
+    var svg = d3.select(config.parent)
+      .append("svg")
+      .attr("id", config["id"])
+      .attr("class", config["class"])
+      .attr('width', config.width)
+      .attr('height', config.height)
+      .datum(nvd3Data)
+      .transition()
+      .duration(500)
+      .call(nvd3Chart);
+
+    nv.utils.windowResize(nvd3Chart.update);
+
     internalChart = nv.addGraph(function () {
-      var nvd3Chart = nv.models.stackedAreaChart()
-        .x(function (d) {
-          return d[0]
-        })
-        .y(function (d) {
-          return d[1]
-        })
-        .clipEdge(true)
-        .useInteractiveGuideline(true);
-
-      nvd3Chart.xAxis
-        .showMaxMin(false)
-        .tickFormat(function (d) {
-          return d3.time.format('%x')(new Date(d))
-        });
-
-      nvd3Chart.yAxis
-        .tickFormat(d3.format(',.2f'));
-
-      var svg = d3.select(config.parent)
-        .append("svg")
-        .attr("id", config["id"])
-        .attr("class", config["class"])
-        .attr('width', config.width)
-        .attr('height', config.height)
-        .datum(nvd3Data)
-        .transition()
-        .duration(500)
-        .call(nvd3Chart);
-
-      nv.utils.windowResize(nvd3Chart.update);
       return nvd3Chart;
+    }, function () {
+      d3.selectAll(".nv-legend-symbol").on('click',
+        function () {
+          dex.console.log("Clicked Legend Of", nvd3Chart.datum());
+        });
     });
+
+    return chart;
   };
 
   chart.update = function () {
@@ -7909,14 +7583,16 @@ var stackedareachart = function (userConfig) {
 
   $(document).ready(function () {
     // Make the entire chart draggable.
-    //$(chart.config.parent).draggable();
+    if (chart.config.draggable) {
+      $(chart.config.parent).draggable();
+    }
   });
 
   return chart;
 };
 
 module.exports = stackedareachart;
-},{}],41:[function(require,module,exports){
+},{}],43:[function(require,module,exports){
 /**
  *
  * This module provides NVD3 based visualization components.
@@ -7930,7 +7606,7 @@ nvd3.StackedAreaChart = require("./StackedAreaChart");
 nvd3.BubbleChart = require("./BubbleChart");
 
 module.exports = nvd3;
-},{"./BubbleChart":39,"./StackedAreaChart":40}],42:[function(require,module,exports){
+},{"./BubbleChart":41,"./StackedAreaChart":42}],44:[function(require,module,exports){
 var scatterplot = function (userConfig) {
   var defaults = {
     // The parent container of this chart.
@@ -8296,7 +7972,7 @@ var scatterplot = function (userConfig) {
 };
 
 module.exports = scatterplot;
-},{}],43:[function(require,module,exports){
+},{}],45:[function(require,module,exports){
 /**
  *
  * This module provides ThreeJS/WebGL based visualization components.
@@ -8309,7 +7985,7 @@ var threejs = {};
 threejs.ScatterPlot = require("./ScatterPlot");
 
 module.exports = threejs;
-},{"./ScatterPlot":42}],44:[function(require,module,exports){
+},{"./ScatterPlot":44}],46:[function(require,module,exports){
 var network = function (userConfig) {
   var chart;
 
@@ -8374,7 +8050,7 @@ var network = function (userConfig) {
   var chart = new dex.component(userConfig, defaults);
 
   chart.resize = function resize() {
-    dex.console.log("PARENT: '" + chart.config.parent + "'");
+    //dex.console.log("PARENT: '" + chart.config.parent + "'");
     if (chart.config.resizable) {
       var width = $("" + chart.config.parent).width();
       var height = $("" + chart.config.parent).height();
@@ -8520,7 +8196,7 @@ var network = function (userConfig) {
         'font'  : {'align': 'middle'} });
     }
 
-    dex.console.log("NODES", nodes, "EDGES", edges);
+    //dex.console.log("NODES", nodes, "EDGES", edges);
 
     return {
       nodes: nodes,
@@ -8532,7 +8208,7 @@ var network = function (userConfig) {
 };
 
 module.exports = network;
-},{}],45:[function(require,module,exports){
+},{}],47:[function(require,module,exports){
 /**
  *
  * This module provides routines for dealing with arrays.
@@ -8545,7 +8221,7 @@ var vis = {};
 vis.Network = require("./Network");
 
 module.exports = vis;
-},{"./Network":44}],46:[function(require,module,exports){
+},{"./Network":46}],48:[function(require,module,exports){
 /**
  *
  * This module provides routines for dealing with colors.
@@ -8696,7 +8372,7 @@ module.exports = function color(dex) {
      * based upon the supplied range.
      *
      * @param {string[]} domain 2 or more items in a categorical domain.
-     * @param {string[2]} range An array of 2 colors.
+     * @param {string[]} range An array of 2 colors.
      * @returns {Function} A colormap function.
      *
      */
@@ -9108,7 +8784,7 @@ module.exports = function color(dex) {
   };
 };
 
-},{}],47:[function(require,module,exports){
+},{}],49:[function(require,module,exports){
 module.exports = function (dex) {
 
   return function (userConfig, defaultConfig) {
@@ -9242,11 +8918,10 @@ module.exports = function (dex) {
     this.resize = function (chart) {
       return function () {
         if (chart.config && chart.config.resizable) {
-          dex.console.log("Resize config: '" + chart.config.parent + "'");
           var width = d3.select(chart.config.parent).property("clientWidth");
           var height = d3.select(chart.config.parent).property("clientHeight");
 
-          dex.console.log("Resizing: " + chart.config.parent + ">" + chart.config.id +
+          dex.console.debug("Resizing: " + chart.config.parent + ">" + chart.config.id +
             "." + chart.config.class + " to (" +
             width + "w x " + height + "h)");
 
@@ -9342,7 +9017,7 @@ module.exports = function (dex) {
     return this;
   };
 };
-},{}],48:[function(require,module,exports){
+},{}],50:[function(require,module,exports){
 /**
  *
  * Config module.
@@ -10562,7 +10237,7 @@ module.exports = function config(dex) {
     }
   };
 };
-},{}],49:[function(require,module,exports){
+},{}],51:[function(require,module,exports){
 /**
  *
  * This module provides console logging capabilities.
@@ -10699,7 +10374,7 @@ module.exports = function (dex) {
     }
   };
 };
-},{}],50:[function(require,module,exports){
+},{}],52:[function(require,module,exports){
 /**
  *
  * This module provides support for dealing with csv structures.  This
@@ -10884,7 +10559,7 @@ module.exports = function csv(dex) {
         // 0 : number
         // [0] : object
         // '0' : string
-        dex.console.log("TYPE", typeof(keyIndex));
+        dex.console.log("UNKNOWN-TYPE", typeof(keyIndex));
       }
       return {};
     },
@@ -11128,7 +10803,7 @@ module.exports = function csv(dex) {
      */
     'columnSlice': function (csv, columns) {
       var slice = {};
-      var columnNumbers = columns.map(function(column) {
+      var columnNumbers = columns.map(function (column) {
         return dex.csv.getColumnNumber(csv, column);
       });
 
@@ -11232,7 +10907,6 @@ module.exports = function csv(dex) {
       for (var i = 0; i < types.length; i++) {
         if (types[i] == 'date') {
           csv.data.forEach(function (row, ri) {
-            dex.console.log("row[" + ri + "]=" + row[ri]);
             csv.data[ri][i] = new Date(csv.data[ri][i]);
           })
         }
@@ -11485,6 +11159,71 @@ module.exports = function csv(dex) {
         }
       }
       return true;
+    },
+
+    /**
+     *
+     * Given a series of categorical indices into a csv which
+     * contains some numeric data, create a new CSV where the
+     * first column is the aggregated categorical indices and
+     * the contents are the sum of numeric columns matching the
+     * aggregated categories.
+     *
+     * @param csv The csv to summarize.
+     * @param columnIndexes The indices to be used in summarization.
+     *
+     * @returns {{header, data: Array}}
+     */
+    'summary': function (csv, columnIndexes) {
+      // Create summary data groups csv.
+      var summaryGroups = dex.csv.columnSlice(csv, columnIndexes);
+
+      // Calculate the indices we will be summarizing.  Omit any
+      // numeric indices contained in the grouping.
+      var summaryIndices = dex.csv.getNumericIndices(csv)
+        .filter(function (el) {
+          return columnIndexes.indexOf(el) < 0;
+        });
+
+      // Extract a csv containing only what we are summarizing.
+      var ncsv = dex.csv.columnSlice(csv, summaryIndices);
+
+      // Initialize a name value pair structure where the key is
+      // the aggregated group values.
+      var summaryMap = {};
+      summaryGroups.data.forEach(function (row) {
+        if (!summaryMap[row.join(":")]) {
+          summaryMap[row.join(":")] =
+            Array.apply(null, Array(summaryIndices.length))
+              .map(Number.prototype.valueOf, 0);
+        }
+      });
+
+      // Add up the summary.
+      for (var i = 0; i < ncsv.data.length; i++) {
+        var key = summaryGroups.data[i].join(":");
+        for (var j = 0; j < ncsv.data[i].length; j++) {
+          summaryMap[key][j] += ncsv.data[i][j];
+        }
+      }
+
+      // Create the base summary csv.
+      var summary = {
+        "header": ncsv.header,
+        "data": []
+      };
+      // Prepend the aggregated summary name to the csv header.
+      summary.header.unshift(summaryGroups.header.join(":"));
+
+      // Iterate over each summary entry creating a row for each.
+      for (key in summaryMap) {
+        var data = summaryMap[key];
+        data.unshift(key);
+        summary.data.push(data);
+      }
+
+      // Return it back to the user.
+      return summary;
     },
 
     /**
@@ -11745,7 +11484,7 @@ module.exports = function csv(dex) {
     }
   };
 };
-},{}],51:[function(require,module,exports){
+},{}],53:[function(require,module,exports){
 /**
  *
  * This module provides support for creating various datasets.
@@ -12164,7 +11903,7 @@ module.exports = function datagen(dex) {
   };
 };
 
-},{}],52:[function(require,module,exports){
+},{}],54:[function(require,module,exports){
 // Allow user to override, but define this by default:
 
 /**
@@ -12425,7 +12164,7 @@ $.widget.bridge('uitooltip', $.ui.tooltip);
 $.widget.bridge('uibutton', $.ui.button);
 
 module.exports = dex;
-},{"../lib/pubsub":3,"./array/array":4,"./charts/charts":13,"./color/color":46,"./component/component":47,"./config/config":48,"./console/console":49,"./csv/csv":50,"./datagen/datagen":51,"./json/json":53,"./matrix/matrix":54,"./object/object":55,"./ui/ui":65,"./util/util":66}],53:[function(require,module,exports){
+},{"../lib/pubsub":3,"./array/array":4,"./charts/charts":15,"./color/color":48,"./component/component":49,"./config/config":50,"./console/console":51,"./csv/csv":52,"./datagen/datagen":53,"./json/json":55,"./matrix/matrix":56,"./object/object":57,"./ui/ui":67,"./util/util":68}],55:[function(require,module,exports){
 /**
  *
  * This module provides routines dealing with json data.
@@ -12528,7 +12267,7 @@ module.exports = function json(dex) {
   };
 };
 
-},{}],54:[function(require,module,exports){
+},{}],56:[function(require,module,exports){
 /**
  *
  * This module provides routines dealing with matrices.
@@ -12843,7 +12582,7 @@ module.exports = function matrix(dex) {
   };
 };
 
-},{}],55:[function(require,module,exports){
+},{}],57:[function(require,module,exports){
 /**
  *
  * This module provides routines dealing with javascript objects.
@@ -13165,7 +12904,7 @@ module.exports = function object(dex) {
 };
 
 
-},{}],56:[function(require,module,exports){
+},{}],58:[function(require,module,exports){
 /**
  *
  * This class creates and attaches a SqlQuery user interface onto the
@@ -13264,7 +13003,7 @@ var sqlquery = function (userConfig) {
 };
 
 module.exports = sqlquery;
-},{}],57:[function(require,module,exports){
+},{}],59:[function(require,module,exports){
 /**
  *
  * @constructor
@@ -13364,7 +13103,7 @@ var table = function (userConfig) {
 };
 
 module.exports = table;
-},{}],58:[function(require,module,exports){
+},{}],60:[function(require,module,exports){
 var typestable = function (userConfig) {
 
   var defaults =
@@ -13445,7 +13184,7 @@ var typestable = function (userConfig) {
 };
 
 module.exports = typestable;
-},{}],59:[function(require,module,exports){
+},{}],61:[function(require,module,exports){
 var configurationbox = function (userConfig) {
 
   var defaults =
@@ -13531,7 +13270,7 @@ var configurationbox = function (userConfig) {
 };
 
 module.exports = configurationbox;
-},{}],60:[function(require,module,exports){
+},{}],62:[function(require,module,exports){
 var player = function (userConfig) {
 
   var defaults = {
@@ -13565,7 +13304,7 @@ var player = function (userConfig) {
     frames = dex.csv.getFramesByIndex(config.csv, config.frameIndex);
     chart.attr("frames", frames);
 
-    dex.console.log("FRAMES:", frames);
+    dex.console.debug("FRAMES:", frames);
 
     $(config.parent)
       .append('<div><label>Frame:</label>' +
@@ -13603,7 +13342,6 @@ var player = function (userConfig) {
           "ui-slider": "highlight"
         },
         'slide': function (event, ui) {
-          dex.console.log("VALUE", ui.value);
           $("#frameNumber").html(ui.value + "foobar")
           gotoFrame(ui.value - 1);
 
@@ -13730,7 +13468,7 @@ var player = function (userConfig) {
 };
 
 module.exports = player;
-},{}],61:[function(require,module,exports){
+},{}],63:[function(require,module,exports){
 var selectable = function (userConfig) {
 
   var defaults =
@@ -13827,7 +13565,7 @@ var selectable = function (userConfig) {
 };
 
 module.exports = selectable;
-},{}],62:[function(require,module,exports){
+},{}],64:[function(require,module,exports){
 var slider = function (userConfig) {
 
   var defaults = {
@@ -13919,7 +13657,7 @@ var slider = function (userConfig) {
 };
 
 module.exports = slider;
-},{}],63:[function(require,module,exports){
+},{}],65:[function(require,module,exports){
 var tabs = function (userConfig) {
   var defaults = {
     // The parent container of this chart.
@@ -14023,7 +13761,7 @@ var tabs = function (userConfig) {
 };
 
 module.exports = tabs;
-},{}],64:[function(require,module,exports){
+},{}],66:[function(require,module,exports){
 /**
  *
  * This module provides ui components based upon jquery-ui.
@@ -14041,7 +13779,7 @@ module.exports = function jqueryui(dex) {
     'Tabs': require("./Tabs")
   };
 };
-},{"./ConfigurationBox":59,"./Player":60,"./Selectable":61,"./Slider":62,"./Tabs":63}],65:[function(require,module,exports){
+},{"./ConfigurationBox":61,"./Player":62,"./Selectable":63,"./Slider":64,"./Tabs":65}],67:[function(require,module,exports){
 /**
  *
  * This module provides ui components from a variety of sources.
@@ -14067,7 +13805,7 @@ module.exports = function ui(dex) {
     'TypesTable': require("./TypesTable")
   };
 };
-},{"./SqlQuery":56,"./Table":57,"./TypesTable":58,"./jqueryui/jqueryui":64}],66:[function(require,module,exports){
+},{"./SqlQuery":58,"./Table":59,"./TypesTable":60,"./jqueryui/jqueryui":66}],68:[function(require,module,exports){
 /**
  *
  * This module provides utility routines.
@@ -14140,5 +13878,5 @@ module.exports = function util(dex) {
     }
   };
 };
-},{}]},{},[52])(52)
+},{}]},{},[54])(54)
 });
