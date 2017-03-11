@@ -40,40 +40,48 @@ var stackedareachart = function (userConfig) {
 
     //dex.console.log("NVDDATA", nvdData);
 
+    var nvd3Chart = nv.models.stackedAreaChart()
+      .x(function (d) {
+        return d[0]
+      })
+      .y(function (d) {
+        return d[1]
+      })
+      .clipEdge(true)
+      .useInteractiveGuideline(true);
+
+    nvd3Chart.xAxis
+      .showMaxMin(false)
+      .tickFormat(function (d) {
+        return d3.time.format('%x')(new Date(d))
+      });
+
+    nvd3Chart.yAxis
+      .tickFormat(d3.format(',.2f'));
+
+    var svg = d3.select(config.parent)
+      .append("svg")
+      .attr("id", config["id"])
+      .attr("class", config["class"])
+      .attr('width', config.width)
+      .attr('height', config.height)
+      .datum(nvd3Data)
+      .transition()
+      .duration(500)
+      .call(nvd3Chart);
+
+    nv.utils.windowResize(nvd3Chart.update);
+
     internalChart = nv.addGraph(function () {
-      var nvd3Chart = nv.models.stackedAreaChart()
-        .x(function (d) {
-          return d[0]
-        })
-        .y(function (d) {
-          return d[1]
-        })
-        .clipEdge(true)
-        .useInteractiveGuideline(true);
-
-      nvd3Chart.xAxis
-        .showMaxMin(false)
-        .tickFormat(function (d) {
-          return d3.time.format('%x')(new Date(d))
-        });
-
-      nvd3Chart.yAxis
-        .tickFormat(d3.format(',.2f'));
-
-      var svg = d3.select(config.parent)
-        .append("svg")
-        .attr("id", config["id"])
-        .attr("class", config["class"])
-        .attr('width', config.width)
-        .attr('height', config.height)
-        .datum(nvd3Data)
-        .transition()
-        .duration(500)
-        .call(nvd3Chart);
-
-      nv.utils.windowResize(nvd3Chart.update);
       return nvd3Chart;
+    }, function () {
+      d3.selectAll(".nv-legend-symbol").on('click',
+        function () {
+          dex.console.log("Clicked Legend Of", nvd3Chart.datum());
+        });
     });
+
+    return chart;
   };
 
   chart.update = function () {
@@ -83,7 +91,9 @@ var stackedareachart = function (userConfig) {
 
   $(document).ready(function () {
     // Make the entire chart draggable.
-    //$(chart.config.parent).draggable();
+    if (chart.config.draggable) {
+      $(chart.config.parent).draggable();
+    }
   });
 
   return chart;
