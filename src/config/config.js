@@ -188,17 +188,16 @@ module.exports = function config(dex) {
      *
      */
     'font': function font(custom) {
-      var defaults =
-        {
-          'decoration': 'none',
-          'family': 'sans-serif',
-          'letterSpacing': 'normal',
-          'size': 14,
-          'style': 'normal',
-          'weight': 'normal',
-          'wordSpacing': 'normal',
-          'variant': 'normal'
-        };
+      var defaults = {
+        'decoration': 'none',
+        'family': 'sans-serif',
+        'letterSpacing': 'normal',
+        'size': 14,
+        'style': 'normal',
+        'weight': 'normal',
+        'wordSpacing': 'normal',
+        'variant': 'normal'
+      };
 
       var fontSpec = dex.config.expandAndOverlay(custom, defaults);
       return fontSpec;
