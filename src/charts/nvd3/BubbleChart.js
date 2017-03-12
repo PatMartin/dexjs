@@ -26,7 +26,7 @@ var bubblechart = function (userConfig) {
 
     d3.select(config.parent).selectAll("*").remove();
 
-    dex.console.log("CSV", csv, dex.csv.group(csv, [0]));
+    //dex.console.log("CSV", csv, dex.csv.group(csv, [0]));
     var groups = dex.csv.group(csv, [0]);
     var nvd3Data = groups.map(function (group) {
       //dex.console.log("KEY", group.key, group);
@@ -38,7 +38,7 @@ var bubblechart = function (userConfig) {
       }
     });
 
-    dex.console.log("NVDDATA", nvd3Data);
+    //dex.console.log("NVDDATA", nvd3Data);
 
     var nvd3Chart = nv.models.scatterChart()
       .showDistX(true)
