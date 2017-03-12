@@ -100,7 +100,7 @@ var chord = function (userConfig) {
     'label': dex.config.text()
   };
 
-  var chart = new dex.component(userConfig, defaults);
+  chart = new dex.component(userConfig, defaults);
 
   chart.render = function render() {
     d3 = dex.charts.d3.d3v3;

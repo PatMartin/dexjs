@@ -1,6 +1,6 @@
 var topojsonmap = function (userConfig) {
   d3 = dex.charts.d3.d3v3;
-  var chart = null;
+  var chart;
 
   var defaults = {
     'parent': '#TopoJsonMap',
@@ -30,9 +30,9 @@ var topojsonmap = function (userConfig) {
     "unselectedColor": "lightgrey",
   };
 
-  chart = new dex.component(userConfig, defaults);
-
   var selected = {};
+
+  chart = new dex.component(userConfig, defaults);
 
   chart.render = function render() {
     d3 = dex.charts.d3.d3v3;
