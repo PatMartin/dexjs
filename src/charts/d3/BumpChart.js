@@ -33,9 +33,9 @@ var bumpchart = function (userConfig) {
     'transform': "",
     'color': d3.scale.category10(),
     'format': d3.format("d"),
-    'key': {'category': 0, 'x': 1, 'y': 2},
-    'xAxisLabel': dex.config.text({
-      'text': "X AxisTitle",
+    'key': {'category': 0, 'sequence': 1, 'rank': 2},
+    'chartLabel': dex.config.text({
+      'text': "",
       'x': function () {
         return (chart.config.width - chart.config.margin.left -
           chart.config.margin.right) / 2;
@@ -47,10 +47,10 @@ var bumpchart = function (userConfig) {
       'font': dex.config.font({
         'fontSize': '32px'
       }),
-      'fill.fillColor' : 'steelblue',
+      'fill.fillColor': 'steelblue',
       'anchor': 'middle'
     }),
-    'label': dex.config.text({
+    'categoryLabel': dex.config.text({
       'x': 8,
       'dy': ".31em",
       'cursor': "pointer",
@@ -61,6 +61,19 @@ var bumpchart = function (userConfig) {
       'fill.fillColor': function (d) {
         return chart.config.color(
           d.key);
+      }
+    }),
+    'sequenceLabel': dex.config.text({
+      'dx': 0,
+      'anchor' : 'middle',
+      'dy': ".31em",
+      'cursor': "pointer",
+      'font': dex.config.font({
+        'size': 32,
+        'weight': 'bold',
+      }),
+      'fill.fillColor': function (d) {
+         return "black";
       }
     }),
     'circle': dex.config.circle({
@@ -74,14 +87,14 @@ var bumpchart = function (userConfig) {
       'fill.fillColor': 'white'
     }),
     'line': dex.config.line({
-      'stroke' : dex.config.stroke({
-        'color' : function(d) {
+      'stroke': dex.config.stroke({
+        'color': function (d) {
           return chart.config.color(d.key);
         },
-        'width' : 3,
+        'width': 3,
         //'dasharray' : "1 1"
       }),
-      'fill.fillColor' : 'none'
+      'fill.fillColor': 'none'
     })
   };
 
@@ -102,10 +115,14 @@ var bumpchart = function (userConfig) {
     var height = config.height - margin.top - margin.bottom;
 
     var categoryKey = dex.csv.getColumnName(csv, config.key.category);
-    var xKey = dex.csv.getColumnName(csv, config.key.x);
-    var yKey = dex.csv.getColumnName(csv, config.key.y);
+    var sequenceKey = dex.csv.getColumnName(csv, config.key.sequence);
+    var rankKey = dex.csv.getColumnName(csv, config.key.rank);
 
-    //dex.console.log("cat", categoryKey, "x", xKey, "y", yKey);
+    var categoryIndex = dex.csv.getColumnNumber(csv, config.key.category);
+    var sequenceIndex = dex.csv.getColumnNumber(csv, config.key.sequence);
+    var rankIndex = dex.csv.getColumnNumber(csv, config.key.rank);
+
+    dex.console.log("cat", categoryKey, "sequence", sequenceKey, "rank", rankKey);
 
     d3.selectAll(config.parent).selectAll("*").remove();
 
@@ -127,7 +144,7 @@ var bumpchart = function (userConfig) {
 
     var dataNest = d3.nest()
       .key(function (d) {
-        return d[csv.header[0]];
+        return d[csv.header[categoryIndex]];
       })
       .entries(data);
 
@@ -167,10 +184,10 @@ var bumpchart = function (userConfig) {
 
     var line = d3.svg.line()
       .x(function (d) {
-        return x(+d[xKey]);
+        return x(+d[sequenceKey]);
       })
       .y(function (d) {
-        return y(+d[yKey]) + y.rangeBand() / 2;
+        return y(+d[rankKey]) + y.rangeBand() / 2;
       });
 
     var clip = svg.append("clipPath")
@@ -181,19 +198,19 @@ var bumpchart = function (userConfig) {
 
     y.domain(d3.range(d3.min(data, function (series) {
         return d3.min(series.values, function (d) {
-          return +d[yKey];
+          return +d[rankKey];
         });
       }),
         d3.max(data, function (series) {
           return d3.max(series.values, function (d) {
-            return +d[yKey];
+            return +d[rankKey];
           });
         }) + 1)
         .reverse()
     );
 
     x.domain(d3.extent(data[0].values.map(function (d) {
-      return +d[xKey];
+      return +d[sequenceKey];
     })));
 
     clippingIndex.domain([1, data[0].values.length]);
@@ -214,6 +231,10 @@ var bumpchart = function (userConfig) {
     rootG.append("g")
       .attr("class", "x axis")
       .call(xAxis1);
+
+    // Style the axis labels.
+    rootG.selectAll(".axis").filter(".x").selectAll(".tick").select("text")
+      .call(dex.config.configureText, config.sequenceLabel);
 
     var key = rootG.selectAll(".key")
       .data(data)
@@ -242,10 +263,10 @@ var bumpchart = function (userConfig) {
     var circleStart = key.append("circle")
       .call(dex.config.configureCircle, config.circle)
       .attr("cx", function (d) {
-        return x(+d.values[0][xKey]);
+        return x(+d.values[0][sequenceKey]);
       })
       .attr("cy", function (d) {
-        return y(+d.values[0][yKey]) + y.rangeBand() / 2;
+        return y(+d.values[0][rankKey]) + y.rangeBand() / 2;
       })
       //    .style("fill", function(d) { return d.color; })
       .on("mouseover", function (d) {
@@ -261,10 +282,10 @@ var bumpchart = function (userConfig) {
     var circleEnd = key.append("circle")
       .call(dex.config.configureCircle, config.circle)
       .attr("cx", function (d) {
-        return x(+d.values[0][xKey]);
+        return x(+d.values[0][sequenceKey]);
       })
       .attr("cy", function (d) {
-        return y(+d.values[0][yKey]) + y.rangeBand() / 2;
+        return y(+d.values[0][rankKey]) + y.rangeBand() / 2;
       })
       .on("mouseover", function (d) {
         key.style("opacity", 0.2);
@@ -277,16 +298,17 @@ var bumpchart = function (userConfig) {
       });
 
 
-    // text label for the x axis
+    // text label for the chart
     rootG.append("text")
-      .call(dex.config.configureText, config.xAxisLabel);
+      .call(dex.config.configureText, config.chartLabel);
 
     var label = key.append("text")
       .attr("transform", function (d) {
-        return "translate(" + (+x(d.values[0][xKey])) +
-          "," + (+y(d.values[0][yKey]) + y.rangeBand() / 2) + ")";
+        //dex.console.log("D", d, sequenceKey);
+        return "translate(" + (+x(d.values[0][sequenceKey])) +
+          "," + (+y(d.values[0][rankKey]) + y.rangeBand() / 2) + ")";
       })
-      .call(dex.config.configureText, config.label)
+      .call(dex.config.configureText, config.categoryLabel)
       .on("mouseover", function (d) {
         key.style("opacity", 0.2);
         key.filter(function (path) {
@@ -297,7 +319,7 @@ var bumpchart = function (userConfig) {
         key.style("opacity", 1);
       })
       .text(function (d) {
-        return "" + d.values[0][yKey] + " " + d.key;
+        return " " + d.values[0][rankKey] + ". " + d.key;
       });
 
     var xIndex = 1;
@@ -305,25 +327,25 @@ var bumpchart = function (userConfig) {
     var transition = d3.transition()
       .duration(speed)
       .each("start", function start() {
-
         label.transition()
           .duration(speed)
           .ease('linear')
           .attr("transform", function (d) {
-            return "translate(" + x(+d.values[xIndex][xKey]) + "," + (y(+d.values[xIndex][yKey]) + y.rangeBand() / 2) + ")";
+            //dex.console.log("D:" + xIndex, d, sequenceKey);
+            return "translate(" + x(+d.values[xIndex][sequenceKey]) + "," + (y(+d.values[xIndex][rankKey]) + y.rangeBand() / 2) + ")";
           })
           .text(function (d) {
-            return " " + " " + d.key;
+            return " " + d.values[xIndex][rankKey] + ". " + d.key;
           });
 
         circleEnd.transition()
           .duration(speed)
           .ease('linear')
           .attr("cx", function (d) {
-            return x(+(d.values[xIndex][xKey]));
+            return x(+(d.values[xIndex][sequenceKey]));
           })
           .attr("cy", function (d) {
-            return y(+(d.values[xIndex][yKey])) + y.rangeBand() / 2;
+            return y(+(d.values[xIndex][rankKey])) + y.rangeBand() / 2;
           });
 
         clip.transition()
@@ -347,6 +369,6 @@ var bumpchart = function (userConfig) {
   });
 
   return chart;
-}
+};
 
 module.exports = bumpchart;
