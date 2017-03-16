@@ -546,6 +546,53 @@ module.exports = function csv(dex) {
       return csv;
     },
 
+    'getRankedCsv': function (csv, nameIndex, sequenceIndex, valueIndex) {
+      var rankedCsv = dex.csv.copy(csv);
+
+      var si = dex.csv.getColumnNumber(csv, sequenceIndex);
+      var ni = dex.csv.getColumnNumber(csv, nameIndex);
+      var vi = dex.csv.getColumnNumber(csv, valueIndex);
+
+      rankedCsv.data.sort(function (row1, row2) {
+        if (+row1[si] == +row2[si]) {
+          if (+row1[vi] == +row2[vi]) {
+            if (row1[ni] < row2[ni]) {
+              return -1;
+            }
+            else if (row1[ni] > row2[ni]) {
+              return 1;
+            }
+            else {
+              return 0;
+            }
+          }
+          else {
+            return +row1[vi] - +row2[vi];
+          }
+        }
+        else {
+          return +row1[si] - +row2[si];
+        }
+      });
+
+      rankedCsv.header.push("rank");
+      var rank = 0;
+      var prev = undefined;
+      rankedCsv.data.forEach(function (row) {
+        if (prev == row[si]) {
+          rank++;
+          row.push(rank);
+        }
+        else {
+          row.push(1);
+          rank = 1;
+        }
+        prev = row[si];
+      });
+
+      return rankedCsv;
+    },
+
     'uniqueArray': function (csv, columnIndex) {
       return dex.array.unique(dex.matrix.flatten(
         dex.matrix.slice(csv.data, [columnIndex])));
