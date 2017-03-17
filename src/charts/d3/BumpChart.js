@@ -65,7 +65,7 @@ var bumpchart = function (userConfig) {
     }),
     'sequenceLabel': dex.config.text({
       'dx': 0,
-      'anchor' : 'middle',
+      'anchor': 'middle',
       'dy': ".31em",
       'cursor': "pointer",
       'font': dex.config.font({
@@ -73,7 +73,7 @@ var bumpchart = function (userConfig) {
         'weight': 'bold',
       }),
       'fill.fillColor': function (d) {
-         return "black";
+        return "black";
       }
     }),
     'circle': dex.config.circle({
@@ -122,7 +122,7 @@ var bumpchart = function (userConfig) {
     var sequenceIndex = dex.csv.getColumnNumber(csv, config.key.sequence);
     var rankIndex = dex.csv.getColumnNumber(csv, config.key.rank);
 
-    dex.console.log("cat", categoryKey, "sequence", sequenceKey, "rank", rankKey);
+    //dex.console.log("cat", categoryKey, "sequence", sequenceKey, "rank", rankKey);
 
     d3.selectAll(config.parent).selectAll("*").remove();
 
@@ -135,8 +135,7 @@ var bumpchart = function (userConfig) {
 
     var rootG = svg.append('g')
       .attr('transform', 'translate(' +
-        (margin.left) + ',' +
-        (margin.top) + ') ' +
+        margin.left + ',' + margin.top + ') ' +
         config.transform);
 
     var data = dex.csv.toJson(csv);
@@ -297,7 +296,6 @@ var bumpchart = function (userConfig) {
         key.style("opacity", 1);
       });
 
-
     // text label for the chart
     rootG.append("text")
       .call(dex.config.configureText, config.chartLabel);
@@ -365,7 +363,9 @@ var bumpchart = function (userConfig) {
 
   $(document).ready(function () {
     // Make the entire chart draggable.
-    //$(chart.config.parent).draggable();
+    if (chart.config.draggable) {
+      $(chart.config.parent).draggable();
+    }
   });
 
   return chart;
