@@ -959,9 +959,9 @@ var bumpchart = function (userConfig) {
     'transform': "",
     'color': d3.scale.category10(),
     'format': d3.format("d"),
-    'key': {'category': 0, 'x': 1, 'y': 2},
-    'xAxisLabel': dex.config.text({
-      'text': "X AxisTitle",
+    'key': {'category': 0, 'sequence': 1, 'rank': 2},
+    'chartLabel': dex.config.text({
+      'text': "",
       'x': function () {
         return (chart.config.width - chart.config.margin.left -
           chart.config.margin.right) / 2;
@@ -973,10 +973,10 @@ var bumpchart = function (userConfig) {
       'font': dex.config.font({
         'fontSize': '32px'
       }),
-      'fill.fillColor' : 'steelblue',
+      'fill.fillColor': 'steelblue',
       'anchor': 'middle'
     }),
-    'label': dex.config.text({
+    'categoryLabel': dex.config.text({
       'x': 8,
       'dy': ".31em",
       'cursor': "pointer",
@@ -987,6 +987,19 @@ var bumpchart = function (userConfig) {
       'fill.fillColor': function (d) {
         return chart.config.color(
           d.key);
+      }
+    }),
+    'sequenceLabel': dex.config.text({
+      'dx': 0,
+      'anchor': 'middle',
+      'dy': ".31em",
+      'cursor': "pointer",
+      'font': dex.config.font({
+        'size': 32,
+        'weight': 'bold',
+      }),
+      'fill.fillColor': function (d) {
+        return "black";
       }
     }),
     'circle': dex.config.circle({
@@ -1000,14 +1013,14 @@ var bumpchart = function (userConfig) {
       'fill.fillColor': 'white'
     }),
     'line': dex.config.line({
-      'stroke' : dex.config.stroke({
-        'color' : function(d) {
+      'stroke': dex.config.stroke({
+        'color': function (d) {
           return chart.config.color(d.key);
         },
-        'width' : 3,
+        'width': 3,
         //'dasharray' : "1 1"
       }),
-      'fill.fillColor' : 'none'
+      'fill.fillColor': 'none'
     })
   };
 
@@ -1028,10 +1041,14 @@ var bumpchart = function (userConfig) {
     var height = config.height - margin.top - margin.bottom;
 
     var categoryKey = dex.csv.getColumnName(csv, config.key.category);
-    var xKey = dex.csv.getColumnName(csv, config.key.x);
-    var yKey = dex.csv.getColumnName(csv, config.key.y);
+    var sequenceKey = dex.csv.getColumnName(csv, config.key.sequence);
+    var rankKey = dex.csv.getColumnName(csv, config.key.rank);
 
-    //dex.console.log("cat", categoryKey, "x", xKey, "y", yKey);
+    var categoryIndex = dex.csv.getColumnNumber(csv, config.key.category);
+    var sequenceIndex = dex.csv.getColumnNumber(csv, config.key.sequence);
+    var rankIndex = dex.csv.getColumnNumber(csv, config.key.rank);
+
+    //dex.console.log("cat", categoryKey, "sequence", sequenceKey, "rank", rankKey);
 
     d3.selectAll(config.parent).selectAll("*").remove();
 
@@ -1044,8 +1061,7 @@ var bumpchart = function (userConfig) {
 
     var rootG = svg.append('g')
       .attr('transform', 'translate(' +
-        (margin.left) + ',' +
-        (margin.top) + ') ' +
+        margin.left + ',' + margin.top + ') ' +
         config.transform);
 
     var data = dex.csv.toJson(csv);
@@ -1053,7 +1069,7 @@ var bumpchart = function (userConfig) {
 
     var dataNest = d3.nest()
       .key(function (d) {
-        return d[csv.header[0]];
+        return d[csv.header[categoryIndex]];
       })
       .entries(data);
 
@@ -1093,10 +1109,10 @@ var bumpchart = function (userConfig) {
 
     var line = d3.svg.line()
       .x(function (d) {
-        return x(+d[xKey]);
+        return x(+d[sequenceKey]);
       })
       .y(function (d) {
-        return y(+d[yKey]) + y.rangeBand() / 2;
+        return y(+d[rankKey]) + y.rangeBand() / 2;
       });
 
     var clip = svg.append("clipPath")
@@ -1107,19 +1123,19 @@ var bumpchart = function (userConfig) {
 
     y.domain(d3.range(d3.min(data, function (series) {
         return d3.min(series.values, function (d) {
-          return +d[yKey];
+          return +d[rankKey];
         });
       }),
         d3.max(data, function (series) {
           return d3.max(series.values, function (d) {
-            return +d[yKey];
+            return +d[rankKey];
           });
         }) + 1)
         .reverse()
     );
 
     x.domain(d3.extent(data[0].values.map(function (d) {
-      return +d[xKey];
+      return +d[sequenceKey];
     })));
 
     clippingIndex.domain([1, data[0].values.length]);
@@ -1140,6 +1156,10 @@ var bumpchart = function (userConfig) {
     rootG.append("g")
       .attr("class", "x axis")
       .call(xAxis1);
+
+    // Style the axis labels.
+    rootG.selectAll(".axis").filter(".x").selectAll(".tick").select("text")
+      .call(dex.config.configureText, config.sequenceLabel);
 
     var key = rootG.selectAll(".key")
       .data(data)
@@ -1168,10 +1188,10 @@ var bumpchart = function (userConfig) {
     var circleStart = key.append("circle")
       .call(dex.config.configureCircle, config.circle)
       .attr("cx", function (d) {
-        return x(+d.values[0][xKey]);
+        return x(+d.values[0][sequenceKey]);
       })
       .attr("cy", function (d) {
-        return y(+d.values[0][yKey]) + y.rangeBand() / 2;
+        return y(+d.values[0][rankKey]) + y.rangeBand() / 2;
       })
       //    .style("fill", function(d) { return d.color; })
       .on("mouseover", function (d) {
@@ -1187,10 +1207,10 @@ var bumpchart = function (userConfig) {
     var circleEnd = key.append("circle")
       .call(dex.config.configureCircle, config.circle)
       .attr("cx", function (d) {
-        return x(+d.values[0][xKey]);
+        return x(+d.values[0][sequenceKey]);
       })
       .attr("cy", function (d) {
-        return y(+d.values[0][yKey]) + y.rangeBand() / 2;
+        return y(+d.values[0][rankKey]) + y.rangeBand() / 2;
       })
       .on("mouseover", function (d) {
         key.style("opacity", 0.2);
@@ -1202,17 +1222,17 @@ var bumpchart = function (userConfig) {
         key.style("opacity", 1);
       });
 
-
-    // text label for the x axis
+    // text label for the chart
     rootG.append("text")
-      .call(dex.config.configureText, config.xAxisLabel);
+      .call(dex.config.configureText, config.chartLabel);
 
     var label = key.append("text")
       .attr("transform", function (d) {
-        return "translate(" + (+x(d.values[0][xKey])) +
-          "," + (+y(d.values[0][yKey]) + y.rangeBand() / 2) + ")";
+        //dex.console.log("D", d, sequenceKey);
+        return "translate(" + (+x(d.values[0][sequenceKey])) +
+          "," + (+y(d.values[0][rankKey]) + y.rangeBand() / 2) + ")";
       })
-      .call(dex.config.configureText, config.label)
+      .call(dex.config.configureText, config.categoryLabel)
       .on("mouseover", function (d) {
         key.style("opacity", 0.2);
         key.filter(function (path) {
@@ -1223,7 +1243,7 @@ var bumpchart = function (userConfig) {
         key.style("opacity", 1);
       })
       .text(function (d) {
-        return "" + d.values[0][yKey] + " " + d.key;
+        return " " + d.values[0][rankKey] + ". " + d.key;
       });
 
     var xIndex = 1;
@@ -1231,25 +1251,25 @@ var bumpchart = function (userConfig) {
     var transition = d3.transition()
       .duration(speed)
       .each("start", function start() {
-
         label.transition()
           .duration(speed)
           .ease('linear')
           .attr("transform", function (d) {
-            return "translate(" + x(+d.values[xIndex][xKey]) + "," + (y(+d.values[xIndex][yKey]) + y.rangeBand() / 2) + ")";
+            //dex.console.log("D:" + xIndex, d, sequenceKey);
+            return "translate(" + x(+d.values[xIndex][sequenceKey]) + "," + (y(+d.values[xIndex][rankKey]) + y.rangeBand() / 2) + ")";
           })
           .text(function (d) {
-            return " " + " " + d.key;
+            return " " + d.values[xIndex][rankKey] + ". " + d.key;
           });
 
         circleEnd.transition()
           .duration(speed)
           .ease('linear')
           .attr("cx", function (d) {
-            return x(+(d.values[xIndex][xKey]));
+            return x(+(d.values[xIndex][sequenceKey]));
           })
           .attr("cy", function (d) {
-            return y(+(d.values[xIndex][yKey])) + y.rangeBand() / 2;
+            return y(+(d.values[xIndex][rankKey])) + y.rangeBand() / 2;
           });
 
         clip.transition()
@@ -1269,11 +1289,13 @@ var bumpchart = function (userConfig) {
 
   $(document).ready(function () {
     // Make the entire chart draggable.
-    //$(chart.config.parent).draggable();
+    if (chart.config.draggable) {
+      $(chart.config.parent).draggable();
+    }
   });
 
   return chart;
-}
+};
 
 module.exports = bumpchart;
 },{}],17:[function(require,module,exports){
@@ -1283,103 +1305,103 @@ var chord = function (userConfig) {
 
   var defaults = {
     // The parent container of this chart.
-    'parent': '#ChordParent',
+    "parent": "#ChordParent",
     // Set these when you need to CSS style components independently.
-    'id': 'ChordId',
-    'class': 'ChordClass',
-    'resizable': true,
+    "id": "ChordId",
+    "class": "ChordClass",
+    "resizable": true,
     // Our data...
-    'csv': {
+    "csv": {
       // Give folks without data something to look at anyhow.
-      'header': ["X", "Y", "Z"],
-      'data': [
+      "header": ["X", "Y", "Z"],
+      "data": [
         [0, 0, 0],
         [1, 1, 1],
         [2, 2, 2]
       ]
     },
-    'width': "100%",
-    'height': "100%",
-    'margin': {
-      'left': 20,
-      'right': 20,
-      'top': 50,
-      'bottom': 50
+    "width": "100%",
+    "height": "100%",
+    "margin": {
+      "left": 50,
+      "right": 50,
+      "top": 50,
+      "bottom": 50
     },
-    'transform': "",
-    'padding': 0.05,
-    'nodes': {
-      'mouseout': dex.config.link({
-        'stroke.color': "black",
-        //'stroke.dasharray': '5 5',
-        'stroke.width': 0,
-        'fill.fillColor': function (d, i) {
+    "transform": "",
+    "draggable" : false,
+    "padding": 0.05,
+    "nodes": {
+      "mouseout": dex.config.link({
+        "stroke.color": "black",
+        //"stroke.dasharray": "5 5",
+        "stroke.width": 0,
+        "fill.fillColor": function (d, i) {
           //dex.console.log("COLORD", d);
           return (chart.config.color(chart.config.chordData.header[d.index]));
         },
-        'fill.fillOpacity': 0.5,
-        'fill.fill': 'none',
-        'd': d3.svg.arc(),
-        'transform': ''
+        "fill.fillOpacity": 0.5,
+        "fill.fill": "none",
+        "d": d3.svg.arc(),
+        "transform": ""
       }),
-      'mouseover': dex.config.link({
-        'stroke.color': "white",
-        //'stroke.dasharray': '5 5',
-        'stroke.width': 2,
-        'fill.fillColor': function (d, i) {
+      "mouseover": dex.config.link({
+        "stroke.color": "white",
+        //"stroke.dasharray": "5 5",
+        "stroke.width": 2,
+        "fill.fillColor": function (d, i) {
           //dex.console.log("D", d)
           return (chart.config.color(chart.config.chordData.header[d.index]));
         },
-        'fill.fillOpacity': 1,
-        'fill.fill': 'none',
-        'd': d3.svg.arc(),
-        'transform': ''
+        "fill.fillOpacity": 1,
+        "fill.fill": "none",
+        "d": d3.svg.arc(),
+        "transform": ""
       })
     },
-    'links': {
-      'mouseout': dex.config.link({
-        'stroke.color': "white",
-        'stroke.dasharray': '',
-        'stroke.width': 0,
-        'fill.fillColor': function (d, i) {
+    "links": {
+      "mouseout": dex.config.link({
+        "stroke.color": "white",
+        "stroke.dasharray": "",
+        "stroke.width": 0,
+        "fill.fillColor": function (d, i) {
           return (chart.config.color(chart.config.chordData.header[d.source.index]));
         },
-        'fill.fillOpacity': 0.1,
-        'fill.fill': 'none',
-        'd': d3.svg.chord(),
-        'transform': ''
+        "fill.fillOpacity": 0.2,
+        "fill.fill": "none",
+        "d": d3.svg.chord(),
+        "transform": ""
       }),
-      'mouseover': dex.config.link({
-        'stroke.color': "white",
-        'stroke.dasharray': '',
-        'stroke.width': 1,
-        'fill.fillColor': function (d, i) {
+      "mouseover": dex.config.link({
+        "stroke.color": "white",
+        "stroke.dasharray": "",
+        "stroke.width": 1,
+        "fill.fillColor": function (d, i) {
           return (chart.config.color(chart.config.chordData.header[d.source.index]));
         },
-        'transform': "",
-        'fill.fillOpacity': 1,
-        'fill.fill': 'none',
-        'd': d3.svg.chord()
+        "transform": "",
+        "fill.fillOpacity": 1,
+        "fill.fill": "none",
+        "d": d3.svg.chord()
       })
     },
-    'color': d3.scale.category20c(),
-    'innerRadius': 130,
-    'outerRadius': 200,
-    'tick.start.x': 1,
-    'tick.start.y': 0,
-    'tick.end.x': 5,
-    'tick.end.y': 0,
-    'tick.padding': 10,
-    'tick.stroke': dex.config.stroke({
-      'width': 2,
-      'color': 'black'
-      //'dasharray' : '1 2'
+    "color": d3.scale.category20c(),
+    "innerRadius": "auto",
+    "outerRadius": "auto",
+    "tick.start.x": 1,
+    "tick.start.y": 0,
+    "tick.end.x": 5,
+    "tick.end.y": 0,
+    "tick.padding": 10,
+    "tick.stroke": dex.config.stroke({
+      "width": 2,
+      "color": "black"
     }),
-    'title': dex.config.text(),
-    'label': dex.config.text()
+    "title": dex.config.text(),
+    "label": dex.config.text()
   };
 
-  var chart = new dex.component(userConfig, defaults);
+  chart = new dex.component(userConfig, defaults);
 
   chart.render = function render() {
     d3 = dex.charts.d3.d3v3;
@@ -1397,30 +1419,34 @@ var chord = function (userConfig) {
 
     d3.selectAll(config.parent).selectAll("*").remove();
 
-    var minDimension = Math.min(width, height);
-    var outer = Math.min(width, height) / 3;
-
-    var inner = Math.max(outer - 20, 10);
-    config.innerRadius = inner;
-    config.outerRadius = outer;
+    var outer;
+    var inner;
+    if (config.outerRadius == "auto") {
+      outer = Math.min(width, height) / 2;
+      inner = Math.max(outer - 20, 10);
+    }
+    else {
+      outer = config.outerRadius;
+      inner = config.innerRadius;
+    }
 
     // Calculated attributes.
-    config.nodes.mouseover.d.innerRadius(config.innerRadius).outerRadius(config.outerRadius + 2);
-    config.nodes.mouseout.d.innerRadius(config.innerRadius).outerRadius(config.outerRadius);
-    config.links.mouseover.d.radius(config.innerRadius);
-    config.links.mouseout.d.radius(config.innerRadius);
+    config.nodes.mouseover.d.innerRadius(inner).outerRadius(outer + 2);
+    config.nodes.mouseout.d.innerRadius(inner).outerRadius(outer);
+    config.links.mouseover.d.radius(inner);
+    config.links.mouseout.d.radius(inner);
 
     var svg = d3.select(config.parent)
       .append("svg")
       .attr("id", config["id"])
       .attr("class", config["class"])
-      .attr('width', config.width)
-      .attr('height', config.height);
+      .attr("width", config.width)
+      .attr("height", config.height);
 
-    var rootG = svg.append('g')
-      .attr('transform', 'translate(' +
-        (margin.left + config.width / 2) + ',' +
-        (margin.top + config.height / 2) + ') ' +
+    var rootG = svg.append("g")
+      .attr("transform", "translate(" +
+        (margin.left + (width / 2)) + "," +
+        (margin.top + (height / 2)) + ") " +
         config.transform);
 
     chordData = dex.csv.getConnectionMatrix(csv);
@@ -1447,7 +1473,6 @@ var chord = function (userConfig) {
 
             return d.source.index == activeChord.index || d.target.index == activeChord.index;
           })
-          //.call("opacity", config.links.mouseover.fill.fillOpacity);
           .call(dex.config.configureLink, config.links.mouseover);
       })
       .on("mouseout", function (inactiveChord) {
@@ -1461,7 +1486,6 @@ var chord = function (userConfig) {
           .call(dex.config.configureLink, config.links.mouseout);
       });
 
-    // REM: Used to be svg.
     var ticks = rootG.append("g")
       .attr("id", "ChordTicks")
       .selectAll("g")
@@ -1478,17 +1502,14 @@ var chord = function (userConfig) {
         var endAngle = this.parentNode.__data__.endAngle;
         var midAngle = startAngle + (endAngle - startAngle) / 2.0;
         return "rotate(" + (midAngle * 180 / Math.PI - 90) + ")"
-          + "translate(" + config.outerRadius + ",0)";
-        //return "translate(" + config.xoffset + "," + config.yoffset + ")rotate(" + (midAngle * 180 / Math.PI - 90) + ")"
-        //    + "translate(" + config.outerRadius + ",0)";
-        //return "translate(" + config.xoffset + "," + config.yoffset + ")rotate(" + (d.angle * 180 / Math.PI - 90) + ")"
-        //    + "translate(" + config.outerRadius + ",0)";
+          + "translate(" + outer + ",0)";
       });
 
     ticks.append("line")
       .call(dex.config.configureLine, config.tick);
 
     ticks.append("text")
+      //.call(dex.config.configureText, config.label)
       .attr("x", config.tick.padding + (config.tick.padding / 4))
       .attr("dy", ".35em")
       .attr("font-size", config.label.font.size)
@@ -1539,7 +1560,9 @@ var chord = function (userConfig) {
 
   $(document).ready(function () {
     // Make the entire chart draggable.
-    //$(chart.config.parent).draggable();
+    if (chart.config.draggable) {
+      $(chart.config.parent).draggable();
+    }
   });
 
   return chart;
@@ -1826,6 +1849,8 @@ module.exports = clusteredforce;
 },{}],19:[function(require,module,exports){
 var dendrogram = function Dendrogram(userConfig) {
   d3 = dex.charts.d3.d3v3;
+  var chart;
+
   var defaults =
   {
     // The parent container of this chart.
@@ -1918,7 +1943,7 @@ var dendrogram = function Dendrogram(userConfig) {
     })
   };
 
-  var chart = new dex.component(userConfig, defaults);
+  chart = new dex.component(userConfig, defaults);
 
   chart.render = function render() {
     d3 = dex.charts.d3.d3v3;
@@ -5582,7 +5607,7 @@ module.exports = sunburst;
 },{}],29:[function(require,module,exports){
 var topojsonmap = function (userConfig) {
   d3 = dex.charts.d3.d3v3;
-  var chart = null;
+  var chart;
 
   var defaults = {
     'parent': '#TopoJsonMap',
@@ -5612,9 +5637,9 @@ var topojsonmap = function (userConfig) {
     "unselectedColor": "lightgrey",
   };
 
-  chart = new dex.component(userConfig, defaults);
-
   var selected = {};
+
+  chart = new dex.component(userConfig, defaults);
 
   chart.render = function render() {
     d3 = dex.charts.d3.d3v3;
@@ -9114,65 +9139,6 @@ module.exports = function config(dex) {
 
     /**
      *
-     * This routine will expand hiearchically delimited names such as
-     * foo.bar into a structure { foo : { bar : value}}.  It will delete
-     * the hierarchical name and overwrite the value into the proper
-     * location leaving any previous object properties undisturbed.
-     *
-     * @param {Object} config The configuration which we will expand.
-     *
-     */
-
-    /*
-     exports.expand_deprecate = function expand(config) {
-     var name,
-     ci,
-     expanded;
-
-     // We have nothing, return nothing.
-     if (!config) {
-     return config;
-     }
-
-     //dex.console.log("dex.config.expand(config=", config);
-
-     // Make a clone of the previous configuration.
-     expanded = dex.object.clone(config);
-
-     // Iterate over the property names.
-     for (name in config) {
-     // If this is our property the process it, otherwise ignore.
-     if (config.hasOwnProperty(name)) {
-     // The property name is non-null.
-     if (name) {
-     // Determine character index.
-     ci = name.indexOf('.');
-     }
-     else {
-     // Default to -1
-     ci = -1;
-     }
-
-     // if Character index is > -1, we have a hierarchical name.
-     // Otherwise do nothing, copying was already handled in the
-     // cloning activity.
-     if (ci > -1) {
-     // Set it...
-     dex.object.setHierarchical(expanded, name,
-     dex.object.clone(expanded[name]), '.');
-     // Delete the old name.
-     delete expanded[name];
-     }
-     }
-     }
-
-     //dex.console.log("CONFIG", config, "EXPANDED", expanded);
-     return expanded;
-     };
-     */
-
-    /**
-     *
      * This routine will take two hierarchies, top and bottom, and expand dot ('.')
      * delimited names such as: 'foo.bar.biz.baz' into a structure:
      * { 'foo' : { 'bar' : { 'biz' : 'baz' }}}
@@ -9197,6 +9163,32 @@ module.exports = function config(dex) {
         dex.config.expand(bottom));
     },
 
+    'configuration': function configuration(defaults, user) {
+      if (user) {
+        return expandAndOverlay(user, defaults);
+      }
+
+      return defaults;
+    },
+
+    'configure': function configureFont(node, config, i) {
+      if (config) {
+        if (config.styles) {
+          for (style in config.styles) {
+            dex.config.setStyle(node, style, config.styles[style], i);
+          }
+        }
+        if (config.attributes) {
+          for (attribute in config.attributes) {
+            dex.config.setAttr(node, attribute, config.attributes[attribute], i);
+          }
+        }
+      }
+
+      // Return the configured node.
+      return node;
+    },
+
     /**
      *
      * Return the configuration for a font after the user's customizations
@@ -9208,17 +9200,16 @@ module.exports = function config(dex) {
      *
      */
     'font': function font(custom) {
-      var defaults =
-        {
-          'decoration': 'none',
-          'family': 'sans-serif',
-          'letterSpacing': 'normal',
-          'size': 14,
-          'style': 'normal',
-          'weight': 'normal',
-          'wordSpacing': 'normal',
-          'variant': 'normal'
-        };
+      var defaults = {
+        'decoration': 'none',
+        'family': 'sans-serif',
+        'letterSpacing': 'normal',
+        'size': 14,
+        'style': 'normal',
+        'weight': 'normal',
+        'wordSpacing': 'normal',
+        'variant': 'normal'
+      };
 
       var fontSpec = dex.config.expandAndOverlay(custom, defaults);
       return fontSpec;
@@ -9272,6 +9263,7 @@ module.exports = function config(dex) {
           'transform': '',
           'glyphOrientationVertical': undefined,
           'text': undefined,
+          "decoration" : "none",
           'dx': 0,
           'dy': 0,
           'writingMode': undefined,
@@ -9310,6 +9302,7 @@ module.exports = function config(dex) {
         dex.config.setAttr(node, 'transform', textSpec.transform, i);
         dex.config.setAttr(node, 'glyph-orientation-vertical',
           textSpec.glyphOrientationVertical, i);
+        dex.config.setStyle(node, "text-decoration", textSpec.decoration, i);
         dex.config.setAttr(node, 'writing-mode', textSpec.writingMode, i);
         dex.config.callIfDefined(node, 'text', textSpec.text, i);
         dex.config.configureFill(node, textSpec.fill, i);
@@ -9335,7 +9328,10 @@ module.exports = function config(dex) {
           'color': "black",
           'opacity': 1,
           'dasharray': '',
-          'transform': ''
+          'transform': '',
+          'lineCap' : '',
+          'lineJoin' : '',
+          'miterLimit' : ''
         };
 
       var config = dex.config.expandAndOverlay(strokeSpec, defaults);
@@ -9356,6 +9352,9 @@ module.exports = function config(dex) {
         dex.config.setStyle(node, 'stroke-width', strokeSpec.width, i);
         dex.config.setStyle(node, 'stroke-opacity', strokeSpec.opacity, i);
         dex.config.setStyle(node, 'stroke-dasharray', strokeSpec.dasharray, i);
+        dex.config.setStyle(node, 'stroke-linecap', strokeSpec.lineCap, i);
+        dex.config.setStyle(node, 'stroke-linejoin', strokeSpec.lineJoin, i);
+        dex.config.setStyle(node, 'stroke-miterlimit', strokeSpec.miterLimit, i);
         dex.config.setAttr(node, 'transform', strokeSpec.transform, i);
       }
       return node;
@@ -10921,6 +10920,60 @@ module.exports = function csv(dex) {
       }
 
       return csv;
+    },
+
+    'getRankedCsv': function (csv, nameIndex, sequenceIndex, valueIndex, options) {
+      var rankedCsv = dex.csv.copy(csv);
+      var opts = options || {};
+      var orderDescending = opts.descending || false;
+
+      var si = dex.csv.getColumnNumber(csv, sequenceIndex);
+      var ni = dex.csv.getColumnNumber(csv, nameIndex);
+      var vi = dex.csv.getColumnNumber(csv, valueIndex);
+
+      rankedCsv.data.sort(function (row1, row2) {
+        if (+row1[si] == +row2[si]) {
+          if (+row1[vi] == +row2[vi]) {
+            if (row1[ni] < row2[ni]) {
+              return -1;
+            }
+            else if (row1[ni] > row2[ni]) {
+              return 1;
+            }
+            else {
+              return 0;
+            }
+          }
+          else {
+            if (orderDescending) {
+              return +row2[vi] - +row1[vi];
+            }
+            else {
+              return +row1[vi] - +row2[vi];
+            }
+          }
+        }
+        else {
+          return +row1[si] - +row2[si];
+        }
+      });
+
+      rankedCsv.header.push("rank");
+      var rank = 0;
+      var prev = undefined;
+      rankedCsv.data.forEach(function (row) {
+        if (prev == row[si]) {
+          rank++;
+          row.push(rank);
+        }
+        else {
+          row.push(1);
+          rank = 1;
+        }
+        prev = row[si];
+      });
+
+      return rankedCsv;
     },
 
     'uniqueArray': function (csv, columnIndex) {
