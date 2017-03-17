@@ -546,8 +546,10 @@ module.exports = function csv(dex) {
       return csv;
     },
 
-    'getRankedCsv': function (csv, nameIndex, sequenceIndex, valueIndex) {
+    'getRankedCsv': function (csv, nameIndex, sequenceIndex, valueIndex, options) {
       var rankedCsv = dex.csv.copy(csv);
+      var opts = options || {};
+      var orderDescending = opts.descending || false;
 
       var si = dex.csv.getColumnNumber(csv, sequenceIndex);
       var ni = dex.csv.getColumnNumber(csv, nameIndex);
@@ -567,7 +569,12 @@ module.exports = function csv(dex) {
             }
           }
           else {
-            return +row1[vi] - +row2[vi];
+            if (orderDescending) {
+              return +row2[vi] - +row1[vi];
+            }
+            else {
+              return +row1[vi] - +row2[vi];
+            }
           }
         }
         else {
