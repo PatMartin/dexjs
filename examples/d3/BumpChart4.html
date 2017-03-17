@@ -32,7 +32,8 @@
       'margin.left': 40,
       'margin.right': 170,
       'csv': getData(),
-      'xAxisLabel.text': 'GDP Ranking Per Capita / Year'
+      'xAxisLabel.text': 'GDP Ranking Per Capita / Year',
+      "key" : { "category" : "Country", "sequence" : "Year", "rank" : "rank" }
     }
   ).render();
 
@@ -1337,46 +1338,6 @@
         ["Vietnam", "2014", "1077.9091"]]
     };
 
-    // Get a list of unique years.
-    var years = dex.csv.uniques(csv, 1);
-
-    // Initialize our year data and rankings.
-    var yearData = {};
-    var rankings = {};
-
-    // Initialize year data and ranking data for each year.
-    years.forEach(function (year) {
-      yearData[year] = [];
-      rankings[year] = {};
-    });
-
-    // Create an array of country to gdp entries that we
-    // can index by year.
-    csv.data.forEach(function (row) {
-      country = row[0];
-      year = row[1];
-      gdp = +row[2];
-      yearData[year].push({'country': country, 'gdp': gdp});
-    });
-
-    // Sort each year array in yearData
-    years.forEach(function (year) {
-      yearData[year] = yearData[year]
-        .sort(function (a, b) {
-          return +b.gdp - +a.gdp
-        });
-
-      // Produce a ranking array which can be indexed by year.
-      for (rank = 0; rank < yearData[year].length; rank++)
-        rankings[year][yearData[year][rank].country] = rank + 1;
-    });
-
-    // Iterate through our data and replace GDP per capita
-    // with the rank.
-    csv.data.forEach(function (row, ri) {
-      csv.data[ri][2] = rankings[row[1]][row[0]];
-    });
-
-    return csv;
+    return dex.csv.getRankedCsv(csv, "Country", "Year", "GDP Per Capita");
   }
 </script>
