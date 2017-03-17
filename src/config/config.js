@@ -94,65 +94,6 @@ module.exports = function config(dex) {
 
     /**
      *
-     * This routine will expand hiearchically delimited names such as
-     * foo.bar into a structure { foo : { bar : value}}.  It will delete
-     * the hierarchical name and overwrite the value into the proper
-     * location leaving any previous object properties undisturbed.
-     *
-     * @param {Object} config The configuration which we will expand.
-     *
-     */
-
-    /*
-     exports.expand_deprecate = function expand(config) {
-     var name,
-     ci,
-     expanded;
-
-     // We have nothing, return nothing.
-     if (!config) {
-     return config;
-     }
-
-     //dex.console.log("dex.config.expand(config=", config);
-
-     // Make a clone of the previous configuration.
-     expanded = dex.object.clone(config);
-
-     // Iterate over the property names.
-     for (name in config) {
-     // If this is our property the process it, otherwise ignore.
-     if (config.hasOwnProperty(name)) {
-     // The property name is non-null.
-     if (name) {
-     // Determine character index.
-     ci = name.indexOf('.');
-     }
-     else {
-     // Default to -1
-     ci = -1;
-     }
-
-     // if Character index is > -1, we have a hierarchical name.
-     // Otherwise do nothing, copying was already handled in the
-     // cloning activity.
-     if (ci > -1) {
-     // Set it...
-     dex.object.setHierarchical(expanded, name,
-     dex.object.clone(expanded[name]), '.');
-     // Delete the old name.
-     delete expanded[name];
-     }
-     }
-     }
-
-     //dex.console.log("CONFIG", config, "EXPANDED", expanded);
-     return expanded;
-     };
-     */
-
-    /**
-     *
      * This routine will take two hierarchies, top and bottom, and expand dot ('.')
      * delimited names such as: 'foo.bar.biz.baz' into a structure:
      * { 'foo' : { 'bar' : { 'biz' : 'baz' }}}
@@ -175,6 +116,32 @@ module.exports = function config(dex) {
       //"EXPANDED BOTTOM", dex.config.expand(bottom));
       return dex.object.overlay(dex.config.expand(top),
         dex.config.expand(bottom));
+    },
+
+    'configuration': function configuration(defaults, user) {
+      if (user) {
+        return expandAndOverlay(user, defaults);
+      }
+
+      return defaults;
+    },
+
+    'configure': function configureFont(node, config, i) {
+      if (config) {
+        if (config.styles) {
+          for (style in config.styles) {
+            dex.config.setStyle(node, style, config.styles[style], i);
+          }
+        }
+        if (config.attributes) {
+          for (attribute in config.attributes) {
+            dex.config.setAttr(node, attribute, config.attributes[attribute], i);
+          }
+        }
+      }
+
+      // Return the configured node.
+      return node;
     },
 
     /**
@@ -251,6 +218,7 @@ module.exports = function config(dex) {
           'transform': '',
           'glyphOrientationVertical': undefined,
           'text': undefined,
+          "decoration" : "none",
           'dx': 0,
           'dy': 0,
           'writingMode': undefined,
@@ -289,6 +257,7 @@ module.exports = function config(dex) {
         dex.config.setAttr(node, 'transform', textSpec.transform, i);
         dex.config.setAttr(node, 'glyph-orientation-vertical',
           textSpec.glyphOrientationVertical, i);
+        dex.config.setStyle(node, "text-decoration", textSpec.decoration, i);
         dex.config.setAttr(node, 'writing-mode', textSpec.writingMode, i);
         dex.config.callIfDefined(node, 'text', textSpec.text, i);
         dex.config.configureFill(node, textSpec.fill, i);
@@ -314,7 +283,10 @@ module.exports = function config(dex) {
           'color': "black",
           'opacity': 1,
           'dasharray': '',
-          'transform': ''
+          'transform': '',
+          'lineCap' : '',
+          'lineJoin' : '',
+          'miterLimit' : ''
         };
 
       var config = dex.config.expandAndOverlay(strokeSpec, defaults);
@@ -335,6 +307,9 @@ module.exports = function config(dex) {
         dex.config.setStyle(node, 'stroke-width', strokeSpec.width, i);
         dex.config.setStyle(node, 'stroke-opacity', strokeSpec.opacity, i);
         dex.config.setStyle(node, 'stroke-dasharray', strokeSpec.dasharray, i);
+        dex.config.setStyle(node, 'stroke-linecap', strokeSpec.lineCap, i);
+        dex.config.setStyle(node, 'stroke-linejoin', strokeSpec.lineJoin, i);
+        dex.config.setStyle(node, 'stroke-miterlimit', strokeSpec.miterLimit, i);
         dex.config.setAttr(node, 'transform', strokeSpec.transform, i);
       }
       return node;
