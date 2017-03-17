@@ -4,100 +4,100 @@ var chord = function (userConfig) {
 
   var defaults = {
     // The parent container of this chart.
-    'parent': '#ChordParent',
+    "parent": "#ChordParent",
     // Set these when you need to CSS style components independently.
-    'id': 'ChordId',
-    'class': 'ChordClass',
-    'resizable': true,
+    "id": "ChordId",
+    "class": "ChordClass",
+    "resizable": true,
     // Our data...
-    'csv': {
+    "csv": {
       // Give folks without data something to look at anyhow.
-      'header': ["X", "Y", "Z"],
-      'data': [
+      "header": ["X", "Y", "Z"],
+      "data": [
         [0, 0, 0],
         [1, 1, 1],
         [2, 2, 2]
       ]
     },
-    'width': "100%",
-    'height': "100%",
-    'margin': {
-      'left': 20,
-      'right': 20,
-      'top': 50,
-      'bottom': 50
+    "width": "100%",
+    "height": "100%",
+    "margin": {
+      "left": 50,
+      "right": 50,
+      "top": 50,
+      "bottom": 50
     },
-    'transform': "",
-    'padding': 0.05,
-    'nodes': {
-      'mouseout': dex.config.link({
-        'stroke.color': "black",
-        //'stroke.dasharray': '5 5',
-        'stroke.width': 0,
-        'fill.fillColor': function (d, i) {
+    "transform": "",
+    "draggable" : false,
+    "padding": 0.05,
+    "nodes": {
+      "mouseout": dex.config.link({
+        "stroke.color": "black",
+        //"stroke.dasharray": "5 5",
+        "stroke.width": 0,
+        "fill.fillColor": function (d, i) {
           //dex.console.log("COLORD", d);
           return (chart.config.color(chart.config.chordData.header[d.index]));
         },
-        'fill.fillOpacity': 0.5,
-        'fill.fill': 'none',
-        'd': d3.svg.arc(),
-        'transform': ''
+        "fill.fillOpacity": 0.5,
+        "fill.fill": "none",
+        "d": d3.svg.arc(),
+        "transform": ""
       }),
-      'mouseover': dex.config.link({
-        'stroke.color': "white",
-        //'stroke.dasharray': '5 5',
-        'stroke.width': 2,
-        'fill.fillColor': function (d, i) {
+      "mouseover": dex.config.link({
+        "stroke.color": "white",
+        //"stroke.dasharray": "5 5",
+        "stroke.width": 2,
+        "fill.fillColor": function (d, i) {
           //dex.console.log("D", d)
           return (chart.config.color(chart.config.chordData.header[d.index]));
         },
-        'fill.fillOpacity': 1,
-        'fill.fill': 'none',
-        'd': d3.svg.arc(),
-        'transform': ''
+        "fill.fillOpacity": 1,
+        "fill.fill": "none",
+        "d": d3.svg.arc(),
+        "transform": ""
       })
     },
-    'links': {
-      'mouseout': dex.config.link({
-        'stroke.color': "white",
-        'stroke.dasharray': '',
-        'stroke.width': 0,
-        'fill.fillColor': function (d, i) {
+    "links": {
+      "mouseout": dex.config.link({
+        "stroke.color": "white",
+        "stroke.dasharray": "",
+        "stroke.width": 0,
+        "fill.fillColor": function (d, i) {
           return (chart.config.color(chart.config.chordData.header[d.source.index]));
         },
-        'fill.fillOpacity': 0.1,
-        'fill.fill': 'none',
-        'd': d3.svg.chord(),
-        'transform': ''
+        "fill.fillOpacity": 0.2,
+        "fill.fill": "none",
+        "d": d3.svg.chord(),
+        "transform": ""
       }),
-      'mouseover': dex.config.link({
-        'stroke.color': "white",
-        'stroke.dasharray': '',
-        'stroke.width': 1,
-        'fill.fillColor': function (d, i) {
+      "mouseover": dex.config.link({
+        "stroke.color": "white",
+        "stroke.dasharray": "",
+        "stroke.width": 1,
+        "fill.fillColor": function (d, i) {
           return (chart.config.color(chart.config.chordData.header[d.source.index]));
         },
-        'transform': "",
-        'fill.fillOpacity': 1,
-        'fill.fill': 'none',
-        'd': d3.svg.chord()
+        "transform": "",
+        "fill.fillOpacity": 1,
+        "fill.fill": "none",
+        "d": d3.svg.chord()
       })
     },
-    'color': d3.scale.category20c(),
-    'innerRadius': 130,
-    'outerRadius': 200,
-    'tick.start.x': 1,
-    'tick.start.y': 0,
-    'tick.end.x': 5,
-    'tick.end.y': 0,
-    'tick.padding': 10,
-    'tick.stroke': dex.config.stroke({
-      'width': 2,
-      'color': 'black'
-      //'dasharray' : '1 2'
+    "color": d3.scale.category20c(),
+    "innerRadius": "auto",
+    "outerRadius": "auto",
+    "tick.start.x": 1,
+    "tick.start.y": 0,
+    "tick.end.x": 5,
+    "tick.end.y": 0,
+    "tick.padding": 10,
+    "tick.stroke": dex.config.stroke({
+      "width": 2,
+      "color": "black"
     }),
-    'title': dex.config.text(),
-    'label': dex.config.text()
+    "title": dex.config.text(),
+    "label": dex.config.text()
   };
 
   chart = new dex.component(userConfig, defaults);
@@ -118,30 +118,34 @@ var chord = function (userConfig) {
 
     d3.selectAll(config.parent).selectAll("*").remove();
 
-    var minDimension = Math.min(width, height);
-    var outer = Math.min(width, height) / 3;
-
-    var inner = Math.max(outer - 20, 10);
-    config.innerRadius = inner;
-    config.outerRadius = outer;
+    var outer;
+    var inner;
+    if (config.outerRadius == "auto") {
+      outer = Math.min(width, height) / 2;
+      inner = Math.max(outer - 20, 10);
+    }
+    else {
+      outer = config.outerRadius;
+      inner = config.innerRadius;
+    }
 
     // Calculated attributes.
-    config.nodes.mouseover.d.innerRadius(config.innerRadius).outerRadius(config.outerRadius + 2);
-    config.nodes.mouseout.d.innerRadius(config.innerRadius).outerRadius(config.outerRadius);
-    config.links.mouseover.d.radius(config.innerRadius);
-    config.links.mouseout.d.radius(config.innerRadius);
+    config.nodes.mouseover.d.innerRadius(inner).outerRadius(outer + 2);
+    config.nodes.mouseout.d.innerRadius(inner).outerRadius(outer);
+    config.links.mouseover.d.radius(inner);
+    config.links.mouseout.d.radius(inner);
 
     var svg = d3.select(config.parent)
       .append("svg")
       .attr("id", config["id"])
       .attr("class", config["class"])
-      .attr('width', config.width)
-      .attr('height', config.height);
+      .attr("width", config.width)
+      .attr("height", config.height);
 
-    var rootG = svg.append('g')
-      .attr('transform', 'translate(' +
-        (margin.left + config.width / 2) + ',' +
-        (margin.top + config.height / 2) + ') ' +
+    var rootG = svg.append("g")
+      .attr("transform", "translate(" +
+        (margin.left + (width / 2)) + "," +
+        (margin.top + (height / 2)) + ") " +
         config.transform);
 
     chordData = dex.csv.getConnectionMatrix(csv);
@@ -168,7 +172,6 @@ var chord = function (userConfig) {
 
             return d.source.index == activeChord.index || d.target.index == activeChord.index;
           })
-          //.call("opacity", config.links.mouseover.fill.fillOpacity);
           .call(dex.config.configureLink, config.links.mouseover);
       })
       .on("mouseout", function (inactiveChord) {
@@ -182,7 +185,6 @@ var chord = function (userConfig) {
           .call(dex.config.configureLink, config.links.mouseout);
       });
 
-    // REM: Used to be svg.
     var ticks = rootG.append("g")
       .attr("id", "ChordTicks")
       .selectAll("g")
@@ -199,17 +201,14 @@ var chord = function (userConfig) {
         var endAngle = this.parentNode.__data__.endAngle;
         var midAngle = startAngle + (endAngle - startAngle) / 2.0;
         return "rotate(" + (midAngle * 180 / Math.PI - 90) + ")"
-          + "translate(" + config.outerRadius + ",0)";
-        //return "translate(" + config.xoffset + "," + config.yoffset + ")rotate(" + (midAngle * 180 / Math.PI - 90) + ")"
-        //    + "translate(" + config.outerRadius + ",0)";
-        //return "translate(" + config.xoffset + "," + config.yoffset + ")rotate(" + (d.angle * 180 / Math.PI - 90) + ")"
-        //    + "translate(" + config.outerRadius + ",0)";
+          + "translate(" + outer + ",0)";
       });
 
     ticks.append("line")
       .call(dex.config.configureLine, config.tick);
 
     ticks.append("text")
+      //.call(dex.config.configureText, config.label)
       .attr("x", config.tick.padding + (config.tick.padding / 4))
       .attr("dy", ".35em")
       .attr("font-size", config.label.font.size)
@@ -260,7 +259,9 @@ var chord = function (userConfig) {
 
   $(document).ready(function () {
     // Make the entire chart draggable.
-    //$(chart.config.parent).draggable();
+    if (chart.config.draggable) {
+      $(chart.config.parent).draggable();
+    }
   });
 
   return chart;
