@@ -82,7 +82,7 @@ var chord = function (userConfig) {
         "fill.fillOpacity": 1,
         "fill.fill": "none",
         "d": d3.svg.chord()
-      })
+      }),
     },
     "color": d3.scale.category20c(),
     "innerRadius": "auto",
@@ -104,7 +104,9 @@ var chord = function (userConfig) {
 
   chart.render = function render() {
     d3 = dex.charts.d3.d3v3;
-    return chart.resize();
+    chart.resize();
+    dex.config.apply(chart);
+    return chart;
   };
 
   chart.update = function () {

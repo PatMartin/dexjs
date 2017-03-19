@@ -118,30 +118,28 @@ module.exports = function config(dex) {
         dex.config.expand(bottom));
     },
 
-    'configuration': function configuration(defaults, user) {
-      if (user) {
-        return expandAndOverlay(user, defaults);
-      }
+    'apply': function apply(chart) {
+      var config = chart.config;
 
-      return defaults;
-    },
+      var node = d3.select(config.parent).select("svg");
 
-    'configure': function configureFont(node, config, i) {
-      if (config) {
-        if (config.styles) {
-          for (style in config.styles) {
-            dex.config.setStyle(node, style, config.styles[style], i);
+      if (node && config && config.apply) {
+        config.apply.forEach(function(applyConfig) {
+          var affectedNodes = node.selectAll(applyConfig["select"]);
+
+          if (applyConfig && applyConfig.styles) {
+            for (styleName in applyConfig.styles) {
+              affectedNodes.style(styleName, applyConfig.styles[styleName]);
+            }
           }
-        }
-        if (config.attributes) {
-          for (attribute in config.attributes) {
-            dex.config.setAttr(node, attribute, config.attributes[attribute], i);
-          }
-        }
-      }
 
-      // Return the configured node.
-      return node;
+          if (applyConfig && applyConfig.attributes) {
+            for (attributeName in applyConfig.attributes) {
+              affectedNodes.attr(attributeName, applyConfig.attributes[attributeName]);
+            }
+          }
+        });
+      }
     },
 
     /**
