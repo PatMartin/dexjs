@@ -98,7 +98,9 @@ var dendrogram = function Dendrogram(userConfig) {
 
   chart.render = function render() {
     d3 = dex.charts.d3.d3v3;
-    return chart.resize();
+    chart.resize();
+    dex.config.apply(chart);
+    return chart;
   };
 
   chart.update = function update() {
@@ -378,6 +380,9 @@ var dendrogram = function Dendrogram(userConfig) {
         d.children = null;
       }
     }
+
+    dex.config.apply(chart);
+    return chart;
   };
 
   $(document).ready(function () {

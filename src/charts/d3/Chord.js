@@ -255,6 +255,8 @@ var chord = function (userConfig) {
       });
     }
 
+    dex.config.apply(chart);
+
     // Allow method chaining
     return chart;
   };

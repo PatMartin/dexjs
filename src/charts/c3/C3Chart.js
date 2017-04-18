@@ -1,4 +1,4 @@
-var c3hart = function (userConfig) {
+var c3chart = function (userConfig) {
   var chart;
   var internalChart;
 
@@ -47,9 +47,11 @@ var c3hart = function (userConfig) {
     config.options =
       dex.config.expandAndOverlay(config.options,
         getDataOptions(csv));
-    dex.console.log("OPTIONS", JSON.stringify(config.options));
+    //dex.console.log("C3OPTIONS", JSON.stringify(config.options));
     internalChart = c3.generate(config.options);
-    return chart.resize();
+    chart.resize();
+    dex.config.apply(chart);
+    return chart;
   };
 
   function getDataOptions(csv) {
@@ -146,6 +148,7 @@ var c3hart = function (userConfig) {
       dex.config.expandAndOverlay(config.options,
         getDataOptions(config.csv));
     internalChart.load(config.options);
+    dex.config.apply(chart);
     return chart;
   };
 
@@ -158,4 +161,4 @@ var c3hart = function (userConfig) {
   return chart;
 };
 
-module.exports = c3hart;
+module.exports = c3chart;

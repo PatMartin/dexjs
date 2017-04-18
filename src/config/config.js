@@ -122,7 +122,7 @@ module.exports = function config(dex) {
       var config = chart.config;
 
       var node = d3.select(config.parent).select("svg");
-
+      //dex.console.log("APPLYING STYLE TO NODE:", node);
       if (node && config && config.apply) {
         config.apply.forEach(function(applyConfig) {
           var affectedNodes = node.selectAll(applyConfig["select"]);
