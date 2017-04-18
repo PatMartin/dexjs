@@ -545,7 +545,7 @@ var barchart = function (userConfig) {
 
 module.exports = barchart;
 },{}],7:[function(require,module,exports){
-var c3hart = function (userConfig) {
+var c3chart = function (userConfig) {
   var chart;
   var internalChart;
 
@@ -594,9 +594,11 @@ var c3hart = function (userConfig) {
     config.options =
       dex.config.expandAndOverlay(config.options,
         getDataOptions(csv));
-    dex.console.log("OPTIONS", JSON.stringify(config.options));
+    //dex.console.log("C3OPTIONS", JSON.stringify(config.options));
     internalChart = c3.generate(config.options);
-    return chart.resize();
+    chart.resize();
+    dex.config.apply(chart);
+    return chart;
   };
 
   function getDataOptions(csv) {
@@ -693,6 +695,7 @@ var c3hart = function (userConfig) {
       dex.config.expandAndOverlay(config.options,
         getDataOptions(config.csv));
     internalChart.load(config.options);
+    dex.config.apply(chart);
     return chart;
   };
 
@@ -705,7 +708,7 @@ var c3hart = function (userConfig) {
   return chart;
 };
 
-module.exports = c3hart;
+module.exports = c3chart;
 },{}],8:[function(require,module,exports){
 /**
  *
@@ -1558,6 +1561,8 @@ var chord = function (userConfig) {
       });
     }
 
+    dex.config.apply(chart);
+
     // Allow method chaining
     return chart;
   };
@@ -1951,7 +1956,9 @@ var dendrogram = function Dendrogram(userConfig) {
 
   chart.render = function render() {
     d3 = dex.charts.d3.d3v3;
-    return chart.resize();
+    chart.resize();
+    dex.config.apply(chart);
+    return chart;
   };
 
   chart.update = function update() {
@@ -2231,6 +2238,9 @@ var dendrogram = function Dendrogram(userConfig) {
         d.children = null;
       }
     }
+
+    dex.config.apply(chart);
+    return chart;
   };
 
   $(document).ready(function () {
@@ -9171,7 +9181,7 @@ module.exports = function config(dex) {
       var config = chart.config;
 
       var node = d3.select(config.parent).select("svg");
-
+      //dex.console.log("APPLYING STYLE TO NODE:", node);
       if (node && config && config.apply) {
         config.apply.forEach(function(applyConfig) {
           var affectedNodes = node.selectAll(applyConfig["select"]);
