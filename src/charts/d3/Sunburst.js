@@ -176,6 +176,10 @@ var sunburst = function (userConfig) {
     }
   };
 
+    chart.clone = function clone(override) {
+        return sunburst(dex.config.expandAndOverlay(override, userConfig));
+    };
+
   $(document).ready(function () {
     // Make the entire chart draggable.
     //$(chart.config.parent).draggable();

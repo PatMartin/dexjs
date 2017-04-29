@@ -408,6 +408,10 @@ var motionbarchart = function (userConfig) {
     }
   };
 
+    chart.clone = function clone(override) {
+        return motionbarchart(dex.config.expandAndOverlay(override, userConfig));
+    };
+
   $(document).ready(function () {
 
     // Add tooltips

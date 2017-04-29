@@ -99,6 +99,10 @@ var network = function (userConfig) {
     chart.render();
   };
 
+    chart.clone = function clone(override) {
+        return network(dex.config.expandAndOverlay(override, userConfig));
+    };
+
   chart.createData = function() {
 
     var nodes = null;

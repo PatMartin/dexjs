@@ -152,6 +152,10 @@ var c3chart = function (userConfig) {
     return chart;
   };
 
+    chart.clone = function clone(override) {
+        return c3chart(dex.config.expandAndOverlay(override, userConfig));
+    };
+
   $(document).ready(function () {
     if (chart.config.draggable) {
       $("#" + chart.config.id).draggable();

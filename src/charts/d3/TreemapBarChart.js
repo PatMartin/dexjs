@@ -438,6 +438,10 @@ var treemapBarChart = function (userConfig) {
     return chart;
   };
 
+    chart.clone = function clone(override) {
+        return treemapBarChart(dex.config.expandAndOverlay(override, userConfig));
+    };
+
   $(document).ready(function () {
     // Make the entire chart draggable.
     //$(sankey.config.parent).draggable();

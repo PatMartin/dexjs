@@ -254,6 +254,10 @@ var clusteredforce = function (userConfig) {
     }
   };
 
+    chart.clone = function clone(override) {
+        return clusteredforce(dex.config.expandAndOverlay(override, userConfig));
+    };
+
   $(document).ready(function () {
     $(chart.config.parent).uitooltip({
       items: "circle",

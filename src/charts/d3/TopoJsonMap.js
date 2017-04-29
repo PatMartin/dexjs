@@ -270,6 +270,11 @@ var topojsonmap = function (userConfig) {
 
     initialize();
   };
+
+    chart.clone = function clone(override) {
+        return topojsonmap(dex.config.expandAndOverlay(override, userConfig));
+    };
+
   return chart;
 };
 

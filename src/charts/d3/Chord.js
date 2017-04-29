@@ -261,6 +261,10 @@ var chord = function (userConfig) {
     return chart;
   };
 
+    chart.clone = function clone(override) {
+        return chord(dex.config.expandAndOverlay(override, userConfig));
+    };
+
   $(document).ready(function () {
     // Make the entire chart draggable.
     if (chart.config.draggable) {

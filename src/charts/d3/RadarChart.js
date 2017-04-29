@@ -470,6 +470,10 @@ var radarchart = function (userConfig) {
     return chart;
   };
 
+    chart.clone = function clone(override) {
+        return radarchart(dex.config.expandAndOverlay(override, userConfig));
+    };
+
   $(document).ready(function () {
     // Make the entire chart draggable.
     //$(chart.config.parent).draggable();

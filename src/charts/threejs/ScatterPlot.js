@@ -359,6 +359,10 @@ var scatterplot = function (userConfig) {
 
   };
 
+    chart.clone = function clone(override) {
+        return scatterplot(dex.config.expandAndOverlay(override, userConfig));
+    };
+
   return chart;
 };
 

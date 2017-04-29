@@ -426,6 +426,10 @@ var parallelcoordinates = function (userConfig) {
     return chart;
   };
 
+    chart.clone = function clone(override) {
+        return parallelcoordinates(dex.config.expandAndOverlay(override, userConfig));
+    };
+
   $(document).ready(function () {
     $(document).uitooltip({
       items: "path",

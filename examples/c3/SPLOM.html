@@ -71,7 +71,7 @@
 
     // Iterate over each SPLOM frame:
     frames.frames.forEach(function (frame, i) {
-      // Create a gridster panel for each of our frames.
+      // Create a multiples panel for each of our frames.
       d3.select(".gridster ul")
         .append("li")
         .attr("data-row", Math.floor(i / (iris.header.length - 1)) + 1)
@@ -123,7 +123,7 @@
       }).render();
     });
 
-    // Enable gridster
+    // Enable multiples
     $(document).ready(function () {
       var gridster;
 

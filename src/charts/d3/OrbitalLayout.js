@@ -350,6 +350,10 @@ var orbitallayout = function (userConfig) {
     }
   };
 
+    chart.clone = function clone(override) {
+        return orbitallayout(dex.config.expandAndOverlay(override, userConfig));
+    };
+
   $(document).ready(function () {
     // Make the entire chart draggable.
     //$(chart.config.parent).draggable();

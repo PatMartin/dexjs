@@ -40,6 +40,10 @@ module.exports = function (dex) {
       return this;
     };
 
+    this.clone = function(userConfig) {
+      dex.console.log("No clone function defined for", this);
+    }
+
     this.subscribe = function (source, eventType, callback) {
       if (arguments.length == 3) {
         var channel = source.config.channel + '/' + eventType;

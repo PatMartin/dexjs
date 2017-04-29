@@ -140,6 +140,10 @@ var bubblechart = function (userConfig) {
     internalChart.resize();
   };
 
+    chart.clone = function clone(override) {
+        return bubblechart(dex.config.expandAndOverlay(override, userConfig));
+    };
+
   $(document).ready(function () {
     // Make the entire chart draggable.
     //$(chart.config.parent).draggable();

@@ -205,7 +205,11 @@ var radialtree = function (userConfig) {
     }
 
     return chart;
-  }
+  };
+
+    chart.clone = function clone(override) {
+        return radialtree(dex.config.expandAndOverlay(override, userConfig));
+    };
 
   function project(x, y) {
     //dex.console.log('project(x,y)', x, y);
