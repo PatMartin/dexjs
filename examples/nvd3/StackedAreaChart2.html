@@ -29,18 +29,15 @@
   dex.console.log("D3", d3.version);
 
   var csv = {
-    'header': ['Name', 'Date', 'Sales'],
+    'header': ['Name', 'Number', 'Sales'],
     'data': []
   };
 
   for (var nameIndex = 0; nameIndex < 18; nameIndex++) {
     var name = faker.name.firstName();
-    for (var year = 2010; year < 2017; year++)
+    for (var n=1; n<10; n++)
     {
-      for (var month = 0; month < 12; month++)
-      {
-        csv.data.push([ name, new Date(year, month, 1), faker.random.number()])
-      }
+        csv.data.push([ name, n, faker.random.number()])
     }
   }
 

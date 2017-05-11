@@ -24,31 +24,30 @@
 <script>d3 = dex.charts.d3.d3v3;</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/nvd3/1.8.5/nv.d3.min.js"></script>
 <body>
-<div id="Nvd3_StackedAreaChartParent"></div>
+<div id="Nvd3_BubbleChartParent"></div>
 <script>
   dex.console.log("D3", d3.version);
 
   var csv = {
-    'header': ['Name', 'Date', 'Sales'],
+    'header': ['Name', 'Number', 'Sales'],
     'data': []
   };
 
+  var months = [ "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" ]
+
   for (var nameIndex = 0; nameIndex < 18; nameIndex++) {
     var name = faker.name.firstName();
-    for (var year = 2010; year < 2017; year++)
+    for (var n=0; n<months.length; n++)
     {
-      for (var month = 0; month < 12; month++)
-      {
-        csv.data.push([ name, new Date(year, month, 1), faker.random.number()])
-      }
+        csv.data.push([ name, months[n], faker.random.number(), faker.random.number() ])
     }
   }
 
-  var stackedAreaChart = new dex.charts.nvd3.StackedAreaChart({
-      'parent': '#Nvd3_StackedAreaChartParent',
+  var bubbleChart = new dex.charts.nvd3.BubbleChart({
+      'parent': '#Nvd3_BubbleChartParent',
       'csv': csv
     }
   );
-  stackedAreaChart.render();
+  bubbleChart.render();
 </script>
 
