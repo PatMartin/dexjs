@@ -85,8 +85,9 @@ var chord = function (userConfig) {
       }),
     },
     "color": d3.scale.category20c(),
-    "innerRadius": "auto",
-    "outerRadius": "auto",
+    "autoRadius" : true,
+    "innerRadius": 350,
+    "outerRadius": 400,
     "tick.start.x": 1,
     "tick.start.y": 0,
     "tick.end.x": 5,
@@ -102,6 +103,66 @@ var chord = function (userConfig) {
 
   chart = new dex.component(userConfig, defaults);
 
+  chart.getGuiDefinition = function getGuiDefinition(config) {
+    var guiDef = config || {};
+    var defaults = {
+      "type": "group",
+      "name": "Chord Diagram Settings",
+      "contents": [
+        dex.config.gui.dimensions(),
+        dex.config.gui.general(),
+        {
+          "type": "group",
+          "name": "Miscellaneous",
+          "contents": [
+            {
+              "name": "Auto Radius",
+              "description": "Turn auto-radius on/off.",
+              "target": "autoRadius",
+              "type": "boolean",
+              "initialValue": true
+            },
+            {
+              "name": "Inner Radius",
+              "description": "The inner radius.",
+              "target": "innerRadius",
+              "type": "int",
+              "minValue": 0,
+              "maxValue": 1000,
+              "initialValue": 350
+            },
+            {
+              "name": "Outer Radius",
+              "description": "The outer radius.",
+              "target": "outerRadius",
+              "type": "int",
+              "minValue": 0,
+              "maxValue": 1000,
+              "initialValue": 400
+            },
+            {
+              "name": "Padding",
+              "description": "Padding between nodes.",
+              "target": "padding",
+              "type": "float",
+              "minValue": 0,
+              "maxValue": 1,
+              "initialValue": 0.05
+            }
+          ]
+        },
+        dex.config.gui.editableText({name: "Title"}, "title"),
+        dex.config.gui.text({name: "Labels"}, "label"),
+        dex.config.gui.link({name: "Links"}, "links.mouseout"),
+        dex.config.gui.link({name: "Links on Mouseover"}, "links.mouseover"),
+        dex.config.gui.link({name: "Nodes"}, "nodes.mouseout"),
+        dex.config.gui.link({name: "Nodes on Mouseover"}, "nodes.mouseover"),
+      ]
+    };
+    return dex.config.expandAndOverlay(guiDef, defaults);
+  };
+
+
   chart.render = function render() {
     d3 = dex.charts.d3.d3v3;
     chart.resize();
@@ -115,14 +176,19 @@ var chord = function (userConfig) {
     var config = chart.config;
     var csv = config.csv;
     var margin = config.margin;
-    var width = config.width - margin.left - margin.right;
-    var height = config.height - margin.top - margin.bottom;
+    margin.top = +margin.top;
+    margin.bottom = +margin.bottom;
+    margin.left = +margin.left;
+    margin.right = +margin.right;
+
+    var width = +config.width - margin.left - margin.right;
+    var height = +config.height - margin.top - margin.bottom;
 
     d3.selectAll(config.parent).selectAll("*").remove();
 
     var outer;
     var inner;
-    if (config.outerRadius == "auto") {
+    if (config.autoRadius && config.autoRadius != "false") {
       outer = Math.min(width, height) / 2;
       inner = Math.max(outer - 20, 10);
     }
@@ -154,7 +220,7 @@ var chord = function (userConfig) {
     config.chordData = chordData;
 
     var chord = d3.layout.chord()
-      .padding(config.padding)
+      .padding(+config.padding)
       .sortSubgroups(d3.descending)
       .matrix(chordData.connections);
 
@@ -211,15 +277,16 @@ var chord = function (userConfig) {
 
     ticks.append("text")
       //.call(dex.config.configureText, config.label)
-      .attr("x", config.tick.padding + (config.tick.padding / 4))
+      .attr("x", +config.tick.padding + (+config.tick.padding / 4))
       .attr("dy", ".35em")
       .attr("font-size", config.label.font.size)
+      .attr("fill", config.label.fill)
       .attr("text-anchor", function (d) {
         return d.angle > Math.PI ? "end" : null;
       })
       .attr("transform", function (d) {
         return d.angle > Math.PI ? "rotate(180)translate(-" +
-          ((config.tick.padding * 2) + (config.tick.padding / 2)) + ")" : null;
+          ((+config.tick.padding * 2) + (+config.tick.padding / 2)) + ")" : null;
       })
       .text(function (d) {
         return d.label;
