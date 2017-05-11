@@ -124,7 +124,7 @@ module.exports = function config(dex) {
       var node = d3.select(config.parent).select("svg");
       //dex.console.log("APPLYING STYLE TO NODE:", node);
       if (node && config && config.apply) {
-        config.apply.forEach(function(applyConfig) {
+        config.apply.forEach(function (applyConfig) {
           var affectedNodes = node.selectAll(applyConfig["select"]);
 
           if (applyConfig && applyConfig.styles) {
@@ -154,13 +154,10 @@ module.exports = function config(dex) {
      */
     'font': function font(custom) {
       var defaults = {
-        'decoration': 'none',
         'family': 'sans-serif',
-        'letterSpacing': 'normal',
         'size': 14,
         'style': 'normal',
         'weight': 'normal',
-        'wordSpacing': 'normal',
         'variant': 'normal'
       };
 
@@ -185,10 +182,6 @@ module.exports = function config(dex) {
         dex.config.setAttr(node, 'font-size', fontSpec.size, i);
         dex.config.setAttr(node, 'font-weight', fontSpec.weight, i);
         dex.config.setAttr(node, 'font-style', fontSpec.style, i);
-        dex.config.setAttr(node, 'text-decoration', fontSpec.decoration, i);
-
-        dex.config.setAttr(node, 'word-spacing', fontSpec.wordSpacing, i);
-        dex.config.setAttr(node, 'letter-spacing', fontSpec.letterSpacing, i);
         dex.config.setAttr(node, 'variant', fontSpec.variant, i);
       }
       return node;
@@ -214,14 +207,13 @@ module.exports = function config(dex) {
           'textLength': undefined,
           'lengthAdjust': undefined,
           'transform': '',
-          'glyphOrientationVertical': undefined,
           'text': undefined,
-          "decoration" : "none",
+          "decoration": "none",
           'dx': 0,
           'dy': 0,
           'writingMode': undefined,
           'anchor': 'start',
-          'fill': dex.config.fill(),
+          'fill': 'fill',
           'format': undefined,
           'events': dex.config.events()
         };
@@ -248,17 +240,15 @@ module.exports = function config(dex) {
         dex.config.setAttr(node, "y", textSpec.y, i);
         dex.config.setAttr(node, "dx", textSpec.dx, i);
         dex.config.setAttr(node, "dy", textSpec.dy, i);
+        dex.config.setAttr(node, "fill", textSpec.fill, i);
         dex.config.setStyle(node, "text-anchor", textSpec.anchor, i);
         dex.config.configureFont(node, textSpec.font, i);
         dex.config.setAttr(node, 'textLength', textSpec.textLength, i);
         dex.config.setAttr(node, 'lengthAdjust', textSpec.lengthAdjust, i);
         dex.config.setAttr(node, 'transform', textSpec.transform, i);
-        dex.config.setAttr(node, 'glyph-orientation-vertical',
-          textSpec.glyphOrientationVertical, i);
         dex.config.setStyle(node, "text-decoration", textSpec.decoration, i);
         dex.config.setAttr(node, 'writing-mode', textSpec.writingMode, i);
         dex.config.callIfDefined(node, 'text', textSpec.text, i);
-        dex.config.configureFill(node, textSpec.fill, i);
         dex.config.configureEvents(node, textSpec.events, i);
       }
       return node;
@@ -282,9 +272,9 @@ module.exports = function config(dex) {
           'opacity': 1,
           'dasharray': '',
           'transform': '',
-          'lineCap' : '',
-          'lineJoin' : '',
-          'miterLimit' : ''
+          'lineCap': '',
+          'lineJoin': '',
+          'miterLimit': ''
         };
 
       var config = dex.config.expandAndOverlay(strokeSpec, defaults);
@@ -326,7 +316,8 @@ module.exports = function config(dex) {
       var defaults =
         {
           'fillColor': "grey",
-          'fillOpacity': 1
+          'fillOpacity': 1,
+          'fillRule' : "nonzero"
         };
 
       var config = dex.config.expandAndOverlay(custom, defaults);
@@ -347,6 +338,7 @@ module.exports = function config(dex) {
       if (config) {
         dex.config.setStyle(node, 'fill', config.fillColor, i);
         dex.config.setStyle(node, 'fill-opacity', config.fillOpacity, i);
+        dex.config.setStyle(node, 'fill-rule', config.fillRule, i);
       }
       return node;
     },
@@ -1186,6 +1178,8 @@ module.exports = function config(dex) {
       }
 
       return scale;
-    }
+    },
+
+    'gui': require("./gui")(dex)
   };
 };
