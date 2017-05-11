@@ -40,9 +40,16 @@ module.exports = function (dex) {
       return this;
     };
 
-    this.clone = function(userConfig) {
+    this.clone = function (userConfig) {
       dex.console.log("No clone function defined for", this);
-    }
+    };
+
+    this.getGuiDefinition = function (userConfig, prefix) {
+      return [
+        dex.config.gui.dimensions(userConfig, prefix),
+        dex.config.gui.general(userConfig, prefix)
+      ];
+    };
 
     this.subscribe = function (source, eventType, callback) {
       if (arguments.length == 3) {
@@ -150,13 +157,11 @@ module.exports = function (dex) {
             width = "100%";
           }
 
-          if (width == 0)
-          {
+          if (width == 0) {
             width = 200;
           }
 
-          if (height == 0)
-          {
+          if (height == 0) {
             height = 200;
           }
 
@@ -193,10 +198,10 @@ module.exports = function (dex) {
     };
 
     // Used to load chart state from the DOM.
-    this.load = function (location) {
+    this.load = function () {
       var config = {};
 
-      $(location + " div").each(function (i) {
+      $("#dexjs-config > div").each(function (i) {
         dex.console.log("Loading Setting: '" + $(this).attr('id') + "'='" +
           $(this).attr('value') + "'");
         config[$(this).attr('id')] = $(this).attr('value');
@@ -206,13 +211,93 @@ module.exports = function (dex) {
       return this.configure(config);
     };
 
-    // Used to save chart state within the DOM.
-    this.save = function (location, config) {
-      dex.console.log("Saving Configuration To: " + location, config);
-      $(location).children().remove();
+    // Used to print save log.
+    this.logSave = function logSave(saveConfig, prefix) {
+      var config = saveConfig || this.attr() || {};
+      var ns = (prefix) ? prefix + "." : "";
       _.keys(config).forEach(function (key) {
-        $(location).append("<div id='" + key + "' value='" + config[key] + "'></div>");
+        var obj = config[key];
+        //dex.console.log(typeof obj);
+        // Don't serialize the CSV.
+        switch (key) {
+          case "csv":
+          case "channel": {
+            return;
+          }
+        }
+        if (config[key] == "") {
+          return;
+        }
+
+        // Arrays are not handled.
+        if (Array.isArray(obj)) {
+          return;
+        }
+        switch (typeof obj) {
+          case "object" : {
+            logSave(config[key], ns + key);
+            break;
+          }
+          // Don't serialize functions or things which are undefined.
+          case "function" :
+          case "undefined" : {
+            break;
+          }
+          default: {
+            dex.console.log("<div id='" + ns + key + "' value='" + config[key] + "'></div>");
+          }
+        }
+
       });
+      return this;
+    };
+
+    this.saveRelative = function saveRelative(location, saveConfig, prefix) {
+      var config = saveConfig || {};
+      var ns = (prefix) ? prefix + "." : "";
+      _.keys(config).forEach(function (key) {
+        var obj = config[key];
+        //dex.console.log(typeof obj);
+        // Don't serialize the CSV.
+        switch (key) {
+          case "csv":
+          case "channel": {
+            return;
+          }
+        }
+        if (config[key] == "") {
+          return;
+        }
+
+        // Arrays are not handled.
+        if (Array.isArray(obj)) {
+          return;
+        }
+        switch (typeof obj) {
+          case "object" : {
+            saveRelative(location, config[key], ns + key);
+            break;
+          }
+          // Don't serialize functions or things which are undefined.
+          case "function" :
+          case "undefined" : {
+            break;
+          }
+          default: {
+            $(location).append("<div id='" + ns + key + "' value='" +
+              config[key] + "'></div>");
+          }
+        }
+      });
+      return this;
+    };
+
+    // Used to save chart state within the DOM.
+    this.save = function (config) {
+      $("#dexjs-config").remove();
+      $("body").prepend("<div id='dexjs-config' style='visibility: hidden;'></div>")
+      var saveConfig = config || this.attr() || {};
+      this.saveRelative("#dexjs-config", saveConfig);
       return this;
     };
 
