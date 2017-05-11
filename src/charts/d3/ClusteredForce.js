@@ -83,6 +83,78 @@ var clusteredforce = function (userConfig) {
 
   var chart = new dex.component(userConfig, defaults);
 
+  chart.getGuiDefinition = function getGuiDefinition(config) {
+    var guiDef = config || {};
+    var defaults = {
+      "type": "group",
+      "name": "Clustered Force Settings",
+      "contents": [
+        dex.config.gui.dimensions(),
+        dex.config.gui.general(),
+        {
+          "type": "group",
+          "name": "Physics and Sizing",
+          "contents": [
+            {
+              "name": "Minimum Radius",
+              "description": "The minimum radius of nodes.",
+              "target": "minRadius",
+              "type": "int",
+              "minValue": 1,
+              "maxValue": 100,
+              "initialValue": 1
+            },
+            {
+              "name": "Maximum Radius",
+              "description": "The maximum radius of nodes.",
+              "target": "maxRadius",
+              "type": "int",
+              "minValue": 1,
+              "maxValue": 100,
+              "initialValue": 50
+            },
+            {
+              "name": "Gravity",
+              "description": "The gravity.",
+              "target": "gravity",
+              "type": "int",
+              "minValue": 0,
+              "maxValue": 10,
+              "initialValue": 2
+            },
+            {
+              "name": "Charge",
+              "description": "The charge of nodes.",
+              "target": "charge",
+              "type": "int",
+              "minValue": 1,
+              "maxValue": 100,
+              "initialValue": 1
+            },
+            {
+              "name": "Scale Columns",
+              "description": "Scale columns or not.",
+              "target": "scaleColumns",
+              "type": "boolean",
+              "initialValue": true
+            },
+            {
+              "name": "Padding",
+              "description": "Padding between nodes.",
+              "target": "padding",
+              "type": "int",
+              "minValue": 0,
+              "maxValue": 100,
+              "initialValue": 1
+            }
+          ]
+        },
+        dex.config.gui.stroke({name: "Nodes"}, "circle.stroke")
+      ]
+    };
+    return dex.config.expandAndOverlay(guiDef, defaults);
+  };
+
   chart.render = function () {
     d3 = dex.charts.d3.d3v3;
     return chart.resize();
@@ -254,9 +326,9 @@ var clusteredforce = function (userConfig) {
     }
   };
 
-    chart.clone = function clone(override) {
-        return clusteredforce(dex.config.expandAndOverlay(override, userConfig));
-    };
+  chart.clone = function clone(override) {
+    return clusteredforce(dex.config.expandAndOverlay(override, userConfig));
+  };
 
   $(document).ready(function () {
     $(chart.config.parent).uitooltip({

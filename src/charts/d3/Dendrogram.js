@@ -3,98 +3,138 @@ var dendrogram = function Dendrogram(userConfig) {
   var chart;
 
   var defaults =
-  {
-    // The parent container of this chart.
-    'parent': 'DendrogramParent',
-    // Set these  when you need to CSS style components independently.
-    'id': 'DendrogramId',
-    'class': 'DendrogramClass',
-    'resizable': true,
-    'margin': {
-      'top': 10,
-      'bottom': 10,
-      'left': 10,
-      'right': 10
-    },
-    'transform' : '',
-    // diagonal, elbow
-    'connectionType': 'diagonal',
-    // Our data...
-    'csv': {
-      // Give folks without data something to look at anyhow.
-      'header': ["X", "Y"],
-      'data': [
-        [0, 0],
-        [1, 1],
-        [2, 4],
-        [3, 9],
-        [4, 16]
-      ]
-    },
-    // width and height of our chart.
-    'width': "100%",
-    'height': "100%",
-    'connection': {
-      'length': 180,
-      'style': {
-        'stroke': dex.config.stroke()
-      }
-    },
-    'root': {
-      'name': "ROOT",
-      'category': "ROOT"
-    },
-    'color': d3.scale.category20(),
-    'node': {
-      'expanded': {
-        'label': dex.config.text({
-          'x': 8,
-          'y': 4,
-          'font.weight': 'bold',
-          'fill.fillColor': 'black',
-          'text': function (d) {
-            return (d.name) ? d.name : d.category;
-          }
-        }),
-        'circle': dex.config.circle({
-          'r': 4,
-          'fill': {
-            'fillColor': 'steelblue'
-          }
-        })
+    {
+      // The parent container of this chart.
+      'parent': 'DendrogramParent',
+      // Set these  when you need to CSS style components independently.
+      'id': 'DendrogramId',
+      'class': 'DendrogramClass',
+      'resizable': true,
+      'margin': {
+        'top': 10,
+        'bottom': 10,
+        'left': 10,
+        'right': 10
       },
-      'collapsed': {
-        'label': dex.config.text({
-          'x': 8,
-          'y': 4,
-          'font.weight': 'bold',
-          'text': function (d) {
-            return (d.name) ? d.name : d.category;
-          }
-        }),
-        'circle': dex.config.circle({
-          'r': 5,
-          'fill': {
-            'fillColor': 'green',
-            'fillOpacity': .8
-          }
-        })
-      }
-    },
-    'link': dex.config.link({
-      'fill': {
-        'fillColor': 'none'
+      'transform': '',
+      // diagonal, elbow
+      'connectionType': 'diagonal',
+      // Our data...
+      'csv': {
+        // Give folks without data something to look at anyhow.
+        'header': ["X", "Y"],
+        'data': [
+          [0, 0],
+          [1, 1],
+          [2, 4],
+          [3, 9],
+          [4, 16]
+        ]
       },
-      'stroke': dex.config.stroke({
-        'color': 'green',
-        'width': 1,
-        'opacity': .3,
-        'dasharray': "5 5"
+      // width and height of our chart.
+      'width': "100%",
+      'height': "100%",
+      'connection': {
+        'length': 180
+//      'style': {
+//        'stroke': dex.config.stroke()
+//      }
+      },
+      'root': {
+        'name': "ROOT",
+        // Used?
+        //'category': "ROOT"
+      },
+      // REM: Used?
+      //'color': d3.scale.category20(),
+      'node': {
+        'expanded': {
+          'label': dex.config.text({
+            'x': 8,
+            'y': 4,
+            'font.weight': 'bold',
+            'fill.fillColor': 'black',
+            'text': function (d) {
+              return (d.name) ? d.name : d.category;
+            }
+          }),
+          'circle': dex.config.circle({
+            'r': 4,
+            'fill': {
+              'fillColor': 'steelblue'
+            }
+          })
+        },
+        'collapsed': {
+          'label': dex.config.text({
+            'x': 8,
+            'y': 4,
+            'font.weight': 'bold',
+            'text': function (d) {
+              return (d.name) ? d.name : d.category;
+            }
+          }),
+          'circle': dex.config.circle({
+            'r': 5,
+            'fill': {
+              'fillColor': 'green',
+              'fillOpacity': .8
+            }
+          })
+        }
+      },
+      'link': dex.config.link({
+        'fill': {
+          'fillColor': 'none'
+        },
+        'stroke': dex.config.stroke({
+          'color': 'green',
+          'width': 1,
+          'opacity': .3,
+          'dasharray': "5 5"
+        })
       })
-    })
-  };
+    };
 
   chart = new dex.component(userConfig, defaults);
+
+  chart.getGuiDefinition = function getGuiDefinition(userConfig) {
+    var defaults = {
+      "type": "group",
+      "name": "Dendrogram Settings",
+      "contents": [
+        dex.config.gui.dimensions(),
+        dex.config.gui.general(),
+        {
+          "type": "group",
+          "name": "General",
+          "contents": [
+            {
+              "name": "Root Name",
+              "description": "The text associated with the root node.",
+              "target": "root.name",
+              "type": "string",
+              "initialValue": chart.root.name || "ROOT"
+            },
+            {
+              "name": "Connection Length",
+              "description": "This controls the length of the connections.",
+              "target": "connection.length",
+              "type": "choice",
+              "choices": ["fit-text", "10", "50", "100", "150", "200", "250", "300"],
+              "initialValue": "fit-text"
+            }
+          ]
+        },
+        dex.config.gui.text({name: "Expanded Label"}, "node.expanded.label"),
+        dex.config.gui.circle({name: "Expanded Circle"}, "node.expanded.circle"),
+        dex.config.gui.text({name: "Collapsed Label"}, "node.collapsed.label"),
+        dex.config.gui.circle({name: "Collapsed Circle"}, "node.collapsed.circle"),
+        dex.config.gui.link({}, "link")
+      ]
+    };
+    return dex.config.expandAndOverlay(userConfig, defaults);
+  };
 
   chart.render = function render() {
     d3 = dex.charts.d3.d3v3;
@@ -160,11 +200,11 @@ var dendrogram = function Dendrogram(userConfig) {
         config.transform);
 
     json =
-    {
-      "name": config.root.name,
-      "category": config.root.category,
-      "children": dex.csv.toHierarchicalJson(csv)
-    };
+      {
+        "name": config.root.name,
+        "category": config.root.category,
+        "children": dex.csv.toHierarchicalJson(csv)
+      };
 
     root = json;
     root.x0 = height / 2;
@@ -369,7 +409,9 @@ var dendrogram = function Dendrogram(userConfig) {
       else {
         d.children = d._children;
         d._children = null;
-        d.children.forEach(function (child) { collapse(child);});
+        d.children.forEach(function (child) {
+          collapse(child);
+        });
         //dex.console.log(d.children);
       }
     }
@@ -385,9 +427,9 @@ var dendrogram = function Dendrogram(userConfig) {
     return chart;
   };
 
-    chart.clone = function clone(override) {
-        return dendrogram(dex.config.expandAndOverlay(override, userConfig));
-    };
+  chart.clone = function clone(override) {
+    return dendrogram(dex.config.expandAndOverlay(override, userConfig));
+  };
 
   $(document).ready(function () {
     // Make the entire chart draggable.
