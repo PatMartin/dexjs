@@ -213,7 +213,10 @@ module.exports = function config(dex) {
           'dy': 0,
           'writingMode': undefined,
           'anchor': 'start',
-          'fill': 'fill',
+          'fill': dex.config.fill(),
+          'stroke': dex.config.stroke({
+            'width' : 0
+          }),
           'format': undefined,
           'events': dex.config.events()
         };
@@ -240,9 +243,10 @@ module.exports = function config(dex) {
         dex.config.setAttr(node, "y", textSpec.y, i);
         dex.config.setAttr(node, "dx", textSpec.dx, i);
         dex.config.setAttr(node, "dy", textSpec.dy, i);
-        dex.config.setAttr(node, "fill", textSpec.fill, i);
         dex.config.setStyle(node, "text-anchor", textSpec.anchor, i);
         dex.config.configureFont(node, textSpec.font, i);
+        dex.config.configureFill(node, textSpec.fill, i);
+        dex.config.configureStroke(node, textSpec.stroke, i);
         dex.config.setAttr(node, 'textLength', textSpec.textLength, i);
         dex.config.setAttr(node, 'lengthAdjust', textSpec.lengthAdjust, i);
         dex.config.setAttr(node, 'transform', textSpec.transform, i);
