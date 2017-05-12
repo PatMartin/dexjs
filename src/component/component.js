@@ -28,7 +28,9 @@ module.exports = function (dex) {
       }
       else if (arguments.length == 1) {
         // REM: Need to getHierarchical
-        return this.config[name];
+        //dex.console.log("HIERARCHY=" + dex.object.getHierarchical(this.config, name));
+        return dex.object.getHierarchical(this.config, name);
+        //return this.config[name];
       }
       else if (arguments.length == 2) {
         //console.log("Setting Hieararchical: " + name + "=" + value);
