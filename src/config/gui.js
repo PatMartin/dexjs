@@ -151,13 +151,6 @@ module.exports = function gui(dex) {
                 "initialValue": ""
               },
               {
-                "name": "Text Color",
-                "description": "The text color.",
-                "target": ns + "fill",
-                "type" : "color",
-                "initialValue": "black"
-              },
-              {
                 "name": "Anchor",
                 "description": "The text anchor.",
                 "target": ns + "anchor",
@@ -219,7 +212,8 @@ module.exports = function gui(dex) {
             ]
           },
           dex.config.gui.font(config.font || {}, ns + "font"),
-          dex.config.gui.fill(config.fill || {}, ns + "fill")
+          dex.config.gui.fill(config.fill || {}, ns + "fill"),
+          dex.config.gui.stroke(config.stroke || {}, ns + "stroke")
         ]
       };
       return dex.config.expandAndOverlay(userConfig, defaults);
@@ -248,22 +242,16 @@ module.exports = function gui(dex) {
           {
             "name": "Fill",
             "description": "The fill color or none.",
-            "target": ns + "fill",
+            "target": ns + "fillColor",
             "type": "choice",
             "choices": ["none", "red", "green", "blue", "black", "white", "yellow",
               "purple", "orange", "pink", "cyan", "steelblue", "grey",],
             "initialValue": "none"
           },
           {
-            "name": "Fill",
-            "description": "The text anchor.",
-            "target": ns + "fill",
-            "type": "color"
-          },
-          {
             "name": "Fill Opacity",
             "description": "The text anchor.",
-            "target": ns + "opacity",
+            "target": ns + "fillOpacity",
             "type": "float",
             "minValue": 0.0,
             "maxValue": 1.0,
@@ -438,8 +426,8 @@ module.exports = function gui(dex) {
               }
             ]
           },
-          dex.config.gui.fill(config.fill || {}, ns + prefix),
-          dex.config.gui.stroke(config.stroke || {}, ns + prefix)
+          dex.config.gui.fill(config.fill || {}, ns + "fill"),
+          dex.config.gui.stroke(config.stroke || {}, ns + "stroke")
         ]
       };
       dex.config.gui.fill(config, ns + "fill");
@@ -452,8 +440,60 @@ module.exports = function gui(dex) {
         "type": "group",
         "name": "Path",
         "contents": [
-          dex.config.gui.fill(config.fill || {}, ns + prefix),
-          dex.config.gui.stroke(config.stroke || {}, ns + prefix)
+          dex.config.gui.fill(config.fill || {}, ns + "fill"),
+          dex.config.gui.stroke(config.stroke || {}, ns + "stroke")
+        ]
+      };
+      return dex.config.expandAndOverlay(userConfig, defaults);
+    },
+    'brush': function path(config, prefix) {
+      var ns = (typeof prefix !== 'undefined') ? (prefix + ".") : "";
+      var userConfig = config || {};
+      var defaults = {
+        "type": "group",
+        "name": "Brush",
+        "contents": [
+          {
+            "type": "group",
+            "name": "Dimensions and Color",
+            "contents": [
+              {
+                "name": "Brush Color",
+                "type": "color",
+                "target": ns + "color",
+                "description": "Brush color",
+                "intialValue": "steelblue"
+              },
+              {
+                "name": "Brush Opacity",
+                "type": "float",
+                "target": ns + "opacity",
+                "minValue": 0,
+                "maxValue": 1,
+                "description": "Brush color",
+                "intialValue": .8
+              },
+              {
+                "name": "Brush Width",
+                "type": "int",
+                "description": "Brush Width",
+                "target": ns + "width",
+                "minValue": 0,
+                "maxValue": 30,
+                "intialValue": 12
+              },
+              {
+                "name": "Brush X Offset",
+                "type": "int",
+                "description": "Brush X Offset",
+                "target": ns + "x",
+                "minValue": -30,
+                "maxValue": 30,
+                "intialValue": -6
+              }
+            ]
+          },
+          dex.config.gui.stroke(config.stroke || {}, ns + "stroke")
         ]
       };
       return dex.config.expandAndOverlay(userConfig, defaults);
@@ -514,12 +554,44 @@ module.exports = function gui(dex) {
               }
             ]
           },
-          dex.config.gui.fill(config.fill || {}, ns + prefix),
-          dex.config.gui.stroke(config.stroke || {}, ns + prefix)
+          dex.config.gui.fill(config.fill || {}, ns + "fill"),
+          dex.config.gui.stroke(config.stroke || {}, ns + "stroke")
         ]
       };
       dex.config.gui.fill(config, ns + "fill");
       return dex.config.expandAndOverlay(userConfig, defaults);
     },
+    'disable': function disable(config, field) {
+      if (config.type == "group") {
+        config.contents.forEach(function (elt, i) {
+          if (elt.hasOwnProperty("target") && elt.target == field)
+          {
+            delete config.contents[i];
+          }
+          else {
+            disable(elt, field);
+          }
+        })
+      }
+
+      return config;
+    },
+    'sync': function sync(chart, guiDef) {
+      if (guiDef.type == "group") {
+        guiDef.contents.forEach(function (elt, i) {
+            sync(chart, elt);
+        })
+      }
+      else {
+        var value = chart.attr(guiDef.target);
+        var valueType = typeof value;
+        if (valueType != "undefined" && valueType != "function") {
+          guiDef.initialValue = value;
+          //dex.console.log(guiDef.target + "=" + chart.attr(guiDef.target));
+        }
+      }
+
+      return guiDef;
+    }
   };
 };
