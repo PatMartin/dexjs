@@ -83,14 +83,6 @@ module.exports = function object(dex) {
       throw new Error("Unable to copy obj! Its type isn't supported.");
     },
 
-    /*
-     This version causes expand to continue forever.
-
-     'isEmpty' : function isEmpty(obj) {
-     return _.isEmpty(obj);
-     };
-     */
-
     /**
      *
      * Kind of misleading.  This really signals when expand should quit
@@ -167,7 +159,7 @@ module.exports = function object(dex) {
     'isNode': function isNode(obj) {
       return (
         typeof Node === "object" ? obj instanceof Node :
-        obj && typeof obj === "object" && typeof obj.nodeType === "number" && typeof obj.nodeName === "string"
+          obj && typeof obj === "object" && typeof obj.nodeType === "number" && typeof obj.nodeName === "string"
       );
     },
 
@@ -184,7 +176,7 @@ module.exports = function object(dex) {
     'isElement': function isElement(obj) {
       return (
         typeof HTMLElement === "object" ? obj instanceof HTMLElement : //DOM2
-        obj && typeof obj === "object" && obj.nodeType === 1 && typeof obj.nodeName === "string"
+          obj && typeof obj === "object" && obj.nodeType === 1 && typeof obj.nodeName === "string"
       );
     },
 
@@ -220,27 +212,6 @@ module.exports = function object(dex) {
       //return typeof obj === 'function';
       return (typeof obj === "function");
     },
-
-    /**
-     *
-     * Visit each local property within.
-     *
-     * @param obj
-     * @param func
-     */
-    /*
-     'visit' : function (obj, func) {
-     var prop;
-     func(obj);
-     for (prop in obj) {
-     if (obj.hasOwnProperty(prop)) {
-     if (typeof obj[prop] === 'object') {
-     dex.object.visit(obj[prop], func);
-     }
-     }
-     }
-     }
-     */
 
     /**
      *
@@ -314,7 +285,27 @@ module.exports = function object(dex) {
       }
 
       return hierarchy;
+    },
+
+    'getHierarchical': function (hierarchy, name) {
+      //dex.console.log("getHierarchical", hierarchy, name);
+      if ((typeof hierarchy) == "undefined" ||
+        (typeof name == "undefined")) {
+        return undefined;
+      }
+      var nsIndex = name.indexOf(".");
+      if (nsIndex >= 0) {
+        var key = name.substring(0, nsIndex);
+        var remainingKey = name.substring(nsIndex+1);
+        //dex.console.log("NAME: ", key, remainingKey);
+        return dex.object.getHierarchical(hierarchy[key], remainingKey);
+      }
+      else
+      {
+        return hierarchy[name];
+      }
     }
+
   };
 };
 
