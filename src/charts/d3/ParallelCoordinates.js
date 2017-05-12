@@ -21,13 +21,12 @@ var parallelcoordinates = function (userConfig) {
         [4, 16]
       ]
     },
-    'rows': 0,
     'normalize': false,
     'transform': '',
     'margin': {
-      'left': 20,
-      'right': 20,
-      'top': 20,
+      'left': 50,
+      'right': 50,
+      'top': 50,
       'bottom': 20
     },
     'axis': {
@@ -80,7 +79,7 @@ var parallelcoordinates = function (userConfig) {
         }
       },
       'dx': function (d, i) {
-        return -1 * Math.max(chart.config.axis.label.font.size(d, i) / 2, 8);
+        return "-.5em"
       },
       'dy': ".35em",
       'fill.fillColor': 'black',
@@ -175,6 +174,56 @@ var parallelcoordinates = function (userConfig) {
   };
 
   chart = new dex.component(userConfig, defaults);
+
+  chart.getGuiDefinition = function getGuiDefinition(userConfig) {
+    var defaults = {
+      "type": "group",
+      "name": "Parallel Coordinates",
+      "contents": [
+        dex.config.gui.dimensions(),
+        dex.config.gui.general(),
+        {
+          "type": "group",
+          "name": "Miscellaneous",
+          "contents": [
+            {
+              "name": "Normalize",
+              "description": "Will normalize the scale of each column consistently, when true.",
+              "target": "normalize",
+              "type": "boolean",
+              "initialValue": false
+            },
+            {
+              "name": "Title",
+              "description": "The title.",
+              "target": "title",
+              "type": "string",
+              "initialValue": ""
+            },
+            {
+              "name": "Axis Orientation",
+              "description": "Axis orientation",
+              "target": "axis.orient",
+              "type": "choice",
+              "choices": ["left", "right", "top", "bottom"],
+              "initialValue": "left"
+            }
+          ]
+        },
+        dex.config.gui.brush({}, "brush"),
+        dex.config.gui.text({name: "Tick Label"}, "axis.label"),
+        dex.config.gui.path({name: "Axis Line"}, "axis.line"),
+        dex.config.gui.text({name: "Axis Label"}, "verticalLabel"),
+        dex.config.gui.link({name: "Selected Links"}, "selected.link"),
+        dex.config.gui.link({name: "Unselected Links"}, "unselected.link")
+      ]
+    };
+    var guiDef = dex.config.expandAndOverlay(userConfig, defaults);
+    //guiDef = dex.config.gui.disable(guiDef, "axis.label.font.size");
+    dex.console.log("GUI-DEF", guiDef);
+    dex.config.gui.sync(chart, guiDef);
+    return guiDef;
+  };
 
   chart.render = function render() {
     d3 = dex.charts.d3.d3v3;
@@ -331,7 +380,7 @@ var parallelcoordinates = function (userConfig) {
         if (i == config.csv.header.length - 1) {
           myConfig.orient = 'right';
           myConfig.label.dx = function (d, i) {
-            return Math.max(chart.config.axis.label.font.size(d, i) / 2, 8);
+            return ".5em";
           }
         }
         // Configure and apply the axis.
@@ -426,9 +475,9 @@ var parallelcoordinates = function (userConfig) {
     return chart;
   };
 
-    chart.clone = function clone(override) {
-        return parallelcoordinates(dex.config.expandAndOverlay(override, userConfig));
-    };
+  chart.clone = function clone(override) {
+    return parallelcoordinates(dex.config.expandAndOverlay(override, userConfig));
+  };
 
   $(document).ready(function () {
     $(document).uitooltip({
