@@ -18,9 +18,9 @@ var radialtree = function (userConfig) {
         [2, 2, 2]
       ]
     },
-    'nodeColorScheme': d3.scaleOrdinal(d3.schemeCategory10),
-    'linkColorScheme': d3.scaleOrdinal(d3.schemeCategory10),
-    'labelColorScheme': d3.scaleOrdinal(d3.schemeCategory10),
+    'nodeColorScheme': "crayola8",
+    'linkColorScheme': "crayola8",
+    'labelColorScheme': "crayola8",
     'width': "100%",
     'height': "100%",
     'transform': "",
@@ -30,7 +30,7 @@ var radialtree = function (userConfig) {
           return d.x < 180 && !d.children ? 6 : -6;
         },
         'fill.fillColor': function (d) {
-          return chart.config.labelColorScheme(d.depth);
+          return chart.config.labelColor(d.depth);
         },
         'font': dex.config.font({
           'family': 'sans-serif',
@@ -52,11 +52,11 @@ var radialtree = function (userConfig) {
     ),
     'link': dex.config.path({
       'stroke.color': function (d) {
-        return chart.config.linkColorScheme(d.depth);
+        return chart.config.linkColor(d.depth);
       },
-      'stroke.dasharray': '1 1',
+      'stroke.dasharray': '',
       'stroke.width': 4,
-      'stroke.opacity': .3,
+      'stroke.opacity': .5,
       'fill.fillOpacity': .1,
       'fill.fillColor': 'none',
       'd': function (d) {
@@ -70,7 +70,7 @@ var radialtree = function (userConfig) {
     'node': dex.config.circle({
       'r': 3,
       'stroke.color': function (d) {
-        return chart.config.nodeColorScheme(d.depth);
+        return chart.config.nodeColor(d.depth);
       },
       'fill.fillColor': 'white'
     }),
@@ -80,12 +80,12 @@ var radialtree = function (userConfig) {
     },
     'connectionLength': 80,
     'maxAngle': 360,
-    'radius': function() {
-    return Math.min(
-      (chart.config.width - chart.config.margin.left -
-       chart.config.margin.right) / 2,
-      (chart.config.height - chart.config.margin.top -
-       chart.config.margin.bottom)/2);
+    'radius': function () {
+      return Math.min(
+        (chart.config.width - chart.config.margin.left -
+        chart.config.margin.right) / 2,
+        (chart.config.height - chart.config.margin.top -
+        chart.config.margin.bottom) / 2);
     },
     'margin': {
       'left': 30,
@@ -97,6 +97,63 @@ var radialtree = function (userConfig) {
 
   var chart = new dex.component(userConfig, defaults);
 
+  chart.getGuiDefinition = function getGuiDefinition(config) {
+    var defaults = {
+      "type": "group",
+      "name": "Radial Tree Settings",
+      "contents": [
+        dex.config.gui.dimensions(),
+        dex.config.gui.general(),
+        dex.config.gui.text({}, "label"),
+        dex.config.gui.link({}, "link"),
+        dex.config.gui.circle({name: "Node"}, "node"),
+        {
+          "name": "Connection Length",
+          "description": "Connection length",
+          "type": "int",
+          "minValue": 0,
+          "maxValue": 300,
+          "initialValue": 80,
+          "target": "connectionLength"
+        },
+        {
+          "name": "Max Angle",
+          "description": "Max angle",
+          "type": "int",
+          "minValue": 0,
+          "maxValue": 360,
+          "initialValue": 360,
+          "target": "maxAngle"
+        },
+        {
+          "name": "Link Color Scheme",
+          "description": "Color Scheme For Links",
+          "type": "choice",
+          "choices": dex.color.colormaps(),
+          "target": "linkColorScheme"
+        },
+        {
+          "name": "Node Color Scheme",
+          "description": "Color Scheme For Nodes",
+          "type": "choice",
+          "choices": dex.color.colormaps(),
+          "target": "nodeColorScheme"
+        },
+        {
+          "name": "Label Color Scheme",
+          "description": "Color Scheme For Labels",
+          "type": "choice",
+          "choices": dex.color.colormaps(),
+          "target": "labelColorScheme"
+        }
+      ]
+    };
+
+    var guiDef = dex.config.expandAndOverlay(config, defaults);
+    dex.config.gui.sync(chart, guiDef);
+    return guiDef;
+  };
+
   chart.render = function render() {
     d3 = dex.charts.d3.d3v4;
     return chart.resize();
@@ -105,11 +162,17 @@ var radialtree = function (userConfig) {
   chart.update = function () {
     d3 = dex.charts.d3.d3v4;
     var config = chart.config;
+    config.linkColor =
+      d3.scaleOrdinal(dex.color.palette[config.linkColorScheme]);
+    config.labelColor =
+      d3.scaleOrdinal(dex.color.palette[config.labelColorScheme]);
+    config.nodeColor =
+      d3.scaleOrdinal(dex.color.palette[config.nodeColorScheme]);
     var csv = config.csv;
     var margin = config.margin;
 
-    var width = config.width - margin.left - margin.right;
-    var height = config.height - margin.top - margin.bottom;
+    var width = +config.width - margin.left - margin.right;
+    var height = +config.height - margin.top - margin.bottom;
 
     d3.selectAll(config.parent).selectAll('*').remove();
 
@@ -122,9 +185,11 @@ var radialtree = function (userConfig) {
       .attr('width', config.width)
       .attr('height', config.height);
 
-    var g = svg.append("g")
-      .attr("transform", "translate(" + (width / 2 + margin.left) + "," +
-        (height / 2 + margin.top) + ") " + config.transform);
+    var rootG = svg.append("g")
+      .attr("transform", "translate(" +
+        (+margin.left + (+width / 2)) + "," +
+        (+margin.top + (+height / 2)) + ") " +
+        config.transform);
 
     chart.internalUpdate(data);
 
@@ -207,9 +272,9 @@ var radialtree = function (userConfig) {
     return chart;
   };
 
-    chart.clone = function clone(override) {
-        return radialtree(dex.config.expandAndOverlay(override, userConfig));
-    };
+  chart.clone = function clone(override) {
+    return radialtree(dex.config.expandAndOverlay(override, userConfig));
+  };
 
   function project(x, y) {
     //dex.console.log('project(x,y)', x, y);
@@ -220,7 +285,9 @@ var radialtree = function (userConfig) {
 
   $(document).ready(function () {
     // Make the entire chart draggable.
-    //$(chart.config.parent).draggable();
+    if (chart.config.draggable) {
+      $(chart.config.parent).draggable();
+    }
   });
 
   return chart;
