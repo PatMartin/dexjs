@@ -47,10 +47,14 @@ module.exports = function (dex) {
     };
 
     this.getGuiDefinition = function (userConfig, prefix) {
-      return [
-        dex.config.gui.dimensions(userConfig, prefix),
-        dex.config.gui.general(userConfig, prefix)
-      ];
+      return {
+        "type": "group",
+        "name": this.config.id + " Settings",
+        "contents": [
+          dex.config.gui.dimensions(userConfig, prefix),
+          dex.config.gui.general(userConfig, prefix)
+        ]
+      };
     };
 
     this.subscribe = function (source, eventType, callback) {
@@ -200,10 +204,11 @@ module.exports = function (dex) {
     };
 
     // Used to load chart state from the DOM.
-    this.load = function () {
+    this.load = function (location) {
+      var loadLocation = location || "dexjs-config";
       var config = {};
 
-      $("#dexjs-config > div").each(function (i) {
+      $("#" + loadLocation + " > div").each(function (i) {
         dex.console.log("Loading Setting: '" + $(this).attr('id') + "'='" +
           $(this).attr('value') + "'");
         config[$(this).attr('id')] = $(this).attr('value');
@@ -211,47 +216,6 @@ module.exports = function (dex) {
 
       dex.console.debug("Loaded Configuration:", config);
       return this.configure(config);
-    };
-
-    // Used to print save log.
-    this.logSave = function logSave(saveConfig, prefix) {
-      var config = saveConfig || this.attr() || {};
-      var ns = (prefix) ? prefix + "." : "";
-      _.keys(config).forEach(function (key) {
-        var obj = config[key];
-        //dex.console.log(typeof obj);
-        // Don't serialize the CSV.
-        switch (key) {
-          case "csv":
-          case "channel": {
-            return;
-          }
-        }
-        if (config[key] == "") {
-          return;
-        }
-
-        // Arrays are not handled.
-        if (Array.isArray(obj)) {
-          return;
-        }
-        switch (typeof obj) {
-          case "object" : {
-            logSave(config[key], ns + key);
-            break;
-          }
-          // Don't serialize functions or things which are undefined.
-          case "function" :
-          case "undefined" : {
-            break;
-          }
-          default: {
-            dex.console.log("<div id='" + ns + key + "' value='" + config[key] + "'></div>");
-          }
-        }
-
-      });
-      return this;
     };
 
     this.saveRelative = function saveRelative(location, saveConfig, prefix) {
@@ -286,8 +250,8 @@ module.exports = function (dex) {
             break;
           }
           default: {
-            $(location).append("<div id='" + ns + key + "' value='" +
-              config[key] + "'></div>");
+            $("#" + location).append("<div id='" + ns + key + "' value='" +
+              config[key] + "' type='" + (typeof obj) + "'></div>");
           }
         }
       });
@@ -295,11 +259,12 @@ module.exports = function (dex) {
     };
 
     // Used to save chart state within the DOM.
-    this.save = function (config) {
-      $("#dexjs-config").remove();
-      $("body").prepend("<div id='dexjs-config' style='visibility: hidden;'></div>")
-      var saveConfig = config || this.attr() || {};
-      this.saveRelative("#dexjs-config", saveConfig);
+    this.save = function (location) {
+      var saveLocation = location || "dexjs-config";
+      $("#" + saveLocation).remove();
+      $("body").prepend("<div id='" + saveLocation + "' style='visibility: hidden;'></div>")
+      var saveConfig = this.attr();
+      this.saveRelative(saveLocation, saveConfig);
       return this;
     };
 
