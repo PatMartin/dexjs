@@ -26,6 +26,7 @@ var clusteredforce = function (userConfig) {
     'groups': [{'category': 0, 'value': 1, 'label': 0}],
     'transform': '',
     'color': d3.scale.category20(),
+    'colorScheme' : 'category10',
     'padding': 10,
     // TODO: Add normalization function.
     'sizingFunction': function () {
@@ -84,7 +85,6 @@ var clusteredforce = function (userConfig) {
   var chart = new dex.component(userConfig, defaults);
 
   chart.getGuiDefinition = function getGuiDefinition(config) {
-    var guiDef = config || {};
     var defaults = {
       "type": "group",
       "name": "Clustered Force Settings",
@@ -96,13 +96,20 @@ var clusteredforce = function (userConfig) {
           "name": "Physics and Sizing",
           "contents": [
             {
+              "name": "Color Scheme",
+              "description": "Color Scheme",
+              "type": "choice",
+              "choices": dex.color.colormaps(),
+              "target": "colorScheme"
+            },
+            {
               "name": "Minimum Radius",
               "description": "The minimum radius of nodes.",
               "target": "minRadius",
               "type": "int",
               "minValue": 1,
               "maxValue": 100,
-              "initialValue": 1
+              "initialValue": 10
             },
             {
               "name": "Maximum Radius",
@@ -152,7 +159,9 @@ var clusteredforce = function (userConfig) {
         dex.config.gui.stroke({name: "Nodes"}, "circle.stroke")
       ]
     };
-    return dex.config.expandAndOverlay(guiDef, defaults);
+    var guiDef = dex.config.expandAndOverlay(config, defaults);
+    dex.config.gui.sync(chart, guiDef);
+    return guiDef;
   };
 
   chart.render = function () {
@@ -165,6 +174,7 @@ var clusteredforce = function (userConfig) {
     var config = chart.config;
     var margin = config.margin;
     var csv = config.csv;
+    config.color = config.color = dex.color.getColormap(config.colorScheme);
 
     var radius = d3.scale.sqrt().range([0, 12]);
 

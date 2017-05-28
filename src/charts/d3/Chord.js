@@ -104,7 +104,6 @@ var chord = function (userConfig) {
   chart = new dex.component(userConfig, defaults);
 
   chart.getGuiDefinition = function getGuiDefinition(config) {
-    var guiDef = config || {};
     var defaults = {
       "type": "group",
       "name": "Chord Diagram Settings",
@@ -159,9 +158,11 @@ var chord = function (userConfig) {
         dex.config.gui.link({name: "Nodes on Mouseover"}, "nodes.mouseover"),
       ]
     };
-    return dex.config.expandAndOverlay(guiDef, defaults);
-  };
 
+    var guiDef = dex.config.expandAndOverlay(config, defaults);
+    dex.config.gui.sync(chart, guiDef);
+    return guiDef;
+  };
 
   chart.render = function render() {
     d3 = dex.charts.d3.d3v3;

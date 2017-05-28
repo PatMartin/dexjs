@@ -31,6 +31,7 @@ var bumpchart = function (userConfig) {
       'bottom': 50
     },
     'transform': "",
+    'colorScheme' : 'category10',
     'color': d3.scale.category10(),
     'format': d3.format("d"),
     'key': {'category': 0, 'sequence': 1, 'rank': 2},
@@ -100,6 +101,39 @@ var bumpchart = function (userConfig) {
 
   chart = new dex.component(userConfig, defaults);
 
+  chart.getGuiDefinition = function getGuiDefinition(config) {
+    var defaults = {
+      "type": "group",
+      "name": "Bump Chart Settings",
+      "contents": [
+        dex.config.gui.dimensions(),
+        dex.config.gui.general(),
+        {
+          "type": "group",
+          "name": "Miscellaneous",
+          "contents": [
+            {
+              "name": "Color Scheme",
+              "description": "Color Scheme",
+              "type": "choice",
+              "choices": dex.color.colormaps(),
+              "target": "colorScheme"
+            }
+          ]
+        },
+        dex.config.gui.text({name: "Chart Label"}, "chartLabel"),
+        dex.config.gui.text({name: "Category Label"}, "categoryLabel"),
+        dex.config.gui.text({name: "Sequence Labels"}, "sequenceLabel"),
+        dex.config.gui.circle({name: "Nodes"}, "circle"),
+        dex.config.gui.link({name: "Lines"}, "line")
+      ]
+    };
+
+    var guiDef = dex.config.expandAndOverlay(config, defaults);
+    dex.config.gui.sync(chart, guiDef);
+    return guiDef;
+  };
+
   chart.render = function render() {
     d3 = dex.charts.d3.d3v3;
     chart.resize();
@@ -113,8 +147,9 @@ var bumpchart = function (userConfig) {
     var config = chart.config;
     var csv = config.csv;
     var margin = config.margin;
-    var width = config.width - margin.left - margin.right;
-    var height = config.height - margin.top - margin.bottom;
+    var width = +config.width - margin.left - margin.right;
+    var height = +config.height - margin.top - margin.bottom;
+    config.color = dex.color.getColormap(config.colorScheme);
 
     var categoryKey = dex.csv.getColumnName(csv, config.key.category);
     var sequenceKey = dex.csv.getColumnName(csv, config.key.sequence);
@@ -362,9 +397,9 @@ var bumpchart = function (userConfig) {
     // Allow method chaining
     return chart;
   };
-    chart.clone = function clone(userConfig) {
-        return bumpchart(userConfig, chart.defaults);
-    };
+  chart.clone = function clone(userConfig) {
+    return bumpchart(userConfig, chart.defaults);
+  };
 
   $(document).ready(function () {
     // Make the entire chart draggable.

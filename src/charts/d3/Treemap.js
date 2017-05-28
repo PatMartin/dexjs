@@ -49,10 +49,7 @@ var treemap = function (userConfig) {
     }),
     'label': dex.config.text({
       //'dy': '1em',
-      'fill.fillColor': 'white',
-//      'font.size': function (d) {
-//       return 16;
-//      }
+      'fill.fillColor': 'white'
     })
   };
 

@@ -32,10 +32,27 @@ var sunburst = function (userConfig) {
     'label': dex.config.text({
       'fill.fillColor': 'white'
     }),
-    'color' : d3.scale.category20c()
+    'color': d3.scale.category20c()
   };
 
   chart = new dex.component(userConfig, defaults);
+
+  chart.getGuiDefinition = function getGuiDefinition(config) {
+    var defaults = {
+      "type": "group",
+      "name": "Sunburst Settings",
+      "contents": [
+        dex.config.gui.dimensions(),
+        dex.config.gui.general(),
+        dex.config.gui.text({"name": "Title"}, "title"),
+        dex.config.gui.text({"name": "Labels"}, "label")
+      ]
+    };
+
+    var guiDef = dex.config.expandAndOverlay(config, defaults);
+    dex.config.gui.sync(chart, guiDef);
+    return guiDef;
+  };
 
   chart.render = function render() {
     d3 = dex.charts.d3.d3v3;
@@ -176,9 +193,9 @@ var sunburst = function (userConfig) {
     }
   };
 
-    chart.clone = function clone(override) {
-        return sunburst(dex.config.expandAndOverlay(override, userConfig));
-    };
+  chart.clone = function clone(override) {
+    return sunburst(dex.config.expandAndOverlay(override, userConfig));
+  };
 
   $(document).ready(function () {
     // Make the entire chart draggable.

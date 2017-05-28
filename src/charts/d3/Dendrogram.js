@@ -98,7 +98,7 @@ var dendrogram = function Dendrogram(userConfig) {
 
   chart = new dex.component(userConfig, defaults);
 
-  chart.getGuiDefinition = function getGuiDefinition(userConfig) {
+  chart.getGuiDefinition = function getGuiDefinition(config) {
     var defaults = {
       "type": "group",
       "name": "Dendrogram Settings",
@@ -133,7 +133,10 @@ var dendrogram = function Dendrogram(userConfig) {
         dex.config.gui.link({}, "link")
       ]
     };
-    return dex.config.expandAndOverlay(userConfig, defaults);
+
+    var guiDef = dex.config.expandAndOverlay(config, defaults);
+    dex.config.gui.sync(chart, guiDef);
+    return guiDef;
   };
 
   chart.render = function render() {
