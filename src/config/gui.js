@@ -562,6 +562,164 @@ module.exports = function gui(dex) {
       dex.config.gui.fill(config, ns + "fill");
       return dex.config.expandAndOverlay(userConfig, defaults);
     },
+    // ECharts configuration:
+    'echartsTextStyle': function fill(config, prefix) {
+      var ns = (typeof prefix !== 'undefined') ? (prefix + ".") : "";
+      var userConfig = config || {};
+      var defaults = {
+        "type": "group",
+        "name": "Text Style",
+        "contents": [
+          {
+            "name": "Text Color",
+            "description": "The color of the text.",
+            "target": ns + "color",
+            "type": "color",
+            "initialValue": "#ffffff"
+          },
+          {
+            "name": "Font Style",
+            "description": "The color of the text.",
+            "target": ns + "fontStyle",
+            "type": "choice",
+            "choices": ["normal", "italic", "oblique"],
+            "initialValue": "normal"
+          },
+          {
+            "name": "Font Weight",
+            "description": "The weight of the text.",
+            "target": ns + "fontWeight",
+            "type": "choice",
+            "choices": ["normal", "bold", "bolder", "lighter",
+              "100", "200", "300", "400", "500", "600", "700",
+              "800", "900"],
+            "initialValue": "normal"
+          },
+          {
+            "name": "Font Family",
+            "description": "The color of the text.",
+            "target": ns + "fontFamily",
+            "type": "choice",
+            "choices": [
+              "sans-serif", "arial", "courier", "courier new",
+              "arial narrow", "allegro", "lucidia console",
+              "lucida sans", "times", "arial rounded mt bold"
+            ],
+            "initialValue": "sans-serif"
+          },
+          {
+            "name": "Font Size",
+            "description": "The font family.",
+            "target": ns + "fontSize",
+            "type": "int",
+            "minValue": 0,
+            "maxValue": 128,
+            "initialValue": 12
+          }
+        ]
+      };
+      return dex.config.expandAndOverlay(userConfig, defaults);
+    },
+    'echartsLabel': function fill(config, prefix) {
+      var ns = (typeof prefix !== 'undefined') ? (prefix + ".") : "";
+      var userConfig = config || {};
+      var defaults = {
+        "type": "group",
+        "name": "Label",
+        "contents": [
+          dex.config.gui.echartsTextStyle(config.textStyle || {},
+            ns + "textStyle"),
+          {
+            "name": "Show Label",
+            "description": "Show or hide the label.",
+            "target": ns + "show",
+            "type": "boolean",
+            "initialValue": false
+          },
+          {
+            "name": "Position",
+            "description": "Position of the label.",
+            "target": ns + "position",
+            "type": "choice",
+            "choices": ["top", "left", "right", "bottom",
+              "inside", "insideLeft", "insideRight", "insideTop",
+              "insideBottom", "insideLeftTop", "insideLeftBottom",
+              "insideRightTop", "insideRightBottom"],
+            "initialValue": "top"
+          },
+          {
+            "name": "Formatter",
+            "description": "Formatter of the label.",
+            "target": ns + "formatter",
+            "type": "string",
+            "initialValue": ""
+          }
+        ]
+      };
+      return dex.config.expandAndOverlay(userConfig, defaults);
+    },
+    'echartsLineStyle': function fill(config, prefix) {
+      var ns = (typeof prefix !== 'undefined') ? (prefix + ".") : "";
+      var userConfig = config || {};
+      var defaults = {
+        "type": "group",
+        "name": "Line Style",
+        "contents": [
+          {
+            "name": "Color",
+            "description": "Line color.",
+            "target": ns + "color",
+            "type": "color",
+            "initialValue": "#aaa"
+          },
+          {
+            "name": "Width",
+            "description": "Line Width.",
+            "target": ns + "width",
+            "type": "float",
+            "minValue": 0,
+            "maxValue": 10,
+            "initialValue": 1
+          },
+          {
+            "name": "Shadow Blur",
+            "description": "Shadow blur.",
+            "target": ns + "shadowBlur",
+            "type": "float",
+            "minValue": 0,
+            "maxValue": 20,
+            "initialValue": 0
+          },
+          {
+            "name": "Shadow Color",
+            "description": "Shadow color.",
+            "target": ns + "shadowColor",
+            "type": "color",
+            "initialValue": "#aaa"
+          },
+          {
+            "name": "Opacity",
+            "description": "Opacity.",
+            "target": ns + "opacity",
+            "type": "float",
+            "minValue": 0,
+            "maxValue": 1,
+            "initialValue": 1
+          },
+          {
+            "name": "Curveness",
+            "description": "Curveness.",
+            "target": ns + "curveness",
+            "type": "float",
+            "minValue": 0,
+            "maxValue": 1,
+            "initialValue": 0
+          }
+        ]
+      };
+      return dex.config.expandAndOverlay(userConfig, defaults);
+    },
+    // Utility functions here:
     'disable': function disable(config, field) {
       if (config.type == "group") {
         config.contents.forEach(function (elt, i) {
