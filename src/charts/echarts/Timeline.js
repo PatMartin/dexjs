@@ -1,46 +1,53 @@
 /**
  *
- * This module provides a ECharts Area Chart.
+ * This module provides a ECharts Timeline.
  *
- * @name dex/charts/echarts/AreaChart
+ * @name dex/charts/echarts/Timeline
  *
  * @param userConfig
- * @returns AreaChart
+ * @returns Timeline
  */
-var linechart = function (userConfig) {
+var timeline = function (userConfig) {
   var chart;
+  var sizeScale = d3.scale.linear();
+
   var defaults = {
-    'parent': '#ECharts_LineChart',
-    'id': 'ECharts_LineChart',
-    'class': 'ECharts_LineChart',
+    'parent': '#ECharts_Timeline',
+    'id': 'ECharts_Timeline',
+    'class': 'ECharts_Timeline',
     'resizable': true,
     'width': "100%",
     'height': "100%",
-    'type': 'linechart',
-
-    'series.symbol': 'circle',
-    'series.symbolSize': 10,
-    'series.type': 'line',
-    'series.showSymbol': true,
-    'series.showAllSymbol': false,
-    'series.stack': false,
-    'series.clipOverflow': true,
-    'series.connectNulls': false,
-    'series.step': false,
-    "options": {
-      tooltip: {
-        formatter: 'Group {a}: ({c})'
-      }
-    }
+    'type': 'timeline',
+    'radius' : { min: 5, max: 200 },
+    categories: function (row) {
+      return row[3];
+    },
+    sequences: function (row) {
+      return +row[4];
+    },
+    sizes: function (row) {
+      //dex.console.log("SIZING ROW: ", row);
+      return chart.config.sizeScale(+row[2]);
+    },
+    'series.type': 'timeline',
+    "options": {}
   };
 
   var combinedConfig = dex.config.expandAndOverlay(userConfig, defaults);
   chart = dex.charts.echarts.EChart(combinedConfig);
 
+  var sizeExtents = dex.csv.extent(csv, [2]);
+
+  sizeScale.domain(sizeExtents)
+    .range([+chart.config.radius.min, +chart.config.radius.max]);
+
+  chart.config.sizeScale = sizeScale;
+
   chart.getGuiDefinition = function getGuiDefinition(config) {
     var defaults = {
       "type": "group",
-      "name": "EChart Line Chart Settings",
+      "name": "EChart Timeline Settings",
       "contents": [
         dex.config.gui.dimensions(),
         dex.config.gui.general(),
@@ -52,8 +59,9 @@ var linechart = function (userConfig) {
               "name": "Symbol Shape",
               "description": "The shape of the symbol.",
               "type": "choice",
-              "choices": ["circle", "rect", "roundRect", "triangle", "diamond", "pin", "arrow"],
-              "target": "series.symbol"
+              "choices": ["emptyCircle", "circle", "rect", "roundRect", "triangle", "diamond", "pin", "arrow"],
+              "target": "series.symbol",
+              "initialValue": "emptyCircle"
             },
             {
               "name": "Symbol Size",
@@ -63,41 +71,6 @@ var linechart = function (userConfig) {
               "minValue": 0,
               "maxValue": 50,
               "initialValue": 5
-            },
-            {
-              "name": "Series Type",
-              "description": "The series type",
-              "type": "choice",
-              "target": "series.type",
-              "choices": ["line", "scatter", "scatterEmphasis", "bar"]
-            },
-            {
-              "name": "Stack Series",
-              "description": "Stack the series or not.",
-              "type": "boolean",
-              "target": "series.stack",
-              "initialValue": false
-            },
-            {
-              "name": "Clip Overflow",
-              "description": "Clip overflow.",
-              "type": "boolean",
-              "target": "series.clipOverflow",
-              "initialValue": true
-            },
-            {
-              "name": "Connect Nulls",
-              "description": "Connect nulls.",
-              "type": "boolean",
-              "target": "series.connectNulls",
-              "initialValue": false
-            },
-            {
-              "name": "Step",
-              "description": "Stack the series or not.",
-              "type": "boolean",
-              "target": "series.step",
-              "initialValue": false
             }
           ]
         },
@@ -113,4 +86,4 @@ var linechart = function (userConfig) {
 
   return chart;
 };
-module.exports = linechart;
+module.exports = timeline;
