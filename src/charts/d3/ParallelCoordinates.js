@@ -220,7 +220,7 @@ var parallelcoordinates = function (userConfig) {
     };
     var guiDef = dex.config.expandAndOverlay(userConfig, defaults);
     //guiDef = dex.config.gui.disable(guiDef, "axis.label.font.size");
-    dex.console.log("GUI-DEF", guiDef);
+    //dex.console.log("GUI-DEF", guiDef);
     dex.config.gui.sync(chart, guiDef);
     return guiDef;
   };
