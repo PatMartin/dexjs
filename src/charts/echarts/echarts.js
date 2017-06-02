@@ -8,6 +8,8 @@
 var echarts = {};
 
 echarts.EChart = require("./EChart");
-echarts.BubbleChart = require("./BubbleChart");
+echarts.LineChart = require("./LineChart");
+echarts.Timeline = require("./Timeline");
+echarts.Network = require("./Network");
 
 module.exports = echarts;
