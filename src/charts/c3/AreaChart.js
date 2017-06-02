@@ -11,7 +11,7 @@ var areachart = function (userConfig) {
   var defaults = {
     'parent': '#C3_AreaChart',
     'id': 'C3_AreaChart',
-    'class': 'C3_LineChart',
+    'class': 'C3_AreaChart',
     'resizable': true,
     'width': "100%",
     'height': "100%",
