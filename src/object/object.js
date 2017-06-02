@@ -287,6 +287,11 @@ module.exports = function object(dex) {
       return hierarchy;
     },
 
+    'isArray' : function(obj)
+    {
+      return Array.isArray(obj);
+    },
+
     'getHierarchical': function (hierarchy, name) {
       //dex.console.log("getHierarchical", hierarchy, name);
       if ((typeof hierarchy) == "undefined" ||
@@ -304,6 +309,10 @@ module.exports = function object(dex) {
       {
         return hierarchy[name];
       }
+    },
+
+    'getValue' : function(hierarchy, name, defaultValue) {
+      return dex.object.getHierarchical(hierarchy, name) || defaultValue;
     }
 
   };
