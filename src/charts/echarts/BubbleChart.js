@@ -11,7 +11,7 @@ var bubblechart = function (userConfig) {
       'header': [],
       'data': []
     },
-    'title' : 'Title',
+    'title': 'Title',
     'width': "100%",
     'height': "100%"
   };
@@ -19,101 +19,109 @@ var bubblechart = function (userConfig) {
   var config1 = dex.config.expandAndOverlay(
     userConfig, defaults);
 
-  var config2 = { 'options' : {
-    title: {
-      text: config1.title
-    },
-    legend: {
-      right: 10,
-      data: config1.csv.header
-    },
-    xAxis: {
-      splitLine: {
-        lineStyle: {
-          type: 'dashed'
-        }
-      }
-    },
-    yAxis: {
-      splitLine: {
-        lineStyle: {
-          type: 'dashed'
-        }
+  var config2 = {
+    'options': {
+      title: {
+        text: config1.title
       },
-      scale: true
-    },
-    series: [{
-      name: config1.csv.header[0],
-      data: config1.csv.data[0],
-      type: 'scatter',
-      symbolSize: function (data) {
-        return Math.sqrt(data[2]) / 5e2;
+      legend: {
+        right: 10,
+        data: config1.csv.header
       },
-      label: {
-        emphasis: {
-          show: true,
-          formatter: function (param) {
-            return param.data[3];
-          },
-          position: 'top'
-        },
-        normal: {
-          textStyle: {
-            color: 'black'
+      xAxis: {
+        splitLine: {
+          lineStyle: {
+            type: 'dashed'
           }
         }
       },
-      itemStyle: {
-        normal: {
-          shadowBlur: 10,
-          shadowColor: 'rgba(120, 36, 50, 0.5)',
-          shadowOffsetY: 5,
-          color: new echarts.graphic.RadialGradient(0.4, 0.3, 1, [{
-            offset: 0,
-            color: 'rgb(251, 118, 123)'
-          }, {
-            offset: 1,
-            color: 'rgb(204, 46, 72)'
-          }])
-        }
-      }
-    }, {
-      name: config1.csv.header[1],
-      data: config1.csv.data[1],
-      type: 'scatter',
-      symbolSize: function (data) {
-        return Math.sqrt(data[2]) / 5e2;
-      },
-      label: {
-        emphasis: {
-          show: true,
-          formatter: function (param) {
-            return param.data[3];
-          },
-          position: 'top'
+      yAxis: {
+        splitLine: {
+          lineStyle: {
+            type: 'dashed'
+          }
         },
-        normal: {
-          textStyle: {
-            color: 'black'
+        scale: true
+      },
+      series: [
+        {
+          name: config1.csv.header[0],
+          data: config1.csv.data[0],
+          type: 'scatter',
+          symbolSize: function (data) {
+            return Math.sqrt(data[2]) / 5e2;
+          },
+          label: {
+            emphasis: {
+              show: true,
+              formatter: function (param) {
+                return param.data[3];
+              },
+              position: 'top'
+            },
+            normal: {
+              textStyle: {
+                color: 'black'
+              }
+            }
+          },
+          itemStyle: {
+            normal: {
+              shadowBlur: 10,
+              shadowColor: 'rgba(120, 36, 50, 0.5)',
+              shadowOffsetY: 5,
+              color: new echarts.graphic.RadialGradient(0.4, 0.3, 1, [{
+                offset: 0,
+                color: 'rgb(251, 118, 123)'
+              }, {
+                offset: 1,
+                color: 'rgb(204, 46, 72)'
+              }])
+            }
+          }
+        },
+        {
+          name: config1.csv.header[1],
+          data: config1.csv.data[1],
+          type: 'scatter',
+          symbolSize: function (data) {
+            return Math.sqrt(data[2]) / 5e2;
+          },
+          label: {
+            emphasis: {
+              show: true,
+              formatter: function (param) {
+                return param.data[3];
+              },
+              position: 'top'
+            },
+            normal: {
+              textStyle: {
+                color: 'black'
+              }
+            }
+          },
+          itemStyle: {
+            normal: {
+              shadowBlur: 10,
+              shadowColor: 'rgba(25, 100, 150, 0.5)',
+              shadowOffsetY: 5,
+              color: new echarts.graphic.RadialGradient(0.4, 0.3, 1, [{
+                offset: 0,
+                color: 'rgb(129, 227, 238)'
+              }, {
+                offset: 1,
+                color: 'rgb(25, 183, 207)'
+              }])
+            }
           }
         }
-      },
-      itemStyle: {
-        normal: {
-          shadowBlur: 10,
-          shadowColor: 'rgba(25, 100, 150, 0.5)',
-          shadowOffsetY: 5,
-          color: new echarts.graphic.RadialGradient(0.4, 0.3, 1, [{
-            offset: 0,
-            color: 'rgb(129, 227, 238)'
-          }, {
-            offset: 1,
-            color: 'rgb(25, 183, 207)'
-          }])
-        }
-      }
-    }]
-  }};
+      ]
+    }
+  };
+
+  // Add series:
+
 
   var chart = new dex.component(config1, config2);
   var internalChart;
@@ -140,9 +148,9 @@ var bubblechart = function (userConfig) {
     internalChart.resize();
   };
 
-    chart.clone = function clone(override) {
-        return bubblechart(dex.config.expandAndOverlay(override, userConfig));
-    };
+  chart.clone = function clone(override) {
+    return bubblechart(dex.config.expandAndOverlay(override, userConfig));
+  };
 
   $(document).ready(function () {
     // Make the entire chart draggable.
