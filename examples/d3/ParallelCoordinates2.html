@@ -32,7 +32,7 @@
   var pcChart = dex.charts.d3.ParallelCoordinates({
     'parent': "#ParallelCoordinatesParent",
     //'color': dex.util.d3.color.colorbrewer('RdBu', 11),
-    'color': dex.util.d3.color.crayola120(),
+    'color': dex.color.getColormap("crayola120"),
     //'color': dex.util.d3.color.interpolateCategorical(
     //  dex.matrix.slice(csv.data, 0),
     //  ['red', 'green']),
@@ -40,4 +40,5 @@
   });
 
   pcChart.render();
+  pcChart.getGuiDefinition();
 </script>
