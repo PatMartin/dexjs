@@ -52,13 +52,14 @@
     // column because we'll be using that for coloring.
     var gi = dex.csv.getColumnNumber(iris, "species");
     var frames = dex.csv.getCombinationFrames(iris, 3, gi);
+    dex.console.log("getCombinationFrames", iris, 3, gi, frames);
 
     // Create our color scheme
     var colorScheme = d3.scale.category10();
 
     // Iterate over each SPLOM3D frame:
     frames.frames.forEach(function (frame, i) {
-      // Create a gridster panel for each of our frames.
+      // Create a multiples panel for each of our frames.
       d3.select("body")
         .append("div")
         .attr("id", "Plot" + i)
