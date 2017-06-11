@@ -658,6 +658,73 @@ module.exports = function gui(dex) {
       };
       return dex.config.expandAndOverlay(userConfig, defaults);
     },
+    'echartsItemStyle': function fill(config, prefix) {
+      var ns = (typeof prefix !== 'undefined') ? (prefix + ".") : "";
+      var userConfig = config || {};
+      var defaults = {
+        "type": "group",
+        "name": "Item Style",
+        "contents": [
+          {
+            "name": "Color",
+            "description": "Color.",
+            "target": ns + "color",
+            "type": "color",
+            "initialValue": "#aaa"
+          },
+          {
+            "name": "Border Color",
+            "description": "Border color.",
+            "target": ns + "borderColor",
+            "type": "color",
+            "initialValue": "#aaa"
+          },
+          {
+            "name": "Border Width",
+            "description": "Border Width.",
+            "target": ns + "borderWidth",
+            "type": "float",
+            "minValue": 0,
+            "maxValue": 10,
+            "initialValue": 1
+          },
+          {
+            "name": "Shadow Blur",
+            "description": "Shadow blur.",
+            "target": ns + "shadowBlur",
+            "type": "float",
+            "minValue": 0,
+            "maxValue": 20,
+            "initialValue": 0
+          },
+          {
+            "name": "Shadow Color",
+            "description": "Shadow color.",
+            "target": ns + "shadowColor",
+            "type": "color",
+            "initialValue": "#aaa"
+          },
+          {
+            "name": "Opacity",
+            "description": "Opacity.",
+            "target": ns + "opacity",
+            "type": "float",
+            "minValue": 0,
+            "maxValue": 1,
+            "initialValue": 1
+          },
+          {
+            "name": "Border Type",
+            "description": "Border type.",
+            "target": ns + "borderType",
+            "type": "choice",
+            "choices": ["solid", "dashed", "dotted"],
+            "initialValue": "solid"
+          }
+        ]
+      };
+      return dex.config.expandAndOverlay(userConfig, defaults);
+    },
     'echartsLineStyle': function fill(config, prefix) {
       var ns = (typeof prefix !== 'undefined') ? (prefix + ".") : "";
       var userConfig = config || {};
@@ -716,6 +783,78 @@ module.exports = function gui(dex) {
             "initialValue": 0
           }
         ]
+      };
+      return dex.config.expandAndOverlay(userConfig, defaults);
+    },
+    'echartsTitle': function fill(config, prefix) {
+      var ns = (typeof prefix !== 'undefined') ? (prefix + ".") : "";
+      var userConfig = config || {};
+      var defaults = {
+        "type": "group",
+        "name": "Title",
+        "contents": [
+          {
+            "name": "Text",
+            "description": "The text.",
+            "target": ns + "text",
+            "type": "string",
+            "initialValue": ""
+          },
+          {
+            "name": "Sub Text",
+            "description": "The subtext.",
+            "target": ns + "subtext",
+            "type": "string",
+            "initialValue": ""
+          },
+          {
+            "name": "Link",
+            "description": "An optional hyperlink.",
+            "target": ns + "link",
+            "type": "string",
+            "initialValue": ""
+          },
+          {
+            "name": "Link Target",
+            "description": "A tab target to open hyperlink in.",
+            "target": ns + "target",
+            "type": "string",
+            "initialValue": ""
+          },
+          {
+            "name": "Horizontal Alignment",
+            "description": "Text alignment.",
+            "target": ns + "textAlign",
+            "type": "choice",
+            "choices": ["left", "center", "right"],
+            "initialValue": "center"
+          },
+          {
+            "name": "Vertical Alignment",
+            "description": "Vertical alignment of title.",
+            "target": ns + "textBaseline",
+            "type": "choice",
+            "choices": ["top", "middle", "bottom"],
+            "initialValue": "top"
+          },
+          {
+            "name": "Sub Link",
+            "description": "An optional hyperlink.",
+            "target": ns + "sublink",
+            "type": "string",
+            "initialValue": ""
+          },
+          {
+            "name": "Sub Link Target",
+            "description": "A tab target to open hyperlink in.",
+            "target": ns + "subtarget",
+            "type": "string",
+            "initialValue": ""
+          },
+          dex.config.gui.echartsTextStyle(config.textStyle || {}, ns + "textStyle"),
+          dex.config.gui.echartsTextStyle(config.subtextStyle || {}, ns + "subtextStyle")
+        ]
+
       };
       return dex.config.expandAndOverlay(userConfig, defaults);
     },
