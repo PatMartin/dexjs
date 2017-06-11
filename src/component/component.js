@@ -38,6 +38,7 @@ module.exports = function (dex) {
 
         // This will handle the setting of a single attribute
         dex.object.setHierarchical(this.config, name, value, '.');
+        this.publish({ type: "attr", attr: name, value: value });
       }
       return this;
     };
