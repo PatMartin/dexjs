@@ -441,7 +441,7 @@
       gridster.remove_widget($(this).closest('li'));
 
       // REM: Timing issue.  Update the charts list after giving
-      // gridster a second to remove the widget.
+      // multiples a second to remove the widget.
       setTimeout(function () {
         charts.forEach(function (chartGroup, i) {
           var parentId;
