@@ -73,12 +73,23 @@
     ]
   };
 
-  dex.console.log(dex.csv.getCategorizationMethods(csv));
-
-  var chart = dex.charts.echarts.Network({
+  var chart = dex.charts.echarts.EChart({
     parent: '#EChart',
     csv: csv,
-    categorizationMethod: "President Value"
+    categories: function(csv, ri, ci) {
+      if (ci == 2) {
+        return "Home State";
+      }
+      return csv.data[ri][1];
+    },
+    //categories: dex.matrix.flatten(dex.csv.columnSlice(csv, [1]).data),
+    //series: { type: 'sankey', layout: 'none' }
+    //series: { type: 'graph', layout: 'circular', circular: {rotateLabel: true}, }
+    //series: {
+    //  'lineStyle.normal.curveness': 0,
+    //  type: 'graph',
+    //  layout: 'force',
+    //  force: {repulsion: 250, initLayout: 'circular', 'edgeLength' : 200} }
   });
   chart.render();
 </script>
