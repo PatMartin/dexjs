@@ -12,6 +12,19 @@ module.exports = function array(dex) {
     'unique': function (array) {
       return _.uniq(array);
     },
+    'orderedUnique': function (array) {
+      var map = {};
+      var uniqueArray = [];
+      if (Array.isArray(array)) {
+        array.forEach(function (elt) {
+          if ((typeof map[elt]) == "undefined") {
+            uniqueArray.push(elt);
+            map[elt] = 1;
+          }
+        });
+      }
+      return uniqueArray;
+    },
     /**
      *
      * Take a slice of an array without modifying the original array.
@@ -207,6 +220,11 @@ module.exports = function array(dex) {
       return _.clone(array);
       // Deep copy:
       //return $.extend(true, {}, array);
+    },
+    'combine': function(array1, array2) {
+      var a1 = dex.array.copy(array1);
+      var a2 = dex.array.copy(array2);
+      return a1.concat(a2);
     },
     'isNumeric': function (array) {
       return array.every(dex.object.isNumeric);
