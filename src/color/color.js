@@ -138,9 +138,26 @@ module.exports = function color(dex) {
      * @return {string[]} The list of available colormaps.
      *
      */
-    'colormaps': function () {
+    'colormaps': function (options) {
+      var opts = options || {};
+      if (opts.shortlist) {
+        return [
+          "category10", "category20b", "category20c", "category20", "c64Dark",
+          "c64Light", "divergingDark12", "divergingPastel12", "hueSoft128",
+          "hueHard128", "crayola8", "crayola120", "YlGn_9",
+          "YlGnBu_9", "GnBu_9", "BuGn_9", "PuBuGn_9", "PuBu_9",
+          "BuPu_9", "RdPu_9", "PuRd_9", "OrRd_9", "YlOrRd_9", "YlOrBr_9",
+          "Purples_9", "Blues_9", "Greens_9", "Oranges_9", "Reds_9",
+          "Greys_9", "PuOr_11", "BrBG_11", "PRGn_11", "PiYG_11",
+          "RdBu_11", "RdGy_11", "RdYlBu_11",
+          "Spectral_4", "Spectral_8", "Spectral_11",
+          "RdYlGn_11", "Accent_8", "Dark2_8", "Paired_12",
+          "Pastel1_9", "Pastel2_8", "Set1_9", "Set2_8", "Set3_12"
+        ];
+      }
       return Object.keys(dex.color.palette);
     },
+
     /**
      *
      * Given a domain of 2 or more items and a range of 2 colors,
