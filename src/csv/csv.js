@@ -100,9 +100,9 @@ module.exports = function csv(dex) {
       return connectionMatrix;
     },
 
-    'getColumnNumber': function (csv, colIndex) {
+    'getColumnNumber': function (csv, colIndex, defaultValue) {
       if (colIndex === undefined) {
-        return -1;
+        return defaultValue;
       }
 
       var colNum = csv.header.indexOf(colIndex);
@@ -115,7 +115,7 @@ module.exports = function csv(dex) {
         return colIndex;
       }
 
-      return -1;
+      return undefined;
     },
 
     /**
@@ -436,6 +436,33 @@ module.exports = function csv(dex) {
       return slice;
     },
 
+    'include': function (csv, columns) {
+      var slice = {};
+      var columnNumbers = columns.map(function (column) {
+        return dex.csv.getColumnNumber(csv, column);
+      });
+
+      slice.header = dex.array.slice(csv.header, columnNumbers);
+      slice.data = dex.matrix.slice(csv.data, columnNumbers);
+
+      return slice;
+    },
+
+    'exclude': function (csv, columns) {
+      var slice = {};
+      var columnNumbers = columns.map(function (column) {
+        return dex.csv.getColumnNumber(csv, column);
+      });
+      var complement = dex.range(0, csv.header.length).filter(function (elt) {
+        return !(columnNumbers.includes(elt));
+      });
+
+      slice.header = dex.array.slice(csv.header, complement);
+      slice.data = dex.matrix.slice(csv.data, complement);
+
+      return slice;
+    },
+
     'removeColumn': function (csv, column) {
       var columnIndex = dex.csv.getColumnNumber(csv, column);
       var columns = dex.range(0, csv.header.length);
@@ -482,27 +509,27 @@ module.exports = function csv(dex) {
 
     'getCategorizationMethods': function (csv) {
       var methods = {
-        'Column Type' : function(csv, ri, ci) {
+        'Column Type': function (csv, ri, ci) {
           return csv.header[ci];
         },
-        'Column Value' : function(csv, ri, ci) {
+        'Column Value': function (csv, ri, ci) {
           return csv.data[ri][ci];
         },
-        'Row Number': function(csv, ri, ci) {
+        'Row Number': function (csv, ri, ci) {
           return ri;
         },
-        "None": function(csv, ri, ci) {
+        "None": function (csv, ri, ci) {
           return "Uncategorized";
         }
       };
 
-      var getColumnValue = function(columnIndex) {
-        return function(csv, ri, ci) {
+      var getColumnValue = function (columnIndex) {
+        return function (csv, ri, ci) {
           return csv.data[ri][columnIndex];
         };
       };
 
-      csv.header.forEach(function(h, hi) {
+      csv.header.forEach(function (h, hi) {
         methods[csv.header[hi] + " Value"] = getColumnValue(hi);
       });
 
@@ -552,6 +579,40 @@ module.exports = function csv(dex) {
 
           return csv.data[ri][ci];
         }
+      }
+    },
+
+    'getScalingMethods': function (csv) {
+      var methods;
+
+      // v4 methods
+      if (d3.version == "4.0") {
+        methods = {
+          'linear': d3.scaleLinear(),
+          'pow': d3.scalePow(),
+          'log': d3.scaleLog()
+        };
+      }
+      else {
+        methods = {
+          'linear': d3.scale.linear(),
+          'pow': d3.scale.pow(),
+          'log': d3.scale.log()
+        };
+      }
+
+      return methods;
+    },
+    'getScalingMethod': function (csv, method, domain, range) {
+      var methods = dex.csv.getScalingMethods(csv);
+      if (((typeof method) == "undefined") ||
+        ((typeof methods[method]) == "undefined")) {
+        return function (value) {
+          return value;
+        };
+      }
+      else {
+        return methods[method].domain(domain).range(range);
       }
     },
 
@@ -741,6 +802,62 @@ module.exports = function csv(dex) {
       return dex.matrix.extent(csv.data, columns);
     },
 
+    getFramesByColumn: function (csv, x) {
+      var xIndex = dex.csv.getColumnNumber(csv, x);
+      var frames = {frameIndices: [], frames: []};
+
+      csv.header.forEach(function (h, hi) {
+        if (hi != xIndex) {
+          var frame = {
+            header: [csv.header[xIndex], h],
+            data: []
+          };
+          frames.frameIndices.push(h);
+          csv.data.forEach(function (row) {
+            frame.data.push([row[xIndex], row[hi]]);
+          });
+          frames.frames.push(frame);
+        }
+      });
+
+      return frames;
+    },
+
+    getFramesByColumns: function (csv, columns) {
+      var columnIndexes = columns.map(function (col) {
+        return dex.csv.getColumnNumber(csv, col);
+      });
+
+      var axisCsv = dex.csv.include(csv, columnIndexes);
+      var seriesCsv = dex.csv.exclude(csv, columnIndexes);
+
+      // If there are no series.
+      if (seriesCsv.header.length == 0) {
+        return {
+          frameIndices: [ axisCsv.header.join(" vs ") ],
+          frames: [ axisCsv ]
+        }
+      }
+
+      dex.console.log(columnIndexes, "AXIS", axisCsv, "SERIES", seriesCsv);
+
+      var frames = {
+        frameIndices: [],
+        frames: []
+      };
+
+      seriesCsv.header.forEach(function (h, hi) {
+        frames.frameIndices.push(h);
+        var frame = dex.csv.copy(axisCsv);
+        frame.header.push(h);
+        seriesCsv.data.forEach(function (row, ri) {
+          frame.data[ri].push(row[hi]);
+        });
+        frames.frames.push(frame);
+      });
+      return frames;
+    },
+
     /**
      *
      * This routine will return a frames structure based on a csv and
@@ -758,31 +875,43 @@ module.exports = function csv(dex) {
      * @param columnIndex
      * @returns {{frameIndices: Array.<T>, frames: Array}}
      */
-    'getFramesByIndex': function (csv, columnIndex) {
+    'getFramesByIndex': function (csv, columnIndex, sort) {
       var types = dex.csv.guessTypes(csv);
       //dex.console.log("TYPES", types);
       var frameIndices;
 
       if (types[columnIndex] == "number") {
-        frameIndices = _.uniq(csv.data.map(function (row) {
+        frameIndices = dex.array.orderedUnique(csv.data.map(function (row) {
           return row[columnIndex]
-        })).sort(function (a, b) {
-          return a - b
-        });
+        }));
+
+        if ((typeof sort) != "undefined") {
+          frameIndices = frameIndices.sort(function (a, b) {
+            return a - b
+          });
+        }
       }
       else if (types[columnIndex] == "date") {
-        frameIndices = _.uniq(csv.data.map(function (row) {
+        frameIndices = dex.array.orderedUnique(csv.data.map(function (row) {
           return row[columnIndex]
-        })).sort(function (a, b) {
-          a = new Date(a);
-          b = new Date(b);
-          return a > b ? 1 : a < b ? -1 : 0;
-        });
+        }));
+
+        if ((typeof sort) != "undefined") {
+          frameIndices = frameIndices.sort(function (a, b) {
+            a = new Date(a);
+            b = new Date(b);
+            return a > b ? 1 : a < b ? -1 : 0;
+          });
+        }
       }
       else {
-        frameIndices = _.uniq(csv.data.map(function (row) {
+        frameIndices = dex.array.orderedUnique(csv.data.map(function (row) {
           return row[columnIndex]
-        })).sort();
+        }));
+
+        if (sort) {
+          frameIndices = frameIndices.sort();
+        }
       }
       //dex.console.log("FRAME-INDICES", frameIndices)
       var header = dex.array.copy(csv.header);
@@ -860,7 +989,6 @@ module.exports = function csv(dex) {
 
       return dex.csv.getFrames(csv, combos, gi);
     },
-
     'getFrames': function (csv, permutations, groupIndex) {
       var frameIndices = [];
       var frames = [];
