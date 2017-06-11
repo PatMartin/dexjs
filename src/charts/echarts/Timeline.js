@@ -31,7 +31,8 @@ var timeline = function (userConfig) {
       return chart.config.sizeScale(+row[2]);
     },
     'series.type': 'timeline',
-    "options": {}
+    "options": {
+    }
   };
 
   var combinedConfig = dex.config.expandAndOverlay(userConfig, defaults);
