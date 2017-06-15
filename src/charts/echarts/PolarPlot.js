@@ -67,7 +67,7 @@ var polarplot = function (userConfig) {
       }
       // If an array, value index is always first.
       if (Array.isArray(value)) {
-        return sizeScale(value[0]);
+        return sizeScale(value[2] || value[0]);
       }
       // If a simple value, size on it.  IE: Polar Bar Chart
       return sizeScale(value);
@@ -87,7 +87,24 @@ var polarplot = function (userConfig) {
     "options": {
       tooltip: {
         formatter: 'Group {a}: ({c})'
-      }
+      },
+      dataZoom: [
+        {
+          orient: 'vertical',
+          show: true,
+          realtime: true,
+          start: 0,
+          end: 100,
+          angleAxisIndex: 0
+        },
+        {
+          show: true,
+          realtime: true,
+          start: 0,
+          end: 100,
+          radiusAxisIndex: 0
+        }
+      ]
     }
   };
 
