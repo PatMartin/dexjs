@@ -1,6 +1,6 @@
 var echart = function (userConfig) {
     var chart;
-    var internalChart;
+    var internalChart = undefined;
     var effectiveOptions;
 
     var defaults = {
@@ -23,12 +23,15 @@ var echart = function (userConfig) {
       var config = chart.config;
       var csv = config.csv;
 
+      echarts.dispose(d3.select(config.parent)[0][0]);
       d3.select(config.parent).selectAll("*").remove();
 
-      if (typeof internalChart != "undefined") {
-        internalChart.dispose();
-      }
-      internalChart = echarts.init(d3.select(config.parent)[0][0]);
+      dex.console.log("PARENT: '" + config.parent + "'");
+      //if (internalChart !== undefined) {
+      //  internalChart.dispose();
+      //}
+      internalChart = echarts.init(
+        d3.select(config.parent)[0][0]);
 
       // Calls update automatically.
       chart.resize();
@@ -90,7 +93,6 @@ var echart = function (userConfig) {
         series: []
       };
       var gtypes = dex.csv.guessTypes(csv);
-      dex.console.log("PIE CHART");
 
       // Get our indices:
       var seriesIndex = dex.csv.getColumnNumber(csv, config.seriesIndex);
@@ -102,7 +104,7 @@ var echart = function (userConfig) {
 
       var frames = dex.csv.getFramesByIndex(csv, seriesIndex);
 
-      dex.console.log("FRAMES", frames);
+      //dex.console.log("FRAMES", frames);
       var legendNames = {};
 
       var maxPercent = chart.config.maxPercent || 80.0;
@@ -112,9 +114,6 @@ var echart = function (userConfig) {
       var padding = chart.config.padding ||
         (Math.min((frames.frames.length <= 1) ? 0 :
           Math.floor(maxPercent / (2 * frames.frames.length - 2)), maxPadding));
-
-      dex.console.log("PADDING", padding, "MAX-PERCENT", maxPercent,
-        "MAX-PADDING", maxPadding, "ARADIUS", availableRadius);
 
       var startRadius = 0;
       var endRadius = Math.floor(availableRadius * 2);
@@ -170,7 +169,7 @@ var echart = function (userConfig) {
 
       // We always need values.
       columns.push(valueIndex);
-      dex.console.log("ANGLE INDEX: ", config.angleIndex, angleIndex);
+      //dex.console.log("ANGLE INDEX: ", config.angleIndex, angleIndex);
 
       switch (config.series.type) {
         case "line":
@@ -192,7 +191,7 @@ var echart = function (userConfig) {
             }
             else {
               var extents = dex.csv.extent(csv, angleIndex);
-              dex.console.log("EXTENT", extents);
+              //dex.console.log("EXTENT", extents);
               options.angleAxis = {
                 type: "value",
                 min: "dataMin",
@@ -223,13 +222,17 @@ var echart = function (userConfig) {
         }
       }
 
+      if (options.radiusAxis.type == "category" &&
+        options.angleAxis.type == "category") {
+        columns = [ radiusIndex, angleIndex, valueIndex ];
+      }
       var seriesNames = [];
 
-      dex.console.log("COLUMNS", columns);
+      //dex.console.log("COLUMNS", columns);
 
       if (seriesIndex !== undefined) {
         seriesNames = dex.csv.uniqueArray(csv, seriesIndex);
-        dex.console.log("SERIES-NAMES", seriesNames);
+        //dex.console.log("SERIES-NAMES", seriesNames);
         options.legend.data = seriesNames;
 
         seriesNames.forEach(function (seriesName) {
