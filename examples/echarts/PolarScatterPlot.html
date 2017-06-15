@@ -30,15 +30,19 @@
   var days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday',
     'Friday', 'Saturday', 'Sunday'];
 
+  var series = ["Commits", "Checkouts", "Issues"];
+
   var csv = {
-    header: ["Day", "Hour", "Commits", "Checkouts", "Issues"],
+    header: ["Day", "Hour", "Activity", "Value"],
     data: []
   };
 
   days.forEach(function (day) {
     hours.forEach(function (hour) {
-      csv.data.push([day, hour, Math.floor(Math.random() * 51),
-        Math.floor(Math.random() * 101), Math.floor(Math.random() * 11)])
+      series.forEach(function (series) {
+        csv.data.push([day, hour, series,
+          Math.floor(Math.random() * 51)]);
+      });
     });
   });
 
@@ -46,7 +50,10 @@
     parent: '#EChart',
     csv: csv,
     radiusIndex: "Day",
-    angleIndex: "Hour"
+    angleIndex: "Hour",
+    seriesIndex: "Activity",
+    valueIndex: "Value",
+    "series.type": "scatter"
   });
   chart.render();
 </script>
