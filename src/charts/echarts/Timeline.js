@@ -19,7 +19,7 @@ var timeline = function (userConfig) {
     'width': "100%",
     'height': "100%",
     'type': 'timeline',
-    'radius' : { min: 5, max: 200 },
+    'radius' : { min: 5, max: 50 },
     categories: function (row) {
       return row[3];
     },
@@ -38,7 +38,7 @@ var timeline = function (userConfig) {
   var combinedConfig = dex.config.expandAndOverlay(userConfig, defaults);
   chart = dex.charts.echarts.EChart(combinedConfig);
 
-  var sizeExtents = dex.csv.extent(csv, [2]);
+  var sizeExtents = dex.csv.extent(chart.config.csv, [2]);
 
   sizeScale.domain(sizeExtents)
     .range([+chart.config.radius.min, +chart.config.radius.max]);
