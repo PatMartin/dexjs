@@ -242,6 +242,31 @@ module.exports = function csv(dex) {
       return jsonData;
     },
 
+    'toStrictJson': function(csv) {
+      var gtypes = dex.csv.guessTypes(csv);
+      var jsonData = [];
+      csv.data.forEach(function(row, ri) {
+        var jsonRow = {};
+        csv.header.forEach(function(header, hi) {
+          switch (gtypes[hi]) {
+            case "number": {
+              jsonRow[header] = +(row[hi]);
+              break;
+            }
+            case "date": {
+              jsonRow[header] = new Date(row[hi]);
+              break;
+            }
+            default: {
+              jsonRow[header] = row[hi];
+            }
+          }
+        });
+        jsonData.push(jsonRow);
+      });
+      return jsonData;
+    },
+
     /**
      *
      * @param csv
