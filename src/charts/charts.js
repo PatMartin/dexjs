@@ -22,8 +22,9 @@ module.exports = function charts() {
     'd3plus'   : require("./d3plus/d3plus"),
     'echarts'  : require("./echarts/echarts"),
     'elegans'  : require("./elegans/elegans"),
-    'multiples' : require("./multiples/multiples"),
+    'multiples': require("./multiples/multiples"),
     'nvd3'     : require("./nvd3/nvd3"),
+    'taucharts': require("./taucharts/taucharts"),
     'threejs'  : require("./threejs/threejs"),
     'vis'      : require("./vis/vis")
   };
