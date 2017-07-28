@@ -1,4 +1,15 @@
-var network = function (userConfig) {
+/**
+ *
+ * This is the base constructor for a VisJS Network component.
+ *
+ * @param userConfig The chart's configuration.
+ *
+ * @returns {Network}
+ *
+ * @memberof dex/charts/vis
+ *
+ */
+var Network = function (userConfig) {
   var chart;
 
   var defaults =
@@ -233,7 +244,7 @@ var network = function (userConfig) {
     if (chart.config.resizable) {
       var width = $("" + chart.config.parent).width();
       var height = $("" + chart.config.parent).height();
-      dex.console.log("RESIZE: " + width + "x" + height);
+      //dex.console.log("RESIZE: " + width + "x" + height);
       chart.attr("width", width)
         .attr("height", height)
         .update();
@@ -267,7 +278,7 @@ var network = function (userConfig) {
   };
 
   chart.clone = function clone(override) {
-    return network(dex.config.expandAndOverlay(override, userConfig));
+    return Network(dex.config.expandAndOverlay(override, userConfig));
   };
 
   chart.createData = function () {
@@ -383,4 +394,4 @@ var network = function (userConfig) {
   return chart;
 };
 
-module.exports = network;
+module.exports = Network;

@@ -1,4 +1,15 @@
-var stackedareachart = function (userConfig) {
+/**
+ *
+ * This is the base constructor for a NVD3 StackedAreaChart.
+ *
+ * @param userConfig The chart's configuration.
+ *
+ * @returns {StackedAreaChart}
+ *
+ * @memberof dex/charts/nvd3
+ *
+ */
+var StackedAreaChart = function (userConfig) {
     d3 = dex.charts.d3.d3v3;
     var chart;
 
@@ -24,13 +35,12 @@ var stackedareachart = function (userConfig) {
         var config = chart.config;
         var csv = config.csv;
 
-        var types = dex.csv.guessTypes(csv);
+        var types = csv.guessTypes();
         //dex.console.log("TYPES", types);
 
         d3.select(config.parent).selectAll("*").remove();
 
-        //dex.console.log("CSV", csv, dex.csv.group(csv, [0]));
-        var groups = dex.csv.group(csv, [0]);
+        var groups = csv.group([0]);
 
 
         var nvd3Data = groups.map(function (group) {
@@ -80,7 +90,7 @@ var stackedareachart = function (userConfig) {
                     return d3.format(".1f")(d)
                 }
                 else {
-                    dex.console.log("D", d, nvd3Data);
+                    //dex.console.log("D", d, nvd3Data);
                     return nvd3Data[0].values[d].xlabel;
                 }
             });
@@ -116,7 +126,7 @@ var stackedareachart = function (userConfig) {
         }, function () {
             d3.selectAll(".nv-legend-symbol").on('click',
                 function () {
-                    dex.console.log("Clicked Legend Of", nvd3Chart);
+                    //dex.console.log("Clicked Legend Of", nvd3Chart);
                 });
         });
 
@@ -129,7 +139,7 @@ var stackedareachart = function (userConfig) {
     };
 
     chart.clone = function clone(override) {
-        return stackedareachart(dex.config.expandAndOverlay(override, userConfig));
+        return StackedAreaChart(dex.config.expandAndOverlay(override, userConfig));
     };
 
     $(document).ready(function () {
@@ -142,4 +152,4 @@ var stackedareachart = function (userConfig) {
     return chart;
 };
 
-module.exports = stackedareachart;
+module.exports = StackedAreaChart;

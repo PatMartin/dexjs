@@ -5,9 +5,12 @@
  * @name dex/charts/c3/PieChart
  *
  * @param userConfig
- * @returns PieChart
+ * @returns {PieChart}
+ *
+ * @memberof dex/charts/c3
+ *
  */
-var piechart = function (userConfig) {
+var PieChart = function (userConfig) {
   var defaults = {
     'parent': '#C3_PieChart',
     'id': 'C3_PieChart',
@@ -24,4 +27,4 @@ var piechart = function (userConfig) {
   return dex.charts.c3.C3Chart(combinedConfig);
 };
 
-module.exports = piechart;
+module.exports = PieChart;

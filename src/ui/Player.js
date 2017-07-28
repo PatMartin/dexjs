@@ -2,15 +2,14 @@
  *
  * Construct a player component.
  *
+ *
  * @param userConfig The configuration of the player.
  *
  * @returns {Player}
  * @memberof dex/ui
  *
- * @constructor
- *
  */
-var player = function (userConfig) {
+var Player = function (userConfig) {
 
   var defaults = {
     // The parent container of this chart.
@@ -40,7 +39,7 @@ var player = function (userConfig) {
   chart.render = function () {
     var timer;
     var state = "stopped";
-    frames = dex.csv.getFramesByIndex(config.csv, config.frameIndex);
+    frames = config.csv.getFramesByIndex(config.frameIndex);
     chart.attr("frames", frames);
 
     dex.console.debug("FRAMES:", frames);
@@ -169,7 +168,7 @@ var player = function (userConfig) {
   };
 
   chart.update = function () {
-    frames = dex.csv.getFramesByIndex(config.csv, config.frameIndex);
+    frames = config.csv.getFramesByIndex(config.frameIndex);
     chart.attr("frames", frames);
     gotoFrame(0);
   };
@@ -206,4 +205,4 @@ var player = function (userConfig) {
   return chart;
 };
 
-module.exports = player;
+module.exports = Player;

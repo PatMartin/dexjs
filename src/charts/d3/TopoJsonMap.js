@@ -1,4 +1,15 @@
-var topojsonmap = function (userConfig) {
+/**
+ *
+ * This is the base constructor for a D3 TopoJsonMap component.
+ *
+ * @param userConfig The chart's configuration.
+ *
+ * @returns {TopoJsonMap}
+ *
+ * @memberof dex/charts/d3
+ *
+ */
+var TopoJsonMap = function (userConfig) {
   d3 = dex.charts.d3.d3v3;
   var chart;
 
@@ -48,7 +59,7 @@ var topojsonmap = function (userConfig) {
     var width = config.width - margin.left - margin.right;
     var height = config.height - margin.top - margin.bottom;
 
-    dex.console.log("WIDTH", config.width, width, config.height, height);
+    //dex.console.log("WIDTH", config.width, width, config.height, height);
 
     d3.selectAll(config.parent).selectAll("*").remove();
 
@@ -272,10 +283,10 @@ var topojsonmap = function (userConfig) {
   };
 
     chart.clone = function clone(override) {
-        return topojsonmap(dex.config.expandAndOverlay(override, userConfig));
+        return TopoJsonMap(dex.config.expandAndOverlay(override, userConfig));
     };
 
   return chart;
 };
 
-module.exports = topojsonmap;
+module.exports = TopoJsonMap;

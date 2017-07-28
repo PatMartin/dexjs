@@ -1,15 +1,19 @@
 /**
  *
- * This module provides a ECharts Polar Plot
+ * Create an ECharts Polar Plot with the given specification.
  *
- * @name dex/charts/echarts/PolarPlot
+ * @param userConfig The chart's configuration.
  *
- * @param userConfig
- * @returns PolarPlot
+ * @returns {PolarPlot} An ECharts Network configured to specification.
+ *
+ * @memberof dex/charts/echarts
+ *
  */
-var polarplot = function (userConfig) {
+var PolarPlot = function (userConfig) {
   var chart;
-  var sizeScale = undefined;
+  var internalChart = undefined;
+  var effectiveOptions;
+
   var defaults = {
     'parent': '#ECharts_PolarPlot',
     'id': 'ECharts_PolarPlot',
@@ -18,75 +22,37 @@ var polarplot = function (userConfig) {
     'width': "100%",
     'height': "100%",
     'type': 'polar',
-    'seriesIndex': 0,
-    'angleIndex': 1,
-    'valueIndex': 2,
-    'radiusIndex': undefined,
-    'radius': {'min': 1, 'max': 20},
+    'palette': 'ECharts',
+    'refreshType': "update",
+    'displayLegend': true,
+    'radius': {'min': 5, 'max': 20},
     'sizeMethod': 'linear',
-    'sizeScale': function (value) {
-      // No size scale exists, so let's establish one.
-      if (typeof sizeScale == "undefined") {
-        // We have a value index to size upon.
-        if (chart.config.valueIndex !== undefined) {
-          sizeScale = dex.csv.getScalingMethod(
-            chart.config.csv, chart.config.sizeMethod,
-            dex.csv.extent(chart.config.csv,
-              [dex.csv.getColumnNumber(chart.config.csv, chart.config.valueIndex)]),
-            [chart.config.radius.min, chart.config.radius.max]);
-        }
-        // There is no value index to size upon. so we will try another
-        // approach:
-        //
-        // 1. Create a csv which omits radius and angle indices from consideration
-        // 2. Omit non-numerics as well.
-        // 3. Get the extents from the remaining columns.
-        // 4. Map these extents to a scale based on radius min/max range.
-        else {
-          var excludes = [];
-          if (chart.config.radiusIndex != undefined) {
-            excludes.push(dex.csv.getColumnNumber(chart.config.radiusIndex));
-          }
-          if (chart.config.angleIndex !== undefined) {
-            excludes.push(dex.csv.getColumnNumber(chart.config.angleIndex));
-          }
-          var sizeCsv;
-          if (excludes.length == 0) {
-            sizeCsv = chart.config.csv;
-          }
-          else {
-            sizeCsv = dex.csv.exclude(chart.config.csv, excludes);
-          }
-          var ncols = dex.csv.getNumericIndices(sizeCsv);
-          var extents = dex.csv.extent(sizeCsv, ncols);
-          dex.console.log("EXTENTS", extents);
-          sizeScale = dex.csv.getScalingMethod(
-            chart.config.csv, chart.config.sizeMethod, extents,
-            [chart.config.radius.min, chart.config.radius.max]);
-        }
-      }
-      // If an array, value index is always first.
-      if (Array.isArray(value)) {
-        return sizeScale(value[2] || value[0]);
-      }
-      // If a simple value, size on it.  IE: Polar Bar Chart
-      return sizeScale(value);
-    },
     'series.coordinateSystem': 'polar',
     'series.type': 'line',
     'series.itemStyle.normal.opacity': .6,
     'series.itemStyle.emphasis.opacity': .9,
-    "series.symbolSize": function (d) {
-      //dex.console.log("SIZING D", d);
-      if (typeof chart.config.sizeScale != "undefined") {
-        //dex.console.log("SIZING D", d, chart.config.sizeScale(+d[2]));
-        return chart.config.sizeScale(d);
-      }
-      return 5;
-    },
     "options": {
       tooltip: {
-        formatter: 'Group {a}: ({c})'
+        backgroundColor: "#FFFFFF",
+        borderColor: "#000000",
+        borderWidth: 2,
+        trigger: 'item',
+        formatter: function (d) {
+          //dex.console.log("FORMATTER", d);
+          var str = "<table class='dex-tooltip-table'>";
+
+          str += "<th colspan='2'>" + d.seriesName + "</th>";
+          d.data.forEach(function (value) {
+            if (typeof value === "string") {
+              var parts = value.split(":::");
+              if (parts.length == 2) {
+                str += "<tr><td>" + parts[0] + "</td><td>" + parts[1] + "</td></tr>";
+              }
+            }
+          });
+          str += "</table>";
+          return str;
+        }
       },
       dataZoom: [
         {
@@ -111,17 +77,11 @@ var polarplot = function (userConfig) {
   var combinedConfig = dex.config.expandAndOverlay(userConfig, defaults);
   chart = dex.charts.echarts.EChart(combinedConfig);
 
-  chart.subscribe(chart, "attr", function (event) {
-    if (event.attr == "radius" || event.attr == "sizeMethod" ||
-      event.attr == "radius.min" || event.attr == "radius.max") {
-      // Causes next call to sizeScale to recreate it.
-      sizeScale = undefined;
-    }
-
-    if (event.attr == "valueIndex" && event.value == "none") {
-      sizeScale = undefined;
-    }
-  });
+  chart.spec = new dex.data.spec("Polar Chart")
+    .any("series")
+    .any("angle")
+    .any("radius")
+    .optionalNumber("size");
 
   chart.getGuiDefinition = function getGuiDefinition(config) {
     var defaults = {
@@ -132,6 +92,11 @@ var polarplot = function (userConfig) {
           "type": "group",
           "name": "General",
           "contents": [
+            dex.config.gui.echartsTitle({}, "options.title"),
+            dex.config.gui.echartsLabelGroup({}, "series.label"),
+            dex.config.gui.echartsGrid({}, "options.grid"),
+            dex.config.gui.echartsTooltip({}, "options.tooltip"),
+            dex.config.gui.echartsSymbol({}, "series"),
             {
               "name": "Chart Type",
               "description": "The chart type.",
@@ -139,7 +104,36 @@ var polarplot = function (userConfig) {
               "choices": ["line", "bar", "scatter"],
               "target": "series.type"
             },
-            dex.config.gui.echartsTitle({}, "options.title")
+            {
+              "name": "Color Scheme",
+              "description": "The color scheme.",
+              "target": "palette",
+              "type": "choice",
+              "choices": dex.color.colormaps({shortlist: true}),
+              "initialValue": "category10"
+            },
+            {
+              "name": "Display Legend",
+              "description": "Determines whether or not to draw the legend or not.",
+              "type": "boolean",
+              "target": "displayLegend",
+              "initialValue": true
+            },
+            {
+              "name": "Background Color",
+              "description": "The color of the background.",
+              "target": "options.backgroundColor",
+              "type": "color",
+              "initialValue": "#ffffff"
+            },
+            {
+              "name": "Symbol Shape",
+              "description": "The shape of the symbol.",
+              "type": "choice",
+              "choices": ["emptyCircle", "circle", "rect", "roundRect", "triangle", "diamond", "pin", "arrow"],
+              "target": "series.symbol",
+              "initialValue": "emptyCircle"
+            }
           ]
         },
         {
@@ -197,34 +191,6 @@ var polarplot = function (userConfig) {
               "type": "choice",
               "choices": ["dynamic", "category"],
               "target": "radiusAxisType"
-            },
-            {
-              "name": "Value Index",
-              "description": "The value index.",
-              "type": "choice",
-              "choices": dex.array.combine(["none"], chart.config.csv.header),
-              "target": "valueIndex"
-            },
-            {
-              "name": "Radius Index",
-              "description": "The radius index.",
-              "type": "choice",
-              "choices": dex.array.combine(["none"], chart.config.csv.header),
-              "target": "radiusIndex"
-            },
-            {
-              "name": "Angle Index",
-              "description": "The angle index.",
-              "type": "choice",
-              "choices": dex.array.combine(["none"], chart.config.csv.header),
-              "target": "angleIndex"
-            },
-            {
-              "name": "Series Index",
-              "description": "The series index.",
-              "type": "choice",
-              "choices": dex.array.combine(["none"], chart.config.csv.header),
-              "target": "seriesIndex"
             }
           ]
         }
@@ -236,6 +202,114 @@ var polarplot = function (userConfig) {
     return guiDef;
   };
 
+  chart.getOptions = function (csv) {
+    var seriesInfo, radiusInfo, angleInfo, scaleInfo;
+    var scaling = false;
+
+    var csvSpec = chart.spec.parse(csv);
+
+    var options = dex.config.expandAndOverlay(chart.config.options, {
+        series: [],
+        polar: {}
+      },
+      chart.getCommonOptions());
+    var seriesNames;
+
+
+    seriesInfo = csvSpec.specified[0];
+    radiusInfo = csvSpec.specified[1];
+    angleInfo = csvSpec.specified[2];
+
+    chart.config.seriesInfo = seriesInfo;
+    chart.config.radiusInfo = radiusInfo;
+    chart.config.angleInfo = angleInfo;
+
+    scaling = csvSpec.specified.length > 3 &&
+      csvSpec.specified[3].type == "number";
+
+    if (scaling) {
+      scaleInfo = csvSpec.specified[3];
+      chart.config.scaleInfo = csvSpec.specified[3];
+      chart.config.sizeScale = csv.getScalingMethod(
+        chart.config.sizeMethod,
+        csv.extent([scaleInfo.position]),
+        [chart.config.radius.min, chart.config.radius.max]);
+      chart.config.series.symbolSize = function (d) {
+        return chart.config.sizeScale(d[2]);
+      };
+    } else {
+      chart.config.series.symbolSize = function (d) {
+        return chart.config.radius.min;
+      }
+    }
+
+    seriesNames = csv.uniqueArray(seriesInfo.position);
+    if (chart.config.displayLegend) {
+      options.legend = {data: seriesNames};
+    }
+
+    if (angleInfo.type == "string" || chart.config.angleAxisType == "category") {
+      options.angleAxis = {
+        type: "category",
+        data: csv.uniqueArray(angleInfo.position)
+      }
+    }
+    else {
+      options.angleAxis = {type: "value"};
+    }
+
+    if (radiusInfo.type == "string" || chart.config.radiusAxisType == "category") {
+      options.radiusAxis = {
+        type: "category",
+        data: csv.uniqueArray(radiusInfo.position)
+      }
+    }
+    else {
+      options.radiusAxis = {type: "value"};
+    }
+
+    seriesNames.forEach(function (seriesName) {
+      var series = dex.config.expandAndOverlay(chart.config.series, {
+        name: seriesName,
+        coordinateSystem: 'polar',
+        type: 'line',
+        data: function (csv) {
+          var selectedCsv = csv.selectRows(function (row) {
+            return row[seriesInfo.position] == seriesName;
+          });
+
+          return selectedCsv.data.map(function (row, ri) {
+            var newRow = [row[radiusInfo.position], row[angleInfo.position]];
+
+            if (radiusInfo.type == "string" || chart.config.radiusAxisType == "category") {
+              newRow[0] = options.radiusAxis.data.findIndex(function (val) {
+                return val == row[radiusInfo.position];
+              });
+            }
+
+            if (angleInfo.type == "string" || chart.config.angleAxisType == "category") {
+              newRow[1] = options.angleAxis.data.findIndex(function (val) {
+                return val == row[angleInfo.position];
+              });
+            }
+
+            if (scaling) {
+              newRow.push(row[chart.config.scaleInfo.position]);
+            }
+            row.forEach(function (col, ci) {
+              newRow.push(selectedCsv.header[ci] + ":::" + col);
+            });
+            return newRow;
+          });
+        }(chart.config.csv)
+      });
+      options.series.push(series);
+    });
+    //dex.console.log("OPTIONS", JSON.stringify(options));
+    //dex.console.log("OPTIONS", options);
+    return options;
+  };
+
   return chart;
 };
-module.exports = polarplot;
+module.exports = PolarPlot;

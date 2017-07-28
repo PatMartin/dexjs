@@ -1,13 +1,15 @@
 /**
  *
- * This module provides a ECharts Line Chart.
+ * Create an ECharts LineChart with the given specification.
  *
- * @name dex/charts/echarts/LineChart
+ * @param userConfig The chart's configuration.
  *
- * @param userConfig
- * @returns LineChart
+ * @returns {LineChart} An ECharts Line Chart configured to specification.
+ *
+ * @memberof dex/charts/echarts
+ *
  */
-var linechart = function (userConfig) {
+var LineChart = function (userConfig) {
   var chart;
   var defaults = {
     'parent': '#ECharts_LineChart',
@@ -17,7 +19,8 @@ var linechart = function (userConfig) {
     'width': "100%",
     'height': "100%",
     'type': 'linechart',
-
+    'palette': "ECharts",
+    'refreshType': "update",
     'series.symbol': 'circle',
     'series.symbolSize': 10,
     'series.type': 'line',
@@ -28,8 +31,45 @@ var linechart = function (userConfig) {
     'series.connectNulls': false,
     'series.step': false,
     "options": {
+      legend: { show: true },
+      dataZoom: [
+        {
+          orient: 'horizontal',
+          show: true,
+          realtime: true,
+          start: 0,
+          end: 100,
+          xAxisIndex: 0
+        },
+        {
+          orient: 'vertical',
+          show: true,
+          realtime: true,
+          start: 0,
+          end: 100,
+          yAxisIndex: 0
+        }
+      ],
       tooltip: {
-        formatter: 'Group {a}: ({c})'
+        backgroundColor: "#FFFFFF",
+        borderColor: "#000000",
+        borderWidth: 2,
+        trigger: 'item',
+        formatter: function (d) {
+          //dex.console.log("FORMATTER", d);
+          var str = "<table class='dex-tooltip-table'>";
+
+          d.data.forEach(function (value) {
+            if (typeof value === "string") {
+              var parts = value.split(":::");
+              if (parts.length == 2) {
+                str += "<tr><td>" + parts[0] + "</td><td>" + parts[1] + "</td></tr>";
+              }
+            }
+          });
+          str += "</table>";
+          return str;
+        }
       }
     }
   };
@@ -37,32 +77,45 @@ var linechart = function (userConfig) {
   var combinedConfig = dex.config.expandAndOverlay(userConfig, defaults);
   chart = dex.charts.echarts.EChart(combinedConfig);
 
+  chart.spec = new dex.data.spec("Line Chart")
+    .string("series")
+    .any("x")
+    .any("y");
+
   chart.getGuiDefinition = function getGuiDefinition(config) {
     var defaults = {
       "type": "group",
       "name": "EChart Line Chart Settings",
       "contents": [
-        dex.config.gui.dimensions(),
-        dex.config.gui.general(),
         {
           "type": "group",
-          "name": "Miscellaneous",
+          "name": "General Options",
           "contents": [
+            dex.config.gui.echartsTitle({}, "options.title"),
+            dex.config.gui.echartsGrid({}, "options.grid"),
+            dex.config.gui.echartsTooltip({}, "options.tooltip"),
+            dex.config.gui.echartsSymbol({}, "series"),
             {
-              "name": "Symbol Shape",
-              "description": "The shape of the symbol.",
+              "name": "Color Scheme",
+              "description": "The color scheme.",
+              "target": "palette",
               "type": "choice",
-              "choices": ["circle", "rect", "roundRect", "triangle", "diamond", "pin", "arrow"],
-              "target": "series.symbol"
+              "choices": dex.color.colormaps({shortlist: true}),
+              "initialValue": "category10"
             },
             {
-              "name": "Symbol Size",
-              "description": "The size of the symbols",
-              "type": "int",
-              "target": "series.symbolSize",
-              "minValue": 0,
-              "maxValue": 50,
-              "initialValue": 5
+              "name": "Display Legend",
+              "description": "Determines whether or not to draw the legend or not.",
+              "type": "boolean",
+              "target": "options.legend.show",
+              "initialValue": true
+            },
+            {
+              "name": "Background Color",
+              "description": "The color of the background.",
+              "target": "options.backgroundColor",
+              "type": "color",
+              "initialValue": "#000000"
             },
             {
               "name": "Series Type",
@@ -101,8 +154,17 @@ var linechart = function (userConfig) {
             }
           ]
         },
-        dex.config.gui.echartsLabel({name: "Normal Label"}, "series.label.normal"),
-        dex.config.gui.echartsLabel({name: "Emphasis Label"}, "series.label.emphasis")
+        dex.config.gui.echartsLabelGroup({}, "series.label"),
+        {
+          "type": "group",
+          "name": "Axis",
+          "contents": [
+            dex.config.gui.echartsAxis({name: "X Axis"}, "options.xAxis"),
+            dex.config.gui.echartsDataZoom({name: "X Axis Data Zoom"}, "xAxisDataZoom"),
+            dex.config.gui.echartsAxis({name: "Y Axis"}, "options.yAxis"),
+            dex.config.gui.echartsDataZoom({name: "Y Axis Data Zoom"}, "yAxisDataZoom"),
+          ]
+        }
       ]
     };
 
@@ -111,6 +173,87 @@ var linechart = function (userConfig) {
     return guiDef;
   };
 
+  chart.getOptions = function (csv) {
+    var options, seriesNames, seriesInfo, xInfo, yInfo;
+    var csvSpec = chart.spec.parse(csv);
+
+    //dex.console.log("CHART-CONFIG", chart.config);
+
+    // Override precedence on options: chart, local defs, common defs.
+    options = dex.config.expandAndOverlay(
+      chart.config.options,
+      {series: []},
+      chart.getCommonOptions());
+
+    if (chart.config.xAxisDataZoom !== undefined) {
+      options.dataZoom[0] = dex.config.expandAndOverlay(chart.config.xAxisDataZoom, options.dataZoom[0]);
+    }
+
+    if (chart.config.yAxisDataZoom !== undefined) {
+      options.dataZoom[1] = dex.config.expandAndOverlay(chart.config.yAxisDataZoom, options.dataZoom[1]);
+    }
+
+    seriesInfo = csvSpec.specified[0];
+    xInfo = csvSpec.specified[1];
+    yInfo = csvSpec.specified[2];
+
+    chart.config.seriesInfo = seriesInfo;
+    chart.config.xInfo = xInfo;
+    chart.config.yInfo = yInfo;
+
+    seriesNames = csv.uniqueArray(seriesInfo.position);
+    options.legend = {data: seriesNames};
+
+    if (xInfo.type == "string") {
+      options.xAxis = dex.config.expandAndOverlay({
+        type: "category",
+        data: csv.uniqueArray(xInfo.position)
+      }, options.xAxis);
+    }
+    else {
+      options.xAxis = dex.config.expandAndOverlay({
+        type: "value"
+      }, options.xAxis);
+      options.xAxis.data = undefined;
+    }
+
+    if (yInfo.type == "string") {
+      options.yAxis = dex.config.expandAndOverlay({
+        type: "category",
+        data: csv.uniqueArray(yInfo.position)
+      }, options.yAxis);
+    }
+    else {
+      options.yAxis = dex.config.expandAndOverlay({
+        type: "value"
+      }, options.yAxis);
+      options.yAxis.data = undefined;
+    }
+
+    seriesNames.forEach(function (seriesName) {
+      var series = dex.config.expandAndOverlay(chart.config.series, {
+        name: seriesName,
+        type: 'line',
+        data: function (csv) {
+          var selectedCsv = csv.selectRows(function (row) {
+            return row[seriesInfo.position] == seriesName;
+          });
+
+          return selectedCsv.data.map(function (row, ri) {
+            var newRow = [row[xInfo.position], row[yInfo.position]];
+            row.forEach(function (col, ci) {
+              newRow.push(selectedCsv.header[ci] + ":::" + col);
+            });
+            return newRow;
+          });
+        }(chart.config.csv)
+      });
+      options.series.push(series);
+    });
+    //dex.console.log("OPTIONS", JSON.stringify(options));
+    return options;
+  };
+
   return chart;
 };
-module.exports = linechart;
+module.exports = LineChart;

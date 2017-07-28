@@ -1,4 +1,16 @@
-var clusteredforce = function (userConfig) {
+/**
+ *
+ * This is the base constructor for a D3 ClusteredForce component.
+ *
+ * @param userConfig The chart's configuration.
+ *
+ * @returns {ClusteredForce}
+ *
+ * @memberof dex/charts/d3
+ *
+ */
+var ClusteredForce = function (userConfig) {
+  var chart;
   d3 = dex.charts.d3.d3v3;
   var defaults = {
     'parent': '#ClusteredForceParent',
@@ -82,7 +94,7 @@ var clusteredforce = function (userConfig) {
     })
   };
 
-  var chart = new dex.component(userConfig, defaults);
+  chart = new dex.component(userConfig, defaults);
 
   chart.getGuiDefinition = function getGuiDefinition(config) {
     var defaults = {
@@ -185,9 +197,9 @@ var clusteredforce = function (userConfig) {
     var max = null;
 
     config.groups.forEach(function (group) {
-      var valIndex = dex.csv.getColumnNumber(csv, group.value);
-      var catIndex = dex.csv.getColumnNumber(csv, group.category);
-      var labelIndex = dex.csv.getColumnNumber(csv, group.label);
+      var valIndex = csv.getColumnNumber(group.value);
+      var catIndex = csv.getColumnNumber(group.category);
+      var labelIndex = csv.getColumnNumber(group.label);
 
       config.csv.data.forEach(function (row) {
         var value = +(row[valIndex]);
@@ -195,7 +207,7 @@ var clusteredforce = function (userConfig) {
           'category': row[catIndex],
           'value': +value,
           'color': config.color(row[catIndex]),
-          'text': "<table><tr><td>Label</td></td><td>" + row[labelIndex] +
+          'text': "<table class='dex-tooltip-table'><tr><td>Label</td></td><td>" + row[labelIndex] +
           "</td></tr><tr><td>Category</td><td>" + row[catIndex] + "</td></tr>" +
           "<tr><td>Value</td><td>" + row[valIndex] +
           "</td></tr></table>"
@@ -334,10 +346,12 @@ var clusteredforce = function (userConfig) {
         });
       };
     }
+
+    return chart;
   };
 
   chart.clone = function clone(override) {
-    return clusteredforce(dex.config.expandAndOverlay(override, userConfig));
+    return ClusteredForce(dex.config.expandAndOverlay(override, userConfig));
   };
 
   $(document).ready(function () {
@@ -359,4 +373,4 @@ var clusteredforce = function (userConfig) {
   return chart;
 };
 
-module.exports = clusteredforce;
+module.exports = ClusteredForce;

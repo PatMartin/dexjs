@@ -1,108 +1,87 @@
 /**
  *
- * This module provides a ECharts Line Chart.
+ * Create an ECharts SteamGraph with the given specification.
  *
- * @name dex/charts/echarts/LineChart
+ * @param userConfig The chart's configuration.
  *
- * @param userConfig
- * @returns LineChart
+ * @returns {SteamGraph} An ECharts Steam Graph configured to specification.
+ *
+ * @memberof dex/charts/echarts
+ *
  */
-var linechart = function (userConfig) {
+var SteamGraph = function (userConfig) {
   var chart;
-  var defaults = {
-    'parent': '#ECharts_LineChart',
-    'id': 'ECharts_LineChart',
-    'class': 'ECharts_LineChart',
+
+  defaults = {
+    'parent': '#ECharts_SteamGraph',
+    'id': 'ECharts_SteamGraph',
+    'class': 'ECharts_SteamGraph',
     'resizable': true,
     'width': "100%",
     'height': "100%",
-    'type': 'linechart',
-
-    'series.symbol': 'circle',
-    'series.symbolSize': 10,
-    'series.type': 'line',
-    'series.showSymbol': true,
-    'series.showAllSymbol': false,
-    'series.stack': false,
-    'series.clipOverflow': true,
-    'series.connectNulls': false,
-    'series.step': false,
+    'type': 'steam',
     "options": {
       tooltip: {
-        formatter: 'Group {a}: ({c})'
+        backgroundColor: "#FFFFFF",
+        borderColor: "#000000",
+        borderWidth: 2,
+        'textStyle.color': '#000000',
+        trigger: 'axis',
+        formatter: function (d) {
+          var str = "<table class='dex-tooltip-table'>";
+          str += "<th colspan='2'>" + d[0].axisValue + "</th>";
+          d.forEach(function (row) {
+            str += "<tr><td>" + row.data[2] + "</td><td>" + row.data[1] + "</td></tr>"
+          });
+          str += "</table>";
+          return str;
+        },
+        axisPointer: {
+          type: 'line',
+          lineStyle: {
+            color: 'rgba(0,0,0,0.2)',
+            width: 1,
+            type: 'solid'
+          }
+        }
       }
     }
   };
 
   var combinedConfig = dex.config.expandAndOverlay(userConfig, defaults);
   chart = dex.charts.echarts.EChart(combinedConfig);
+  chart.spec = new dex.data.spec("Steam Graph")
+    .string("series")
+    .any("x")
+    .number("value");
 
   chart.getGuiDefinition = function getGuiDefinition(config) {
     var defaults = {
       "type": "group",
-      "name": "EChart Line Chart Settings",
+      "name": "EChart Steam Graph Settings",
       "contents": [
-        dex.config.gui.dimensions(),
-        dex.config.gui.general(),
         {
           "type": "group",
           "name": "Miscellaneous",
           "contents": [
             {
-              "name": "Symbol Shape",
-              "description": "The shape of the symbol.",
+              "name": "Color Scheme",
+              "description": "The color scheme.",
+              "target": "palette",
               "type": "choice",
-              "choices": ["circle", "rect", "roundRect", "triangle", "diamond", "pin", "arrow"],
-              "target": "series.symbol"
+              "choices": dex.color.colormaps({shortlist: true}),
+              "initialValue": "category10"
             },
             {
-              "name": "Symbol Size",
-              "description": "The size of the symbols",
-              "type": "int",
-              "target": "series.symbolSize",
-              "minValue": 0,
-              "maxValue": 50,
-              "initialValue": 5
+              "name": "Background Color",
+              "description": "The color of the background.",
+              "target": "options.backgroundColor",
+              "type": "color",
+              "initialValue": "#ffffff"
             },
-            {
-              "name": "Series Type",
-              "description": "The series type",
-              "type": "choice",
-              "target": "series.type",
-              "choices": ["line", "scatter", "effectScatter", "bar"]
-            },
-            {
-              "name": "Stack Series",
-              "description": "Stack the series or not.",
-              "type": "boolean",
-              "target": "series.stack",
-              "initialValue": false
-            },
-            {
-              "name": "Clip Overflow",
-              "description": "Clip overflow.",
-              "type": "boolean",
-              "target": "series.clipOverflow",
-              "initialValue": true
-            },
-            {
-              "name": "Connect Nulls",
-              "description": "Connect nulls.",
-              "type": "boolean",
-              "target": "series.connectNulls",
-              "initialValue": false
-            },
-            {
-              "name": "Step",
-              "description": "Stack the series or not.",
-              "type": "boolean",
-              "target": "series.step",
-              "initialValue": false
-            }
           ]
         },
-        dex.config.gui.echartsLabel({name: "Normal Label"}, "series.label.normal"),
-        dex.config.gui.echartsLabel({name: "Emphasis Label"}, "series.label.emphasis")
+        dex.config.gui.echartsLabelGroup({}, "series.label")
       ]
     };
 
@@ -111,6 +90,88 @@ var linechart = function (userConfig) {
     return guiDef;
   };
 
+  chart.getOptions = function (csv) {
+    var options, seriesNames, seriesInfo, xInfo, valueInfo;
+    var csvSpec = chart.spec.parse(csv);
+
+    options = dex.config.expandAndOverlay(chart.config.options, {
+      title: [],
+      singleAxis: {
+        scale: true,
+        bottom: "10%",
+        axisPointer: {
+          animation: true,
+          label: {
+            show: true
+          }
+        },
+      },
+      series: [],
+      legend: {},
+      dataZoom: {
+        show: true,
+        realtime: true,
+        start: 0,
+        end: 100,
+        singleAxisIndex: 0
+      }
+    }, chart.getCommonOptions());
+
+    seriesInfo = csvSpec.specified[0];
+    xInfo = csvSpec.specified[1];
+    valueInfo = csvSpec.specified[2];
+
+    chart.config.seriesInfo = seriesInfo;
+    chart.config.xInfo = xInfo;
+    chart.config.valueInfo = valueInfo;
+
+    seriesNames = csv.uniqueArray(seriesInfo.position);
+    options.legend.data = seriesNames;
+
+    switch (xInfo.type) {
+      case "string": {
+        options.singleAxis.type = "category";
+        options.singleAxis.data = csv.uniqueArray(xInfo.position);
+        break;
+      }
+      case "date": {
+        options.singleAxis.type = "time";
+        break;
+      }
+      default: {
+        options.singleAxis.type = "value";
+      }
+    }
+
+    var dataColumns = [xInfo.position, valueInfo.position, seriesInfo.position];
+
+    var series = dex.config.expandAndOverlay(chart.config.series, {
+      type: 'themeRiver',
+      itemStyle: {
+        emphasis: {
+          shadowBlur: 20,
+          shadowColor: 'rgba(0, 0, 0, 0.8)'
+        }
+      },
+      data: function (csv) {
+        return csv.data.map(function (row, ri) {
+          var newRow = [row[xInfo.position], row[valueInfo.position], row[seriesInfo.position]];
+          if (xInfo.type == "string") {
+            newRow[0] = options.singleAxis.data.findIndex(function (val) {
+              return val == row[xInfo.position];
+            });
+          }
+          return newRow;
+        });
+      }(csv)
+    });
+
+    options.series.push(series);
+
+    //dex.console.log("OPTIONS", JSON.stringify(options));
+    return options;
+  };
+
   return chart;
 };
-module.exports = linechart;
+module.exports = SteamGraph;

@@ -1,4 +1,15 @@
-var radarchart = function (userConfig) {
+/**
+ *
+ * This is the base constructor for a D3 RadarChart component.
+ *
+ * @param userConfig The chart's configuration.
+ *
+ * @returns {RadarChart}
+ *
+ * @memberof dex/charts/d3
+ *
+ */
+var RadarChart = function (userConfig) {
   d3 = dex.charts.d3.d3v3;
   var chart;
 
@@ -471,7 +482,7 @@ var radarchart = function (userConfig) {
   };
 
     chart.clone = function clone(override) {
-        return radarchart(dex.config.expandAndOverlay(override, userConfig));
+        return RadarChart(dex.config.expandAndOverlay(override, userConfig));
     };
 
   $(document).ready(function () {
@@ -482,4 +493,4 @@ var radarchart = function (userConfig) {
   return chart;
 };
 
-module.exports = radarchart;
+module.exports = RadarChart;

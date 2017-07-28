@@ -1,9 +1,9 @@
 /**
  *
- * @constructor
- * @classdesc This class constructs an html table from the supplied CSV data.
- * @memberOf dex/ui
- * @implements {dex/component}
+ * Creates a Table component for visualizing tabular data.
+ *
+ * @param {object} userConfig - A user supplied configuration object which
+ * will override the defaults.
  *
  * @example {@lang javascript}
  * var myTable = new dex.ui.Table({
@@ -12,28 +12,24 @@
  *   'csv'    : { header : [ "X", "Y", "Z" ],
  *                data   : [[ 1, 2, 3 ], [4, 5, 6], [7, 8, 9]]}
  * });
- * @param {object} userConfig - A user supplied configuration object which will override the defaults.
- * @param {string} [userConfig.parent=#Table] - The parent node to which this component will be attached.
- * Ex: #MyParent will attach to a node with an id = "MyParent".
- * @param {string} [userConfig.id=Table] - The id of this component.
- * @param {string} [userConfig.class=Table] - The class of this component.
- * @param {csv} userConfig.csv - The user's CSV data.
+ *
+ * @returns {Table}
+ * @memberof dex/ui
  *
  */
-var table = function (userConfig) {
+var Table = function (userConfig) {
 
-  var defaults =
-  {
+  var defaults = {
     // The parent container of this chart.
-    'parent' : '#TableParent',
+    'parent': '#TableParent',
     // Set these when you need to CSS style components independently.
-    'id'     : 'TableId',
-    'class'  : 'TableClass',
+    'id': 'TableId',
+    'class': 'TableClass',
     // Our data...
-    'csv'    : {
+    'csv': {
       // Give folks without data something to look at anyhow.
-      'header' : ["X", "Y", "Z"],
-      'data'   : [
+      'header': ["X", "Y", "Z"],
+      'data': [
         [0, 0, 0],
         [1, 1, 1],
         [2, 2, 2]
@@ -83,7 +79,7 @@ var table = function (userConfig) {
     var cells = rows.selectAll("td")
       .data(function (row) {
         return csv.header.map(function (column, i) {
-          return {column : i, value : row[i]};
+          return {column: i, value: row[i]};
         });
       })
       .enter()
@@ -96,4 +92,4 @@ var table = function (userConfig) {
   return chart;
 };
 
-module.exports = table;
+module.exports = Table;

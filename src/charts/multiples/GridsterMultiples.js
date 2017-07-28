@@ -1,4 +1,15 @@
-var gridstermultiples = function (userConfig) {
+/**
+ *
+ * This is the base constructor for Gridster base multiples.
+ *
+ * @param userConfig The chart's configuration.
+ *
+ * @returns {GridsterMultiples}
+ *
+ * @memberof dex/charts/multiples
+ *
+ */
+var GridsterMultiples = function (userConfig) {
   var chart;
   var gridster;
   var cells = [];
@@ -8,7 +19,6 @@ var gridstermultiples = function (userConfig) {
     'id': 'GridsterMultiplesId',
     'class': 'GridsterMultiplesClass',
     'resizable': true,
-    'frames': {},
     'width': "100%",
     'height': "100%",
     'cell': {
@@ -24,7 +34,7 @@ var gridstermultiples = function (userConfig) {
       draggable: {
         enabled: true,
         start: function (e, ui) {
-          dex.console.log("DRAG-START", e, ui);
+          //dex.console.log("DRAG-START", e, ui);
         },
         handle: '.drag-handle'
       },
@@ -32,7 +42,7 @@ var gridstermultiples = function (userConfig) {
         enabled: true,
         min_size: [1, 1],
         stop: function (event, ui, $widget) {
-          dex.console.log("Event", event, ui, $widget);
+          //dex.console.log("Event", event, ui, $widget);
           cells.forEach(function (cell, i) {
             cell.render();
           })
@@ -84,7 +94,8 @@ var gridstermultiples = function (userConfig) {
 
   chart.render = function render() {
     var config = chart.config;
-    var frames = config.frames;
+    var csv = config.csv;
+    var frames = csv.getFramesByIndex(0);
 
     if (config.charts) {
       // Unregisters any window resize handlers.
@@ -152,4 +163,4 @@ var gridstermultiples = function (userConfig) {
   return chart;
 };
 
-module.exports = gridstermultiples;
+module.exports = GridsterMultiples;

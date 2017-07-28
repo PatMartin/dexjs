@@ -1,13 +1,15 @@
 /**
  *
- * This module provides a ECharts Single Axis ScatterPlot.
+ * Create an ECharts Single Axis ScatterPlot with the given specification.
  *
- * @name dex/charts/echarts/SingleAxisScatterPlot
+ * @param userConfig The chart's configuration.
  *
- * @param userConfig
- * @returns SingleAxisScatterPlot
+ * @returns {SingleAxisScatterPlot} An ECharts Network configured to specification.
+ *
+ * @memberof dex/charts/echarts
+ *
  */
-var singleaxisscatterplot = function (userConfig) {
+var SingleAxisScatterPlot = function (userConfig) {
   var chart;
   var sizeScale = undefined;
 
@@ -19,14 +21,13 @@ var singleaxisscatterplot = function (userConfig) {
     'width': "100%",
     'height': "100%",
     'type': 'single-axis',
-    'radius': {'min': 1, 'max': 50},
+    'radius': {'min': 1, 'max': 20},
     'sizeMethod': 'linear',
     'sizeScale': function (value) {
       if (typeof sizeScale == "undefined") {
-        dex.console.log("EXTENT", dex.csv.extent(chart.config.csv, [2]));
-        sizeScale = dex.csv.getScalingMethod(
-          chart.config.csv, chart.config.sizeMethod,
-          dex.csv.extent(chart.config.csv, [2]),
+        sizeScale = chart.config.csv.getScalingMethod(
+          chart.config.sizeMethod,
+          chart.config.csv.extent([chart.config.valueInfo.position]),
           [chart.config.radius.min, chart.config.radius.max]);
       }
       return sizeScale(value);
@@ -54,18 +55,14 @@ var singleaxisscatterplot = function (userConfig) {
       }
     },
     "options": {
-      dataZoom: [
-        {
-          handleSize: '100%',
-          filterMode: 'empty',
-          singleAxisIndex: dex.range(0, dex.csv.uniqueArray(csv, 0).length)
-        }
-      ],
       tooltip: {
-        formatter: function(d) {
-          return "<table><tr><td><b>" + csv.header[1] + ":</b></td><td>" +
-              d.data[0] + "</td></tr><tr><td><b>" + csv.header[2] +
-              ":</b></td><td>" + d.data[1] + "</td></tr></table>";
+        backgroundColor: "#FFFFFF",
+        borderColor: "#000000",
+        borderWidth: 2,
+        formatter: function (d) {
+          return "<table class='dex-tooltip-table'><tr><td><b>" + csv.header[1] + ":</b></td><td>" +
+            d.data[0] + "</td></tr><tr><td><b>" + csv.header[2] +
+            ":</b></td><td>" + d.data[1] + "</td></tr></table>";
         }
       }
     }
@@ -73,72 +70,66 @@ var singleaxisscatterplot = function (userConfig) {
 
   var combinedConfig = dex.config.expandAndOverlay(userConfig, defaults);
   chart = dex.charts.echarts.EChart(combinedConfig);
+  chart.spec = new dex.data.spec("Single Axis ScatterPlot")
+    .any("series")
+    .any("x")
+    .number("size");
 
   chart.getGuiDefinition = function getGuiDefinition(config) {
     var defaults = {
       "type": "group",
-      "name": "EChart Single Axis ScatterPlot Settings",
+      "name": "Single Axis ScatterPlot Settings",
       "contents": [
-        dex.config.gui.dimensions(),
-        dex.config.gui.general(),
         {
           "type": "group",
-          "name": "Miscellaneous",
+          "name": "General",
           "contents": [
+            dex.config.gui.echartsTitle({}, "options.title"),
+            dex.config.gui.echartsGrid({}, "options.grid"),
+            dex.config.gui.echartsTooltip({}, "options.tooltip"),
+            dex.config.gui.echartsSymbol({}, "series"),
             {
-              "name": "Symbol Shape",
-              "description": "The shape of the symbol.",
+              "name": "Color Scheme",
+              "description": "The color scheme.",
+              "target": "palette",
               "type": "choice",
-              "choices": ["circle", "rect", "roundRect", "triangle", "diamond", "pin", "arrow"],
-              "target": "series.symbol"
+              "choices": dex.color.colormaps({shortlist: true}),
+              "initialValue": "category10"
             },
             {
-              "name": "Minimum Symbol Size",
-              "description": "The minimum size of the symbols",
-              "type": "int",
-              "target": "radius.min",
-              "minValue": 0,
-              "maxValue": 100,
-              "initialValue": 5
-            },
-            {
-              "name": "Maximum Symbol Size",
-              "description": "The maximum size of the symbols",
-              "type": "int",
-              "target": "radius.max",
-              "minValue": 0,
-              "maxValue": 100,
-              "initialValue": 50
+              "name": "Background Color",
+              "description": "The color of the background.",
+              "target": "options.backgroundColor",
+              "type": "color",
+              "initialValue": "#ffffff"
             },
             {
               "name": "Size Scaling Method",
               "description": "The type of scaling method",
               "type": "choice",
               "target": "sizeMethod",
-              "choices" : [ "linear", "pow", "log", "sqrt", "time" ],
+              "choices": ["linear", "pow", "log", "sqrt", "time"],
               "initialValue": "linear"
-            },
-            {
-              "name": "Color Scheme",
-              "description": "The color scheme.",
-              "target": "palette",
-              "type": "choice",
-              "choices": dex.color.colormaps({shortlist:true}),
-              "initialValue": "category10"
             },
             {
               "name": "Series Type",
               "description": "The series type",
               "type": "choice",
               "target": "series.type",
-              "choices": [ "scatter", "effectScatter" ]
+              "choices": ["scatter", "effectScatter"]
             }
           ]
         },
-        dex.config.gui.echartsItemStyle({name: "Item Style"}, "series.itemStyle.normal"),
-        dex.config.gui.echartsItemStyle({name: "Item Style (Emphasis)"}, "series.itemStyle.emphasis"),
-        dex.config.gui.echartsLabel({name: "Label"}, "series.label.normal"),
-        dex.config.gui.echartsLabel({name: "Label (Emphasis)"}, "series.label.emphasis")
+        dex.config.gui.echartsItemStyleGroup({}, "series.itemStyle"),
+        dex.config.gui.echartsLabelGroup({}, "series.label"),
+        {
+          "type": "group",
+          "name": "Axis",
+          "contents": [
+            dex.config.gui.echartsAxis({name: "X Axis"}, "singleAxis"),
+            dex.config.gui.echartsDataZoom({name: "Data Zoom"}, "dataZoom")
+          ]
+        }
       ]
     };
 
@@ -147,6 +138,102 @@ var singleaxisscatterplot = function (userConfig) {
     return guiDef;
   };
 
+  chart.getOptions = function (csv) {
+    var options, seriesNames, seriesInfo, xInfo;
+    var csvSpec = chart.spec.parse(csv);
+
+    options = dex.config.expandAndOverlay(chart.config.options, {
+      title: [],
+      singleAxis: [],
+      series: [],
+      dataZoom: [
+        {
+          handleSize: '100%',
+          filterMode: 'empty',
+        }
+      ],
+    }, chart.getCommonOptions());
+
+    seriesInfo = csvSpec.specified[0];
+    xInfo = csvSpec.specified[1];
+    valueInfo = csvSpec.specified[2];
+
+    chart.config.seriesInfo = seriesInfo;
+    chart.config.xInfo = xInfo;
+    chart.config.valueInfo = valueInfo;
+
+    seriesNames = csv.uniqueArray(seriesInfo.position);
+    options.dataZoom[0].singleAxisIndex = dex.range(0, seriesNames.length);
+
+    if (chart.config.dataZoom !== undefined) {
+      options.dataZoom[0] = dex.config.expandAndOverlay(chart.config.dataZoom, options.dataZoom[0]);
+    }
+
+    var scatterHeightPercent = 90;
+    var percentIncrement = scatterHeightPercent / seriesNames.length;
+    var topOffset = 0;
+    var heightOffset = 0;
+
+    seriesNames.forEach(function (seriesName, si) {
+
+      var seriesCsv = csv.selectRows(function (row) {
+        return row[seriesInfo.position] == seriesName;
+      });
+
+      options.title.push({
+        textBaseline: 'middle',
+        top: "" + ((si + .5) * scatterHeightPercent / seriesNames.length) + "%",
+        text: seriesName
+      });
+
+      var singleAxis = dex.config.expandAndOverlay(chart.config.singleAxis, {
+        left: 150,
+        type: 'category',
+        data: seriesCsv.include([xInfo.position]).data,
+        top: (si * percentIncrement + topOffset) + '%',
+        height: (percentIncrement + heightOffset) + '%',
+        axisLabel: {interval: 2}
+      });
+
+      if (xInfo.type == "string") {
+        singleAxis.type = "category";
+      }
+      else {
+        singleAxis.type = "value";
+      }
+
+      options.singleAxis.push(singleAxis);
+
+      var series = dex.config.expandAndOverlay(chart.config.series, {
+        singleAxisIndex: si,
+        coordinateSystem: 'singleAxis',
+        type: 'scatter',
+        data: function (csv) {
+          //dex.console.log("CSV", csv);
+          return csv.data.map(function (row, ri) {
+            var newRow;
+            if (xInfo.type == "string") {
+              newRow = [
+                singleAxis.data.findIndex(function (val) {
+                  return val == row[xInfo.position];
+                }), row[valueInfo.position]];
+            }
+            else {
+              newRow = [row[xInfo.position], row[valueInfo.position]];
+            }
+            return newRow;
+          });
+        }(seriesCsv),
+        symbolSize: function (dataItem) {
+          return chart.config.sizeScale(dataItem[1]);
+        }
+      });
+      options.series.push(series);
+    });
+    //dex.console.log("OPTIONS", JSON.stringify(options));
+    return options;
+  };
+
   return chart;
 };
-module.exports = singleaxisscatterplot;
+module.exports = SingleAxisScatterPlot;

@@ -1,6 +1,17 @@
-var treemap = function (userConfig) {
+/**
+ *
+ * This is the base constructor for a D3 Treemap component.
+ *
+ * @param userConfig The chart's configuration.
+ *
+ * @returns {Treemap}
+ *
+ * @memberof dex/charts/d3
+ *
+ */
+var Treemap = function (userConfig) {
   d3 = dex.charts.d3.d3v3;
-  var chart = null;
+  var chart;
 
   var defaults = {
     'parent': '#TreemapParent',
@@ -53,7 +64,8 @@ var treemap = function (userConfig) {
     })
   };
 
-  var chart = new dex.component(userConfig, defaults);
+  chart = new dex.component(userConfig, defaults);
+dex.console.log("CHART", chart);
 
   chart.render = function render() {
     d3 = dex.charts.d3.d3v3;
@@ -118,9 +130,7 @@ var treemap = function (userConfig) {
     grandparent.append("text")
       .call(dex.config.configureText, config.navbarLabel);
 
-    var chartData = dex.csv.toNestedJson(csv, config.manualSizing);
-
-    //dex.console.log("chartData", chartData);
+    var chartData = csv.toNestedJson(config.manualSizing);
 
     initialize(chartData);
     accumulate(chartData);
@@ -217,9 +227,10 @@ var treemap = function (userConfig) {
         })
         .style('fill', 'white')
         .attr('text-anchor', 'start')
-        .style('alignment-baseline', 'hanging')
-        .attr('dy', '1px')
-        .attr('dy', '.1em');
+        // Only works on chrome:
+        //.style('alignment-baseline', 'hanging')
+        .attr('dx', '.1em')
+        .attr('dy', '.8em');
 
       // AWESOME Text Fitter
       function getSize(d) {
@@ -285,12 +296,11 @@ var treemap = function (userConfig) {
               return Math.min(64, d.scale) + "px";
             })
             .attr('text-anchor', 'start')
-            .style('alignment-baseline', 'hanging')
             .style('fill', 'white')
             .style("fill-opacity", 1)
-            .attr('dx', '0')
-            .attr('dy', '1px');
-        })
+            .attr('dx', '.1em')
+            .attr('dy', '.8em');
+        });
       }
 
       return g;
@@ -355,7 +365,7 @@ var treemap = function (userConfig) {
   };
 
     chart.clone = function clone(override) {
-        return treemap(dex.config.expandAndOverlay(override, userConfig));
+        return Treemap(dex.config.expandAndOverlay(override, userConfig));
     };
 
   $(document).ready(function () {
@@ -366,4 +376,4 @@ var treemap = function (userConfig) {
   return chart;
 };
 
-module.exports = treemap;
+module.exports = Treemap;

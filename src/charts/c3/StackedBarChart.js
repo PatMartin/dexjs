@@ -6,8 +6,11 @@
  *
  * @param userConfig
  * @returns StackedBarChart
+ *
+ * @memberof dex/charts/c3
+ *
  */
-var stackedbarchart = function (userConfig) {
+var StackedBarChart = function (userConfig) {
   var chart;
 
   var defaults = {
@@ -29,4 +32,4 @@ var stackedbarchart = function (userConfig) {
   return chart;
 };
 
-module.exports = stackedbarchart;
+module.exports = StackedBarChart;

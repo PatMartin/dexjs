@@ -1,4 +1,15 @@
-var scatterplot = function (userConfig) {
+/**
+ *
+ * This is the base constructor for a D3 ScatterPlot component.
+ *
+ * @param userConfig The chart's configuration.
+ *
+ * @returns {ScatterPlot}
+ *
+ * @memberof dex/charts/d3
+ *
+ */
+var ScatterPlot = function (userConfig) {
   d3 = dex.charts.d3.d3v3;
   var chart = new dex.component(userConfig,
     {
@@ -200,7 +211,7 @@ var scatterplot = function (userConfig) {
   };
 
     chart.clone = function clone(override) {
-        return scatterplot(dex.config.expandAndOverlay(override, userConfig));
+        return ScatterPlot(dex.config.expandAndOverlay(override, userConfig));
     };
 
   $(document).ready(function () {
@@ -211,4 +222,4 @@ var scatterplot = function (userConfig) {
   return chart;
 };
 
-module.exports = scatterplot;
+module.exports = ScatterPlot;

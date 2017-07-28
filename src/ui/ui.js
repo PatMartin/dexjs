@@ -1,20 +1,19 @@
 module.exports = function (dex) {
   /**
    *
-   * This module provides ui components.
+   * This module provides various ui components.
    *
-   * @module ui
-   * @memberof dex
+   * @module dex/ui
    *
    */
   var ui = {};
 
-  ui.Player = require("./ui/Player");
-  ui.SqlQuery = require("./ui/SqlQuery");
-  ui.Table = require("./ui/Table");
-  ui.ConfigurationPane = require("./ui/ConfigurationPane");
-  ui.DataFilterPane = require("./ui/DataFilterPane");
-  ui.GuiPane = require("./ui/GuiPane");
+  ui.Player = require("./Player");
+  ui.SqlQuery = require("./SqlQuery");
+  ui.Table = require("./Table");
+  ui.ConfigurationPane = require("./ConfigurationPane");
+  ui.DataFilterPane = require("./DataFilterPane");
+  ui.GuiPane = require("./GuiPane");
 
   return ui;
 };

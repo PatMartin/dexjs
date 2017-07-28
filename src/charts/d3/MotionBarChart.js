@@ -1,4 +1,15 @@
-var motionbarchart = function (userConfig) {
+/**
+ *
+ * This is the base constructor for a D3 MotionBarChart component.
+ *
+ * @param userConfig The chart's configuration.
+ *
+ * @returns {MotionBarChart}
+ *
+ * @memberof dex/charts/d3
+ *
+ */
+var MotionBarChart = function (userConfig) {
   d3 = dex.charts.d3.d3v3;
   var chart;
 
@@ -122,11 +133,11 @@ var motionbarchart = function (userConfig) {
 
     var keyMap = {};
 
-    var nameIndex = dex.csv.getColumnNumber(csv, config.index.name);
-    var colorIndex = dex.csv.getColumnNumber(csv, config.index.color);
-    var timeIndex = dex.csv.getColumnNumber(csv, config.index.time);
-    var yIndex = dex.csv.getColumnNumber(csv, config.index.y);
-    var sizeIndex = dex.csv.getColumnNumber(csv, config.index.size);
+    var nameIndex = csv.getColumnNumber(config.index.name);
+    var colorIndex = csv.getColumnNumber(config.index.color);
+    var timeIndex = csv.getColumnNumber(config.index.time);
+    var yIndex = csv.getColumnNumber(config.index.y);
+    var sizeIndex = csv.getColumnNumber(config.index.size);
 
     csv.data.forEach(function (row) {
       var curName = row[nameIndex];
@@ -408,9 +419,9 @@ var motionbarchart = function (userConfig) {
     }
   };
 
-    chart.clone = function clone(override) {
-        return motionbarchart(dex.config.expandAndOverlay(override, userConfig));
-    };
+  chart.clone = function clone(override) {
+    return MotionBarChart(dex.config.expandAndOverlay(override, userConfig));
+  };
 
   $(document).ready(function () {
 
@@ -427,4 +438,4 @@ var motionbarchart = function (userConfig) {
   return chart;
 };
 
-module.exports = motionbarchart;
+module.exports = MotionBarChart;

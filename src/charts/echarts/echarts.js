@@ -1,7 +1,5 @@
 /**
  *
- * This module provides ECharts 3.0 based visualization components.
- *
  * @module dex/charts/echarts
  *
  */
@@ -14,5 +12,7 @@ echarts.Timeline = require("./Timeline");
 echarts.Network = require("./Network");
 echarts.SingleAxisScatterPlot = require("./SingleAxisScatterPlot");
 echarts.PieChart = require("./PieChart");
+echarts.SteamGraph = require("./SteamGraph");
+echarts.RadarChart = require("./RadarChart");
 
 module.exports = echarts;

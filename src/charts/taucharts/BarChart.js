@@ -1,22 +1,24 @@
 /**
  *
- * This module provides a TauCharts Scatterplot.
+ * This is the base constructor for a TauChart BarChart.
  *
- * @name dex/charts/taucharts/ScatterPlot
+ * @param userConfig The chart's configuration.
  *
- * @param userConfig
- * @returns ScatterPlot
+ * @returns {BarChart}
+ *
+ * @memberof dex/charts/taucharts
+ *
  */
-var scatterplot = function (userConfig) {
+var BarChart = function (userConfig) {
   var chart;
   var defaults = {
-    'parent': '#TauCharts_ScatterPlot',
-    'id': 'TauCharts_ScatterPlot',
-    'class': 'TauCharts_ScatterPlot',
+    'parent': '#TauCharts_BarChart',
+    'id': 'TauCharts_BarChart',
+    'class': 'TauCharts_BarChart',
     'resizable': true,
     'width': "100%",
     'height': "100%",
-    'type': 'scatterplot'
+    'type': 'bar'
   };
 
   var combinedConfig = dex.config.expandAndOverlay(userConfig, defaults);
@@ -24,4 +26,4 @@ var scatterplot = function (userConfig) {
 
   return chart;
 };
-module.exports = scatterplot;
+module.exports = BarChart;

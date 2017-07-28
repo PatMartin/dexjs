@@ -1,5 +1,9 @@
 /**
+ *
+ * This module provides C3 based visualization components.
+ *
  * @module dex/charts/c3
+ *
  */
 var c3 = {};
 

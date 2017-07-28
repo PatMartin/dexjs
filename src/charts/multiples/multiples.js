@@ -1,5 +1,9 @@
 /**
- * @module dex/charts/gridster
+ *
+ * This module contains components related to producing multiples.
+ *
+ * @module dex/charts/multiples
+ *
  */
 var multiples = {};
 

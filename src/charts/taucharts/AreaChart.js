@@ -1,22 +1,24 @@
 /**
  *
- * This module provides a TauCharts Scatterplot.
+ * This is the base constructor for a TauChart AreaChart.
  *
- * @name dex/charts/taucharts/ScatterPlot
+ * @param userConfig The chart's configuration.
  *
- * @param userConfig
- * @returns ScatterPlot
+ * @returns {AreaChart}
+ *
+ * @memberof dex/charts/taucharts
+ *
  */
-var scatterplot = function (userConfig) {
+var AreaChart = function (userConfig) {
   var chart;
   var defaults = {
-    'parent': '#TauCharts_ScatterPlot',
-    'id': 'TauCharts_ScatterPlot',
-    'class': 'TauCharts_ScatterPlot',
+    'parent': '#TauCharts_AreaChart',
+    'id': 'TauCharts_AreaChart',
+    'class': 'TauCharts_AreaChart',
     'resizable': true,
     'width': "100%",
     'height': "100%",
-    'type': 'scatterplot'
+    'type': 'area'
   };
 
   var combinedConfig = dex.config.expandAndOverlay(userConfig, defaults);
@@ -24,4 +26,4 @@ var scatterplot = function (userConfig) {
 
   return chart;
 };
-module.exports = scatterplot;
+module.exports = AreaChart;

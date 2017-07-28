@@ -1,4 +1,15 @@
-var treemapBarChart = function (userConfig) {
+/**
+ *
+ * This is the base constructor for a D3 TreemapBarChart component.
+ *
+ * @param userConfig The chart's configuration.
+ *
+ * @returns {TreemapBarChart}
+ *
+ * @memberof dex/charts/d3
+ *
+ */
+var TreemapBarChart = function (userConfig) {
   d3 = dex.charts.d3.d3v4;
   var chart;
 
@@ -99,8 +110,8 @@ var treemapBarChart = function (userConfig) {
         margin.left + ',' + margin.top + ') ' +
         config.transform);
 
-    var colorDomain = dex.csv.uniqueArray(config.csv, config.index.color);
-    var categoryDomain = dex.csv.uniqueArray(config.csv, config.index.category);
+    var colorDomain = config.csv.uniqueArray(config.index.color);
+    var categoryDomain = config.csv.uniqueArray(config.index.category);
     //dex.console.log("COLOR-DOMAIN", colorDomain, "CATEGORY-DOMAIN", categoryDomain);
     //var orderedContinents = ['Asia', 'North America', 'Europe', 'South America', 'Africa', 'Australia']
     var color = d3.scaleOrdinal()
@@ -439,7 +450,7 @@ var treemapBarChart = function (userConfig) {
   };
 
     chart.clone = function clone(override) {
-        return treemapBarChart(dex.config.expandAndOverlay(override, userConfig));
+        return TreemapBarChart(dex.config.expandAndOverlay(override, userConfig));
     };
 
   $(document).ready(function () {
@@ -450,4 +461,4 @@ var treemapBarChart = function (userConfig) {
   return chart;
 };
 
-module.exports = treemapBarChart;
+module.exports = TreemapBarChart;

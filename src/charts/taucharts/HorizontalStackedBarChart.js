@@ -1,13 +1,15 @@
 /**
  *
- * This module provides a TauCharts HorizontalStackedBarChart.
+ * This is the base constructor for a TauChart HorizontalStackedBarChart.
  *
- * @name dex/charts/taucharts/HorizontalStackedBarChart
+ * @param userConfig The chart's configuration.
  *
- * @param userConfig
- * @returns HorizontalStackedBarChart
+ * @returns {HorizontalStackedBarChart}
+ *
+ * @memberof dex/charts/taucharts
+ *
  */
-var horizontalstackedbarchart = function (userConfig) {
+var HorizontalStackedBarChart = function (userConfig) {
   var chart;
   var defaults = {
     'parent': '#TauCharts_HorizontalStackedBarChart',
@@ -24,4 +26,4 @@ var horizontalstackedbarchart = function (userConfig) {
 
   return chart;
 };
-module.exports = horizontalstackedbarchart;
+module.exports = HorizontalStackedBarChart;

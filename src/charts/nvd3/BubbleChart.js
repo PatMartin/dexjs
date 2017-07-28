@@ -1,4 +1,15 @@
-var bubblechart = function (userConfig) {
+/**
+ *
+ * This is the base constructor for a NVD3 BubbleChart.
+ *
+ * @param userConfig The chart's configuration.
+ *
+ * @returns {BubbleChart}
+ *
+ * @memberof dex/charts/nvd3
+ *
+ */
+var BubbleChart = function (userConfig) {
     d3 = dex.charts.d3.d3v3;
     var chart;
 
@@ -24,13 +35,13 @@ var bubblechart = function (userConfig) {
         var config = chart.config;
         var csv = config.csv;
 
-        var types = dex.csv.guessTypes(csv);
-        dex.console.log("TYPES", types);;
+        var types = csv.guessTypes();
+        //dex.console.log("TYPES", types);;
 
         var xlabels = [];
 
         d3.select(config.parent).selectAll("*").remove();
-        var groups = dex.csv.group(csv, [0]);
+        var groups = csv.group([0]);
         var nvd3Data = groups.map(function (group) {
             //dex.console.log("KEY", group.key, group);
             return {
@@ -131,7 +142,7 @@ var bubblechart = function (userConfig) {
         }, function () {
             d3.selectAll(".nv-legend-symbol").on('click',
                 function () {
-                    dex.console.log("Clicked Legend Of", nvd3Chart.datum());
+                    //dex.console.log("Clicked Legend Of", nvd3Chart.datum());
                 });
         });
 
@@ -144,7 +155,7 @@ var bubblechart = function (userConfig) {
     };
 
     chart.clone = function clone(override) {
-        return bubblechart(dex.config.expandAndOverlay(override, userConfig));
+        return BubbleChart(dex.config.expandAndOverlay(override, userConfig));
     };
 
     $(document).ready(function () {
@@ -155,4 +166,4 @@ var bubblechart = function (userConfig) {
     return chart;
 };
 
-module.exports = bubblechart;
+module.exports = BubbleChart;

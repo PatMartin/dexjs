@@ -6,8 +6,11 @@
  *
  * @param userConfig
  * @returns StackedAreaChart
+ *
+ * @memberof dex/charts/c3
+ *
  */
-var stackedareachart = function (userConfig) {
+var StackedAreaChart = function (userConfig) {
   var defaults = {
     'parent': '#C3_StackedAreaChart',
     'id': 'C3_StackedAreaChart',
@@ -25,4 +28,4 @@ var stackedareachart = function (userConfig) {
   return dex.charts.c3.C3Chart(combinedConfig);
 };
 
-module.exports = stackedareachart;
+module.exports = StackedAreaChart;

@@ -1,6 +1,6 @@
 /**
  *
- * This module provides routines for dealing with arrays.
+ * This module provides VisJS based visualizations.
  *
  * @module dex/charts/vis
  *

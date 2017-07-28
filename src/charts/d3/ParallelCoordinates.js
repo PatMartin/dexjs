@@ -1,6 +1,18 @@
-var parallelcoordinates = function (userConfig) {
+/**
+ *
+ * This is the base constructor for a D3 ParallelCoordinates component.
+ *
+ * @param userConfig The chart's configuration.
+ *
+ * @returns {ParallelCoordinates}
+ *
+ * @memberof dex/charts/d3
+ *
+ */
+var ParallelCoordinates = function (userConfig) {
   d3 = dex.charts.d3.d3v3;
-  var chart;
+  var chart, x, y;
+  var axisDistance = undefined;
 
   defaults = {
     'parent': "ParallelCoordinatesParent",
@@ -11,22 +23,13 @@ var parallelcoordinates = function (userConfig) {
     'resizable': true,
     'color': d3.scale.category20(),
     'title': 'Parallel Coordinates',
-    'csv': {
-      'header': ["X", "Y"],
-      'data': [
-        [0, 0],
-        [1, 1],
-        [2, 4],
-        [3, 9],
-        [4, 16]
-      ]
-    },
+    'csv': new dex.csv(["X", "Y"], [[0, 0], [1, 1], [2, 4], [3, 9], [4, 16]]),
     'normalize': false,
     'transform': '',
     'margin': {
-      'left': 50,
-      'right': 50,
-      'top': 50,
+      'left': 30,
+      'right': 30,
+      'top': 40,
       'bottom': 20
     },
     'axis': {
@@ -46,30 +49,6 @@ var parallelcoordinates = function (userConfig) {
       }
     }),
     'axis.label': dex.config.text({
-      'font': {
-        'size': function (d, i) {
-          var uniques = _.uniq(_.flatten(dex.matrix.slice(chart.config.csv.data, [i])));
-
-          var maxLabelLength =
-            Math.min(("" + _.max(uniques,
-              function (item) {
-                return ("" + item).length;
-              })).length, 40);
-
-          // No need to adjust margins, initial transform already did.
-          var maxFontSizeByHeight =
-            ((chart.config.height) /
-            (uniques.length ? uniques.length : 1) - 2);
-
-          var maxFontSizeByWidth =
-            (((chart.config.width) /
-            (chart.config.csv.header.length - 1)) / maxLabelLength);
-
-          //dex.console.log("AXIS-FONT-SIZE: I: " + i + ", MAX-HEIGHT: " + maxFontSizeByHeight +
-          //", MAX-WIDTH: " + maxFontSizeByWidth + ", MAX-LABEL-LENGTH: " + maxLabelLength);
-          return Math.min(Math.max(Math.min(maxFontSizeByWidth, maxFontSizeByHeight), 4), 18);
-        }
-      },
       'anchor': function (d, i) {
         if (i < chart.config.csv.header.length - 1) {
           return 'end';
@@ -78,10 +57,6 @@ var parallelcoordinates = function (userConfig) {
           return 'start';
         }
       },
-      'dx': function (d, i) {
-        return "-.5em"
-      },
-      'dy': ".35em",
       'fill.fillColor': 'black',
       'fill.fillOpacity': 1,
       'events': {
@@ -101,19 +76,13 @@ var parallelcoordinates = function (userConfig) {
       // If you want to stagger labels.
       'dy': function (d, i) {
         return (i % 2) ?
-          -chart.config.margin.top * .60 :
-          -chart.config.margin.top * .20;
+          -chart.config.margin.top * .40 :
+          -chart.config.margin.top * .40;
       },
       'font.size': function (d) {
-        var maxFontSizeByHeight =
-          chart.config.margin.top * .5;
-        var maxFontSizeByWidth =
-          (chart.config.width - chart.config.margin.left - chart.config.margin.right) /
-          (chart.config.csv.header.length) / 10;
-        //dex.console.log("TITLE-FONT-SIZE: MAX-HEIGHT: " + maxFontSizeByHeight +
-        //", MAX-WIDTH: " + maxFontSizeByWidth);
-        return Math.max(Math.min(maxFontSizeByWidth, maxFontSizeByHeight), 4);
+        return 32
       },
+      'fill.fillColor': 'red',
       'anchor': 'middle',
       'text': function (d) {
         return d;
@@ -124,7 +93,7 @@ var parallelcoordinates = function (userConfig) {
         }
       }
     }),
-    'selected.link': {
+    'link.emphasis': {
       'stroke': dex.config.stroke(
         {
           'color': function (d, i) {
@@ -139,18 +108,18 @@ var parallelcoordinates = function (userConfig) {
       'events': {
         'mouseover': function () {
           d3.select(this)
-            .style("stroke-width", chart.config.selected.link.stroke.width +
-              Math.max(4, (chart.config.selected.link.stroke.width / 3)))
-            .style("stroke-opacity", chart.config.selected.link.stroke.opacity);
+            .style("stroke-width", chart.config.link.emphasis.stroke.width +
+              Math.max(4, (chart.config.link.emphasis.stroke.width / 3)))
+            .style("stroke-opacity", chart.config.link.emphasis.stroke.opacity);
         },
         'mouseout': function () {
           d3.select(this)
-            .style("stroke-width", chart.config.selected.link.stroke.width)
-            .style("stroke-opacity", chart.config.selected.link.stroke.opacity);
+            .style("stroke-width", chart.config.link.emphasis.stroke.width)
+            .style("stroke-opacity", chart.config.link.emphasis.stroke.opacity);
         }
       }
     },
-    'unselected.link': {
+    'link.normal': {
       'stroke': dex.config.stroke(
         {
           'color': function (d, i) {
@@ -214,8 +183,7 @@ var parallelcoordinates = function (userConfig) {
         dex.config.gui.text({name: "Tick Label"}, "axis.label"),
         dex.config.gui.path({name: "Axis Line"}, "axis.line"),
         dex.config.gui.text({name: "Axis Label"}, "verticalLabel"),
-        dex.config.gui.link({name: "Selected Links"}, "selected.link"),
-        dex.config.gui.link({name: "Unselected Links"}, "unselected.link")
+        dex.config.gui.linkGroup({}, "link")
       ]
     };
     var guiDef = dex.config.expandAndOverlay(userConfig, defaults);
@@ -236,21 +204,28 @@ var parallelcoordinates = function (userConfig) {
     var config = chart.config;
     var csv = config.csv;
     var margin = config.margin;
+    margin.top = +margin.top;
+    margin.bottom = +margin.bottom;
+    margin.left = +margin.left;
+    margin.right = +margin.right;
 
     var width = config.width - margin.left - margin.right;
     var height = config.height - margin.top - margin.bottom;
 
     d3.selectAll(chart.config.parent).selectAll('*').remove();
 
-    var numericColumns =
-      dex.csv.getNumericColumnNames(csv);
+    var numericColumns = csv.getNumericColumnNames();
 
-    var jsonData = dex.csv.toJson(csv);
+    var jsonData = csv.toJson();
 
-    var x = d3.scale.ordinal()
+    // Determine increment.  -|-|-
+    var widthIncrement = width / (csv.header.length + 1);
+    dex.console.logString("Width: " + width + ", Width Increment: ",
+      widthIncrement);
+    // Scales
+    x = d3.scale.ordinal()
       .rangePoints([0, width], 1);
-
-    var y = {};
+    y = {};
 
     var line = d3.svg.line();
 
@@ -268,20 +243,15 @@ var parallelcoordinates = function (userConfig) {
       .attr("class", config["class"])
       .attr('width', config.width)
       .attr('height', config.height);
+    dex.console.log("MARGIN: ", margin);
 
-    var rootG = svg
-      .append('g')
-      .attr('transform', 'translate(' +
-        margin.left + ',' + margin.top + ') ' +
+    var rootG = svg.append("g")
+      .attr("transform", "translate(" +
+        (margin.left) + "," +
+        (margin.top) + ") " +
         config.transform);
 
     // Extract the list of dimensions and create a scale for each.
-    //x.domain(dimensions = d3.keys(cars[0]).filter(function(d)
-    //{
-    //  return d != "name" && (y[d] = d3.scale.linear()
-    //    .domain(d3.extent(cars, function(p) { return +p[d]; }))
-    //    .range([height, 0]));
-    //}));
     var allExtents = []
 
     numericColumns.forEach(function (d) {
@@ -326,7 +296,7 @@ var parallelcoordinates = function (userConfig) {
       .selectAll("path")
       .data(jsonData)
       .enter().append("path")
-      .call(dex.config.configureLink, config.unselected.link)
+      .call(dex.config.configureLink, config.link.normal)
       .attr("d", path)
       .attr("id", "fillpath");
 
@@ -335,27 +305,17 @@ var parallelcoordinates = function (userConfig) {
       .data(jsonData)
       .enter().append("path")
       .attr("d", path)
-      .call(dex.config.configureLink, config.selected.link);
+      .call(dex.config.configureLink, config.link.emphasis);
 
-    foreground
-      .append("tooltip-content").text(function (d, i) {
-      var info = "<table border=\"1\">";
-      for (key in jsonData[i]) {
-        info += "<tr><td><b><i>" + key + "</i></b></td><td>" + jsonData[i][key] + "</td></tr>"
-      }
-      return info + "</table>";
-    });
-//      .on("mouseover", function () {
-//        d3.select(this)
-//          .style("stroke-width", config.selected.link.stroke.width +
-//          Math.max(4, (config.selected.link.stroke.width / 3)))
-//          .style("stroke-opacity", config.selected.link.stroke.opacity);
-//      })
-//      .on("mouseout", function () {
-//        d3.select(this)
-//          .style("stroke-width", config.selected.link.stroke.width)
-//          .style("stroke-opacity", config.selected.link.stroke.opacity);
-//      });
+    var tooltips = foreground
+      .append("tooltip-content").text(function (d) {
+        var info = "<table class='dex-tooltip-table'><th>NAME</th><th>VALUE</th>";
+        Object.keys(d).forEach(function (key) {
+          info += "<tr><td>" + key + "</td><td>" +
+            d[key] + "</td></tr>"
+        });
+        return info + "</table>";
+      });
 
     // Add a group element for each dimension.
     var g = rootG.selectAll(".dimension")
@@ -365,6 +325,9 @@ var parallelcoordinates = function (userConfig) {
       .attr("transform", function (d) {
         return "translate(" + x(d) + ")";
       });
+
+    var availableWidth = Math.abs(x(chart.config.csv.header[1]) -
+      x(chart.config.csv.header[0]));
 
     // Add an axis and title.
     g.append("g")
@@ -389,15 +352,42 @@ var parallelcoordinates = function (userConfig) {
 
         // Now that the axis has rendered, adjust the tick labels based on our spec.
         var tickLabels = d3.select(this)
-          .selectAll('.tick')
-          .selectAll("text")
+          .selectAll('.tick text')
           .call(dex.config.configureText, myConfig.label, i);
+
+
+        var maxFont = 48;
+
+        var availableHeight = height / (tickLabels[0].length)
+        dex.console.logString("TICK-LABELS: ", "Height: ", height,
+          ", Width: ", width, ", Available Width: ",
+          availableWidth, ", Available Height:", availableHeight,
+          ", Length:", tickLabels[0].length);
+
+        tickLabels
+          .style("font-size", "1px")
+          .each(function (d) {
+
+            var bbox = this.getBBox();
+            var wsize = (availableWidth) / bbox.width;
+
+            if (wsize < maxFont) {
+              maxFont = wsize;
+            }
+          });
+
+        maxFont = Math.min(availableHeight, maxFont);
+        tickLabels.style("font-size", "" + maxFont + "px")
+          .attr("dy", ".3em")
+          .attr("dx", (i < config.csv.header.length - 1) ? "-4px" : "4px");
+
+
       })
       .append("text")
       .call(dex.config.configureText, config.verticalLabel);
 
     // Add and store a brush for each axis.
-    g.append("g")
+    var brush = g.append("g")
       .attr("class", "brush")
       .each(function (d) {
         d3.select(this).call(y[d].brush =
@@ -452,8 +442,8 @@ var parallelcoordinates = function (userConfig) {
 
     // Handles a brush event, toggling the display of foreground lines.
     function brushend() {
-      //dex.console.log("BRUSH-END: ", foreground);
-      //dex.console.log("chart: ", chart);
+      dex.console.log("BRUSH-END: ", foreground);
+      dex.console.log("chart: ", chart);
       var activeData = [];
       var i;
 
@@ -476,7 +466,7 @@ var parallelcoordinates = function (userConfig) {
   };
 
   chart.clone = function clone(override) {
-    return parallelcoordinates(dex.config.expandAndOverlay(override, userConfig));
+    return ParallelCoordinates(dex.config.expandAndOverlay(override, userConfig));
   };
 
   $(document).ready(function () {
@@ -492,4 +482,4 @@ var parallelcoordinates = function (userConfig) {
   return chart;
 };
 
-module.exports = parallelcoordinates;
+module.exports = ParallelCoordinates;

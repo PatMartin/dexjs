@@ -1,4 +1,15 @@
-var legend = function (userConfig) {
+/**
+ *
+ * This is the base constructor for a D3 Legend component.
+ *
+ * @param userConfig The chart's configuration.
+ *
+ * @returns {Legend}
+ *
+ * @memberof dex/charts/d3
+ *
+ */
+var Legend = function (userConfig) {
   d3 = dex.charts.d3.d3v4;
   var chart;
 
@@ -98,4 +109,4 @@ var legend = function (userConfig) {
   return chart;
 }
 
-module.exports = legend;
+module.exports = Legend;

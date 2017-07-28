@@ -1,4 +1,15 @@
-var horizontallegend = function (userConfig) {
+/**
+ *
+ * This is the base constructor for a D3 HorizontalLegend component.
+ *
+ * @param userConfig The chart's configuration.
+ *
+ * @returns {HorizontalLegend}
+ *
+ * @memberof dex/charts/d3
+ *
+ */
+var HorizontalLegend = function (userConfig) {
   var defaults = {
     'parent'     : null,
     'labels'     : ["A", "B", "C"],
@@ -51,7 +62,7 @@ var horizontallegend = function (userConfig) {
   chart.update = function () {
     var chart = this;
     var config = chart.config;
-    dex.console.log("HorizontalLegend config:", config);
+    //dex.console.log("HorizontalLegend config:", config);
     // Create our x scale
     var x = d3.scale.ordinal()
       .domain(config.labels)
@@ -104,4 +115,4 @@ var horizontallegend = function (userConfig) {
   return chart;
 };
 
-module.exports = horizontallegend;
+module.exports = HorizontalLegend;

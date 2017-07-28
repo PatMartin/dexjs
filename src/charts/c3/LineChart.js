@@ -1,13 +1,15 @@
 /**
  *
- * This module provides a C3 Line Chart.
+ * This is the base constructor for a C3 Line Chart.
  *
- * @name dex/charts/c3/LineChart
+ * @param userConfig The chart's configuration.
  *
- * @param userConfig
- * @returns LineChart
+ * @returns {LineChart}
+ *
+ * @memberof dex/charts/c3
+ *
  */
-var linechart = function (userConfig) {
+var LineChart = function (userConfig) {
   var defaults = {
     'parent': '#C3_LineChart',
     'id': 'C3_LineChart',
@@ -24,4 +26,4 @@ var linechart = function (userConfig) {
   return dex.charts.c3.C3Chart(combinedConfig);
 };
 
-module.exports = linechart;
+module.exports = LineChart;

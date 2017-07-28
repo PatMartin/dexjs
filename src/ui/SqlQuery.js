@@ -1,20 +1,16 @@
 /**
  *
- * This class creates and attaches a SqlQuery user interface onto the
- * parent node.
+ * This creates a SqlQuery component which provides a SQL
+ * interface into retrieving data from a SQL Lite database.
  *
- * @name dex.ui.SqlQuery
  * @param userConfig The following configuration options are available for configuring the
  * behavior of the SqlQuery component.<br><br>
  *
- * 'parent' : The default
- *
  * @returns {SqlQuery}
- *
- * @constructor
+ * @memberof dex/ui
  *
  */
-var sqlquery = function (userConfig) {
+var SqlQuery = function (userConfig) {
 
   var defaults =
   {
@@ -24,7 +20,7 @@ var sqlquery = function (userConfig) {
     'class'  : 'SqlQuery',
     'query'  : 'select * from dex;',
     // Our data...
-    'csv'    : {
+    'csv'    : new dex.csv({
       // Give folks without data something to look at anyhow.
       'header' : ["X", "Y", "Z"],
       'data'   : [
@@ -32,7 +28,7 @@ var sqlquery = function (userConfig) {
         [1, 1, 1],
         [2, 2, 2]
       ]
-    }
+    })
   };
 
   var chart = new dex.component(userConfig, defaults);
@@ -45,9 +41,9 @@ var sqlquery = function (userConfig) {
     // Create the table only at render time.
     var createStr = "create table dex(" + csv.header.map(function (h, i) {
         var colName = h.trim();
-        return "'" + colName + "' " + ((dex.csv.isColumnNumeric(csv, i)) ? "float" : "text");
+        return "'" + colName + "' " + (csv.isColumnNumeric(i) ? "float" : "text");
       }).join(",") + ")";
-    console.log("CREATESTR: " + createStr);
+
     db.exec("drop table if exists dex;");
     db.exec(createStr);
 
@@ -95,4 +91,4 @@ var sqlquery = function (userConfig) {
   return chart;
 };
 
-module.exports = sqlquery;
+module.exports = SqlQuery;

@@ -1,3 +1,14 @@
+/**
+ *
+ * This is the base constructor for a Elegans ScatterPlot.
+ *
+ * @param userConfig The chart's configuration.
+ *
+ * @returns {ScatterPlot}
+ *
+ * @memberof dex/charts/elegans
+ *
+ */
 var scatterplot = function (userConfig) {
   d3 = dex.charts.d3.d3v3;
   var chart;
@@ -50,7 +61,7 @@ var scatterplot = function (userConfig) {
     var config = chart.config;
     var csv = config.csv;
 
-    var tcsv = dex.csv.transpose(csv);
+    var tcsv = csv.transpose();
 
     d3.select(config.parent).selectAll("*").remove();
 
@@ -62,9 +73,7 @@ var scatterplot = function (userConfig) {
       //dex.console.log("SERIES", series);
       var groups;
       if (series.group) {
-        //dex.console.log("GROUPING BY: " + series.group + " = " +
-        //  dex.csv.getColumnNumber(series.group));
-        groups = dex.csv.group(csv, [dex.csv.getColumnNumber(csv, series.group)]);
+        groups = csv.group([csv.getColumnNumber(series.group)]);
         //dex.console.log("GROUP", group);
         groups.forEach(function (group) {
           group.name = group.key;
@@ -80,9 +89,9 @@ var scatterplot = function (userConfig) {
       groups.forEach(function (group) {
         //dex.console.log("GROUP", group);
         data = {
-          'x': dex.csv.getColumnData(group.csv, series.coordinates.x),
-          'y': dex.csv.getColumnData(group.csv, series.coordinates.y),
-          'z': dex.csv.getColumnData(group.csv, series.coordinates.z)
+          'x': group.csv.getColumnData(series.coordinates.x),
+          'y': group.csv.getColumnData(series.coordinates.y),
+          'z': group.csv.getColumnData(series.coordinates.z)
         };
 
         //dex.console.log("GROUP", group);

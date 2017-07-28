@@ -1,4 +1,15 @@
-var chord = function (userConfig) {
+/**
+ *
+ * This is the base constructor for a D3 Chord Diagram.
+ *
+ * @param userConfig The chart's configuration.
+ *
+ * @returns {Chord}
+ *
+ * @memberof dex/charts/d3
+ *
+ */
+var Chord = function (userConfig) {
   d3 = dex.charts.d3.d3v3;
   var chart;
 
@@ -10,15 +21,7 @@ var chord = function (userConfig) {
     "class": "ChordClass",
     "resizable": true,
     // Our data...
-    "csv": {
-      // Give folks without data something to look at anyhow.
-      "header": ["X", "Y", "Z"],
-      "data": [
-        [0, 0, 0],
-        [1, 1, 1],
-        [2, 2, 2]
-      ]
-    },
+    "csv": new dex.csv(["A", "B"], [["a", "b"]]),
     "width": "100%",
     "height": "100%",
     "margin": {
@@ -28,10 +31,10 @@ var chord = function (userConfig) {
       "bottom": 50
     },
     "transform": "",
-    "draggable" : false,
+    "draggable": false,
     "padding": 0.05,
     "nodes": {
-      "mouseout": dex.config.link({
+      "normal": dex.config.link({
         "stroke.color": "black",
         //"stroke.dasharray": "5 5",
         "stroke.width": 0,
@@ -44,7 +47,7 @@ var chord = function (userConfig) {
         "d": d3.svg.arc(),
         "transform": ""
       }),
-      "mouseover": dex.config.link({
+      "emphasis": dex.config.link({
         "stroke.color": "white",
         //"stroke.dasharray": "5 5",
         "stroke.width": 2,
@@ -59,7 +62,7 @@ var chord = function (userConfig) {
       })
     },
     "links": {
-      "mouseout": dex.config.link({
+      "normal": dex.config.link({
         "stroke.color": "white",
         "stroke.dasharray": "",
         "stroke.width": 0,
@@ -71,7 +74,7 @@ var chord = function (userConfig) {
         "d": d3.svg.chord(),
         "transform": ""
       }),
-      "mouseover": dex.config.link({
+      "emphasis": dex.config.link({
         "stroke.color": "white",
         "stroke.dasharray": "",
         "stroke.width": 1,
@@ -85,7 +88,7 @@ var chord = function (userConfig) {
       }),
     },
     "color": d3.scale.category20c(),
-    "autoRadius" : true,
+    "autoRadius": true,
     "innerRadius": 350,
     "outerRadius": 400,
     "tick.start.x": 1,
@@ -108,8 +111,8 @@ var chord = function (userConfig) {
       "type": "group",
       "name": "Chord Diagram Settings",
       "contents": [
-        dex.config.gui.dimensions(),
         dex.config.gui.general(),
+        dex.config.gui.dimensions(),
         {
           "type": "group",
           "name": "Miscellaneous",
@@ -151,11 +154,9 @@ var chord = function (userConfig) {
           ]
         },
         dex.config.gui.editableText({name: "Title"}, "title"),
-        dex.config.gui.text({name: "Labels"}, "label"),
-        dex.config.gui.link({name: "Links"}, "links.mouseout"),
-        dex.config.gui.link({name: "Links on Mouseover"}, "links.mouseover"),
-        dex.config.gui.link({name: "Nodes"}, "nodes.mouseout"),
-        dex.config.gui.link({name: "Nodes on Mouseover"}, "nodes.mouseover"),
+        dex.config.gui.textGroup({}, "label"),
+        dex.config.gui.linkGroup({}, "links"),
+        dex.config.gui.rectangleGroup({}, "nodes")
       ]
     };
 
@@ -164,10 +165,17 @@ var chord = function (userConfig) {
     return guiDef;
   };
 
+  chart.subscribe(chart, "attr", function (msg) {
+    //dex.console.log("MSG", msg);
+    if (msg.attr == "draggable") {
+      $(chart.config.parent).draggable();
+      $(chart.config.parent).draggable((msg.value === true) ? 'enable' : 'disable');
+    }
+  });
+
   chart.render = function render() {
     d3 = dex.charts.d3.d3v3;
     chart.resize();
-    dex.config.apply(chart);
     return chart;
   };
 
@@ -199,10 +207,10 @@ var chord = function (userConfig) {
     }
 
     // Calculated attributes.
-    config.nodes.mouseover.d.innerRadius(inner).outerRadius(outer + 2);
-    config.nodes.mouseout.d.innerRadius(inner).outerRadius(outer);
-    config.links.mouseover.d.radius(inner);
-    config.links.mouseout.d.radius(inner);
+    config.nodes.emphasis.d.innerRadius(inner).outerRadius(outer + 2);
+    config.nodes.normal.d.innerRadius(inner).outerRadius(outer);
+    config.links.emphasis.d.radius(inner);
+    config.links.normal.d.radius(inner);
 
     var svg = d3.select(config.parent)
       .append("svg")
@@ -217,7 +225,7 @@ var chord = function (userConfig) {
         (margin.top + (height / 2)) + ") " +
         config.transform);
 
-    chordData = dex.csv.getConnectionMatrix(csv);
+    chordData = csv.getConnectionMatrix();
     config.chordData = chordData;
 
     var chord = d3.layout.chord()
@@ -231,27 +239,27 @@ var chord = function (userConfig) {
       .data(chord.groups)
       .enter().append("path")
       .attr("id", "fillpath")
-      .call(dex.config.configureLink, config.nodes.mouseout)
+      .call(dex.config.configureLink, config.nodes.normal)
       .on("mouseover", function (activeChord) {
         d3.select(this)
-          .call(dex.config.configureLink, config.nodes.mouseover);
+          .call(dex.config.configureLink, config.nodes.emphasis);
 
         rootG.selectAll("g.chord path")
           .filter(function (d) {
 
             return d.source.index == activeChord.index || d.target.index == activeChord.index;
           })
-          .call(dex.config.configureLink, config.links.mouseover);
+          .call(dex.config.configureLink, config.links.emphasis);
       })
       .on("mouseout", function (inactiveChord) {
         d3.select(this)
-          .call(dex.config.configureLink, config.nodes.mouseout)
+          .call(dex.config.configureLink, config.nodes.normal)
         //dex.console.log("INACTIVE", inactiveChord);
         rootG.selectAll("g.chord path")
           .filter(function (d) {
             return d.source.index == inactiveChord.index || d.target.index == inactiveChord.index;
           })
-          .call(dex.config.configureLink, config.links.mouseout);
+          .call(dex.config.configureLink, config.links.normal);
       });
 
     var ticks = rootG.append("g")
@@ -277,7 +285,7 @@ var chord = function (userConfig) {
       .call(dex.config.configureLine, config.tick);
 
     ticks.append("text")
-      //.call(dex.config.configureText, config.label)
+      .call(dex.config.configureText, config.label.normal)
       .attr("x", +config.tick.padding + (+config.tick.padding / 4))
       .attr("dy", ".35em")
       .attr("font-size", config.label.font.size)
@@ -298,20 +306,20 @@ var chord = function (userConfig) {
       .selectAll("path")
       .data(chord.chords)
       .enter().append("path")
-      .call(dex.config.configureLink, config.links.mouseout)
+      .call(dex.config.configureLink, config.links.normal)
       .on("mouseover", function () {
         d3.select(this)
-          .call(dex.config.configureLink, config.links.mouseover);
+          .call(dex.config.configureLink, config.links.emphasis);
       })
       .on("mouseout", function () {
         d3.select(this)
-          .call(dex.config.configureLink, config.links.mouseout);
+          .call(dex.config.configureLink, config.links.normal);
       });
 
-    var chartTitle = rootG.append("text").call(dex.config.configureText, config.title,
-      config.title.text);
+    var chartTitle = rootG.append("text")
+      .call(dex.config.configureText, config.title, config.title.text);
 
-    /** Returns an array of tick angles and labels, given a group. */
+    // Returns an array of tick angles and labels, given a group.
     function groupTicks(d) {
       var k = (d.endAngle - d.startAngle) / d.value;
       return d3.range(0, d.value, 1000).map(function (v, i) {
@@ -323,15 +331,13 @@ var chord = function (userConfig) {
       });
     }
 
-    dex.config.apply(chart);
-
     // Allow method chaining
     return chart;
   };
 
-    chart.clone = function clone(override) {
-        return chord(dex.config.expandAndOverlay(override, userConfig));
-    };
+  chart.clone = function clone(override) {
+    return Chord(dex.config.expandAndOverlay(override, userConfig));
+  };
 
   $(document).ready(function () {
     // Make the entire chart draggable.
@@ -343,4 +349,4 @@ var chord = function (userConfig) {
   return chart;
 }
 
-module.exports = chord;
+module.exports = Chord;

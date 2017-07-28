@@ -1,100 +1,100 @@
-var dendrogram = function Dendrogram(userConfig) {
+/**
+ *
+ * This is the base constructor for a D3 Dendrogram component.
+ *
+ * @param userConfig The chart's configuration.
+ *
+ * @returns {Dendrogram}
+ *
+ * @memberof dex/charts/d3
+ *
+ */
+var Dendrogram = function Dendrogram(userConfig) {
   d3 = dex.charts.d3.d3v3;
   var chart;
 
-  var defaults =
-    {
-      // The parent container of this chart.
-      'parent': 'DendrogramParent',
-      // Set these  when you need to CSS style components independently.
-      'id': 'DendrogramId',
-      'class': 'DendrogramClass',
-      'resizable': true,
-      'margin': {
-        'top': 10,
-        'bottom': 10,
-        'left': 10,
-        'right': 10
-      },
-      'transform': '',
-      // diagonal, elbow
-      'connectionType': 'diagonal',
-      // Our data...
-      'csv': {
-        // Give folks without data something to look at anyhow.
-        'header': ["X", "Y"],
-        'data': [
-          [0, 0],
-          [1, 1],
-          [2, 4],
-          [3, 9],
-          [4, 16]
-        ]
-      },
-      // width and height of our chart.
-      'width': "100%",
-      'height': "100%",
-      'connection': {
-        'length': 180
+  var defaults = {
+    // The parent container of this chart.
+    'parent': 'DendrogramParent',
+    // Set these  when you need to CSS style components independently.
+    'id': 'DendrogramId',
+    'class': 'DendrogramClass',
+    'resizable': true,
+    'margin': {
+      'top': 10,
+      'bottom': 10,
+      'left': 10,
+      'right': 10
+    },
+    'transform': '',
+    // diagonal, elbow
+    'connectionType': 'diagonal',
+    // Our data...
+    'csv': new dex.csv(["X", "Y"], [[0, 0], [1, 1], [2, 4], [3, 9], [4, 16]]),
+    // width and height of our chart.
+    'width': "100%",
+    'height': "100%",
+    'connection': {
+      'length': 180
 //      'style': {
 //        'stroke': dex.config.stroke()
 //      }
-      },
-      'root': {
-        'name': "ROOT",
-        // Used?
-        //'category': "ROOT"
-      },
-      // REM: Used?
-      //'color': d3.scale.category20(),
-      'node': {
-        'expanded': {
-          'label': dex.config.text({
-            'x': 8,
-            'y': 4,
-            'font.weight': 'bold',
-            'fill.fillColor': 'black',
-            'text': function (d) {
-              return (d.name) ? d.name : d.category;
-            }
-          }),
-          'circle': dex.config.circle({
-            'r': 4,
-            'fill': {
-              'fillColor': 'steelblue'
-            }
-          })
-        },
-        'collapsed': {
-          'label': dex.config.text({
-            'x': 8,
-            'y': 4,
-            'font.weight': 'bold',
-            'text': function (d) {
-              return (d.name) ? d.name : d.category;
-            }
-          }),
-          'circle': dex.config.circle({
-            'r': 5,
-            'fill': {
-              'fillColor': 'green',
-              'fillOpacity': .8
-            }
-          })
-        }
-      },
-      'link': dex.config.link({
-        'fill': {
-          'fillColor': 'none'
-        },
-        'stroke': dex.config.stroke({
-          'color': 'green',
-          'width': 1,
-          'opacity': .3,
-          'dasharray': "5 5"
+    },
+    'root': {
+      'name': "ROOT",
+      // Used?
+      //'category': "ROOT"
+    },
+    // REM: Used?
+    //'color': d3.scale.category20(),
+    'node': {
+      'expanded': {
+        'label': dex.config.text({
+          'x': 8,
+          'y': 4,
+          'font.weight': 'bold',
+          'fill.fillColor': 'black',
+          'text': function (d) {
+            return (d.name) ? d.name : d.category;
+          }
+        }),
+        'circle': dex.config.circle({
+          'r': 4,
+          'fill': {
+            'fillColor': 'steelblue'
+          }
         })
+      },
+      'collapsed': {
+        'label': dex.config.text({
+          'x': 8,
+          'y': 4,
+          'font.weight': 'bold',
+          'text': function (d) {
+            return (d.name) ? d.name : d.category;
+          }
+        }),
+        'circle': dex.config.circle({
+          'r': 5,
+          'fill': {
+            'fillColor': 'green',
+            'fillOpacity': .8
+          }
+        })
+      }
+    },
+    'link': dex.config.link({
+      'fill': {
+        'fillColor': 'none'
+      },
+      'stroke': dex.config.stroke({
+        'color': 'green',
+        'width': 1,
+        'opacity': .3,
+        'dasharray': "5 5"
       })
-    };
+    })
+  };
 
   chart = new dex.component(userConfig, defaults);
 
@@ -114,7 +114,7 @@ var dendrogram = function Dendrogram(userConfig) {
               "description": "The text associated with the root node.",
               "target": "root.name",
               "type": "string",
-              "initialValue": chart.root.name || "ROOT"
+              "initialValue": chart.config.root.name || "ROOT"
             },
             {
               "name": "Connection Length",
@@ -141,9 +141,7 @@ var dendrogram = function Dendrogram(userConfig) {
 
   chart.render = function render() {
     d3 = dex.charts.d3.d3v3;
-    chart.resize();
-    dex.config.apply(chart);
-    return chart;
+    return chart.resize();
   };
 
   chart.update = function update() {
@@ -202,11 +200,10 @@ var dendrogram = function Dendrogram(userConfig) {
         margin.left + ',' + margin.top + ') ' +
         config.transform);
 
-    json =
-      {
+    json =     {
         "name": config.root.name,
         "category": config.root.category,
-        "children": dex.csv.toHierarchicalJson(csv)
+        "children": csv.toHierarchicalJson()
       };
 
     root = json;
@@ -426,12 +423,11 @@ var dendrogram = function Dendrogram(userConfig) {
       }
     }
 
-    dex.config.apply(chart);
     return chart;
   };
 
   chart.clone = function clone(override) {
-    return dendrogram(dex.config.expandAndOverlay(override, userConfig));
+    return Dendrogram(dex.config.expandAndOverlay(override, userConfig));
   };
 
   $(document).ready(function () {
@@ -442,4 +438,4 @@ var dendrogram = function Dendrogram(userConfig) {
   return chart;
 };
 
-module.exports = dendrogram;
+module.exports = Dendrogram;

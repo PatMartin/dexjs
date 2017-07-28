@@ -1,4 +1,15 @@
-var c3chart = function (userConfig) {
+/**
+ *
+ * This is the base constructor for C3 charts.
+ *
+ * @param userConfig The chart's configuration.
+ *
+ * @returns {C3Chart}
+ *
+ * @memberof dex/charts/c3
+ *
+ */
+var C3Chart = function (userConfig) {
   var chart;
   var internalChart;
 
@@ -8,6 +19,7 @@ var c3chart = function (userConfig) {
     'id': 'C3ChartId',
     'class': 'C3ChartClass',
     'resizable': true,
+    'renderType': "update",
     'width': "100%",
     'height': "100%",
     'margin': {
@@ -24,7 +36,7 @@ var c3chart = function (userConfig) {
     },
     'options': {
       "tooltip.show": true,
-      "subchart.show": false,
+      "subchart.show": true,
       "zoom.enabled": true,
       "point.show": true,
       "legend.position": "right"
@@ -32,93 +44,94 @@ var c3chart = function (userConfig) {
   };
 
   chart = new dex.component(userConfig, defaults);
+//  chart.spec = new dex.data.spec("C3 Chart")
+//    .string("series")
+//    .any("x")
+//    .number("value");
 
   chart.getGuiDefinition = function getGuiDefinition(config) {
     var defaults = {
       "type": "group",
       "name": "C3 Settings",
-      "contents": [
-        dex.config.gui.dimensions(),
-        dex.config.gui.general(),
-        {
-          "type": "group",
-          "name": "Miscellaneous",
-          "contents": [
-            {
-              "name": "Show Tooltips",
-              "description": "If true, show tooltips.",
-              "type": "boolean",
-              "initialValue": true,
-              "target": "options.tooltip.show"
-            },
-            {
-              "name": "Group Tooltips",
-              "description": "If true, group tooltips.",
-              "type": "boolean",
-              "initialValue": true,
-              "target": "options.tooltip.grouped"
-            },
-            {
-              "name": "Show Subchart",
-              "description": "If true, show subchart.",
-              "type": "boolean",
-              "initialValue": false,
-              "target": "options.subchart.show"
-            },
-            {
-              "name": "Enable Zoom",
-              "description": "If true, enable zoom.",
-              "type": "boolean",
-              "initialValue": true,
-              "target": "options.zoom.enabled"
-            },
-            {
-              "name": "Show Points",
-              "description": "If true, show points.",
-              "type": "boolean",
-              "initialValue": true,
-              "target": "options.point.show"
-            },
-            {
-              "name": "Show Legend",
-              "description": "Location of legend.",
-              "type": "boolean",
-              "initialValue": true,
-              "target": "options.legend.show"
-            },
-            {
-              "name": "Legend Position",
-              "description": "Location of legend.",
-              "type": "choice",
-              "choices": ["right", "bottom", "inset"],
-              "initialValue": "right",
-              "target": "options.legend.position"
-            },
-            {
-              "name": "Color Scheme",
-              "description": "Color Scheme",
-              "type": "choice",
-              "choices": dex.color.colormaps(),
-              "target": "colorScheme"
-            },
-            {
-              "name": "Type",
-              "description": "Type of chart",
-              "type": "choice",
-              "choices": ["line", "spline", "area",
-                "area-spline", "bar", "scatter", "step", "donut", "pie"],
-              "target": "options.data.type"
-            },
-            {
-              "name": "Stack",
-              "description": "Stack items",
-              "type": "boolean",
-              "initialValue": false,
-              "target": "stack"
-            },
-          ]
-        }
-      ]
+      "contents": [{
+        "type": "group",
+        "name": "General",
+        "contents": [
+          dex.config.gui.c3Dimensions({}, "options"),
+          {
+            "name": "Show Tooltips",
+            "description": "If true, show tooltips.",
+            "type": "boolean",
+            "initialValue": true,
+            "target": "options.tooltip.show"
+          },
+          {
+            "name": "Group Tooltips",
+            "description": "If true, group tooltips.",
+            "type": "boolean",
+            "initialValue": true,
+            "target": "options.tooltip.grouped"
+          },
+          {
+            "name": "Show Subchart",
+            "description": "If true, show subchart.",
+            "type": "boolean",
+            "initialValue": true,
+            "target": "options.subchart.show"
+          },
+          {
+            "name": "Enable Zoom",
+            "description": "If true, enable zoom.",
+            "type": "boolean",
+            "initialValue": true,
+            "target": "options.zoom.enabled"
+          },
+          {
+            "name": "Show Points",
+            "description": "If true, show points.",
+            "type": "boolean",
+            "initialValue": true,
+            "target": "options.point.show"
+          },
+          {
+            "name": "Show Legend",
+            "description": "Location of legend.",
+            "type": "boolean",
+            "initialValue": true,
+            "target": "options.legend.show"
+          },
+          {
+            "name": "Legend Position",
+            "description": "Location of legend.",
+            "type": "choice",
+            "choices": ["right", "bottom", "inset"],
+            "initialValue": "right",
+            "target": "options.legend.position"
+          },
+          {
+            "name": "Color Scheme",
+            "description": "Color Scheme",
+            "type": "choice",
+            "choices": dex.color.colormaps(),
+            "target": "colorScheme"
+          },
+          {
+            "name": "Type",
+            "description": "Type of chart",
+            "type": "choice",
+            "choices": ["line", "spline", "area",
+              "area-spline", "bar", "scatter", "step", "donut", "pie"],
+            "target": "options.data.type"
+          },
+          {
+            "name": "Stack",
+            "description": "Stack items",
+            "type": "boolean",
+            "initialValue": false,
+            "target": "stack"
+          },
+        ]
+      }]
     };
 
     var guiDef = dex.config.expandAndOverlay(config, defaults);
@@ -127,6 +140,7 @@ var c3chart = function (userConfig) {
   };
 
   chart.render = function render() {
+    d3 = dex.charts.d3.d3v3;
     var config = chart.config;
     var csv = config.csv;
     d3 = dex.charts.d3.d3v3;
@@ -143,19 +157,19 @@ var c3chart = function (userConfig) {
     var dataOptions = getDataOptions(csv);
     //dex.console.log("PRE-OPTS", config.options);
     config.options =
-      dex.config.expandAndOverlay(config.options, dataOptions);
+      dex.config.expandAndOverlay(dataOptions, config.options);
     //dex.console.log("C3OPTIONS", JSON.stringify(config.options));
     internalChart = c3.generate(config.options);
     chart.resize();
-    dex.config.apply(chart);
     return chart;
   };
 
   function getDataOptions(csv) {
     var options = {};
-    var gtypes = dex.csv.guessTypes(csv);
-    var ncsv = dex.csv.numericSubset(csv);
-    var columns = dex.csv.transpose(csv);
+    //var csvSpec = chart.spec.parse(csv);
+    var gtypes = csv.guessTypes();
+    var ncsv = csv.numericSubset();
+    var columns = csv.transpose();
 
     ncsv.data.unshift(ncsv.header);
     // Categorical axis
@@ -166,7 +180,7 @@ var c3chart = function (userConfig) {
           chart.config.options.data.type == "pie" ||
           chart.config.options.data.type == "donut"
         )) {
-        var summary = dex.csv.summary(csv, [0]);
+        var summary = csv.summary([0]);
 
         return {
           data: {
@@ -195,9 +209,9 @@ var c3chart = function (userConfig) {
       }
     }
     else if (gtypes[0] == "date") {
-      var numericIndices = dex.csv.getNumericIndices(csv);
+      var numericIndices = csv.getNumericIndices();
       numericIndices.unshift(0);
-      var tcsv = dex.csv.columnSlice(csv, numericIndices);
+      var tcsv = csv.include(numericIndices);
       tcsv.data.unshift(tcsv.header);
       options = {
         data: {
@@ -238,19 +252,21 @@ var c3chart = function (userConfig) {
   }
 
   chart.update = function () {
+    //dex.console.log("C3 Chart Update...");
+    d3 = dex.charts.d3.d3v3;
     var config = chart.config;
     var csv = config.csv;
     var dataOptions = getDataOptions(csv);
     config.options =
-      dex.config.expandAndOverlay(config.options,
-        getDataOptions(config.csv));
+      dex.config.expandAndOverlay(
+        dataOptions, config.options);
+    //dex.console.log("DATA-OPTIONS", dataOptions, "C3OPTIONS", JSON.stringify(config.options));
     internalChart.load(config.options);
-    dex.config.apply(chart);
     return chart;
   };
 
   chart.clone = function clone(override) {
-    return c3chart(dex.config.expandAndOverlay(override, userConfig));
+    return C3Chart(dex.config.expandAndOverlay(override, userConfig));
   };
 
   $(document).ready(function () {
@@ -262,4 +278,4 @@ var c3chart = function (userConfig) {
   return chart;
 };
 
-module.exports = c3chart;
+module.exports = C3Chart;

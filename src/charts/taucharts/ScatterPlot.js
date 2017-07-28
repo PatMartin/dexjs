@@ -1,22 +1,24 @@
 /**
  *
- * This module provides a TauCharts Line Chart.
+ * This is the base constructor for a TauChart ScatterPlot.
  *
- * @name dex/charts/taucharts/LineChart
+ * @param userConfig The chart's configuration.
  *
- * @param userConfig
- * @returns LineChart
+ * @returns {ScatterPlot}
+ *
+ * @memberof dex/charts/taucharts
+ *
  */
-var linechart = function (userConfig) {
+var ScatterPlot = function (userConfig) {
   var chart;
   var defaults = {
-    'parent': '#TauCharts_LineChart',
-    'id': 'TauCharts_LineChart',
-    'class': 'TauCharts_LineChart',
+    'parent': '#TauCharts_ScatterPlot',
+    'id': 'TauCharts_ScatterPlot',
+    'class': 'TauCharts_ScatterPlot',
     'resizable': true,
     'width': "100%",
     'height': "100%",
-    'type': 'line'
+    'type': 'scatterplot'
   };
 
   var combinedConfig = dex.config.expandAndOverlay(userConfig, defaults);
@@ -24,4 +26,4 @@ var linechart = function (userConfig) {
 
   return chart;
 };
-module.exports = linechart;
+module.exports = ScatterPlot;

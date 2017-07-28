@@ -1,4 +1,15 @@
-var radialtree = function (userConfig) {
+/**
+ *
+ * This is the base constructor for a D3 RadialTree component.
+ *
+ * @param userConfig The chart's configuration.
+ *
+ * @returns {RadialTree}
+ *
+ * @memberof dex/charts/d3
+ *
+ */
+var RadialTree = function (userConfig) {
   d3 = dex.charts.d3.d3v4;
   var chart;
 
@@ -18,9 +29,9 @@ var radialtree = function (userConfig) {
         [2, 2, 2]
       ]
     },
-    'nodeColorScheme': "crayola8",
-    'linkColorScheme': "crayola8",
-    'labelColorScheme': "crayola8",
+    'nodeColorScheme': "category10",
+    'linkColorScheme': "category10",
+    'labelColorScheme': "category10",
     'width': "100%",
     'height': "100%",
     'transform': "",
@@ -176,7 +187,7 @@ var radialtree = function (userConfig) {
 
     d3.selectAll(config.parent).selectAll('*').remove();
 
-    var data = dex.csv.toNestedJson(dex.csv.copy(csv));
+    var data = csv.copy().toNestedJson();
 
     var svg = d3.select(config.parent)
       .append("svg")
@@ -273,7 +284,7 @@ var radialtree = function (userConfig) {
   };
 
   chart.clone = function clone(override) {
-    return radialtree(dex.config.expandAndOverlay(override, userConfig));
+    return RadialTree(dex.config.expandAndOverlay(override, userConfig));
   };
 
   function project(x, y) {
@@ -293,4 +304,4 @@ var radialtree = function (userConfig) {
   return chart;
 };
 
-module.exports = radialtree;
+module.exports = RadialTree;

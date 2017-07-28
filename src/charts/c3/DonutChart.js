@@ -1,13 +1,15 @@
 /**
  *
- * This module provides a C3 Donut Chart.
+ * This is the base constructor for a C3 Donut Chart.
  *
- * @name dex/charts/c3/DonutChart
+ * @param userConfig The chart's configuration.
  *
- * @param userConfig
- * @returns DonutChart
+ * @returns {DonutChart}
+ *
+ * @memberof dex/charts/c3
+ *
  */
-var donutchart = function (userConfig) {
+var DonutChart = function (userConfig) {
   var defaults = {
     'parent': '#C3_DonutChart',
     'id': 'C3_DonutChart',
@@ -24,4 +26,4 @@ var donutchart = function (userConfig) {
   return dex.charts.c3.C3Chart(combinedConfig);
 };
 
-module.exports = donutchart;
+module.exports = DonutChart;

@@ -1,5 +1,9 @@
 /**
- * @module dex/charts/c3
+ *
+ * Create charts using WebGL based Elegans.
+ *
+ * @module dex/charts/elegans
+ *
  */
 var elegans = {};
 

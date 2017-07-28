@@ -6,8 +6,11 @@
  *
  * @param userConfig
  * @returns ScatterPlot
+ *
+ * @memberof dex/charts/c3
+ *
  */
-var scatterplot = function (userConfig) {
+var ScatterPlot = function (userConfig) {
   var defaults = {
     'parent': '#C3_ScatterPlot',
     'id': 'C3_ScatterPlot',
@@ -24,4 +27,4 @@ var scatterplot = function (userConfig) {
   return dex.charts.c3.C3Chart(combinedConfig);
 };
 
-module.exports = scatterplot;
+module.exports = ScatterPlot;

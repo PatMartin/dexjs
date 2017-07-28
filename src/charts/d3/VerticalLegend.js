@@ -1,4 +1,15 @@
-var verticallegend = function (userConfig) {
+/**
+ *
+ * This is the base constructor for a D3 VerticalLegend component.
+ *
+ * @param userConfig The chart's configuration.
+ *
+ * @returns {VerticalLegend}
+ *
+ * @memberof dex/charts/d3
+ *
+ */
+var VerticalLegend = function (userConfig) {
 
   var defaults = {
     'labels'          : ["A", "B", "C"],
@@ -40,7 +51,7 @@ var verticallegend = function (userConfig) {
         },
         'events' : {
           'mouseover' : function (d, i) {
-            dex.console.log("mouseover event(d=" + d + ", i=" + i + ")");
+            //dex.console.log("mouseover event(d=" + d + ", i=" + i + ")");
             //dex.console.log("this", d3.select(this), "Mouseover config",
             //chart.config);
             //dex.console.log("cell.events.mouseover.config",
@@ -50,19 +61,19 @@ var verticallegend = function (userConfig) {
             chart.publish({"type" : "mouseover", "d" : d});
           },
           'mouseout'  : function (d) {
-            dex.console.log("mouseout event(d=" + d + ", i=" + i + ")");
+            //dex.console.log("mouseout event(d=" + d + ", i=" + i + ")");
             d3.select(this).call(dex.config.configureRectangle,
               chart.config.cell.appearance.mouseout.rect);
             chart.publish({"type" : "mouseout", "d" : d});
           },
           'mousedown' : function (d) {
-            dex.console.log("mousedown event(d=" + d + ", i=" + i + ")");
+            //dex.console.log("mousedown event(d=" + d + ", i=" + i + ")");
             d3.select(this).call(dex.config.configureRectangle,
               chart.config.cell.appearance.mousedown.rect);
             chart.publish({"type" : "mousedown", "d" : d});
           },
           'mouseup'   : function (d) {
-            dex.console.log("mouseup event(d=" + d + ", i=" + i + ")");
+            //dex.console.log("mouseup event(d=" + d + ", i=" + i + ")");
             d3.select(this).call(dex.config.configureRectangle,
               chart.config.cell.appearance.mouseup.rect);
             chart.publish({"type" : "mouseup", "d" : d});
@@ -74,7 +85,7 @@ var verticallegend = function (userConfig) {
           return d;
         },
         'font.scale'  : function (d) {
-          dex.console.log("FONT.SCALE: width=" + chart.config.width + 'x' + chart.config.height);
+          //dex.console.log("FONT.SCALE: width=" + chart.config.width + 'x' + chart.config.height);
           var scale = d3.scale.linear()
             .domain([0, 150])
             .range([0, 32]);
@@ -82,9 +93,9 @@ var verticallegend = function (userConfig) {
         },
         'font.weight' : "bold",
         'font.size'   : function (d) {
-          dex.console.log("FONT-SIZE: width=" + chart.config.width +
-          ", height=" + chart.config.height +
-          ", fontScale=" + chart.config.cell.label.font.scale()(chart.config.width * .2));
+          //dex.console.log("FONT-SIZE: width=" + chart.config.width +
+          //", height=" + chart.config.height +
+          //", fontScale=" + chart.config.cell.label.font.scale()(chart.config.width * .2));
           return chart.config.cell.label.font.scale()(chart.config.width * .2);
         },
         'anchor'      : 'end',
@@ -92,7 +103,7 @@ var verticallegend = function (userConfig) {
           return chart.config.yscale(d);
         },
         'dx'          : function (d, i) {
-          dex.console.log("dx", chart.config.cell.label.font.size(d));
+          //dex.console.log("dx", chart.config.cell.label.font.size(d));
           return -1 * chart.config.cell.label.font.size(d) / 2;
           //dex.console.log("this", this, "select(this)", d3.select(this), chart.config);
           //return -(chart.config.cell.label.font.size / 2);
@@ -109,17 +120,17 @@ var verticallegend = function (userConfig) {
       'text'       : 'title.text',
       'anchor'     : 'middle',
       'font.scale' : function (d) {
-        dex.console.log("TITLE.FONT.SCALE: width=" + chart.config.width + 'x' + chart.config.height);
+        //dex.console.log("TITLE.FONT.SCALE: width=" + chart.config.width + 'x' + chart.config.height);
         var scale = d3.scale.linear()
           .domain([0, 200])
           .range([4, 64]);
         return scale;
       },
       'font.size'  : function (d) {
-        dex.console.log("TITLE-FONT-SIZE: width=" + chart.config.width +
-        ", height=" + chart.config.height +
-        ", fontScale=" + chart.config.cell.label.font.scale()(
-          Math.min(chart.config.width, chart.config.height) / 5));
+        //dex.console.log("TITLE-FONT-SIZE: width=" + chart.config.width +
+        //", height=" + chart.config.height +
+        //", fontScale=" + chart.config.cell.label.font.scale()(
+        //  Math.min(chart.config.width, chart.config.height) / 5));
         return chart.config.title.font.scale()
         (Math.min(chart.config.width, chart.config.height) * .2);
       },
@@ -148,7 +159,7 @@ var verticallegend = function (userConfig) {
       var height = d3.select(chart.config.parent).property("clientHeight");
       var cellWidth = width * .4;
       var cellHeight = height * .8 / (chart.config.labels.length + 1);
-      dex.console.log("Resizing VerticalLegend: " + width + "x" + height);
+      //dex.console.log("Resizing VerticalLegend: " + width + "x" + height);
       chart
         .attr("width", width)
         .attr("height", height)
@@ -177,8 +188,7 @@ var verticallegend = function (userConfig) {
   chart.update = function update() {
     var chart = this;
     var config = this.config;
-    dex.console.log("RESIZE");
-    dex.console.log(config.id + ": " + config.width + "x" + config.height);
+    //dex.console.log(config.id + ": " + config.width + "x" + config.height);
     d3.selectAll("#" + config.id).remove();
 
     config.yscale = d3.scale.ordinal()
@@ -215,4 +225,4 @@ var verticallegend = function (userConfig) {
   return chart;
 };
 
-module.exports = verticallegend;
+module.exports = VerticalLegend;

@@ -1,4 +1,15 @@
-var ringnetwork = function (userConfig) {
+/**
+ *
+ * This is the base constructor for a D3Plus RingNetwork.
+ *
+ * @param userConfig The chart's configuration.
+ *
+ * @returns {RingNetwork}
+ *
+ * @memberof dex/charts/d3plus
+ *
+ */
+var RingNetwork = function (userConfig) {
   d3 = dex.charts.d3.d3v3;
   var chart;
 
@@ -91,7 +102,7 @@ var ringnetwork = function (userConfig) {
   };
 
     chart.clone = function clone(override) {
-        return ringnetwork(dex.config.expandAndOverlay(override, userConfig));
+        return RingNetwork(dex.config.expandAndOverlay(override, userConfig));
     };
 
   $(document).ready(function () {
@@ -102,4 +113,4 @@ var ringnetwork = function (userConfig) {
   return chart;
 };
 
-module.exports = ringnetwork;
+module.exports = RingNetwork;

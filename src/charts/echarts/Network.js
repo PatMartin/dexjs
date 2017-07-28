@@ -1,33 +1,41 @@
 /**
  *
- * This module provides a ECharts Network.
+ * Create an ECharts Network with the given specification.
  *
- * @name dex/charts/echarts/network
+ * @param userConfig The chart's configuration.
  *
- * @param userConfig
- * @returns Network
+ * @returns {Network} An ECharts Network configured to specification.
+ *
+ * @memberof dex/charts/echarts
+ *
  */
-var network = function (userConfig) {
+var Network = function (userConfig) {
   var chart;
   var defaults = {
     'parent': '#ECharts_Network',
     'id': 'ECharts_Network',
     'class': 'ECharts_Network',
+    'refreshType': "update",
     'resizable': true,
     'width': "100%",
     'height': "100%",
     'type': 'force',
+    'displayLegend': false,
     // Each node is a unique category
-    'categories' : dex.csv.getCsvFunction(),
-    'series.circular' : {},
+    'categories': new dex.csv().getCsvFunction(),
+    'palette': "ECharts",
+    'connectionIncrement': 1,
+    'series.circular': {},
     'series.type': 'graph',
     'series.layout': 'force',
-    'series.force' : {
-      repulsion: 50,
+    'series.force': {
+      repulsion: 100,
       gravity: .1,
       edgeLength: 100,
-      layoutAnimation: true
+      layoutAnimation: true,
     },
+    'series.lineStyle.normal.curveness': 0,
+    'series.focusNodeAdjacency': true,
     "options": {
       title: {
         text: 'Title',
@@ -41,48 +49,67 @@ var network = function (userConfig) {
 
   var combinedConfig = dex.config.expandAndOverlay(userConfig, defaults);
   chart = dex.charts.echarts.EChart(combinedConfig);
+  chart.spec = new dex.data.spec("Network")
+    .anything();
 
   chart.getGuiDefinition = function getGuiDefinition(config) {
     var defaults = {
       "type": "group",
       "name": "EChart Network Settings",
       "contents": [
-        dex.config.gui.dimensions(),
-        dex.config.gui.general(),
         {
           "type": "group",
-          "name": "Miscellaneous",
+          "name": "General Options",
           "contents": [
+            dex.config.gui.echartsTitle({}, "options.title"),
+            dex.config.gui.echartsGrid({}, "options.grid"),
+            dex.config.gui.echartsSymbol({}, "series"),
+            dex.config.gui.echartsTooltip({}, "options.tooltip"),
             {
               "name": "Layout",
-              "description": "The shape of the symbol.",
+              "description": "The layout of the network.",
               "type": "choice",
               "choices": ["force", "circular", "none"],
               "target": "series.layout",
               "initialValue": "force"
             },
             {
+              "name": "Color Scheme",
+              "description": "The color scheme.",
+              "target": "palette",
+              "type": "choice",
+              "choices": dex.color.colormaps({shortlist: true}),
+              "initialValue": "category10"
+            },
+            {
               "name": "Categorize",
               "description": "Categorization Methods",
               "type": "choice",
-              "choices": Object.keys(dex.csv.getCategorizationMethods(csv)),
+              "choices": Object.keys(chart.config.csv.getCategorizationMethods()),
               "target": "categorizationMethod"
             },
             {
-              "name": "Symbol Shape",
-              "description": "The shape of the symbol.",
-              "type": "choice",
-              "choices": ["circle", "rect", "roundRect", "triangle", "diamond", "pin", "arrow"],
-              "target": "series.symbol"
+              "name": "Display Legend",
+              "description": "Determines whether or not to draw the legend or not.",
+              "type": "boolean",
+              "target": "displayLegend",
+              "initialValue": true
             },
             {
-              "name": "Symbol Size",
-              "description": "The size of the symbols",
+              "name": "Background Color",
+              "description": "The color of the background.",
+              "target": "options.backgroundColor",
+              "type": "color",
+              "initialValue": "#ffffff"
+            },
+            {
+              "name": "Connection Increment",
+              "description": "The size increase per additional connection.",
               "type": "int",
-              "target": "series.symbolSize",
+              "target": "connectionIncrement",
               "minValue": 0,
-              "maxValue": 50,
-              "initialValue": 5
+              "maxValue": 10,
+              "initialValue": 1
             },
             {
               "name": "Node Scale Ratio",
@@ -92,6 +119,13 @@ var network = function (userConfig) {
               "minValue": 0,
               "maxValue": 2,
               "initialValue": .6
+            },
+            {
+              "name": "Focus Node Adjacency",
+              "description": "Highlight node connections on hover.",
+              "type": "boolean",
+              "target": "series.focusNodeAdjacency",
+              "initialValue": true
             },
             {
               "name": "Draggable",
@@ -104,7 +138,7 @@ var network = function (userConfig) {
         },
         {
           "type": "group",
-          "name": "Force Layout",
+          "name": "Physics",
           "contents": [
             {
               "name": "Initial Layout",
@@ -119,8 +153,8 @@ var network = function (userConfig) {
               "description": "The gravitational factor.",
               "type": "float",
               "target": "series.force.gravity",
-              "minValue": -10,
-              "maxValue": 10,
+              "minValue": -.1,
+              "maxValue": 2,
               "initialValue": .1
             },
             {
@@ -128,7 +162,7 @@ var network = function (userConfig) {
               "description": "The repulsive force between nodes.",
               "type": "int",
               "target": "series.force.repulsion",
-              "minValue": -1000,
+              "minValue": -100,
               "maxValue": 1000,
               "initialValue": 50
             },
@@ -150,10 +184,32 @@ var network = function (userConfig) {
             }
           ]
         },
-        dex.config.gui.echartsLineStyle({name: "Line Style"}, "series.lineStyle.normal"),
-        dex.config.gui.echartsLineStyle({name: "Line Style (Emphasis)"}, "series.lineStyle.emphasis"),
-        dex.config.gui.echartsLabel({name: "Normal Label"}, "series.label.normal"),
-        dex.config.gui.echartsLabel({name: "Emphasis Label"}, "series.label.emphasis")
+        {
+          "type": "group",
+          "name": "Nodes",
+          "contents": [
+            dex.config.gui.echartsItemStyle({name: "Nodes: Normal"}, "series.itemStyle.normal"),
+            dex.config.gui.echartsItemStyle({name: "Nodes: Emphasis"}, "series.itemStyle.emphasis")
+          ]
+        },
+        {
+          "type": "group",
+          "name": "Edges",
+          "contents": [
+            dex.config.gui.echartsLineStyle({name: "Edges: Normal"}, "series.lineStyle.normal"),
+            dex.config.gui.echartsLineStyle({name: "Edges: Emphasis"}, "series.lineStyle.emphasis"),
+            dex.config.gui.echartsLabel({name: "Edge Labels: Normal"}, "series.edgeLabel.normal"),
+            dex.config.gui.echartsLabel({name: "Edge Labels: Emphasis"}, "series.edgeLabel.emphasis")
+          ]
+        },
+        {
+          "type": "group",
+          "name": "Labels",
+          "contents": [
+            dex.config.gui.echartsLabel({name: "Label: Normal"}, "series.label.normal"),
+            dex.config.gui.echartsLabel({name: "Label: Emphasis"}, "series.label.emphasis")
+          ]
+        }
       ]
     };
 
@@ -162,6 +218,117 @@ var network = function (userConfig) {
     return guiDef;
   };
 
+  chart.getOptions = function (csv) {
+    var csvSpec = chart.spec.parse(csv);
+    var options = dex.config.expandAndOverlay(chart.config.options,
+      {}, chart.getCommonOptions());
+
+    var nodes = {};
+    var nodeId = 0;
+
+    // Dynamically determine our categorization function:
+    var categorize = csv.getCsvFunction(chart.config.categories);
+
+    // Cateorize all data in csv.
+    var catMap = {};
+    var catNum = 0;
+
+    csv.data.forEach(function (row, ri) {
+      row.forEach(function (col, ci) {
+        var category = categorize(csv, ri, ci);
+        if (typeof catMap[category] == "undefined") {
+          catMap[category] = catNum;
+          catNum++;
+        }
+      });
+    });
+    var categories = Object.keys(catMap).map(function (key) {
+      return {name: key};
+    });
+
+    csv.data.forEach(function (row, ri) {
+      row.forEach(function (col, ci) {
+        var category = catMap[categorize(csv, ri, ci)];
+        var key = col + "::" + category;
+        nodes[key] = nodes[key] || {
+          id: nodeId++,
+          name: col,
+          symbolSize: 10,
+          itemStyle: null,
+          category: category,
+          value: 0,
+          draggable: true,
+          label: {normal: {show: true}}
+        };
+        nodes[key].value++;
+        nodes[key].symbolSize += chart.config.connectionIncrement;
+      });
+    });
+
+    var links = [];
+
+    var linkId = 0;
+    csv.data.forEach(function (row, ri) {
+      row.forEach(function (col, ci) {
+        if (ci < (row.length - 1)) {
+          var sourceCat = catMap[categorize(csv, ri, ci)];
+          var targetCat = catMap[categorize(csv, ri, ci + 1)];
+
+          links.push({
+            id: linkId,
+            source: nodes[row[ci] + "::" + sourceCat]["id"],
+            target: nodes[row[ci + 1] + "::" + targetCat]["id"]
+          });
+          linkId++;
+        }
+      });
+    });
+
+    if (chart.config.displayLegend) {
+      options.legend = {
+        //selectedMode: 'single',
+        orient: 'vertical',
+        left: true,
+        top: true,
+        show: true,
+        data: categories
+      };
+    }
+
+    options.series = dex.config.expandAndOverlay(chart.config.series,
+      {
+        name: "series",
+        type: 'graph',
+        layout: 'circular',
+
+        lineStyle: {
+          normal: {
+            color: 'source',
+            curveness: 0.3
+          }
+        },
+        links: links,
+        data: Object.keys(nodes).map(function (key) {
+          return nodes[key];
+        }),
+        categories: categories,
+        roam: true,
+        label: {
+          normal: {
+            position: 'right',
+            formatter: '{b}'
+          }
+        }
+      });
+
+    if (options.series.layout == "circular") {
+      options.series.circular = {rotateLabel: true};
+    }
+
+    //dex.console.log("OPTIONS", options);
+    return options;
+  };
+
   return chart;
 };
-module.exports = network;
+module.exports = Network;

@@ -1,4 +1,15 @@
-var bumpchart = function (userConfig) {
+/**
+ *
+ * This is the base constructor for a D3 BumpChart component.
+ *
+ * @param userConfig The chart's configuration.
+ *
+ * @returns {BumpChart}
+ *
+ * @memberof dex/charts/d3
+ *
+ */
+var BumpChart = function (userConfig) {
   d3 = dex.charts.d3.d3v3;
   var chart;
 
@@ -8,20 +19,12 @@ var bumpchart = function (userConfig) {
     'class': 'BumpChartClass',
     'resizable': true,
     // Sample data...
-    'csv': {
-      'header': ["category", "sequence", "rank"],
-      'data': [
-        ["Team 1", 1, 1],
-        ["Team 1", 2, 2],
-        ["Team 1", 3, 3],
-        ["Team 2", 1, 2],
-        ["Team 2", 2, 1],
-        ["Team 2", 3, 2],
-        ["Team 3", 1, 3],
-        ["Team 3", 2, 3],
-        ["Team 3", 3, 1]
-      ]
-    },
+    'csv': new dex.csv(["category", "sequence", "rank"],
+      [
+        ["Team 1", 1, 1], ["Team 1", 2, 2], ["Team 1", 3, 3],
+        ["Team 2", 1, 2], ["Team 2", 2, 1], ["Team 2", 3, 2],
+        ["Team 3", 1, 3], ["Team 3", 2, 3], ["Team 3", 3, 1]
+      ]),
     'width': "100%",
     'height': "100%",
     'margin': {
@@ -31,7 +34,7 @@ var bumpchart = function (userConfig) {
       'bottom': 50
     },
     'transform': "",
-    'colorScheme' : 'category10',
+    'colorScheme': 'category10',
     'color': d3.scale.category10(),
     'format': d3.format("d"),
     'key': {'category': 0, 'sequence': 1, 'rank': 2},
@@ -137,13 +140,11 @@ var bumpchart = function (userConfig) {
   chart.render = function render() {
     d3 = dex.charts.d3.d3v3;
     chart.resize();
-    dex.config.apply(chart);
     return chart;
   };
 
   chart.update = function () {
     d3 = dex.charts.d3.d3v3;
-    var chart = this;
     var config = chart.config;
     var csv = config.csv;
     var margin = config.margin;
@@ -151,13 +152,13 @@ var bumpchart = function (userConfig) {
     var height = +config.height - margin.top - margin.bottom;
     config.color = dex.color.getColormap(config.colorScheme);
 
-    var categoryKey = dex.csv.getColumnName(csv, config.key.category);
-    var sequenceKey = dex.csv.getColumnName(csv, config.key.sequence);
-    var rankKey = dex.csv.getColumnName(csv, config.key.rank);
+    var categoryKey = csv.getColumnName(config.key.category);
+    var sequenceKey = csv.getColumnName(config.key.sequence);
+    var rankKey = csv.getColumnName(config.key.rank);
 
-    var categoryIndex = dex.csv.getColumnNumber(csv, config.key.category);
-    var sequenceIndex = dex.csv.getColumnNumber(csv, config.key.sequence);
-    var rankIndex = dex.csv.getColumnNumber(csv, config.key.rank);
+    var categoryIndex = csv.getColumnNumber(config.key.category);
+    var sequenceIndex = csv.getColumnNumber(config.key.sequence);
+    var rankIndex = csv.getColumnNumber(config.key.rank);
 
     //dex.console.log("cat", categoryKey, "sequence", sequenceKey, "rank", rankKey);
 
@@ -175,7 +176,7 @@ var bumpchart = function (userConfig) {
         margin.left + ',' + margin.top + ') ' +
         config.transform);
 
-    var data = dex.csv.toJson(csv);
+    var data = csv.toJson();
     //dex.console.log("JSON", JSON.stringify(data));
 
     var dataNest = d3.nest()
@@ -237,11 +238,11 @@ var bumpchart = function (userConfig) {
           return +d[rankKey];
         });
       }),
-        d3.max(data, function (series) {
-          return d3.max(series.values, function (d) {
-            return +d[rankKey];
-          });
-        }) + 1)
+      d3.max(data, function (series) {
+        return d3.max(series.values, function (d) {
+          return +d[rankKey];
+        });
+      }) + 1)
         .reverse()
     );
 
@@ -398,7 +399,7 @@ var bumpchart = function (userConfig) {
     return chart;
   };
   chart.clone = function clone(userConfig) {
-    return bumpchart(userConfig, chart.defaults);
+    return BumpChart(userConfig, chart.defaults);
   };
 
   $(document).ready(function () {
@@ -411,4 +412,4 @@ var bumpchart = function (userConfig) {
   return chart;
 };
 
-module.exports = bumpchart;
+module.exports = BumpChart;

@@ -1,13 +1,15 @@
 /**
  *
- * This module provides a C3 Bar Chart.
+ * This is the base constructor for a C3 Bar Chart.
  *
- * @name dex/charts/c3/BarChart
+ * @param userConfig The chart's configuration.
  *
- * @param userConfig
- * @returns BarChart
+ * @returns {BarChart}
+ *
+ * @memberof dex/charts/c3
+ *
  */
-var barchart = function (userConfig) {
+var BarChart = function (userConfig) {
   var defaults = {
     'parent': '#C3_BarChart',
     'id': 'C3_BarChart',
@@ -24,4 +26,4 @@ var barchart = function (userConfig) {
   return dex.charts.c3.C3Chart(combinedConfig);
 };
 
-module.exports = barchart;
+module.exports = BarChart;

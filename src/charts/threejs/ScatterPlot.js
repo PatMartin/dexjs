@@ -1,4 +1,15 @@
-var scatterplot = function (userConfig) {
+/**
+ *
+ * This is the base constructor for a WebGL ScatterPlot component.
+ *
+ * @param userConfig The chart's configuration.
+ *
+ * @returns {ScatterPlot}
+ *
+ * @memberof dex/charts/threejs
+ *
+ */
+var ScatterPlot = function (userConfig) {
   var defaults = {
     // The parent container of this chart.
     'parent'  : null,
@@ -366,4 +377,4 @@ var scatterplot = function (userConfig) {
   return chart;
 };
 
-module.exports = scatterplot;
+module.exports = ScatterPlot;

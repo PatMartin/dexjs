@@ -1,4 +1,15 @@
-var orbitallayout = function (userConfig) {
+/**
+ *
+ * This is the base constructor for a D3 OrbitalLayout component.
+ *
+ * @param userConfig The chart's configuration.
+ *
+ * @returns {OrbitalLayout}
+ *
+ * @memberof dex/charts/d3
+ *
+ */
+var OrbitalLayout = function (userConfig) {
   d3 = dex.charts.d3.d3v3;
   var chart;
   var colors = d3.scale.category10();
@@ -31,11 +42,11 @@ var orbitallayout = function (userConfig) {
     'transform': "",
     'title': dex.config.text(),
     'label': dex.config.text(),
-    'radiusScale' : d3.scale.linear()
+    'radiusScale': d3.scale.linear()
       .domain([0, 1, 2, 3, 4])
       .range([60, 20, 5, 2, 1])
       .clamp(true),
-    'orbitScale' : d3.scale.linear()
+    'orbitScale': d3.scale.linear()
       .domain([0, 5])
       .range([4.5, .3])
       .clamp(true),
@@ -82,7 +93,7 @@ var orbitallayout = function (userConfig) {
 
     d3.selectAll(config.parent).selectAll("*").remove();
 
-    var data = dex.csv.toNestedJson(dex.csv.copy(csv));
+    var data = csv.copy().toNestedJson();
 
     d3.layout.orbit = function () {
       var currentTickStep = 0;
@@ -121,9 +132,9 @@ var orbitallayout = function (userConfig) {
             flattenedNodes.forEach(function (_node) {
               if (_node.parent) {
                 _node.x = _node.parent.x + ( (_node.parent.ring / 2) * Math.sin(_node.angle + (currentTickStep *
-                    config.tickRadianStep * tickRadianFunction(_node))) );
+                  config.tickRadianStep * tickRadianFunction(_node))) );
                 _node.y = _node.parent.y + ( (_node.parent.ring / 2) * Math.cos(_node.angle + (currentTickStep *
-                    config.tickRadianStep * tickRadianFunction(_node))) );
+                  config.tickRadianStep * tickRadianFunction(_node))) );
               }
             })
             orbitalRings.forEach(function (_ring) {
@@ -191,6 +202,7 @@ var orbitallayout = function (userConfig) {
       d3.rebind(_orbitLayout, orbitDispatch, "on");
 
       return _orbitLayout;
+
       function calculateNodes() {
         var _data = nestedNodes;
         //If you have an array of elements, then create a root node (center)
@@ -350,9 +362,9 @@ var orbitallayout = function (userConfig) {
     }
   };
 
-    chart.clone = function clone(override) {
-        return orbitallayout(dex.config.expandAndOverlay(override, userConfig));
-    };
+  chart.clone = function clone(override) {
+    return OrbitalLayout(dex.config.expandAndOverlay(override, userConfig));
+  };
 
   $(document).ready(function () {
     // Make the entire chart draggable.
@@ -362,4 +374,4 @@ var orbitallayout = function (userConfig) {
   return chart;
 };
 
-module.exports = orbitallayout;
+module.exports = OrbitalLayout;
