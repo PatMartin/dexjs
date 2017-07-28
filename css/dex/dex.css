@@ -1,0 +1,123 @@
+
+.dex-tooltip-table tr:first-child th {
+    background: #337ab7;
+
+    text-align: center;
+    font-size: 2em;
+    font-family: "Segoe UI";
+    font-weight: normal;
+    font-style: italic;
+
+    padding: 1px 15px 1px 1px;
+    color: #ffffff;
+    border-top: 1px solid #000000;
+    border-bottom: 1px solid #000000;
+}
+
+.dex-tooltip-table thead {
+    -moz-border-radius: 2px;
+    -webkit-border-radius: 2px;
+    border-radius: 2px;
+}
+
+.dex-tooltip-table thead th:first-child {
+    -moz-border-radius-topleft: 5px;
+    -webkit-border-top-left-radius: 5px;
+    border-top-left-radius: 5px;
+}
+
+.dex-tooltip-table thead th:last-child {
+    -moz-border-radius-topright: 5px;
+    -webkit-border-top-right-radius: 5px;
+    border-top-right-radius: 5px;
+}
+
+.dex-tooltip-table tbody tr td {
+    font-family: 'Open Sans', sans-serif;
+    color: black;
+    padding: 1px 15px 1px 1px;
+    border-bottom: 1px solid #337ab7;
+}
+
+.dex-tooltip-table tbody tr:nth-child(2n) {
+    background: rgb(226, 239, 251);
+}
+
+.dex-tooltip-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.dex-tooltip-table tbody tr:last-child td:first-child {
+    -moz-border-radius-bottomleft: 5px;
+    -webkit-border-bottom-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+}
+
+.dex-tooltip-table tbody tr:last-child td:last-child {
+    -moz-border-radius-bottomright: 5px;
+    -webkit-border-bottom-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+}
+/**
+<div style='height:100%;width:100%;display:flex;align-items:center;" +
+"justify-content:center;'><h1 style='text-align:center;width:100%;" +
+"background:#428bca;color:white;'>No Data</h1></div>");
+
+*/
+
+.dex-exception-title {
+    font-size: 3em;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #3e999f;
+    color: white;
+}
+
+.dex-exception-msg {
+    font-size: 1.5em;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    background: #d58512;
+    color: white;
+}
+
+.SankeyClass .node rect {
+    cursor: move;
+    fill-opacity: .9;
+    shape-rendering: crispEdges;
+}
+
+.SankeyClass .node text {
+    pointer-events: none;
+    text-shadow: 0 1px 0 #fff;
+}
+
+/*
+.SankeyClass .link {
+    fill: none;
+    stroke: #000;
+    stroke-opacity: .2;
+}
+*/
+
+.SankeyClass .link:hover {
+    stroke-opacity: .5;
+}
+
+.ui-tooltip {
+    background: white;
+    border: 2px solid white;
+    opacity: 1;
+    padding: 2px 2px;
+    color: white;
+    /**border-radius: 20px;**/
+    font: bold 14px "Helvetica Neue", Sans-Serif;
+    text-transform: uppercase;
+    box-shadow: 0 0 7px black;
+}

@@ -22,18 +22,23 @@
 .ConfigurationPaneClass table,
 .ConfigurationPaneClass td > label,
 .ConfigurationPaneClass th,
-.ConfigurationPaneClass td,
+.ConfigurationPaneClass td {
+    padding: 0px !important;
+    margin: 0px !important;
+}
+
 .ConfigurationPaneClass h1,
 .ConfigurationPaneClass h2,
 .ConfigurationPaneClass h3,
 .ConfigurationPaneClass h4,
-.ConfigurationPaneClass h5 {
-    padding: 1px !important;
+.ConfigurationPaneClass h5,
+.ConfigurationPaneClass h6 {
+    padding: 2px !important;
     margin: 0px !important;
 }
 
 .ConfigurationPaneClass h1 {
-    font-size: 3em !important;
+    font-size: 1.8em !important;
     font-weight: normal !important;
     color: white;
     background-color: #878787;
@@ -41,7 +46,7 @@
 }
 
 .ConfigurationPaneClass h2 {
-    font-size: 2.5em !important;
+    font-size: 1.5em !important;
     font-weight: normal !important;
     color: white;
     background-color: #3288bd;
@@ -49,7 +54,7 @@
 }
 
 .ConfigurationPaneClass h3 {
-    font-size: 2.25em !important;
+    font-size: 1.2em !important;
     font-weight: normal !important;
     color: white;
     background-color: #1a9850;
@@ -57,7 +62,7 @@
 }
 
 .ConfigurationPaneClass h4 {
-    font-size: 2em !important;
+    font-size: 1em !important;
     font-weight: normal !important;
     color: white;
     background-color: #d58512;
@@ -65,10 +70,18 @@
 }
 
 .ConfigurationPaneClass h5 {
-    font-size: 1.5em !important;
+    font-size: .9em !important;
     font-weight: normal !important;
     color: white;
     background-color: #3e999f;
+    text-align: center;
+}
+
+.ConfigurationPaneClass h6 {
+    font-size: .8em !important;
+    font-weight: normal !important;
+    color: white;
+    background-color: #91765d;
     text-align: center;
 }
 
@@ -92,13 +105,16 @@
 .ConfigurationPaneClass .control-float {
     margin: 10px;
 }
-
+.ConfigurationPaneClass .slider {
+    margin-bottom: 10px !important;
+}
+/**
 .ConfigurationPaneClass .slider {
     margin-left: 5px !important;
-    margin-bottom: 15px !important;
+    margin-bottom: 5px !important;
     margin-top: 0px !important;
 }
-
+**/
 .ConfigurationPaneClass .slider-handle {
     top: 5px !important;
 }
