@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+    html, body, #ChordParent, #ConfigurationPane {
+        height: 100%;
+        min-height: 100%;
+        width: 100%;
+        min-width: 100%;
+    }
+</style>
+<link rel="stylesheet" href="../../dist/dex.css"/>
+<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.css">
+<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.theme.min.css">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.css"/>
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/css/bootstrap-multiselect.css"/>
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.8.0/css/bootstrap-slider.min.css"/>
+<body>
+
+</div>
+<div id="ConfigurationPane"></div>
+<div id="ChordParent"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+<script src="../../dist/dex.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/js/bootstrap-multiselect.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.8.0/bootstrap-slider.min.js"></script>
+
+<script>
+
+  var csv = {
+    'header': ["Presidency", "President", "Party", "Home State"],
+    'data': [
+      [1, "George Washington", "Independent", "Virginia"],
+      [2, "John Adams", "Federalist", "Massachusetts"],
+      [3, "Thomas Jefferson", "Dem-Rep", "Virginia"],
+      [4, "James Madison", "Dem-Rep", "Virginia"],
+      [5, "James Monroe", "Dem-Rep", "Virginia"],
+      [6, "John Quincy Adams", "Dem-Rep/Nat Rep", "Massachusetts"],
+      [7, "Andrew Jackson", "Democratic", "Tennessee"],
+      [8, "Martin Van Buren", "Democratic", "New York"],
+      [9, "William Henry Harrison", "Whig", "Ohio"],
+      [10, "John Tyler", "Whig", "Virginia"],
+      [11, "James K. Polk", "Democratic", "Tennessee"],
+      [12, "Zachary Taylor", "Whig", "Louisiana"],
+      [13, "Millard Fillmore", "Whig", "New York"],
+      [14, "Franklin Pierce", "Democratic", "New Hampshire"],
+      [15, "James Buchanan", "Democratic", "Pennsylvania"],
+      [16, "Abraham Lincoln", "Rep/Nat Union", "Illinois"],
+      [17, "Andrew Johnson", "Dem/Nat Union", "Tennessee"],
+      [18, "Ulysses S. Grant", "Republican", "Ohio"],
+      [19, "Rutherford B. Hayes", "Republican", "Ohio"],
+      [20, "James A. Garfield", "Republican", "Ohio"],
+      [21, "Chester A. Arthur", "Republican", "New York"],
+      [22, "Grover Cleveland", "Democratic", "New York"],
+      [23, "Benjamin Harrison", "Republican", "Indiana"],
+      [24, "Grover Cleveland (2nd)", "Democratic", "New York"],
+      [25, "William McKinley", "Republican", "Ohio"],
+      [26, "Theodore Roosevelt", "Republican", "New York"],
+      [27, "William Howard Taft", "Republican", "Ohio"],
+      [28, "Woodrow Wilson", "Democratic", "New Jersey"],
+      [29, "Warren G. Harding", "Republican", "Ohio"],
+      [30, "Calvin Coolidge", "Republican", "Massachusetts"],
+      [31, "Herbert Hoover", "Republican", "Iowa"],
+      [32, "Franklin D. Roosevelt", "Democratic", "New York"],
+      [33, "Harry S. Truman", "Democratic", "Missouri"],
+      [34, "Dwight D. Eisenhower", "Republican", "Texas"],
+      [35, "John F. Kennedy", "Democratic", "Massachusetts"],
+      [36, "Lyndon B. Johnson", "Democratic", "Texas"],
+      [37, "Richard Nixon", "Republican", "California"],
+      [38, "Gerald Ford", "Republican", "Michigan"],
+      [39, "Jimmy Carter", "Democratic", "Georgia"],
+      [40, "Ronald Reagan", "Republican", "California"],
+      [41, "George H. W. Bush", "Republican", "Texas"],
+      [42, "Bill Clinton", "Democratic", "Arkansas"],
+      [43, "George W. Bush", "Republican", "Texas"],
+      [44, "Barack Obama", "Democratic", "Illinois"]
+    ]
+  };
+
+  var chord = dex.charts.d3.Chord({
+      'parent': '#ChordParent',
+      'color': d3.scale.category20c(),
+      'csv': csv.include([1, 2, 0])
+    }
+  ).render();
+
+  var columnFilter = dex.ui.ConfigurationPane({
+    "parent": "#ConfigurationPane",
+    "csv": csv,
+    "components" : [ chord ]
+  }).render();
+
+  chord.subscribe(columnFilter, "select", function (msg) {
+    chord.attr('csv', msg.selected).update();
+  });
+
+</script>
+
+</body>
+</html>

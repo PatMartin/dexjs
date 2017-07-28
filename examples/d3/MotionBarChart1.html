@@ -10,14 +10,25 @@
 </style>
 <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.css">
 <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.theme.min.css">
+<link rel="stylesheet" href="../../dist/dex-jquery.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.css"/>
+<link rel="stylesheet" href="../../dist/dex-bootstrap.css">
+<link rel="stylesheet" href="../../dist/dex.css">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+<script src="../../dist/dex-jquery.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script src="../../dist/dex-bootstrap.js"></script>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+<script src="../../dist/dex-libs.js"></script>
+<script src="../../dist/dex.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Faker/3.1.0/faker.min.js"></script>
 <body>
 <div id="MotionBarChartParent"></div>
-<script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-<script src="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
-<script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
-<script src="../../dist/dex.js"></script>
+
 <script>
-  var csv = {
+  var csv = new dex.csv({
     'header': ["Country Abbreviation", "Country", "Year", "Births per 1000 People", "Deaths per 1000 People", "population"],
     'data': [
       ["JPN", "Japan", "1975", "6.20000000000000E+00", "1.70000000000000E+01", "1.11940000000000E+08"],
@@ -533,7 +544,7 @@
       ["SAU", "Saudi Arabia", "2001", "4.24200000000000E+00", "2.61720000000000E+01", "2.06815760000000E+07"],
       ["SAU", "Saudi Arabia", "2002", "4.16900000000000E+00", "2.52530000000000E+01", "2.14630720000000E+07"],
       ["SAU", "Saudi Arabia", "2003", "4.09600000000000E+00", "2.44200000000000E+01", "2.23343710000000E+07"]]
-  };
+  });
 
   var color = d3.scale.category20c();
 

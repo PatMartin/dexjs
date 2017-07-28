@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        html, body, #Chart {
+            height: 100%;
+            min-height: 100%;
+            width: 100%;
+            min-width: 100%;
+        }
+
+        #Chart {
+            display: inline-block;
+        }
+
+        #ConfigurationPane {
+            height: 100%;
+            width: 100%;
+            max-height: 100%;
+            max-width: 100%;
+        }
+    </style>
+    <title>Configuration Pane Example</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.10/c3.min.css"/>
+    <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.css">
+    <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.theme.min.css">
+    <link rel="stylesheet" href="../../../dist/dex-jquery.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.css"/>
+    <link rel="stylesheet" href="../../../dist/dex-bootstrap.css">
+    <link rel="stylesheet" href="../../../dist/dex.css">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <script src="../../../dist/dex-jquery.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="../../../dist/dex-bootstrap.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+    <script src="../../../dist/dex-libs.js"></script>
+    <script src="../../../dist/dex.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Faker/3.1.0/faker.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.14/c3.min.js"></script>
+</head>
+<body>
+
+<div class="ui-layout-center">
+    <div id="Chart"></div>
+</div>
+<div class="ui-layout-west">
+    <div id="ConfigurationPane"></div>
+</div>
+<script>
+
+  var csv = {
+    'header': ["I", "X", "Y", "Z"],
+    'data': dex.datagen.randomIndexedMatrix({rows: 100, columns: 4, min: 0, max: 100})
+  };
+
+  $(document).ready(function () {
+    $('body').layout({
+      applyDemoStyles: false,
+      west: {
+        size: 335
+      }
+    });
+
+    var chart = dex.charts.c3.AreaChart({
+        'parent': '#Chart',
+        'csv': csv
+      }
+    ).render();
+
+    var configurationPane = dex.ui.ConfigurationPane({
+      "parent": "#ConfigurationPane",
+      "csv": csv,
+      "components" : [ chart ]
+    }).render();
+  });
+</script>
+</body>
+</html>

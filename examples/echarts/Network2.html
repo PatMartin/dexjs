@@ -16,18 +16,23 @@
     </style>
     <title>dex.js : ECharts Network</title>
 
-    <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.theme.min.css"/>
+    <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.css">
+    <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.theme.min.css">
+    <link rel="stylesheet" href="../../dist/dex-jquery.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.css"/>
+    <link rel="stylesheet" href="../../dist/dex-bootstrap.css">
+    <link rel="stylesheet" href="../../dist/dex.css">
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <script src="../../dist/dex-jquery.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="../../dist/dex-bootstrap.js"></script>
     <script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+    <script src="../../dist/dex-libs.js"></script>
     <script src="../../dist/dex.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/3.6.1/echarts.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Faker/3.1.0/faker.min.js"></script>
-
 </head>
 <body>
 
@@ -39,26 +44,55 @@
 </div>
 
 <script>
-  var csv = {
-    'header': ['First Name', 'Last Name', 'City', 'State', 'Zip Code', "Number 1", "Number 2", "Boolean 1", "Boolean 2" ],
-    'data': []
-  };
-
-  for (var nameIndex = 0; nameIndex < 200; nameIndex++) {
-    csv.data.push(
-      [
-        faker.name.firstName(),
-        faker.name.lastName(),
-        faker.address.city(),
-        faker.address.state(),
-        faker.address.zipCode(),
-        faker.random.number(),
-        faker.random.number(),
-        faker.random.boolean(),
-        faker.random.boolean()
-      ]
-    );
-  }
+  var csv = new dex.csv({
+    'header': ["President", "Party", "Home State"],
+    'data': [
+      ["George Washington", "Independent", "Virginia"],
+      ["John Adams", "Federalist", "Massachusetts"],
+      ["Thomas Jefferson", "Democratic-Republican", "Virginia"],
+      ["James Madison", "Democratic-Republican", "Virginia"],
+      ["James Monroe", "Democratic-Republican", "Virginia"],
+      ["John Quincy Adams", "Democratic-Republican/National Republican", "Massachusetts"],
+      ["Andrew Jackson", "Democratic", "Tennessee"],
+      ["Martin Van Buren", "Democratic", "New York"],
+      ["William Henry Harrison", "Whig", "Ohio"],
+      ["John Tyler", "Whig", "Virginia"],
+      ["James K. Polk", "Democratic", "Tennessee"],
+      ["Zachary Taylor", "Whig", "Louisiana"],
+      ["Millard Fillmore", "Whig", "New York"],
+      ["Franklin Pierce", "Democratic", "New Hampshire"],
+      ["James Buchanan", "Democratic", "Pennsylvania"],
+      ["Abraham Lincoln", "Republican/National Union", "Illinois"],
+      ["Andrew Johnson", "Democratic/National Union", "Tennessee"],
+      ["Ulysses S. Grant", "Republican", "Ohio"],
+      ["Rutherford B. Hayes", "Republican", "Ohio"],
+      ["James A. Garfield", "Republican", "Ohio"],
+      ["Chester A. Arthur", "Republican", "New York"],
+      ["Grover Cleveland", "Democratic", "New York"],
+      ["Benjamin Harrison", "Republican", "Indiana"],
+      ["Grover Cleveland (2nd term)", "Democratic", "New York"],
+      ["William McKinley", "Republican", "Ohio"],
+      ["Theodore Roosevelt", "Republican", "New York"],
+      ["William Howard Taft", "Republican", "Ohio"],
+      ["Woodrow Wilson", "Democratic", "New Jersey"],
+      ["Warren G. Harding", "Republican", "Ohio"],
+      ["Calvin Coolidge", "Republican", "Massachusetts"],
+      ["Herbert Hoover", "Republican", "Iowa"],
+      ["Franklin D. Roosevelt", "Democratic", "New York"],
+      ["Harry S. Truman", "Democratic", "Missouri"],
+      ["Dwight D. Eisenhower", "Republican", "Texas"],
+      ["John F. Kennedy", "Democratic", "Massachusetts"],
+      ["Lyndon B. Johnson", "Democratic", "Texas"],
+      ["Richard Nixon", "Republican", "California"],
+      ["Gerald Ford", "Republican", "Michigan"],
+      ["Jimmy Carter", "Democratic", "Georgia"],
+      ["Ronald Reagan", "Republican", "California"],
+      ["George H. W. Bush", "Republican", "Texas"],
+      ["Bill Clinton", "Democratic", "Arkansas"],
+      ["George W. Bush", "Republican", "Texas"],
+      ["Barack Obama", "Democratic", "Illinois"]
+    ]
+  });
 
   $(document).ready(function () {
     $('body').layout({

@@ -10,14 +10,25 @@
 </style>
 <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.css">
 <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.theme.min.css">
+<link rel="stylesheet" href="../../dist/dex-jquery.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.css"/>
+<link rel="stylesheet" href="../../dist/dex-bootstrap.css">
+<link rel="stylesheet" href="../../dist/dex.css">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+<script src="../../dist/dex-jquery.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script src="../../dist/dex-bootstrap.js"></script>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+<script src="../../dist/dex-libs.js"></script>
+<script src="../../dist/dex.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Faker/3.1.0/faker.min.js"></script>
 <body>
 <div id="SunburstParent"></div>
-<script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-<script src="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
-<script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
-<script src="../../dist/dex.js"></script>
+
 <script>
-  csv = {
+  csv = new dex.csv({
     'header': ["Presidency", "President", "Party", "Home State"],
     'data': [
       ["1", "George Washington", "Independent", "Virginia"],
@@ -65,13 +76,11 @@
       ["43", "George W. Bush", "Republican", "Texas"],
       ["44", "Barack Obama", "Democratic", "Illinois"]
     ]
-  };
+  }).include([2, 3]);
 
   var sunburst = dex.charts.d3.Sunburst({
       'parent': '#SunburstParent',
-      //'color': d3.scale.category20(),
-      'color': dex.util.d3.color.c64Dark(),
-      'csv': dex.csv.columnSlice(csv, [2, 3])
+      'csv': csv
     }
   ).render();
 

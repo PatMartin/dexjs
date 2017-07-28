@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+    html, body {
+        height: 100%;
+        min-height: 100%;
+        width: 100%;
+        min-width: 100%;
+    }
+</style>
+<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.css">
+<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.theme.min.css">
+<body>
+
+<script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+<script src="../../../dist/dex.js"></script>
+<script src="http://www.d3plus.org/js/d3plus.js"></script>
+
+<!--
+// Move 0, 300
+M2.2441652594375247e-14,366.5
+Arc, rx, ry, x-axis-rot=0, large-arc-flag=0, sweep-flag=1, x, y,
+M0,300A300.5,300 0 0,1 0,-300.5L0,-200A200,200 0 0,0 0,200Z
+
+# 1 way to draw the segment.
+M0,300A300,300 0 0,1 0,-300L0,-200A200,200 0 0,0 0,200Z
+
+-->
+
+<svg id="ArcSegment" width="1485" height="833">
+    <g transform="translate(100,50) translate(642.5,366.5)">
+        <g>
+            <path d="M0,300A300,300 0 0,1 0,-300L0,-200A200,200 0 0,0 0,200Z"
+                  style="fill: steelblue; stroke:black; stroke-width:5;"></path>
+            <path id="mypath" d="M0,250A250,250 0 0,1 0,-250"
+                  style="fill:none; opacity:0; stroke:black; stroke-width:5;"></path>
+            <text dominant-baseline="central" font-family="Verdana" font-size="42.5" fill="white" text-anchor="middle">
+                <textPath xlink:href="#mypath" startOffset="50%">
+                    This is text along an annulus sector.
+                </textPath>
+        </g>
+    </g>
+</svg>
+
+<script>
+  function getPoints(path) {
+    var NUM_POINTS = 150;
+    var pathLen = path.getTotalLength();
+    var increment = pathLen / NUM_POINTS;
+    var pointPosition = 0;
+    var points = [];
+    for (i = 0; i < NUM_POINTS; i++) {
+      var point = path.getPointAtLength(pointPosition);
+      points.push([point.x, point.y]);
+      pointPosition += increment;
+    }
+    return points;
+  }
+
+  function getPoints2(path) {
+    return d3plus.geom.path2poly(path.attributes["d"].value);
+  }
+
+  function area(points) {
+    var area = 0;
+    var pts = this.points;
+    var nPts = points.length;
+    var j = nPts - 1;
+    var p1;
+    var p2;
+
+    for (var i = 0; i < nPts; j = i++) {
+      p1 = pts[i];
+      p2 = pts[j];
+      area += p1[0] * p2[1];
+      area -= p1[1] * p2[0];
+    }
+    area /= 2;
+    return area;
+  };
+
+  var centroid2 = function (arr) {
+    var twoTimesSignedArea = 0;
+    var cxTimes6SignedArea = 0;
+    var cyTimes6SignedArea = 0;
+
+    var length = arr.length
+
+    var x = function (i) {
+      return arr[i % length][0]
+    };
+    var y = function (i) {
+      return arr[i % length][1]
+    };
+
+    for (var i = 0; i < arr.length; i++) {
+      var twoSA = x(i) * y(i + 1) - x(i + 1) * y(i);
+      twoTimesSignedArea += twoSA;
+      cxTimes6SignedArea += (x(i) + x(i + 1)) * twoSA;
+      cyTimes6SignedArea += (y(i) + y(i + 1)) * twoSA;
+    }
+    var sixSignedArea = 3 * twoTimesSignedArea;
+    return [cxTimes6SignedArea / sixSignedArea, cyTimes6SignedArea / sixSignedArea];
+  }
+
+  function centroid(points) {
+    var nPts = points.length;
+    var x = 0;
+    var y = 0;
+    var f;
+    var j = nPts - 1;
+    var p1;
+    var p2;
+
+    for (var i = 0; i < nPts; j = i++) {
+      p1 = points[i];
+      p2 = points[j];
+      f = p1[0] * p2[1] - p2[0] * p1[1];
+      x += (p1[0] + p2[1]) * f;
+      y += (p1[1] + p2[1]) * f;
+    }
+
+    f = area(points) * 6;
+    return [x / f, y / f];
+  };
+
+  var g = d3.select("#ArcSegment g g");
+  var path = g.select("path");
+  var points = getPoints(path[0][0]);
+  var cen = centroid(points);
+  var cen2 = centroid(points);
+  dex.console.log("PATH", path, "POINTS", points, cen);
+
+  // Pole of inaccessibility
+  //var polygon = { "type": "Polygon", "coordinates" : points };
+  //var p = dex.polylabel([dex.matrix.copy(points)], 20);
+  //dex.console.log("POLYLABEL", p);
+  /*
+   g.selectAll("circle")
+   .data(points)
+   .enter().append("circle")
+   .attr("cx", function (d) {
+   return p[0];
+   })
+   .attr("cy", function (d) {
+   return p[1];
+   })
+   .attr("r", 5)
+   .style("fill", 'cyan');
+   */
+
+  var spointJsonArray = [];
+  points.forEach(function (point) {
+    spointJsonArray.push({x: point[0], y: point[1]});
+  });
+
+  var simplified = dex.geometry.simplify(spointJsonArray, 1, false);
+
+  var spoints = simplified.map(function (point) {
+    return [point.x, point.y];
+  });
+
+  dex.console.log("POINTS", points, "SIMPLIFIED", spoints);
+
+  var checkpoint = [-1, 356];
+  dex.console.log("POINT-INSIDE?", dex.geometry.pointInside(checkpoint, points));
+  var raster = dex.geometry.rasterize(points, 1);
+  dex.console.log("RASTERIZE", raster);
+  dex.console.log("MAX-RECT", dex.geometry.maxRect(raster.image));
+
+  raster.image.forEach(function (scanline, ri) {
+    scanline.forEach(function (pixel, ci) {
+      g.append("circle")
+        .attr("cx", raster.extents.x.min + (raster.resolution * ci))
+        .attr("cy", raster.extents.y.min + (raster.resolution * ri))
+        .attr("r", .5 * raster.resolution)
+        .attr("fill", function(d) { return (pixel == 1) ? "green" : "red"; })
+        .style("opacity", 1);
+    });
+  });
+
+  /*
+   g.selectAll("circle")
+   .data(spoints)
+   .enter().append("circle")
+   .attr("cx", checkpoint[0] )
+   .attr("cy", checkpoint[1])
+   .attr("r", 5)
+   .style("fill", dex.geometry.pointInside(checkpoint, points) ? "green" : "red");
+
+   g.selectAll("circle")
+   .data(spoints)
+   .enter().append("circle")
+   .attr("cx", function (d) {
+   return d[0];
+   })
+   .attr("cy", function (d) {
+   return d[1];
+   })
+   .attr("r", 5)
+   .style("fill", 'black');
+
+   var rect = d3plus.geom.largestRect(points, {nTries: 5000});
+   var lr = rect[0];
+
+   g.append("circle")
+   .attr("cx", lr.cx)
+   .attr("cy", lr.cy)
+   .attr("r", 10)
+   .style("fill", 'none')
+   .attr("stroke", "red")
+   .style("stroke-width", 4);
+
+   g.append("circle")
+   .attr("cx", cen[0])
+   .attr("cy", cen[1])
+   .attr("r", 10)
+   .style("fill", 'none')
+   .attr("stroke", "black")
+   .style("stroke-width", 4);
+
+   g.append("circle")
+   .attr("cx", cen2[0])
+   .attr("cy", cen2[1])
+   .attr("r", 10)
+   .style("fill", 'none')
+   .attr("stroke", "green")
+   .style("stroke-width", 4);
+
+   g.append("rect")
+   .attr("x", lr.cx - (.5 * lr.width))
+   .attr("y", lr.cy - (.5 * lr.height))
+   .attr("width", lr.width)
+   .attr("height", lr.height)
+   .attr("stroke", "yellow")
+   .attr("fill", "none")
+   .attr("stroke-width", 4)
+   .attr("transform", "rotate(" + lr.angle + " " + lr.cx + " " + lr.cy + ")");
+   */
+</script>

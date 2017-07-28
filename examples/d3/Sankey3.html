@@ -1,130 +1,122 @@
 <!DOCTYPE html>
-<meta charset="utf-8">
-<style>
-    html, body, #SankeyParent {
-        height: 100%;
-        min-height: 100%;
-        width: 100%;
-        min-width: 100%;
-    }
-</style>
+<html>
+<head>
+    <style>
+        html, body, #Chart {
+            height: 100%;
+            min-height: 100%;
+            width: 100%;
+            min-width: 100%;
+            font-family: "Arial Rounded MT Bold"
+        }
 
-<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.css">
-<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.theme.min.css">
+        #Chart {
+            display: inline-block;
+        }
 
+    </style>
+    <title>Sankey Diagram</title>
+
+    <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.css">
+    <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.theme.min.css">
+    <link rel="stylesheet" href="../../dist/dex-jquery.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.css"/>
+    <link rel="stylesheet" href="../../dist/dex-bootstrap.css">
+    <link rel="stylesheet" href="../../dist/dex.css">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <script src="../../dist/dex-jquery.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="../../dist/dex-bootstrap.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+    <script src="../../dist/dex-libs.js"></script>
+    <script src="../../dist/dex.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Faker/3.1.0/faker.min.js"></script>
+
+</head>
 <body>
-<div id="SankeyParent"></div>
-<script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-<script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
-<script src="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
-<script src="../../dist/dex.js"></script>
+
+<div class="ui-layout-center">
+    <div id="Chart"></div>
+</div>
+<div class="ui-layout-west">
+    <div id="ConfigurationPane"></div>
+</div>
+
 <script>
-  var csv = {
-    'header' : ["Party", "Home State", "President"],
-    'data'   : [["Independent", "Virginia", "George Washington"],
-                ["Federalist", "Massachusetts", "John Adams"],
-                ["Dem-Rep", "Virginia", "Thomas Jefferson"],
-                ["Dem-Rep", "Virginia", "James Madison"],
-                ["Dem-Rep", "Virginia", "James Monroe"],
-                ["Dem-Rep/Nat-Rep", "Massachusetts", "John Quincy Adams"],
-                ["Democratic", "Tennessee", "Andrew Jackson"],
-                ["Democratic", "New York", "Martin Van Buren"],
-                ["Whig", "Ohio", "William Henry Harrison"],
-                ["Whig", "Virginia", "John Tyler"],
-                ["Democratic", "Tennessee", "James K. Polk"],
-                ["Whig", "Louisiana", "Zachary Taylor"],
-                ["Whig", "New York", "Millard Fillmore"],
-                ["Democratic", "New Hampshire", "Franklin Pierce"],
-                ["Democratic", "Pennsylvania", "James Buchanan"],
-                ["Rep/Nat-Union", "Illinois", "Abraham Lincoln"],
-                ["Dem/Nat-Union", "Tennessee", "Andrew Johnson"],
-                ["Republican", "Ohio", "Ulysses S. Grant"],
-                ["Republican", "Ohio", "Rutherford B. Hayes"],
-                ["Republican", "Ohio", "James A. Garfield"],
-                ["Republican", "New York", "Chester A. Arthur"],
-                ["Democratic", "New York", "Grover Cleveland"],
-                ["Republican", "Indiana", "Benjamin Harrison"],
-                ["Democratic", "New York", "Grover Cleveland"],
-                ["Republican", "Ohio", "William McKinley"],
-                ["Republican", "New York", "Theodore Roosevelt"],
-                ["Republican", "Ohio", "William Howard Taft"],
-                ["Democratic", "New Jersey", "Woodrow Wilson"],
-                ["Republican", "Ohio", "Warren G. Harding"],
-                ["Republican", "Massachusetts", "Calvin Coolidge"],
-                ["Republican", "Iowa", "Herbert Hoover"],
-                ["Democratic", "New York", "Franklin D. Roosevelt"],
-                ["Democratic", "Missouri", "Harry S. Truman"],
-                ["Republican", "Texas", "Dwight D. Eisenhower"],
-                ["Democratic", "Massachusetts", "John F. Kennedy"],
-                ["Democratic", "Texas", "Lyndon B. Johnson"],
-                ["Republican", "California", "Richard Nixon"],
-                ["Republican", "Michigan", "Gerald Ford"],
-                ["Democratic", "Georgia", "Jimmy Carter"],
-                ["Republican", "California", "Ronald Reagan"],
-                ["Republican", "Texas", "George H. W. Bush"],
-                ["Democratic", "Arkansas", "Bill Clinton"],
-                ["Republican", "Texas", "George W. Bush"],
-                ["Democratic", "Illinois", "Barack Obama"]]
-  };
-
-  var palette = d3.scale.category10();
-  var color = function (d) {
-    dex.console.log("D", d);
-    if (d.category == "Democratic") {
-      return "blue";
-    }
-    else if (d.category == "Republican") {
-      return "red";
-    }
-
-    return palette(d.category);
-  };
-
-  // Configure a chart.
-  var sankey = new dex.charts.d3.Sankey({
-    'parent'                        : "#SankeyParent",
-    'color'                         : color,
-    'csv'                           : csv,
-    'mouseout.link.stroke.color'             : color,
-    'link.stroke.opacity'           : .2,
-    'link.fillOpacity'              : .2,
-    'mouseover.link.stroke.opacity' : .6,
-    'mouseover.link.stroke.color'   : color,
-    'label.color'                   : "grey",
-    'label.font.size'               : 16,
-    'label.font.weight'             : "bold",
-    'label.font.style'              : 'italic',
-    'relationships'                 : [
-      {
-        'source'   : 1,
-        'target'   : 0,
-        'value'    : function (csv, ri) {
-          return 1;
-        },
-        'category' : function (csv, ri) {
-          return csv.data[ri][0];
-        }
-      },
-      {
-        'source'   : 0, 'target' : 2,
-        'value'    : function (i) {
-          return 1;
-        },
-        'category' : function (csv, ri) {
-          return csv.data[ri][0];
-        }
-      }
-    ],
-    'node.padding'                  : 5,
-    'node.rectangle.stroke.color'   : color,
-    'node.rectangle.stroke.width'   : "0",
-    //'node.rectangle.stroke.dasharray' : "2 2",
-    'node.rectangle.rx'             : 10,
-    'node.rectangle.ry'             : 10,
-    'node.rectangle.color' : color,
-    'link.curvature'                : 0
+  var csv = new dex.csv({
+    'header': ["Party", "Home State", "President"],
+    'data': [["Independent", "Virginia", "George Washington"],
+      ["Federalist", "Massachusetts", "John Adams"],
+      ["Dem-Rep", "Virginia", "Thomas Jefferson"],
+      ["Dem-Rep", "Virginia", "James Madison"],
+      ["Dem-Rep", "Virginia", "James Monroe"],
+      ["Dem-Rep/Nat-Rep", "Massachusetts", "John Quincy Adams"],
+      ["Democratic", "Tennessee", "Andrew Jackson"],
+      ["Democratic", "New York", "Martin Van Buren"],
+      ["Whig", "Ohio", "William Henry Harrison"],
+      ["Whig", "Virginia", "John Tyler"],
+      ["Democratic", "Tennessee", "James K. Polk"],
+      ["Whig", "Louisiana", "Zachary Taylor"],
+      ["Whig", "New York", "Millard Fillmore"],
+      ["Democratic", "New Hampshire", "Franklin Pierce"],
+      ["Democratic", "Pennsylvania", "James Buchanan"],
+      ["Rep/Nat-Union", "Illinois", "Abraham Lincoln"],
+      ["Dem/Nat-Union", "Tennessee", "Andrew Johnson"],
+      ["Republican", "Ohio", "Ulysses S. Grant"],
+      ["Republican", "Ohio", "Rutherford B. Hayes"],
+      ["Republican", "Ohio", "James A. Garfield"],
+      ["Republican", "New York", "Chester A. Arthur"],
+      ["Democratic", "New York", "Grover Cleveland"],
+      ["Republican", "Indiana", "Benjamin Harrison"],
+      ["Democratic", "New York", "Grover Cleveland"],
+      ["Republican", "Ohio", "William McKinley"],
+      ["Republican", "New York", "Theodore Roosevelt"],
+      ["Republican", "Ohio", "William Howard Taft"],
+      ["Democratic", "New Jersey", "Woodrow Wilson"],
+      ["Republican", "Ohio", "Warren G. Harding"],
+      ["Republican", "Massachusetts", "Calvin Coolidge"],
+      ["Republican", "Iowa", "Herbert Hoover"],
+      ["Democratic", "New York", "Franklin D. Roosevelt"],
+      ["Democratic", "Missouri", "Harry S. Truman"],
+      ["Republican", "Texas", "Dwight D. Eisenhower"],
+      ["Democratic", "Massachusetts", "John F. Kennedy"],
+      ["Democratic", "Texas", "Lyndon B. Johnson"],
+      ["Republican", "California", "Richard Nixon"],
+      ["Republican", "Michigan", "Gerald Ford"],
+      ["Democratic", "Georgia", "Jimmy Carter"],
+      ["Republican", "California", "Ronald Reagan"],
+      ["Republican", "Texas", "George H. W. Bush"],
+      ["Democratic", "Arkansas", "Bill Clinton"],
+      ["Republican", "Texas", "George W. Bush"],
+      ["Democratic", "Illinois", "Barack Obama"]]
   });
 
-  sankey.render();
+  $(document).ready(function () {
+    $('body').layout({
+      applyDemoStyles: false,
+      west: {
+        size: 335
+      },
+      onresize: function () {
+        chart.resize();
+      }
+    });
+
+    // Configure a chart.
+    var chart = new dex.charts.d3.Sankey({
+      'parent': "#Chart",
+      'csv': csv
+    });
+
+    var configPane = dex.ui.ConfigurationPane({
+      "parent": "#ConfigurationPane",
+      "csv": csv,
+      "components": [chart]
+    }).render();
+  });
 
 </script>
+</body>
+</html>

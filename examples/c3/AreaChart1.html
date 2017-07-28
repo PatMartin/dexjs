@@ -1,42 +1,52 @@
 <!DOCTYPE html>
-<meta charset="utf-8">
-<style>
-  html, body {
-    height: 100%;
-    min-height: 100%;
-    width: 100%;
-    min-width: 100%;
-  }
+<html>
+<head>
+    <style>
+        html, body, #ChartArea {
+            height: 100%;
+            min-height: 100%;
+            width: 100%;
+            min-width: 100%;
+        }
 
-  #ChartArea {
-    height: 100%;
-    min-height: 100%;
-    width: 100%;
-    min-width: 100%;
-  }
-</style>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.10/c3.min.css"/>
-<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.css">
-<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.theme.min.css">
+        #ChartArea {
+            display: inline-block;
+        }
+    </style>
+    <title>C3 Area Chart Example</title>
 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.10/c3.min.css"/>
+    <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.css">
+    <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.theme.min.css">
+    <link rel="stylesheet" href="../../dist/dex-jquery.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.css"/>
+    <link rel="stylesheet" href="../../dist/dex-bootstrap.css">
+    <link rel="stylesheet" href="../../dist/dex.css">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <script src="../../dist/dex-jquery.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="../../dist/dex-bootstrap.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+    <script src="../../dist/dex-libs.js"></script>
+    <script src="../../dist/dex.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Faker/3.1.0/faker.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.14/c3.min.js"></script>
+</head>
 <body>
 
-<script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-<script src="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
-<script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
-<script src="../../dist/dex.js"></script>
-<script src="http://www.d3plus.org/js/d3plus.js"></script>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.10/c3.min.js"></script>
-
-<body>
-<svg id="ChartArea"></svg>
+<div class="ui-layout-center">
+    <div id="ChartArea"></div>
+</div>
+<div class="ui-layout-west">
+    <div id="ConfigurationPane"></div>
+</div>
 
 <script>
-  var csv =
-  {
-    'header' : ["NAME", "SERIES 1", "SERIES 2"],
-    'data'   : [
+  var csv = new dex.csv({
+    'header': ["NAME", "SERIES 1", "SERIES 2"],
+    'data': [
       ["Bob", Math.random() * 1000, Math.random() * 1000],
       ["Sue", Math.random() * 1000, Math.random() * 1000],
       ["Pat", Math.random() * 1000, Math.random() * 1000],
@@ -46,15 +56,36 @@
       ["Rodney", Math.random() * 1000, Math.random() * 1000],
       ["Willie", Math.random() * 1000, Math.random() * 1000]
     ]
-  };
+  });
 
-  var areachart = new dex.charts.c3.AreaChart({
-            'parent'      : '#ChartArea',
-            'resizable'  : true,
-            'color'       : d3.scale.category20c(),
-            'csv'         : csv
-          }
-  );
-  areachart.render();
+  $(document).ready(function () {
+    $('body').layout({
+      applyDemoStyles: false,
+      west: {
+        size: 335
+      },
+      onresize: function () {
+        var width = d3.select(chart.config.parent).property("clientWidth");
+        var height = d3.select(chart.config.parent).property("clientHeight");
+        chart.attr("width", width).attr("height", height).update();
+      }
+    });
+
+    var chart = dex.charts.c3.AreaChart({
+        parent: '#ChartArea',
+        csv: csv,
+        height: 500, width: 800
+      }
+    );
+    chart.render();
+
+    var configPane = dex.ui.ConfigurationPane({
+      parent: "#ConfigurationPane",
+      csv: csv,
+      components: [chart]
+    }).render();
+  });
 </script>
 
+</body>
+</html>

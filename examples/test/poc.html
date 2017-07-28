@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>dex.js : ECharts Network</title>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <script src="../../dist/dex-jquery.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="../../dist/dex-bootstrap.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+    <script src="../../dist/dex-libs.js"></script>
+    <script src="../../dist/dex.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/3.6.1/echarts.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Faker/3.1.0/faker.min.js"></script>
+
+</head>
+<body>
+
+
+<script>
+
+var csv = new dex.csv(["A", "B"],[["a1", "b1"],["a2", "b2"]]);
+
+dex.console.log(csv, csv.transpose());
+
+    /**
+  var csv1 = {
+    header: [ "Seq", "X", "Y", "Size"],
+    data: [
+      [ 1, 1, 1, 'a' ],
+      [  1, 2, 2, 20 ]
+    ]
+  };
+
+  var spec = new dex.data.spec("specname")
+    .number()
+    .oneOrMoreMatch("ys", "number");
+  try {
+    var assessment = spec.parse(csv1);
+  }
+  catch (ex) {
+    dex.console.log(ex, ex.message, ex.stack);
+  }
+  dex.console.log("ASSESSMENT", assessment);
+    **/
+
+    var array1 = dex.range(10, 20, 10);
+    dex.console.log(array1);
+
+</script>
+</body>
+</html>

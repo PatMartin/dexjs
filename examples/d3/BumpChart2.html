@@ -1,60 +1,49 @@
 <!DOCTYPE html>
-<meta charset="utf-8">
-<style>
-    html, body, #BumpChartParent {
-        height: 100%;
-        min-height: 100%;
-        width: 100%;
-        min-width: 100%;
-    }
+<html>
+<head>
+    <style>
+        html, body, #Chart {
+            height: 100%;
+            min-height: 100%;
+            width: 100%;
+            min-width: 100%;
+        }
 
-    body {
-        font-size: 14px;
-        font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    }
+        #Chart {
+            display: inline-block;
+        }
 
-    .x.axis path, .x.axis line {
-        fill: none;
-        stroke: #000;
-        shape-rendering: crispEdges;
-    }
+    </style>
+    <title>dex.js : Bump Chart</title>
+    <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.css">
+    <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.theme.min.css">
+    <link rel="stylesheet" href="../../dist/dex-jquery.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.css"/>
+    <link rel="stylesheet" href="../../dist/dex-bootstrap.css">
+    <link rel="stylesheet" href="../../dist/dex.css">
 
-    .y.axis path {
-        fill: none;
-    }
-
-    .y.axis line {
-        fill: none;
-        stroke: #eeeeee;
-        shape-rendering: crispEdges;
-    }
-
-    h1 {
-        font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-        font-size: 26px;
-        font-style: bold;
-
-    }
-
-    p {
-        font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-        font-size: 16px;
-    }
-</style>
-<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.css">
-<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.theme.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <script src="../../dist/dex-jquery.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="../../dist/dex-bootstrap.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+    <script src="../../dist/dex-libs.js"></script>
+    <script src="../../dist/dex.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Faker/3.1.0/faker.min.js"></script>
+</head>
 <body>
-<div id="BumpChartParent"></div>
-<script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-<script src="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
-<script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
-<script src="../../dist/dex.js"></script>
+
+<div class="ui-layout-center">
+    <div id="Chart"></div>
+</div>
+<div class="ui-layout-west">
+    <div id="ConfigurationPane"></div>
+</div>
 
 <script>
-
-  var csv = {
-    'header': ["category", "x", "y"],
-    'data': [["American University (DC)", "2008", "85"],
+  var csv = new dex.csv(["category", "x", "y"],
+    [["American University (DC)", "2008", "85"],
       ["American University (DC)", "2009", "83"],
       ["American University (DC)", "2010", "84"],
       ["American University (DC)", "2011", "79"],
@@ -707,16 +696,37 @@
       ["Florida State University[*]", "2010", "102"],
       ["Florida State University[*]", "2011", "104"],
       ["Florida State University[*]", "2012", "101"],
-      ["Florida State University[*]", "2013", "91"]]
-  };
+      ["Florida State University[*]", "2013", "91"]]);
 
-  var bumpchart = dex.charts.d3.BumpChart({
-      'parent': '#BumpChartParent',
-      'color': d3.scale.category20c(),
-      'margin.top' : 15,
-      'margin.left' : 40,
-      'margin.right' : 370,
-      'csv': csv
-    }
-  ).render();
+  var chart = dex.charts.d3.BumpChart({
+    'parent': '#Chart',
+    'color': d3.scale.category20c(),
+    'margin.top' : 15,
+    'margin.left' : 40,
+    'margin.right' : 370,
+    'csv': csv
+    });
+
+  $(document).ready(function () {
+    $('body').layout({
+      applyDemoStyles: false,
+      west: {
+        size: 335
+      },
+      onresize: function () {
+        chart.resize();
+      }
+    });
+
+    chart.render();
+
+    var configPane = dex.ui.ConfigurationPane({
+      "parent": "#ConfigurationPane",
+      "csv": csv,
+      "components": [chart]
+    }).render();
+
+  });
 </script>
+</body>
+</html>

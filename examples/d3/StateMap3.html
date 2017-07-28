@@ -79,12 +79,23 @@
     </div>
 </div>
 
-<script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-<script src="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min.js"></script>
-<script src="../../dist/dex.js"></script>
-<script src="http://cdnjs.cloudflare.com/ajax/libs/topojson/1.6.19/topojson.min.js"></script>
+<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.css">
+<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.theme.min.css">
+<link rel="stylesheet" href="../../dist/dex-jquery.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.css"/>
+<link rel="stylesheet" href="../../dist/dex-bootstrap.css">
+<link rel="stylesheet" href="../../dist/dex.css">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+<script src="../../dist/dex-jquery.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script src="../../dist/dex-bootstrap.js"></script>
 <script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.11/c3.min.js"></script>
+<script src="../../dist/dex-libs.js"></script>
+<script src="../../dist/dex.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Faker/3.1.0/faker.min.js"></script>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/topojson/1.6.19/topojson.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.11/c3.min.js"></script>
 
 <script>
 
@@ -165,15 +176,12 @@ dex.console.log("MAP: " + mapWidth + "x" + mapHeight);
       ["Delaware", 0, 0, 5, 0, 15, 24, 0, 14, 30, 20, 0, 0, 112, 1, 13, 2, 0, 84, 16, 273, 63, 2, 76, 0, 1, 749]
     ];
 
-    var csv = dex.csv.csv(labels, stateData);
-    var stateMap = dex.csv.createRowMap(csv, 0);
+    var csv = new dex.csv(labels, stateData);
+    var stateMap = csv.createRowMap(0);
     dex.console.log("STATE-MAP", stateMap);
 
     var selectedStates = {};
-    var treemapCsv = {
-      'header' : [ 'State', 'Tax', 'Value' ],
-      'data' : []
-    };
+    var treemapCsv = new dex.csv([ 'State', 'Tax', 'Value' ], []);
 
     csv.data.forEach(function(row) {
       var stateName = row[0];
@@ -181,8 +189,6 @@ dex.console.log("MAP: " + mapWidth + "x" + mapHeight);
         treemapCsv.data.push([ stateName, csv.header[i], row[i]]);
       }
     });
-
-    dex.console.log("TMD", treemapCsv);
 
     var treemap = dex.charts.d3.Treemap({
         'parent': "#Treemap",
@@ -196,11 +202,10 @@ dex.console.log("MAP: " + mapWidth + "x" + mapHeight);
 
       if (stateMap[msg.feature.id] != null) {
         selectedStates[msg.feature.id] = true;
-        var newCsv = dex.csv.selectRows(treemapCsv, function (row) {
+        var newCsv = treemapCsv.selectRows(function (row) {
           return row[0] in selectedStates && selectedStates[row[0]];
         });
         treemap.attr('csv', newCsv);
-        dex.console.log("NEW-CSV", newCsv);
         treemap.update();
       }
     });
@@ -210,11 +215,10 @@ dex.console.log("MAP: " + mapWidth + "x" + mapHeight);
 
       if (stateMap[msg.feature.id] != null) {
         selectedStates[msg.feature.id] = false;
-        var newCsv = dex.csv.selectRows(treemapCsv, function (row) {
+        var newCsv = treemapCsv.selectRows(function (row) {
           return row[0] in selectedStates && selectedStates[row[0]];
         });
 
-        dex.console.log("DESELECT-NEW-CSV", newCsv);
         treemap.attr('csv', newCsv.data.length > 0 ? newCsv : treemapCsv);
         treemap.update();
       }

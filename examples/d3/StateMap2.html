@@ -30,6 +30,12 @@
 
 </style>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.11/c3.min.css"/>
+<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.css">
+<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.theme.min.css">
+<link rel="stylesheet" href="../../dist/dex-jquery.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.css"/>
+<link rel="stylesheet" href="../../dist/dex-bootstrap.css">
+<link rel="stylesheet" href="../../dist/dex.css">
 
 <div id="container">
     <div id="top_div">
@@ -40,11 +46,16 @@
     </div>
 </div>
 
-<script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-<script src="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min.js"></script>
-<script src="../../dist/dex.js"></script>
-<script src="http://cdnjs.cloudflare.com/ajax/libs/topojson/1.6.19/topojson.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+<script src="../../dist/dex-jquery.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script src="../../dist/dex-bootstrap.js"></script>
 <script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+<script src="../../dist/dex-libs.js"></script>
+<script src="../../dist/dex.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Faker/3.1.0/faker.min.js"></script>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/topojson/1.6.19/topojson.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.11/c3.min.js"></script>
 
 <script>
@@ -136,8 +147,8 @@ dex.console.log("MAP: " + mapWidth + "x" + mapHeight);
     });
     dex.console.log("STATE-DATA", stateData);
 
-    var csv = dex.csv.csv(labels, stateData);
-    var stateMap = dex.csv.createRowMap(csv, 0);
+    var csv = new dex.csv(labels, stateData);
+    var stateMap = csv.createRowMap(0);
     dex.console.log("STATE-MAP", stateMap);
     var selectedStates = {};
 
@@ -154,7 +165,7 @@ dex.console.log("MAP: " + mapWidth + "x" + mapHeight);
 
       if (stateMap[nameIndex[msg.feature.id]] != null) {
         selectedStates[nameIndex[msg.feature.id]] = true;
-        barChart.attr('csv', dex.csv.selectRows(csv, function (row) {
+        barChart.attr('csv', csv.selectRows(function (row) {
           return row[0] in selectedStates && selectedStates[row[0]];
         }));
         barChart.update();
@@ -166,7 +177,7 @@ dex.console.log("MAP: " + mapWidth + "x" + mapHeight);
 
       if (stateMap[nameIndex[msg.feature.id]] != null) {
         selectedStates[nameIndex[msg.feature.id]] = false;
-        var newCsv = dex.csv.selectRows(csv, function (row) {
+        var newCsv = csv.selectRows(function (row) {
           return row[0] in selectedStates && selectedStates[row[0]];
         });
         barChart.attr('csv',newCsv.data.length > 0 ? newCsv : csv);
