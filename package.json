@@ -38,10 +38,29 @@
   },
   "scripts": {
     "lint": "jslint src/*.js src/*/*.js src/*/*/*.js src/*/*/*/*.js",
-    "docs": "jsdoc -c jsdoc-conf.json",
-    "build": "browserify src/dex.js --standalone dex > dist/dex.js && cp dist/dex.js docs/js/dex.js && cp dist/dex.js C:/sites/dexjs-site/themes/dexjs-theme/static/js/dex.js && browserify src/dex.js --standalone dex | uglifyjs > dist/dex.min.js && cp dist/dex.min.js docs/js/dex.min.js && cp dist/dex.min.js C:/sites/dexjs-site/themes/dexjs-theme/static/js/dex.min.js",
-    "build:min": "browserify src/dex.js --standalone dex | uglifyjs > dist/dex.min.js && cp dist/dex.min.js docs/js/dex.min.js && cp dist/dex.min.js C:/sites/dexjs-site/themes/dexjs-theme/static/js/dex.min.js",
-    "build:js": "browserify src/dex.js --standalone dex > dist/dex.js && cp dist/dex.js docs/js/dex.js && cp dist/dex.js C:/sites/dexjs-site/themes/dexjs-theme/static/js/dex.js",
-    "watch": "watch \"npm run build:js\" src lib"
+    "docs-old": "jsdoc -c jsdoc-conf.json",
+    "documentation": "documentation build -o docs -f html src/dex.js",
+    "documentation:md": "documentation build -f md src/dex.js > docs/dexjs.md",
+    "dex:jquery:css": "shx cat css/jquery/*.css > dist/dex-jquery.css && shx cat dist/dex-jquery.css | cssmin > dist/dex-jquery.min.css",
+    "dex:bootstrap:css": "shx cat css/bootstrap/*.css > dist/dex-bootstrap.css && shx cat dist/dex-bootstrap.css | cssmin > dist/dex-bootstrap.min.css",
+    "dex:css": "shx cat css/dex/*.css > dist/dex.css && shx cat dist/dex.css | cssmin > dist/dex.min.css",
+    "css": "npm run dex:css & npm run dex:jquery:css & npm run dex:bootstrap:css",
+
+    "dex:libs:js": "browserify src/dex-libs.js --standalone dexlibs > dist/dex-libs.js && shx cat dist/dex-libs.js | uglifyjs > dist/dex-libs.min.js",
+    "dex:jquery:js": "browserify src/dex-jquery.js --standalone dexjquery > dist/dex-jquery.js && shx cat dist/dex-jquery.js | uglifyjs > dist/dex-jquery.min.js",
+    "dex:bootstrap:js": "browserify src/dex-bootstrap.js --standalone dexbootstrap > dist/dex-bootstrap.js && shx cat dist/dex-bootstrap.js | uglifyjs > dist/dex-bootstrap.min.js",
+    "dex:js": "browserify src/dex.js --standalone dex > dist/dex.js && shx cat dist/dex.js | uglifyjs > dist/dex.min.js",
+    "js" : "npm-run-all --parallel dex:js dex:libs:js dex:jquery:js dex:bootstrap:js",
+
+    "build": "npm-run-all --parallel js css",
+    "build and deploy": "npm run build && npm run deploy",
+    "deploy": "npm run deploy-site & npm run deploy-dex",
+    "deploy-site": "cp dist/*.js dist/*.css C:/sites/dexjs-site/static/js",
+    "deploy-dex": "cp dist/*.js dist/*.css C:/dex2ws/Dex/javascript/dexjs/latest",
+
+    "watch": "shx echo QUICK WATCH IS BUILDING JS SOURCE... && watch \"npm run build && echo DONE...\" css src lib",
+    "watch-css": "shx echo QUICK WATCH IS BUILDING CSS... && watch \"npm run css && echo DONE...\" css",
+    "watch-autodeploy": "shx echo AUTODEPLOY WATCH IS BUILDING JS SOURCE... && watch \"npm run build && npm run deploy && echo DONE...\" css src lib",
+    "watch-quick": "shx echo QUICK WATCH IS BUILDING JS SOURCE... && watch \"npm run dex:js && echo DONE...\" src"
   }
 }
