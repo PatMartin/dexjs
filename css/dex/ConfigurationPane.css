@@ -1,0 +1,104 @@
+/* ConfigurationPane */
+
+.ConfigurationPaneClass {
+    display: inline-block;
+    height: 100%;
+    width: 100%;
+    max-height: 100%;
+    max-width: 100%;
+}
+
+.ConfigurationPaneClass label {
+    font-size: small;
+}
+
+.ConfigurationPaneClass table {
+    width: 100%;
+}
+
+.ConfigurationPaneClass div,
+.ConfigurationPaneClass .panel-body,
+.ConfigurationPaneClass .panel-heading,
+.ConfigurationPaneClass table,
+.ConfigurationPaneClass td > label,
+.ConfigurationPaneClass th,
+.ConfigurationPaneClass td,
+.ConfigurationPaneClass h1,
+.ConfigurationPaneClass h2,
+.ConfigurationPaneClass h3,
+.ConfigurationPaneClass h4,
+.ConfigurationPaneClass h5 {
+    padding: 1px !important;
+    margin: 0px !important;
+}
+
+.ConfigurationPaneClass h1 {
+    font-size: 3em !important;
+    font-weight: normal !important;
+    color: white;
+    background-color: #878787;
+    text-align: center;
+}
+
+.ConfigurationPaneClass h2 {
+    font-size: 2.5em !important;
+    font-weight: normal !important;
+    color: white;
+    background-color: #3288bd;
+    text-align: center;
+}
+
+.ConfigurationPaneClass h3 {
+    font-size: 2.25em !important;
+    font-weight: normal !important;
+    color: white;
+    background-color: #1a9850;
+    text-align: center;
+}
+
+.ConfigurationPaneClass h4 {
+    font-size: 2em !important;
+    font-weight: normal !important;
+    color: white;
+    background-color: #d58512;
+    text-align: center;
+}
+
+.ConfigurationPaneClass h5 {
+    font-size: 1.5em !important;
+    font-weight: normal !important;
+    color: white;
+    background-color: #3e999f;
+    text-align: center;
+}
+
+.ConfigurationPaneClass h1:hover,
+.ConfigurationPaneClass h2:hover,
+.ConfigurationPaneClass h3:hover,
+.ConfigurationPaneClass h4:hover,
+.ConfigurationPaneClass h5:hover {
+    box-shadow: inset 0 0 100px 100px rgba(255, 255, 255, 0.1);
+    color: yellow;
+}
+
+.ConfigurationPaneClass .control-boolean label,
+.ConfigurationPaneClass .control-boolean input,
+.ConfigurationPaneClass .control-string label,
+.ConfigurationPaneClass .control-string input {
+    padding: 1px !important;
+    margin: 0px !important;
+}
+
+.ConfigurationPaneClass .control-float {
+    margin: 10px;
+}
+
+.ConfigurationPaneClass .slider {
+    margin-left: 5px !important;
+    margin-bottom: 15px !important;
+    margin-top: 0px !important;
+}
+
+.ConfigurationPaneClass .slider-handle {
+    top: 5px !important;
+}

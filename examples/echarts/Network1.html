@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        html, body, #Chart {
+            height: 100%;
+            min-height: 100%;
+            width: 100%;
+            min-width: 100%;
+        }
+
+        #Chart {
+            display: inline-block;
+        }
+
+    </style>
+    <title>dex.js : ECharts Network</title>
+
+    <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.theme.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.css"/>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+    <script src="../../dist/dex.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/3.6.1/echarts.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Faker/3.1.0/faker.min.js"></script>
+
+</head>
+<body>
+
+<div class="ui-layout-center">
+    <div id="Chart"></div>
+</div>
+<div class="ui-layout-west">
+    <div id="ConfigurationPane"></div>
+</div>
+
+<script>
+  var csv = {
+    'header': ['First Name', 'Last Name', 'City', 'State', 'Zip Code', "Number 1", "Number 2", "Boolean 1", "Boolean 2" ],
+    'data': []
+  };
+
+  for (var nameIndex = 0; nameIndex < 200; nameIndex++) {
+    csv.data.push(
+      [
+        faker.name.firstName(),
+        faker.name.lastName(),
+        faker.address.city(),
+        faker.address.state(),
+        faker.address.zipCode(),
+        faker.random.number(),
+        faker.random.number(),
+        faker.random.boolean(),
+        faker.random.boolean()
+      ]
+    );
+  }
+
+  $(document).ready(function () {
+    $('body').layout({
+      applyDemoStyles: false,
+      west: {
+        size: 335
+      },
+      onresize: function () {
+        chart.resize();
+      }
+    });
+
+    var chart = dex.charts.echarts.Network({
+      parent: '#Chart',
+      csv: csv
+    });
+    chart.render();
+
+    var configPane = dex.ui.ConfigurationPane({
+      "parent": "#ConfigurationPane",
+      "csv": csv,
+      "components": [chart]
+    }).render();
+
+  });
+</script>
+</body>
+</html>

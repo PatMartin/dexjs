@@ -1,25 +1,20 @@
-/**
- *
- * This module provides ui components from a variety of sources.
- *
- @module dex/ui
- *
- */
+module.exports = function (dex) {
+  /**
+   *
+   * This module provides ui components.
+   *
+   * @module ui
+   * @memberof dex
+   *
+   */
+  var ui = {};
 
-/**
- *
- * A module for creating ui components such as players and sliders.
- *
- * @name jqueryui
- * @type {module:jqueryui}
- *
- */
-module.exports = function ui(dex) {
+  ui.Player = require("./ui/Player");
+  ui.SqlQuery = require("./ui/SqlQuery");
+  ui.Table = require("./ui/Table");
+  ui.ConfigurationPane = require("./ui/ConfigurationPane");
+  ui.DataFilterPane = require("./ui/DataFilterPane");
+  ui.GuiPane = require("./ui/GuiPane");
 
-  return {
-    'jqueryui'  : require("./jqueryui/jqueryui")(dex),
-    'SqlQuery'  : require("./SqlQuery"),
-    'Table'     : require("./Table"),
-    'TypesTable': require("./TypesTable")
-  };
+  return ui;
 };

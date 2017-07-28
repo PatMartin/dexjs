@@ -1,0 +1,15 @@
+.BumpChartClass .x.axis path, .BumpChartClass .x.axis line {
+    fill: none;
+    stroke: #000;
+    shape-rendering: crispEdges;
+}
+
+.BumpChartClass .y.axis path {
+    fill: none;
+}
+
+.BumpChartClass .y.axis line {
+    fill: none;
+    stroke: #eeeeee;
+    shape-rendering: crispEdges;
+}
