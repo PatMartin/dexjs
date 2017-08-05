@@ -1,35 +1,50 @@
 <!DOCTYPE html>
-<meta charset="utf-8">
-<style>
-    html, body, #ClusteredForceParent {
-        height: 100%;
-        min-height: 100%;
-        width: 100%;
-        min-width: 100%;
-    }
-</style>
-<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.css">
-<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.theme.min.css">
-<link rel="stylesheet" href="../../dist/dex-jquery.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.css"/>
-<link rel="stylesheet" href="../../dist/dex-bootstrap.css">
-<link rel="stylesheet" href="../../dist/dex.css">
+<html>
+<head>
+    <style>
+        html, body, #Chart {
+            height: 100%;
+            min-height: 100%;
+            width: 100%;
+            min-width: 100%;
+        }
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-<script src="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
-<script src="../../dist/dex-jquery.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
-<script src="../../dist/dex-bootstrap.js"></script>
-<script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
-<script src="../../dist/dex-libs.js"></script>
-<script src="../../dist/dex.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Faker/3.1.0/faker.min.js"></script>
+        #Chart {
+            display: inline-block;
+        }
 
+    </style>
+    <title>dex.js : Bump Chart</title>
+
+    <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.css">
+    <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.theme.min.css">
+    <link rel="stylesheet" href="../../dist/dex-jquery.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.css"/>
+    <link rel="stylesheet" href="../../dist/dex-bootstrap.css">
+    <link rel="stylesheet" href="../../dist/dex.css">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <script src="../../dist/dex-jquery.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="../../dist/dex-bootstrap.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+    <script src="../../dist/dex-libs.js"></script>
+    <script src="../../dist/dex.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Faker/3.1.0/faker.min.js"></script>
+
+</head>
 <body>
-<div id="ClusteredForceParent"></div>
+
+<div class="ui-layout-center">
+    <div id="Chart"></div>
+</div>
+<div class="ui-layout-west">
+    <div id="ConfigurationPane"></div>
+</div>
 
 <script>
-  var prez = new dex.csv(["C1", "V1", "C2", "V2"],
+  var csv = new dex.csv(["C1", "V1", "C2", "V2"],
     [
       [1, "George Washington", "Independent", "Virginia"],
       [2, "John Adams", "Federalist", "Massachusetts"],
@@ -77,16 +92,36 @@
       [44, "Barack Obama", "Democratic", "Illinois"]
     ]);
 
-  // Configure a chart.
-  var cforce = dex.charts.d3.ClusteredForce({
-      'parent': "#ClusteredForceParent",
-      'csv': prez,
-      'groups': [{
-        'category': 2,
-        'value': 0,
-        'label': 1
-      }]
-    }
-  );
-  cforce.render();
+  $(document).ready(function () {
+    $('body').layout({
+      applyDemoStyles: false,
+      west: {
+        size: 335
+      },
+      onresize: function () {
+        chart.resize();
+      }
+    });
+
+    // Configure a chart.
+    var chart = dex.charts.d3.ClusteredForce({
+        'parent': "#Chart",
+        'csv': csv,
+        'groups': [{
+          'category': 2,
+          'value': 0,
+          'label': 1
+        }]
+      }
+    );
+    chart.render();
+
+    var configPane = dex.ui.ConfigurationPane({
+      "parent": "#ConfigurationPane",
+      "csv": csv,
+      "components": [chart]
+    }).render();
+  });
 </script>
+</body>
+</html>

@@ -30,7 +30,7 @@
 
   var csv = new dex.csv(["DEGREES", "RADIANS", "SIN(X)", "COS(X)", "TAN(X)"], []);
 
-  for (x = -360; x < 360; x += 10) {
+  for (x = -360; x < 360; x += 1) {
     var rad = x * Math.PI / 180;
     csv.data.push([x, rad, Math.sin(rad), Math.cos(rad), Math.tan(rad)]);
   }

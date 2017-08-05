@@ -15,6 +15,7 @@
 
     </style>
     <title>dex.js : Bump Chart</title>
+
     <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.css">
     <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.theme.min.css">
     <link rel="stylesheet" href="../../dist/dex-jquery.css">
@@ -31,6 +32,7 @@
     <script src="../../dist/dex-libs.js"></script>
     <script src="../../dist/dex.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Faker/3.1.0/faker.min.js"></script>
+
 </head>
 <body>
 
@@ -71,15 +73,6 @@
       ["Team 4", 6, 4]
     ]);
 
-  var chart = dex.charts.d3.BumpChart({
-      'parent': '#Chart',
-      'margin.top': 15,
-      'margin.left': 40,
-      'margin.right': 370,
-      'csv': csv
-    }
-  );
-
   $(document).ready(function () {
     $('body').layout({
       applyDemoStyles: false,
@@ -91,6 +84,11 @@
       }
     });
 
+    var chart = dex.charts.d3.BumpChart({
+        'parent': '#Chart',
+        'csv': csv
+      }
+    );
     chart.render();
 
     var configPane = dex.ui.ConfigurationPane({
@@ -98,8 +96,10 @@
       "csv": csv,
       "components": [chart]
     }).render();
-
   });
 </script>
 </body>
 </html>
+
+
+

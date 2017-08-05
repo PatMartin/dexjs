@@ -1,7 +1,7 @@
 module.exports = function (dex) {
   /**
    *
-   * This module provides routines for dealing with arrays.
+   * This module provides various configuration routines.
    *
    * @module dex/config
    *
@@ -14,43 +14,28 @@ module.exports = function (dex) {
    * user to specify deeply nested configuration options without
    * having to deal with nested json structures.
    *
-   * Options like:
-   *
-   * {
- *   'cell' : {
- *     'rect' : {
- *       'width' : 10,
- *       'height' : 20,
- *       'events' : {
- *         'mouseover' : function(d) { console.log("MouseOver: " + d); }
- *       }
- *     }
- *   }
- * }
-   *
-   * Can now be described more succinctly and more readably as:
-   *
-   * {
- *   'cell.rect.width'            : 10,
- *   'cell.rect.height'           : 20,
- *   'cell.rect.events.mouseover' : function(d) { console.log("Mouseover: " + d); }
- * }
-   *
-   * Or a hybrid strategy can be used:
-   *
-   * {
- *   'cell.rect' : {
- *     'width' : 10,
- *     'height' : 20,
- *     'events.mouseover' : function(d) { console.log("Mouseover: " + d); }
- *   }
- * }
-   *
    * @param {object} config The configuration to expand.
-   * @returns {*} The expanded configuration.  The original configuration
-   *   is left untouched.
-   *
+   * @returns {object} An object containing the expanded configuration.
+   *   The original configuration is left untouched.
    * @memberof dex/config
+   *
+   * @example
+   *
+   * {
+   *   'cell' : {
+   *     'rect' : {
+   *       'width' : 10,
+   *       'height' : 20
+   *     }
+   *   }
+   * }
+   *
+   * becomes easier to read when expressed as:
+   *
+   * {
+   *   'cell.rect.width'            : 10,
+   *   'cell.rect.height'           : 20,
+   * }
    *
    */
   config.expand = function expand(config) {
@@ -61,8 +46,6 @@ module.exports = function (dex) {
     if (!config) {
       return config;
     }
-
-    //dex.console.log("dex.config.expand(config=", config);
 
     for (var name in config) {
       if (config.hasOwnProperty(name)) {
@@ -82,8 +65,14 @@ module.exports = function (dex) {
             //expanded[name] = config[name];
           }
           else {
-            // CSV is a special case.
-            if (config[name].constructor !== undefined &&
+            // CSV is a special case.  Older WebKit browsers such as
+            // that used by JavaFX can't seem to detect the contructor
+            // so i build in a special workaround for any attribute
+            // named csv to be copied as-is.
+            if (name == "csv") {
+              expanded[name] = config[name];
+            }
+            else if (config[name].constructor !== undefined &&
               config[name].constructor.name === "csv") {
               expanded[name] = config[name];
             }
@@ -102,31 +91,61 @@ module.exports = function (dex) {
 
   /**
    *
-   * This routine will take two hierarchies, top and bottom, and expand dot ('.')
-   * delimited names such as: 'foo.bar.biz.baz' into a structure:
-   * { 'foo' : { 'bar' : { 'biz' : 'baz' }}}
-   * It will then overlay the top hierarchy onto the bottom one.  This is useful
-   * for configuring objects based upon a default configuration while allowing
-   * the client to conveniently override these defaults as needed.
+   * This routine will take one or more objects and expand each one
+   * via dex.config.expand.  The objects will then be overlaid on top
+   * of each other.  Objects are supplied in descending precedence;
+   * meaning that object conflicts will be resolved by taking the
+   * value from the first supplied object defining it within the
+   * method call.
    *
    * @param {object} top - The top object hierarchy.
    * @param {object} bottom - The bottom, base object hierarchy.
-   * @returns {object} - A new object representing the expanded top object
-   * hierarchy overlaid on top of the expanded bottom object hierarchy.
-   *
+   * @returns {object} - A new object representing the expanded
+   * and overlaid objects.  The objects supplied in the method
+   * call will not be modified.
    * @memberof dex/config
+   *
+   * @example
+   *
+   * Given:
+   *
+   * var first = {
+   *   "name": "first",
+   *   "screen.width" : 800
+   * };
+   *
+   * var second = {
+   *   "name": "second",
+   *   "screen.width": 100,
+   *   "screen.height": 600,
+   *   "secondField": "Only in 2nd"
+   * };
+   *
+   * var third = {
+   *   "name": "third",
+   *   "screen.width": 333,
+   *   "screen.height": 333,
+   *   "thirdField": "Only in 3rd"
+   * };
+   *
+   * Calling:
+   *
+   * var combined = dex.config.expandAndOverlay(first, second, third);
+   *
+   * Yields a combined value of:
+   *
+   * {
+   *   "name": "first",
+   *   "screen": {
+   *     "width": 800,
+   *     "height": 600
+   *   },
+   *   "secondField": "Only in 2nd",
+   *   "thirdField" : "Only in 3rd"
+   * }
    *
    */
   config.expandAndOverlay = function expandAndOverlay() {
-    //dex.console.log(
-    //dex.config.getCallerString(arguments.callee.caller),
-    //"TOP", top,
-    //"BOTTOM", bottom,
-    //"EXPANDED TOP", dex.config.expand(top),
-    //"EXPANDED BOTTOM", dex.config.expand(bottom));
-    //return dex.object.overlay(dex.config.expand(top),
-    //  dex.config.expand(bottom));
-
     switch (arguments.length) {
       case 0: {
         return {};
@@ -148,55 +167,38 @@ module.exports = function (dex) {
             expanded.push(dex.config.expand(arguments[i]));
           }
         }
+
         var overlay = dex.object.overlay(expanded[expanded.length - 2],
           expanded[expanded.length - 1]);
 
         for (i = arguments.length - 3; i >= 0; i--) {
           overlay = dex.object.overlay(expanded[i], overlay);
         }
+
         return overlay;
       }
     }
   };
 
-
-  configapply = function apply(chart) {
-    var config = chart.config;
-
-    var node = d3.select(config.parent).select("svg");
-    //dex.console.log("APPLYING STYLE TO NODE:", node);
-    if (node && config && config.apply) {
-      config.apply.forEach(function (applyConfig) {
-        var affectedNodes = node.selectAll(applyConfig["select"]);
-
-        if (applyConfig && applyConfig.styles) {
-          for (styleName in applyConfig.styles) {
-            affectedNodes.style(styleName, applyConfig.styles[styleName]);
-          }
-        }
-
-        if (applyConfig && applyConfig.attributes) {
-          for (attributeName in applyConfig.attributes) {
-            affectedNodes.attr(attributeName, applyConfig.attributes[attributeName]);
-          }
-        }
-      });
-    }
-  };
-
   /**
    *
-   * Return the configuration for a font after the user's customizations
-   * have been applied.
+   * Return the configuration for a font after the user's
+   * customizations have been applied.
    *
-   * @param {d3font_spec} custom - The user customizations.
-   * @returns {d3font_spec} - An object containing the font's specifications
+   * @param {FontSpec} options - The user customizations.
+   * @param {string} [options.family="sans-serif"] - The font family.
+   * @param {number} [options.size=14] - The font size.
+   * @param {string} [options.style="normal"] - The font style.
+   * @param {string} [options.weight="normal"] - The font weight.
+   * @param {string} [options.variant="normal"] - The font variant.
+   *
+   * @returns {object} - An object containing the font's specifications
    * after the user's customizations have been applied.
    *
    * @memberof dex/config
    *
    */
-  config.font = function font(custom) {
+  config.font = function font(options) {
     var defaults = {
       'family': 'sans-serif',
       'size': 14,
@@ -205,7 +207,7 @@ module.exports = function (dex) {
       'variant': 'normal'
     };
 
-    var fontSpec = dex.config.expandAndOverlay(custom, defaults);
+    var fontSpec = dex.config.expandAndOverlay(options, defaults);
     return fontSpec;
   };
 
@@ -213,16 +215,15 @@ module.exports = function (dex) {
    *
    * Configure the given font with the supplied font specification.
    *
-   * @param {object} node - The node to be configured.
-   * @param {d3font_spec} fontSpec - The font specification to be applied.
-   *
-   * @returns {*} The node after having the font specification applied.
+   * @param {node} node - The node to be configured.
+   * @param {fontSpec} fontSpec - The font specification to be applied.
+   * @param {number} i - The node number.
+   * @returns {node} The node after having the font specification applied.
    *
    * @memberof dex/config
    *
    */
   config.configureFont = function configureFont(node, fontSpec, i) {
-    //dex.console.log("CONFIG-FONT: " + i);
     if (fontSpec) {
       dex.config.setAttr(node, 'font-family', fontSpec.family, i);
       dex.config.setStyle(node, 'font-size', fontSpec.size, i);
@@ -235,18 +236,38 @@ module.exports = function (dex) {
 
   /**
    *
-   * Construct a text speficiation.
+   * Construct a text specification.
    *
-   * @param {d3text_spec} custom - The user's adjustments to the default text
-   * specification.
+   * @param {TextSpec} options - The user's options which override the default
+   * text specification.
+   * @param {FontSpec} options.font - The users's font specification.
+   * @param {number} [options.x=0] - The x coordinate of the text.
+   * @param {number} [options.y=0] - The y coordinate of the text.
+   * @param {number} options.textLength - The SVG text length.
+   * @param {string} options.transform - The SVG transform to apply to the text.
+   * @param {string} options.text - The text.
+   * @param {string} [options.decoration=none] - Text decoration.
+   * @param {number} [options.dx=0] - An x offset to apply.
+   * @param {number} [options.dy=0] - A y offset to apply.
+   * @param {fontSpec} [options.writingMode=] - The text writing mode.
+   * @param {fontSpec} [options.anchor=start] - The text anchor.  One of start, middle,
+   * or end.
+   * @param {FillSpec} options.fill - The text fill specification.
+   * @param {StrokeSpec} options.stroke - The text stroke specification.
+   * @param {string} [options.format=] - A format to apply to the text.
+   * @param {EventSpec} options.events - Any text events.
    *
-   * @returns {d3text_spec} A revised text specification after having applied
-   * the user's modfiications.
+   * @returns {TextSpec} A revised text specification after having applied
+   * the user's modifications.
    *
    * @memberof dex/config
    *
+   * @example
+   *
+   * var myText = dex.config.text({ "font.size" : 32 });
+   *
    */
-  config.text = function text(custom) {
+  config.text = function text(options) {
     var defaults =
       {
         'font': dex.config.font(),
@@ -269,7 +290,7 @@ module.exports = function (dex) {
         'events': dex.config.events()
       };
 
-    var textSpec = dex.config.expandAndOverlay(custom, defaults);
+    var textSpec = dex.config.expandAndOverlay(options, defaults);
     return textSpec;
   };
 
@@ -278,12 +299,20 @@ module.exports = function (dex) {
    * This routine will dynamically configure an SVG text entity based upon the
    * supplied configuration.
    *
-   * @param {object} node The SVG text node to be configured.
-   * @param {d3text_spec} textSpec The text specification for this node.
+   * @param {node} node The SVG text node to be configured.
+   * @param {TextSpec} textSpec The text specification for this node.
+   * @param {number} i The index of the node (if any).
    *
-   * @returns {*} The node after having applied the text specification.
+   * @returns {node} The node after having the text specification applied
+   * to it.
    *
    * @memberof dex/config
+   *
+   * @example
+   *
+   * var textSpec = dex.config.text({ "font.size": 32, "fill.fillColor": "red" });
+   * d3.select("some-nodes")
+   *   .call(dex.config.configureText, textSpec);
    *
    */
   config.configureText = function configureText(node, textSpec, i) {
@@ -312,7 +341,7 @@ module.exports = function (dex) {
    *
    * Construct a stroke specification.
    *
-   * @param {d3text_spec} strokeSpec - The user's customizations to the specification.
+   * @param {StrokeSpec} options - The user's customizations to the specification.
    *
    * @returns {d3text_spec} The stroke specification after having applied the user's
    * configuration.
@@ -320,7 +349,7 @@ module.exports = function (dex) {
    * @memberof dex/config
    *
    */
-  config.stroke = function stroke(strokeSpec) {
+  config.stroke = function stroke(options) {
     var defaults =
       {
         'width': 1,
@@ -333,7 +362,7 @@ module.exports = function (dex) {
         'miterLimit': ''
       };
 
-    var config = dex.config.expandAndOverlay(strokeSpec, defaults);
+    var config = dex.config.expandAndOverlay(options, defaults);
     return config;
   };
 
@@ -626,84 +655,16 @@ module.exports = function (dex) {
     return node;
   };
 
-  config.getCallers = function getCallers(caller) {
-    var callers = [caller];
-    var currentCaller = caller;
-    //for (; currentCaller; currentCaller = currentCaller.caller) {
-    //  if (currentCaller.name) {
-    //    callers.push(currentCaller.name);
-    //  }
-    //}
-
-    return callers.reverse();
-  };
-
-  config.getCallerString = function getCallerString(caller) {
-    return dex.config.getCallers(caller).join("->");
-  };
-
-  config.setEventHandler = function setEventHandler(node, eventType, eventHandler, i) {
-    var callerStr = dex.config.getCallerString(arguments.callee.caller);
-
-    //dex.console.debug(callerStr + ": setEventHandler(node=" + node + ", eventType=" + eventType + ", eventHandler=" + eventHandler);
-    if (!node) {
-      dex.console.debug(callerStr + ": dex.config.setEventHandler(eventType='" + eventType + "eventHandler=" + eventHandler + ") : node is null.");
-      return node;
-    }
-    if (!dex.object.isFunction(node.on)) {
-      dex.console.debug(callerStr + ": dex.config.setEventHandler(eventType='" + eventType + "', eventHandler='" + eventHandler +
-        "') : target node is missing function: node.on(eventType,eventHandler).  Node dump:", node);
-      return node;
-    }
-    if (typeof eventHandler != 'undefined') {
-      dex.console.debug(callerStr + ": Set Event Handler: '" + eventType + "'='" + eventHandler + "'");
-      node.on(eventType, eventHandler);
-    }
-    else {
-      dex.console.debug(callerStr += ": Undefined Event Handler: '" + eventType + "'='" + eventHandler + "'");
-    }
-    return node;
-  };
-
   config.setAttr = function setAttr(node, name, value, i) {
-    var callerStr = dex.config.getCallerString(arguments.callee.caller);
-    if (!node) {
-      dex.console.debug(callerStr + ": dex.config.setAttr(name='" + name + "value=" + value + ") : node is null.");
-      return node;
-    }
-    if (!dex.object.isFunction(node.attr)) {
-      dex.console.debug(callerStr + ": dex.config.setAttr(name='" + name + "', value='" + value +
-        "') : target node is missing function: node.attr.  Node dump:", node);
-      return node;
-    }
     if (typeof value != 'undefined') {
-      dex.console.debug(callerStr + ": Set Attr: '" + name + "'='" + value + "'");
       node.attr(name, dex.config.optionValue(value, i, node));
-    }
-    else {
-      dex.console.debug(callerStr += ": Undefined Attr: '" + name + "'='" + value + "'");
     }
     return node;
   };
 
   config.setStyle = function setStyle(node, name, value, i) {
-    var callerStr = dex.config.getCallerString(arguments.callee.caller);
-    if (!node) {
-      dex.console.warn(callerStr + ": dex.config.setAttr(name='" + name + "value=" + value + ") : node is null.");
-      return node;
-    }
-    if (!dex.object.isFunction(node.style)) {
-      dex.console.debug(callerStr + ": dex.config.setStyle(name='" + name + "', value='" + value +
-        "') : target node is missing function: node.style.  Node Dump:", node);
-      return node;
-    }
     if (typeof value !== 'undefined' && node && dex.object.isFunction(node.style)) {
-      dex.console.debug(callerStr + ": Set Style: name='" + name + "', Value Dump:",
-        dex.config.optionValue(value, i));
       node.style(name, dex.config.optionValue(value, i, node));
-    }
-    else {
-      dex.console.debug(callerStr + ": Undefined Style: name='" + name + "', Value Dump:", value);
     }
     return node;
   };
@@ -832,7 +793,7 @@ module.exports = function (dex) {
       'events': dex.config.events()
     };
     if (custom) {
-      config = dex.object.overlay(custom, config);
+      config = dex.config.expandAndOverlay(custom, config);
     }
     return config;
   };

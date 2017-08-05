@@ -1,6 +1,6 @@
 /**
  *
- * This is the base constructor for a D3 Legend component.
+ * This is the base constructor for a D3 HorizontalLegend component.
  *
  * @param userConfig The chart's configuration.
  *
@@ -14,37 +14,64 @@ var Legend = function (userConfig) {
   var chart;
 
   var defaults = {
-    'parent': '#LegendParent',
-    'id': 'LegendId',
-    'class': 'LegendClass',
+    'parent': "#LegendParent",
+    'id': "LegendId",
+    'class': "LegendClass",
     'resizable': true,
-    'csv': {
-      'header': ["X", "Y", "Z"],
-      'data': [
-        [0, 0, 0],
-        [1, 1, 1],
-        [2, 2, 2]
-      ]
-    },
-    'width': "100%",
-    'height': "100%",
-    'margin': {
-      'left': 20,
-      'right': 20,
-      'top': 50,
-      'bottom': 50
+    "margin": {
+      "left": 0,
+      "right": 0,
+      "top": 0,
+      "bottom": 0
     },
     'transform': "",
-
-    'title': dex.config.text(),
-    'label': dex.config.text()
+    "palette": "category10",
+    'categorizationMethod': "Column Type"
   };
 
-  var chart = new dex.component(userConfig, defaults);
+  //config = dex.object.overlay(dex.config.expand(userConfig), dex.config.expand(defaults));
+  chart = new dex.component(userConfig, defaults);
 
-  chart.render = function render() {
+  chart.getGuiDefinition = function getGuiDefinition(config) {
+    var defaults = {
+      "type": "group",
+      "name": "Legend Settings",
+      "contents": [
+        {
+          "type": "group",
+          "name": "Legend Options",
+          "contents": [
+            dex.config.gui.general(),
+            dex.config.gui.dimensions(),
+            {
+              "name": "Color Scheme",
+              "description": "The color scheme.",
+              "target": "palette",
+              "type": "choice",
+              "choices": dex.color.colormaps({shortlist: true}),
+              "initialValue": "category10"
+            },
+            {
+              "name": "Categorize By",
+              "description": "The way we classify data.",
+              "type": "choice",
+              "choices": Object.keys(chart.config.csv.getCategorizationMethods()),
+              "target": "categorizationMethod"
+            }
+          ]
+        }
+      ]
+    };
+
+    var guiDef = dex.config.expandAndOverlay(config, defaults);
+    dex.config.gui.sync(chart, guiDef);
+    return guiDef;
+  };
+
+  chart.render = function () {
     d3 = dex.charts.d3.d3v4;
-    return chart.resize();
+    chart.resize();
+    return chart;
   };
 
   chart.update = function () {
@@ -53,60 +80,78 @@ var Legend = function (userConfig) {
     var config = chart.config;
     var csv = config.csv;
     var margin = config.margin;
-    var width = config.width - margin.left - margin.right;
-    var height = config.height - margin.top - margin.bottom;
+    margin.top = +margin.top;
+    margin.bottom = +margin.bottom;
+    margin.left = +margin.left;
+    margin.right = +margin.right;
+
+    var width = +config.width - margin.left - margin.right;
+    var height = +config.height - margin.top - margin.bottom;
 
     d3.selectAll(config.parent).selectAll("*").remove();
 
-    var quantize = d3.scaleQuantize()
-      .domain([ 0, 0.15 ])
-      .range(d3.range(9).map(function(i) { return "q" + i + "-9"; }));
+    // Dynamically determine our categorization function:
+    var catMethod = csv.getCategorizationMethod(
+      config.categorizationMethod);
 
-    var thresholdScale = d3.scaleThreshold()
-      .domain([ 0, 1000, 2500, 5000, 10000 ])
-      .range(d3.range(6)
-        .map(function(i) { return "q" + i + "-9"}));
+    var categories = csv.getCategories(catMethod);
+    var type = dex.array.guessType(categories);
 
-    var svg = d3.select(config.parent)
-      .append("svg")
-      .attr("id", config["id"])
-      .attr("class", config["class"])
-      .attr('width', config.width)
-      .attr('height', config.height);
+    if (type === "number") {
+      categories = categories.sort(function (a, b) {
+        return a - b;
+      });
+    }
 
-    var rootG = svg.append('g')
-      .attr("class", chart.config.class)
-      .attr('transform', 'translate(' +
-        (margin.left) + ',' +
-        (margin.top) + ') ' +
-        config.transform);
+    var color = d3.scaleOrdinal()
+      .domain(categories)
+      .range(dex.color.palette[config.palette]);
 
-    var quantizeLegend = d3.legendColor()
-      .labelFormat(d3.format(".2f"))
-      .useClass(true)
-      .title("title")
-      .titleWidth(100)
-      .scale(quantize);
+    var $parent = $(config.parent);
+    var $top = $("<div></div>")
+      .addClass(config.class)
+      .attr("id", config.id)
+      .width(width)
+      .height(height);
 
-    var thresholdLegend = d3.legendColor()
-      .labelFormat(d3.format(".2f"))
-      .labels(d3.legendHelpers.thresholdLabels)
-      .useClass(true)
-      .scale(thresholdScale)
+    categories.forEach(function (category, i) {
+      $cat = $("<div></div>")
+        .addClass("dex-legend-item")
+        .text(category)
+        .css("background-color", color(i))
+        .css("color", "white");
+      $top.append($cat);
+    });
 
-    svg.select("." + chart.config.class)
-      .call(thresholdLegend);
+    $parent.append($top);
 
-    // Allow method chaining
+    // Size all elements equally by height and width.
+    var maxHeight = -1;
+    var maxWidth = -1;
+
+    $(".dex-legend-item").each(function () {
+      maxHeight = maxHeight > $(this).height() ?
+        maxHeight : $(this).height();
+      maxWidth = maxWidth > $(this).width() ?
+        maxWidth : $(this).width();
+    });
+
+    $(".dex-legend-item").each(function () {
+      $(this).height(maxHeight).width(maxWidth);
+    });
+
+    $(".dex-legend-item").on("mouseover", function(event) {
+      //dex.console.log("MOUSEOVER", event);
+      chart.publish({ type: "mouseover", text: event.textContent });
+    });
+
     return chart;
   };
 
   $(document).ready(function () {
-    // Make the entire chart draggable.
-    //$(chart.config.parent).draggable();
   });
 
   return chart;
-}
+};
 
 module.exports = Legend;

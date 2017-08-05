@@ -1,8 +1,31 @@
 /**
  *
- * This is the base constructor for a D3 Chord Diagram.
+ * This is the base constructor for a D3 Chord diagram.
  *
- * @param userConfig The chart's configuration.
+ * @param {object} options The chart's configuration.
+ * @param {string} [options.parent=#ChordParent] A selector pointing to the
+ * parent container to which this chart will be added.
+ * @param {string} [options.id=ChordId] The id of this chart.  This enables
+ * it to be uniquely styled, even on pages with multiple charts of the same
+ * type.
+ * @param {string} [options.class=ChordClass] The class of this chart.
+ * This enables groups of similarly classed charts to be styled in a
+ * common manner.
+ * @param {boolean} [options.resizable=true] If true, the chart will resize
+ * itself to the size of the parent container, otherwise, it will observe
+ * any height/width limitations imposed by the options.
+ * @param {csv} options.csv The csv data for this chart.
+ * @param {number|string} [options.width=100%] The width of the chart expressed either
+ * as a number representing the width in pixels, or as a percentage of the
+ * available parent container space.
+ * @param {number|string} [options.height=100%] The height of the chart expressed either
+ * as a number representing the height in pixels, or as a percentage of the
+ * available parent container space.
+ * @param {margin} options.margin The margins of this chart.  Expressed as an
+ * object with properties top, bottom, left and right which represent the top,
+ * bottom, left and right margins respectively.
+ * @param {string} options.transform The transformation to apply to the chart.
+ * ex: rotate(45), size(.5), etc...
  *
  * @returns {Chord}
  *
@@ -166,7 +189,6 @@ var Chord = function (userConfig) {
   };
 
   chart.subscribe(chart, "attr", function (msg) {
-    //dex.console.log("MSG", msg);
     if (msg.attr == "draggable") {
       $(chart.config.parent).draggable();
       $(chart.config.parent).draggable((msg.value === true) ? 'enable' : 'disable');
@@ -246,14 +268,13 @@ var Chord = function (userConfig) {
 
         rootG.selectAll("g.chord path")
           .filter(function (d) {
-
             return d.source.index == activeChord.index || d.target.index == activeChord.index;
           })
           .call(dex.config.configureLink, config.links.emphasis);
       })
       .on("mouseout", function (inactiveChord) {
         d3.select(this)
-          .call(dex.config.configureLink, config.nodes.normal)
+          .call(dex.config.configureLink, config.nodes.normal);
         //dex.console.log("INACTIVE", inactiveChord);
         rootG.selectAll("g.chord path")
           .filter(function (d) {

@@ -42,9 +42,16 @@ module.exports = function (dex) {
        * will perform a miminimal update.  Components which do
        * not support incremental updates will perform a full
        * render.  This behavior is controlled by the "refreshType"
-       * parameter which is set either to "update" or "render".
-       *
+       * component option which is set either to "update" or
+       * "render".
        * @memberof dex/component
+       * @example
+       * var someChart = dex.chart.SomeChart({ refreshType: 'update' }).render();
+       * someChart.refresh(); // Calls update on refresh. ie: partial update.
+       *
+       * var anotherChart = dex.chart.AnotherChart({ refreshType: 'render' )}.render();
+       * // Calls render on refresh.  This means that the entire chart is recreated.
+       * anotherChart.refresh();
        *
        */
       cmp.refresh = function () {
@@ -56,6 +63,39 @@ module.exports = function (dex) {
         }
       };
 
+      /**
+       *
+       * There are 3 forms of this method.
+       *
+       * * () - Return the component's configuration.
+       * * (name) - Return the value of a specific named attribute.
+       * * (name, value)- Set the value of an attribute.
+       *
+       * @param {string} name The name of the attribute we are accessing.
+       * @param {*} value The value of the attribute.
+       *
+       * @returns {Component} The component so that this form will support
+       * the chaining of attr calls.
+       *
+       * @memberof dex/component
+       * @example
+       *
+       * // Return the chart's configuration.
+       * var config = chart.attr();
+       *
+       * // Return the height attribute of the chart.
+       * var height = chart.attr("height");
+       *
+       * // Set attribute name to value
+       * chart.attr("name", value);
+       *
+       * // Set param1, param2 and a nested parameter named param3
+       * // using dot-notation.
+       * chart.attr("param1", "value1")
+       *   .attr("param2", "value2")
+       *   .attr("nested.param3", { key: "value" };
+       *
+       */
       cmp.attr = function (name, value) {
         //dex.console.log("SETTING-ATTR: '" + name + "'='" + value + "'", cmp.config);
 
@@ -76,28 +116,92 @@ module.exports = function (dex) {
         return cmp;
       };
 
+      /**
+       *
+       * By default, the setter form of attr (having 2 arguments) triggers
+       * an event notifying all concerned listeners that the attribute
+       * has changed.  Sometimes we wish avoid the generation of this
+       * event.
+       *
+       * @param {string} name The attribute name.
+       * @param {*} value The attribute value.
+       * @returns {Component} Returns the component being changed so that
+       * method chaining works.
+       * @memberof dex/component
+       *
+       */
       cmp.attrNoEvent = function (name, value) {
         // This will handle the setting of a single attribute
         dex.object.setHierarchical(cmp.config, name, value, '.');
         return cmp;
       };
 
-      cmp.clone = function (userConfig) {
+      /**
+       *
+       * Components must define a clone function.  This is a
+       * placeholder to indicate that they have not done so
+       * should it get called.
+       *
+       * @param options Dummy operator in this case, but in a
+       * real clone implementation, it would contain the
+       * user specified options for the clone.  Thus, clone
+       * can clone and modify on the fly.
+       * @memberof dex/component
+       *
+       */
+      cmp.clone = function (options) {
         dex.console.log("No clone function defined for", cmp);
       };
 
-      cmp.getGuiDefinition = function (userConfig, prefix) {
+      /**
+       *
+       * Components should define a gui definition for platforms
+       * to modify their settings interactively.  This provides a
+       * generic implementation consisting of common attributes for
+       * components which have not defined their interface.
+       *
+       * @param userGuiDef User supplied gui definitions which will
+       * take precedence over defaults.
+       * @param target The component's configuration target which
+       * will be changed when this GUI is interactec with by the
+       * user.
+       * @returns {GuiDefinition}
+       * @memberof dex/component
+       *
+       */
+      cmp.getGuiDefinition = function (userGuiDef, target) {
         return {
           "type": "group",
           "name": cmp.config.id + " Settings",
           "contents": [
-            dex.config.gui.dimensions(userConfig, prefix),
-            dex.config.gui.general(userConfig, prefix)
+            dex.config.gui.dimensions(userGuiDef, target),
+            dex.config.gui.general(userGuiDef, target)
           ]
         };
       };
 
+      /**
+       *
+       * Subscribe a component to the specified events of another component.
+       *
+       * @param {Component} source The source component.
+       * @param {string} eventType The events we are interested in.
+       * @param {function} callback The callback to invoke when the event is received.
+       * Events may also pass data to this callback.
+       * @returns {handle} A handle which may be used to unsubscribe from
+       * the event channel.  False if something failed.
+       * @memberof dex/component
+       *
+       * @example
+       *
+       * var handle = chart1.subscribe(chart2, 'select', function(event) {
+       *   // do something
+       * });
+       *
+       */
       cmp.subscribe = function (source, eventType, callback) {
+        // TODO: Keep track of handles so I can gracefully delete components
+        // which are listening to events?
         if (arguments.length == 3) {
           var channel = source.config.channel + '/' + eventType;
 
@@ -113,6 +217,16 @@ module.exports = function (dex) {
         }
       };
 
+      /**
+       *
+       * Unsubscribe this component from the channel indicated in the
+       * handle.
+       *
+       * @param {handle} The handle attained through cmp.subscribe.
+       * @returns {Component} The component for method chaining support.
+       * @memberof dex/component
+       *
+       */
       cmp.unsubscribe = function (handle) {
         dex.bus.unsubscribe(handle);
         return cmp;
@@ -218,20 +332,61 @@ module.exports = function (dex) {
         }
       };
 
+      /**
+       *
+       * Render the chart asynchronously and ensure we don't attempt to
+       * render more than 1x / second via debounce.
+       *
+       * @memberof dex/component
+       *
+       */
       cmp.renderAsync = _.debounce(function () {
         cmp.render();
       }, 1000);
+
+      /**
+       *
+       * Update the chart asynchronously and ensure we don't attempt to
+       * update more than 1x / second via debounce.
+       *
+       * @memberof dex/component
+       *
+       */
       cmp.updateAsync = _.debounce(function () {
         cmp.update();
       }, 1000);
 
+      /**
+       *
+       * Refresh the chart asynchronously and ensure we don't attempt to
+       * refresh more than 1x / second via debounce.
+       *
+       * @memberof dex/component
+       *
+       */
       cmp.refreshAsync = _.debounce(function () {
         cmp.refresh();
       }, 1000);
+
+      /**
+       *
+       * Resize the chart asynchronously and ensure we don't attempt to
+       * resize more than 1x / second via debounce.
+       *
+       * @memberof dex/component
+       *
+       */
       cmp.resizeAsync = _.debounce(function () {
         cmp.resize();
       }, 1000);
 
+      /**
+       *
+       * Delete the chart.  Unregister listeners and delete it gracefully.
+       *
+       * @memberof dex/component
+       *
+       */
       cmp.deleteChart = function () {
         if (window.attachEvent) {
           window.detachEvent('onresize', cmp.resize);
@@ -245,6 +400,16 @@ module.exports = function (dex) {
         }
       };
 
+      /**
+       *
+       * Save a specified attribute.
+       *
+       * @param name The attribute name.
+       * @param value The attribute value.
+       * @returns {Component} Returns the component for method chaining.
+       * @memberof dex/component
+       *
+       */
       cmp.attrSave = function (name, value) {
         //dex.console.log("attrSave(" + name + "," + value + ")", cmp);
         if (arguments.length == 2) {
@@ -255,7 +420,21 @@ module.exports = function (dex) {
         return cmp;
       };
 
-      // Used to load cmp state from the DOM.
+      /**
+       *
+       * Load component state from the DOM.  It silently looks for the information
+       * within an attribute with id=dexjs-config descended from the HTML page
+       * body.  Each chart configured is encapsulated in a div element with a
+       * chart-id attribute set to the id of that component as defined in it's
+       * config.id option.  This means that if you wish to configure multiple
+       * instances of the same chart type on the same page, you must supply them
+       * with unique id's.
+       *
+       * @returns {Component} Returns the component after having the loaded attributes
+       * applied to it.
+       * @memberof dex/component
+       *
+       */
       cmp.load = function () {
         dex.console.log("Loading Chart: " + cmp.config.id);
         $("body #dexjs-config div[chart-id=" + cmp.config.id + "]").each(function (i, obj) {
@@ -274,7 +453,16 @@ module.exports = function (dex) {
         return cmp;
       };
 
-      // Used to save chart state within the DOM.
+      /**
+       *
+       * Save the user modified component state to the DOM.  The information
+       * is stored in an element with selector path: "body div#dexjs-config".
+       * Under this element, individual charts are configured in a descending
+       * div element with attribute "chart-id" set to the component's
+       * config.id.
+       *
+       * @returns {Component} Returns the component for method chaining.
+       */
       cmp.save = function () {
         // Add dexjs-config if it does not exist.
         if ($("body #dexjs-config").length == 0) {
@@ -295,6 +483,7 @@ module.exports = function (dex) {
         });
         return cmp;
       };
+
       if (window.attachEvent) {
         dex.console.debug("window.attachEvent");
         window.attachEvent('onresize', cmp.resize);

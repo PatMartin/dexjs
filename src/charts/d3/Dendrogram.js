@@ -1,15 +1,38 @@
 /**
  *
- * This is the base constructor for a D3 Dendrogram component.
+ * This is the base constructor for a D3 Dendrogram visualization.
  *
- * @param userConfig The chart's configuration.
+ * @param {object} options The chart's configuration.
+ * @param {string} [options.parent=#DendrogramParent] A selector pointing to the
+ * parent container to which this chart will be added.
+ * @param {string} [options.id=DendrogramId] The id of this chart.  This enables
+ * it to be uniquely styled, even on pages with multiple charts of the same
+ * type.
+ * @param {string} [options.class=DendrogramClass] The class of this chart.
+ * This enables groups of similarly classed charts to be styled in a
+ * common manner.
+ * @param {boolean} [options.resizable=true] If true, the chart will resize
+ * itself to the size of the parent container, otherwise, it will observe
+ * any height/width limitations imposed by the options.
+ * @param {csv} options.csv The csv data for this chart.
+ * @param {number|string} [options.width=100%] The width of the chart expressed either
+ * as a number representing the width in pixels, or as a percentage of the
+ * available parent container space.
+ * @param {number|string} [options.height=100%] The height of the chart expressed either
+ * as a number representing the height in pixels, or as a percentage of the
+ * available parent container space.
+ * @param {margin} options.margin The margins of this chart.  Expressed as an
+ * object with properties top, bottom, left and right which represent the top,
+ * bottom, left and right margins respectively.
+ * @param {string} options.transform The transformation to apply to the chart.
+ * ex: rotate(45), size(.5), etc...
  *
  * @returns {Dendrogram}
  *
  * @memberof dex/charts/d3
  *
  */
-var Dendrogram = function Dendrogram(userConfig) {
+var Dendrogram = function Dendrogram(options) {
   d3 = dex.charts.d3.d3v3;
   var chart;
 
@@ -96,7 +119,7 @@ var Dendrogram = function Dendrogram(userConfig) {
     })
   };
 
-  chart = new dex.component(userConfig, defaults);
+  chart = new dex.component(options, defaults);
 
   chart.getGuiDefinition = function getGuiDefinition(config) {
     var defaults = {
@@ -427,7 +450,7 @@ var Dendrogram = function Dendrogram(userConfig) {
   };
 
   chart.clone = function clone(override) {
-    return Dendrogram(dex.config.expandAndOverlay(override, userConfig));
+    return Dendrogram(dex.config.expandAndOverlay(override, options));
   };
 
   $(document).ready(function () {

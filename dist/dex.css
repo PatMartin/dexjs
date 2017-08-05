@@ -274,6 +274,21 @@
     color: white;
 }
 
+/** Dex Legends **/
+.dex-legend {}
+.dex-legend-item {
+    float: left;
+    padding: 2px;
+    text-align: center;
+    margin: 1px;
+}
+
+.dex-legend-item:hover {
+    opacity: .8;
+    color: yellow;
+    stroke-width: 2;
+}
+
 .SankeyClass .node rect {
     cursor: move;
     fill-opacity: .9;

@@ -111,6 +111,23 @@ module.exports = function (dex) {
     return arraySlice;
   };
 
+  array.guessType = function (array) {
+    if (array.every(function (elt) {
+        return !isNaN(elt);
+      })) {
+      return "number";
+    }
+
+    // Not a number, so lets try dates.
+    if (array.every(function (elt) {
+        return dex.object.couldBeADate(elt);
+      })) {
+      return "date";
+    }
+    // Congratulations, you have a string!!
+    return "string";
+  };
+
   array.removeIndex = function (targetArray, removeIndex) {
     if (arguments.length >= 2 && Array.isArray(targetArray)) {
       if (Array.isArray(removeIndexes)) {
@@ -282,7 +299,8 @@ module.exports = function (dex) {
     return indices;
   }
   return array;
-};
+}
+;
 },{}],4:[function(require,module,exports){
 /**
  *
@@ -996,19 +1014,56 @@ module.exports = function charts() {
     'vis'      : require("./vis/vis")
   };
 };
-},{"./c3/c3":13,"./d3/d3":32,"./d3plus/d3plus":34,"./echarts/echarts":44,"./elegans/elegans":46,"./multiples/multiples":48,"./nvd3/nvd3":51,"./taucharts/taucharts":60,"./threejs/threejs":62,"./vis/vis":64}],15:[function(require,module,exports){
+},{"./c3/c3":13,"./d3/d3":33,"./d3plus/d3plus":35,"./echarts/echarts":45,"./elegans/elegans":47,"./multiples/multiples":49,"./nvd3/nvd3":52,"./taucharts/taucharts":61,"./threejs/threejs":63,"./vis/vis":65}],15:[function(require,module,exports){
 /**
  *
  * This is the base constructor for a D3 BumpChart component.
  *
- * @param userConfig The chart's configuration.
+ * @param {object} options The chart's configuration.
+ * @param {string} [options.parent=#BumpChartParent] A selector pointing to the
+ * parent container to which this chart will be added.
+ * @param {string} [options.id=BumpChartId] The id of this chart.  This enables
+ * it to be uniquely styled, even on pages with multiple charts of the same
+ * type.
+ * @param {string} [options.class=BumpChartClass] The class of this chart.
+ * This enables groups of similarly classed charts to be styled in a
+ * common manner.
+ * @param {boolean} [options.resizable=true] If true, the chart will resize
+ * itself to the size of the parent container, otherwise, it will observe
+ * any height/width limitations imposed by the options.
+ * @param {csv} options.csv The csv data for this chart.  This chart expects a CSV
+ * consisting of 3 columns of the form: Category:String, Sequence:Number,
+ * Ranking:Number.
+ * @param {number|string} [options.width=100%] The width of the chart expressed either
+ * as a number representing the width in pixels, or as a percentage of the
+ * available parent container space.
+ * @param {number|string} [options.height=100%] The height of the chart expressed either
+ * as a number representing the height in pixels, or as a percentage of the
+ * available parent container space.
+ * @param {margin} options.margin The margins of this chart.  Expressed as an
+ * object with properties top, bottom, left and right which represent the top,
+ * bottom, left and right margins respectively.
+ * @param {string} options.transform The transformation to apply to the chart.
+ * ex: rotate(45), size(.5), etc...
+ * @param {number} options.speed The time, in milliseconds between transitions
+ * or frames as the chart displays.
+ * @param {ColormapName} colorScheme The name of the colormap to use for our
+ * color scheme.
+ * @param {string} format The d3 format to apply to the format of the ticks.
+ * @param {TextSpec} options.chartLabel The text specification for chart labels.
+ * @param {TextSpec} options.categoryLabel The text specification for categories.
+ * @param {TextSpec} options.sequenceLabel The text specification for sequences.
+ * @param {CircleGroupSpec} options.circle The specification for nodes represented as
+ * circles under normal and emphasized circumstances.
+ * @param {LineGroupSpec} options.line The specification for lines under normal and
+ * emphasized circumstances.
  *
  * @returns {BumpChart}
  *
  * @memberof dex/charts/d3
  *
  */
-var BumpChart = function (userConfig) {
+var BumpChart = function (options) {
   d3 = dex.charts.d3.d3v3;
   var chart;
 
@@ -1027,16 +1082,16 @@ var BumpChart = function (userConfig) {
     'width': "100%",
     'height': "100%",
     'margin': {
-      'left': 140,
-      'right': 160,
-      'top': 50,
-      'bottom': 50
+      'left': 20,
+      'right': 80,
+      'top': 20,
+      'bottom': 20
     },
     'transform': "",
+    'speed': 100,
     'colorScheme': 'category10',
     'color': d3.scale.category10(),
     'format': d3.format("d"),
-    'key': {'category': 0, 'sequence': 1, 'rank': 2},
     'chartLabel': dex.config.text({
       'text': "",
       'x': function () {
@@ -1079,7 +1134,7 @@ var BumpChart = function (userConfig) {
         return "black";
       }
     }),
-    'circle': dex.config.circle({
+    'circle.normal': dex.config.circle({
       'r': 6,
       'stroke': dex.config.stroke({
         'color': function (d) {
@@ -1089,19 +1144,42 @@ var BumpChart = function (userConfig) {
       }),
       'fill.fillColor': 'white'
     }),
-    'line': dex.config.line({
+    'circle.emphasis': dex.config.circle({
+      'r': 6,
       'stroke': dex.config.stroke({
         'color': function (d) {
           return chart.config.color(d.key);
         },
-        'width': 3,
-        //'dasharray' : "1 1"
+        'width': 4,
+      }),
+      'fill.fillColor': 'white'
+    }),
+    'line.emphasis': dex.config.line({
+      'stroke': dex.config.stroke({
+        'color': function (d) {
+          return chart.config.color(d.key);
+        },
+        'width': 3
+      }),
+      'fill.fillColor': 'none'
+    }),
+    'line.normal': dex.config.line({
+      'stroke': dex.config.stroke({
+        'color': function (d) {
+          return chart.config.color(d.key);
+        },
+        'width': 1,
       }),
       'fill.fillColor': 'none'
     })
   };
 
-  chart = new dex.component(userConfig, defaults);
+  chart = new dex.component(options, defaults);
+
+  chart.spec = new dex.data.spec("Bump Chart")
+    .string("category")
+    .number("sequence")
+    .number("ranking");
 
   chart.getGuiDefinition = function getGuiDefinition(config) {
     var defaults = {
@@ -1126,8 +1204,8 @@ var BumpChart = function (userConfig) {
         dex.config.gui.text({name: "Chart Label"}, "chartLabel"),
         dex.config.gui.text({name: "Category Label"}, "categoryLabel"),
         dex.config.gui.text({name: "Sequence Labels"}, "sequenceLabel"),
-        dex.config.gui.circle({name: "Nodes"}, "circle"),
-        dex.config.gui.link({name: "Lines"}, "line")
+        dex.config.gui.circleGroup({name: "Nodes"}, "circle"),
+        dex.config.gui.linkGroup({name: "Lines"}, "line")
       ]
     };
 
@@ -1151,17 +1229,23 @@ var BumpChart = function (userConfig) {
     var height = +config.height - margin.top - margin.bottom;
     config.color = dex.color.getColormap(config.colorScheme);
 
-    var categoryKey = csv.getColumnName(config.key.category);
-    var sequenceKey = csv.getColumnName(config.key.sequence);
-    var rankKey = csv.getColumnName(config.key.rank);
-
-    var categoryIndex = csv.getColumnNumber(config.key.category);
-    var sequenceIndex = csv.getColumnNumber(config.key.sequence);
-    var rankIndex = csv.getColumnNumber(config.key.rank);
-
-    //dex.console.log("cat", categoryKey, "sequence", sequenceKey, "rank", rankKey);
-
     d3.selectAll(config.parent).selectAll("*").remove();
+
+    var spec;
+
+    try {
+      spec = chart.spec.parse(csv);
+    }
+    catch (ex) {
+      if (ex instanceof dex.exception.SpecificationException) {
+        $(config.parent).append(chart.spec.message(ex));
+      }
+      return chart;
+    }
+
+    categoryInfo = spec.specified[0];
+    sequenceInfo = spec.specified[1];
+    rankInfo = spec.specified[2];
 
     var svg = d3.select(config.parent)
       .append("svg")
@@ -1175,18 +1259,13 @@ var BumpChart = function (userConfig) {
         margin.left + ',' + margin.top + ') ' +
         config.transform);
 
-    var data = csv.toJson();
-    //dex.console.log("JSON", JSON.stringify(data));
-
+    var data = csv.include([0, 1, 2]).toJson();
     var dataNest = d3.nest()
       .key(function (d) {
-        return d[csv.header[categoryIndex]];
+        return d[csv.header[0]];
       })
       .entries(data);
-
     data = dataNest;
-
-    var speed = 100;
 
     var x = d3.scale.linear()
       .range([0, width]);
@@ -1220,10 +1299,10 @@ var BumpChart = function (userConfig) {
 
     var line = d3.svg.line()
       .x(function (d) {
-        return x(+d[sequenceKey]);
+        return x(+d[sequenceInfo.header]);
       })
       .y(function (d) {
-        return y(+d[rankKey]) + y.rangeBand() / 2;
+        return y(+d[rankInfo.header]) + y.rangeBand() / 2;
       });
 
     var clip = svg.append("clipPath")
@@ -1234,19 +1313,19 @@ var BumpChart = function (userConfig) {
 
     y.domain(d3.range(d3.min(data, function (series) {
         return d3.min(series.values, function (d) {
-          return +d[rankKey];
+          return +d[rankInfo.header];
         });
       }),
       d3.max(data, function (series) {
         return d3.max(series.values, function (d) {
-          return +d[rankKey];
+          return +d[rankInfo.header];
         });
       }) + 1)
         .reverse()
     );
 
     x.domain(d3.extent(data[0].values.map(function (d) {
-      return +d[sequenceKey];
+      return +d[sequenceInfo.header];
     })));
 
     clippingIndex.domain([1, data[0].values.length]);
@@ -1279,7 +1358,7 @@ var BumpChart = function (userConfig) {
 
     var path = key.append("path")
       .attr("class", "line")
-      .call(dex.config.configureLine, config.line)
+      .call(dex.config.configureLine, config.line.emphasis)
       .attr("clip-path", function (d) {
         return "url(#clip)";
       })
@@ -1287,50 +1366,49 @@ var BumpChart = function (userConfig) {
         return line(d.values);
       })
       .on("mouseover", function (d) {
-        key.style("opacity", 0.2);
+        key.call(dex.config.configureLine, config.line.normal);
         key.filter(function (path) {
           return path.key === d.key;
-        }).style("opacity", 1);
+        }).call(dex.config.configureLine, config.line.emphasis);
       })
       .on("mouseout", function (d) {
-        key.style("opacity", 1);
+        key.call(dex.config.configureLine, config.line.emphasis);
       });
 
     var circleStart = key.append("circle")
-      .call(dex.config.configureCircle, config.circle)
+      .call(dex.config.configureCircle, config.circle.emphasis)
       .attr("cx", function (d) {
-        return x(+d.values[0][sequenceKey]);
+        return x(+d.values[0][sequenceInfo.header]);
       })
       .attr("cy", function (d) {
-        return y(+d.values[0][rankKey]) + y.rangeBand() / 2;
+        return y(+d.values[0][rankInfo.header]) + y.rangeBand() / 2;
       })
-      //    .style("fill", function(d) { return d.color; })
       .on("mouseover", function (d) {
-        key.style("opacity", 0.2);
+        key.call(dex.config.configureCircle, config.circle.normal);
         key.filter(function (path) {
           return path.key === d.key;
-        }).style("opacity", 1);
+        }).call(dex.config.configureCircle, config.circle.emphasis);
       })
       .on("mouseout", function (d) {
-        key.style("opacity", 1);
+        key.call(dex.config.configureCircle, config.circle.emphasis);
       });
 
     var circleEnd = key.append("circle")
-      .call(dex.config.configureCircle, config.circle)
+      .call(dex.config.configureCircle, config.circle.emphasis)
       .attr("cx", function (d) {
-        return x(+d.values[0][sequenceKey]);
+        return x(+d.values[0][sequenceInfo.header]);
       })
       .attr("cy", function (d) {
-        return y(+d.values[0][rankKey]) + y.rangeBand() / 2;
+        return y(+d.values[0][rankInfo.header]) + y.rangeBand() / 2;
       })
       .on("mouseover", function (d) {
-        key.style("opacity", 0.2);
+        key.call(dex.config.configureCircle, config.circle.normal);
         key.filter(function (path) {
           return path.key === d.key;
-        }).style("opacity", 1);
+        }).call(dex.config.configureCircle, config.circle.emphasis);
       })
       .on("mouseout", function (d) {
-        key.style("opacity", 1);
+        key.call(dex.config.configureCircle, config.circle.emphasis);
       });
 
     // text label for the chart
@@ -1339,9 +1417,9 @@ var BumpChart = function (userConfig) {
 
     var label = key.append("text")
       .attr("transform", function (d) {
-        //dex.console.log("D", d, sequenceKey);
-        return "translate(" + (+x(d.values[0][sequenceKey])) +
-          "," + (+y(d.values[0][rankKey]) + y.rangeBand() / 2) + ")";
+        //dex.console.log("D", d, sequenceInfo.header);
+        return "translate(" + (+x(d.values[0][sequenceInfo.header])) +
+          "," + (+y(d.values[0][rankInfo.header]) + y.rangeBand() / 2) + ")";
       })
       .call(dex.config.configureText, config.categoryLabel)
       .on("mouseover", function (d) {
@@ -1354,37 +1432,37 @@ var BumpChart = function (userConfig) {
         key.style("opacity", 1);
       })
       .text(function (d) {
-        return " " + d.values[0][rankKey] + ". " + d.key;
+        return " " + d.values[0][rankInfo.header] + ". " + d.key;
       });
 
     var xIndex = 1;
 
     var transition = d3.transition()
-      .duration(speed)
+      .duration(config.speed)
       .each("start", function start() {
         label.transition()
-          .duration(speed)
+          .duration(config.speed)
           .ease('linear')
           .attr("transform", function (d) {
-            //dex.console.log("D:" + xIndex, d, sequenceKey);
-            return "translate(" + x(+d.values[xIndex][sequenceKey]) + "," + (y(+d.values[xIndex][rankKey]) + y.rangeBand() / 2) + ")";
+            //dex.console.log("D:" + xIndex, d, sequenceInfo.header);
+            return "translate(" + x(+d.values[xIndex][sequenceInfo.header]) + "," + (y(+d.values[xIndex][rankInfo.header]) + y.rangeBand() / 2) + ")";
           })
           .text(function (d) {
-            return " " + d.values[xIndex][rankKey] + ". " + d.key;
+            return " " + d.values[xIndex][rankInfo.header] + ". " + d.key;
           });
 
         circleEnd.transition()
-          .duration(speed)
+          .duration(config.speed)
           .ease('linear')
           .attr("cx", function (d) {
-            return x(+(d.values[xIndex][sequenceKey]));
+            return x(+(d.values[xIndex][sequenceInfo.header]));
           })
           .attr("cy", function (d) {
-            return y(+(d.values[xIndex][rankKey])) + y.rangeBand() / 2;
+            return y(+(d.values[xIndex][rankInfo.header])) + y.rangeBand() / 2;
           });
 
         clip.transition()
-          .duration(speed)
+          .duration(config.speed)
           .ease('linear')
           .attr("width", clippingIndex(xIndex + 1))
           .attr("height", height);
@@ -1397,8 +1475,8 @@ var BumpChart = function (userConfig) {
     // Allow method chaining
     return chart;
   };
-  chart.clone = function clone(userConfig) {
-    return BumpChart(userConfig, chart.defaults);
+  chart.clone = function clone(options) {
+    return BumpChart(options, chart.defaults);
   };
 
   $(document).ready(function () {
@@ -1415,9 +1493,32 @@ module.exports = BumpChart;
 },{}],16:[function(require,module,exports){
 /**
  *
- * This is the base constructor for a D3 Chord Diagram.
+ * This is the base constructor for a D3 Chord diagram.
  *
- * @param userConfig The chart's configuration.
+ * @param {object} options The chart's configuration.
+ * @param {string} [options.parent=#ChordParent] A selector pointing to the
+ * parent container to which this chart will be added.
+ * @param {string} [options.id=ChordId] The id of this chart.  This enables
+ * it to be uniquely styled, even on pages with multiple charts of the same
+ * type.
+ * @param {string} [options.class=ChordClass] The class of this chart.
+ * This enables groups of similarly classed charts to be styled in a
+ * common manner.
+ * @param {boolean} [options.resizable=true] If true, the chart will resize
+ * itself to the size of the parent container, otherwise, it will observe
+ * any height/width limitations imposed by the options.
+ * @param {csv} options.csv The csv data for this chart.
+ * @param {number|string} [options.width=100%] The width of the chart expressed either
+ * as a number representing the width in pixels, or as a percentage of the
+ * available parent container space.
+ * @param {number|string} [options.height=100%] The height of the chart expressed either
+ * as a number representing the height in pixels, or as a percentage of the
+ * available parent container space.
+ * @param {margin} options.margin The margins of this chart.  Expressed as an
+ * object with properties top, bottom, left and right which represent the top,
+ * bottom, left and right margins respectively.
+ * @param {string} options.transform The transformation to apply to the chart.
+ * ex: rotate(45), size(.5), etc...
  *
  * @returns {Chord}
  *
@@ -1581,7 +1682,6 @@ var Chord = function (userConfig) {
   };
 
   chart.subscribe(chart, "attr", function (msg) {
-    //dex.console.log("MSG", msg);
     if (msg.attr == "draggable") {
       $(chart.config.parent).draggable();
       $(chart.config.parent).draggable((msg.value === true) ? 'enable' : 'disable');
@@ -1661,14 +1761,13 @@ var Chord = function (userConfig) {
 
         rootG.selectAll("g.chord path")
           .filter(function (d) {
-
             return d.source.index == activeChord.index || d.target.index == activeChord.index;
           })
           .call(dex.config.configureLink, config.links.emphasis);
       })
       .on("mouseout", function (inactiveChord) {
         d3.select(this)
-          .call(dex.config.configureLink, config.nodes.normal)
+          .call(dex.config.configureLink, config.nodes.normal);
         //dex.console.log("INACTIVE", inactiveChord);
         rootG.selectAll("g.chord path")
           .filter(function (d) {
@@ -1768,9 +1867,32 @@ module.exports = Chord;
 },{}],17:[function(require,module,exports){
 /**
  *
- * This is the base constructor for a D3 ClusteredForce component.
+ * This is the base constructor for a D3 Clustered Force visualization.
  *
- * @param userConfig The chart's configuration.
+ * @param {object} options The chart's configuration.
+ * @param {string} [options.parent=#ClusteredForceParent] A selector pointing to the
+ * parent container to which this chart will be added.
+ * @param {string} [options.id=ClusteredForceId] The id of this chart.  This enables
+ * it to be uniquely styled, even on pages with multiple charts of the same
+ * type.
+ * @param {string} [options.class=ClusterdForceClass] The class of this chart.
+ * This enables groups of similarly classed charts to be styled in a
+ * common manner.
+ * @param {boolean} [options.resizable=true] If true, the chart will resize
+ * itself to the size of the parent container, otherwise, it will observe
+ * any height/width limitations imposed by the options.
+ * @param {csv} options.csv The csv data for this chart.
+ * @param {number|string} [options.width=100%] The width of the chart expressed either
+ * as a number representing the width in pixels, or as a percentage of the
+ * available parent container space.
+ * @param {number|string} [options.height=100%] The height of the chart expressed either
+ * as a number representing the height in pixels, or as a percentage of the
+ * available parent container space.
+ * @param {margin} options.margin The margins of this chart.  Expressed as an
+ * object with properties top, bottom, left and right which represent the top,
+ * bottom, left and right margins respectively.
+ * @param {string} options.transform The transformation to apply to the chart.
+ * ex: rotate(45), size(.5), etc...
  *
  * @returns {ClusteredForce}
  *
@@ -1788,10 +1910,10 @@ var ClusteredForce = function (userConfig) {
     'width': "100%",
     'resizable': true,
     'margin': {
-      'left': 100,
-      'right': 100,
-      'top': 50,
-      'bottom': 50
+      'left': 0,
+      'right': 0,
+      'top': 0,
+      'bottom': 0
     },
     'csv': {
       'header': ["X", "Y"],
@@ -1864,6 +1986,13 @@ var ClusteredForce = function (userConfig) {
 
   chart = new dex.component(userConfig, defaults);
 
+  chart.subscribe(chart, "attr", function (msg) {
+    if (msg.attr == "draggable") {
+      $(chart.config.parent).draggable();
+      $(chart.config.parent).draggable((msg.value === true) ? 'enable' : 'disable');
+    }
+  });
+
   chart.getGuiDefinition = function getGuiDefinition(config) {
     var defaults = {
       "type": "group",
@@ -1873,7 +2002,7 @@ var ClusteredForce = function (userConfig) {
         dex.config.gui.general(),
         {
           "type": "group",
-          "name": "Physics and Sizing",
+          "name": "Physics and Appearance",
           "contents": [
             {
               "name": "Color Scheme",
@@ -1936,7 +2065,7 @@ var ClusteredForce = function (userConfig) {
             }
           ]
         },
-        dex.config.gui.stroke({name: "Nodes"}, "circle.stroke")
+        dex.config.gui.circle({name: "Nodes"}, "circle")
       ]
     };
     var guiDef = dex.config.expandAndOverlay(config, defaults);
@@ -2133,9 +2262,6 @@ var ClusteredForce = function (userConfig) {
       },
       track: true
     });
-
-    // Make the entire chart draggable.
-    //$(chart.config.parent).draggable();
   });
 
   return chart;
@@ -2145,16 +2271,39 @@ module.exports = ClusteredForce;
 },{}],18:[function(require,module,exports){
 /**
  *
- * This is the base constructor for a D3 Dendrogram component.
+ * This is the base constructor for a D3 Dendrogram visualization.
  *
- * @param userConfig The chart's configuration.
+ * @param {object} options The chart's configuration.
+ * @param {string} [options.parent=#DendrogramParent] A selector pointing to the
+ * parent container to which this chart will be added.
+ * @param {string} [options.id=DendrogramId] The id of this chart.  This enables
+ * it to be uniquely styled, even on pages with multiple charts of the same
+ * type.
+ * @param {string} [options.class=DendrogramClass] The class of this chart.
+ * This enables groups of similarly classed charts to be styled in a
+ * common manner.
+ * @param {boolean} [options.resizable=true] If true, the chart will resize
+ * itself to the size of the parent container, otherwise, it will observe
+ * any height/width limitations imposed by the options.
+ * @param {csv} options.csv The csv data for this chart.
+ * @param {number|string} [options.width=100%] The width of the chart expressed either
+ * as a number representing the width in pixels, or as a percentage of the
+ * available parent container space.
+ * @param {number|string} [options.height=100%] The height of the chart expressed either
+ * as a number representing the height in pixels, or as a percentage of the
+ * available parent container space.
+ * @param {margin} options.margin The margins of this chart.  Expressed as an
+ * object with properties top, bottom, left and right which represent the top,
+ * bottom, left and right margins respectively.
+ * @param {string} options.transform The transformation to apply to the chart.
+ * ex: rotate(45), size(.5), etc...
  *
  * @returns {Dendrogram}
  *
  * @memberof dex/charts/d3
  *
  */
-var Dendrogram = function Dendrogram(userConfig) {
+var Dendrogram = function Dendrogram(options) {
   d3 = dex.charts.d3.d3v3;
   var chart;
 
@@ -2241,7 +2390,7 @@ var Dendrogram = function Dendrogram(userConfig) {
     })
   };
 
-  chart = new dex.component(userConfig, defaults);
+  chart = new dex.component(options, defaults);
 
   chart.getGuiDefinition = function getGuiDefinition(config) {
     var defaults = {
@@ -2572,7 +2721,7 @@ var Dendrogram = function Dendrogram(userConfig) {
   };
 
   chart.clone = function clone(override) {
-    return Dendrogram(dex.config.expandAndOverlay(override, userConfig));
+    return Dendrogram(dex.config.expandAndOverlay(override, options));
   };
 
   $(document).ready(function () {
@@ -2704,6 +2853,164 @@ var HorizontalLegend = function (userConfig) {
 
 module.exports = HorizontalLegend;
 },{}],20:[function(require,module,exports){
+/**
+ *
+ * This is the base constructor for a D3 HorizontalLegend component.
+ *
+ * @param userConfig The chart's configuration.
+ *
+ * @returns {Legend}
+ *
+ * @memberof dex/charts/d3
+ *
+ */
+var Legend = function (userConfig) {
+  d3 = dex.charts.d3.d3v4;
+  var chart;
+
+  var defaults = {
+    'parent': "#LegendParent",
+    'id': "LegendId",
+    'class': "LegendClass",
+    'resizable': true,
+    "margin": {
+      "left": 0,
+      "right": 0,
+      "top": 0,
+      "bottom": 0
+    },
+    'transform': "",
+    "palette": "category10",
+    'categorizationMethod': "Column Type"
+  };
+
+  //config = dex.object.overlay(dex.config.expand(userConfig), dex.config.expand(defaults));
+  chart = new dex.component(userConfig, defaults);
+
+  chart.getGuiDefinition = function getGuiDefinition(config) {
+    var defaults = {
+      "type": "group",
+      "name": "Legend Settings",
+      "contents": [
+        {
+          "type": "group",
+          "name": "Legend Options",
+          "contents": [
+            dex.config.gui.general(),
+            dex.config.gui.dimensions(),
+            {
+              "name": "Color Scheme",
+              "description": "The color scheme.",
+              "target": "palette",
+              "type": "choice",
+              "choices": dex.color.colormaps({shortlist: true}),
+              "initialValue": "category10"
+            },
+            {
+              "name": "Categorize By",
+              "description": "The way we classify data.",
+              "type": "choice",
+              "choices": Object.keys(chart.config.csv.getCategorizationMethods()),
+              "target": "categorizationMethod"
+            }
+          ]
+        }
+      ]
+    };
+
+    var guiDef = dex.config.expandAndOverlay(config, defaults);
+    dex.config.gui.sync(chart, guiDef);
+    return guiDef;
+  };
+
+  chart.render = function () {
+    d3 = dex.charts.d3.d3v4;
+    chart.resize();
+    return chart;
+  };
+
+  chart.update = function () {
+    d3 = dex.charts.d3.d3v4;
+    var chart = this;
+    var config = chart.config;
+    var csv = config.csv;
+    var margin = config.margin;
+    margin.top = +margin.top;
+    margin.bottom = +margin.bottom;
+    margin.left = +margin.left;
+    margin.right = +margin.right;
+
+    var width = +config.width - margin.left - margin.right;
+    var height = +config.height - margin.top - margin.bottom;
+
+    d3.selectAll(config.parent).selectAll("*").remove();
+
+    // Dynamically determine our categorization function:
+    var catMethod = csv.getCategorizationMethod(
+      config.categorizationMethod);
+
+    var categories = csv.getCategories(catMethod);
+    var type = dex.array.guessType(categories);
+
+    if (type === "number") {
+      categories = categories.sort(function (a, b) {
+        return a - b;
+      });
+    }
+
+    var color = d3.scaleOrdinal()
+      .domain(categories)
+      .range(dex.color.palette[config.palette]);
+
+    var $parent = $(config.parent);
+    var $top = $("<div></div>")
+      .addClass(config.class)
+      .attr("id", config.id)
+      .width(width)
+      .height(height);
+
+    categories.forEach(function (category, i) {
+      $cat = $("<div></div>")
+        .addClass("dex-legend-item")
+        .text(category)
+        .css("background-color", color(i))
+        .css("color", "white");
+      $top.append($cat);
+    });
+
+    $parent.append($top);
+
+    // Size all elements equally by height and width.
+    var maxHeight = -1;
+    var maxWidth = -1;
+
+    $(".dex-legend-item").each(function () {
+      maxHeight = maxHeight > $(this).height() ?
+        maxHeight : $(this).height();
+      maxWidth = maxWidth > $(this).width() ?
+        maxWidth : $(this).width();
+    });
+
+    $(".dex-legend-item").each(function () {
+      $(this).height(maxHeight).width(maxWidth);
+    });
+
+    $(".dex-legend-item").on("mouseover", function(event) {
+      //dex.console.log("MOUSEOVER", event);
+      chart.publish({ type: "mouseover", text: event.textContent });
+    });
+
+    return chart;
+  };
+
+  $(document).ready(function () {
+  });
+
+  return chart;
+};
+
+module.exports = Legend;
+},{}],21:[function(require,module,exports){
 /**
  *
  * This is the base constructor for a D3 MotionBarChart component.
@@ -3145,7 +3452,7 @@ var MotionBarChart = function (userConfig) {
 };
 
 module.exports = MotionBarChart;
-},{}],21:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 /**
  *
  * This is the base constructor for a D3 OrbitalLayout component.
@@ -3523,7 +3830,7 @@ var OrbitalLayout = function (userConfig) {
 };
 
 module.exports = OrbitalLayout;
-},{}],22:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 /**
  *
  * This is the base constructor for a D3 ParallelCoordinates component.
@@ -4009,7 +4316,7 @@ var ParallelCoordinates = function (userConfig) {
 };
 
 module.exports = ParallelCoordinates;
-},{}],23:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 /**
  *
  * This is the base constructor for a D3 RadarChart component.
@@ -4507,7 +4814,7 @@ var RadarChart = function (userConfig) {
 
 module.exports = RadarChart;
 
-},{}],24:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 /**
  *
  * This is the base constructor for a D3 RadialTree component.
@@ -4816,7 +5123,7 @@ var RadialTree = function (userConfig) {
 
 module.exports = RadialTree;
 
-},{}],25:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 /**
  *
  * This is the base constructor for a D3 Sankey component.
@@ -4847,7 +5154,9 @@ var Sankey = function (userConfig) {
       'top': 5,
       'bottom': 5
     },
+    'palette': "ECharts",
     units: "UNITS",
+    iterations: 32,
     link: {
       normal: dex.config.link({
         'fill.fillColor': 'none',
@@ -4893,6 +5202,15 @@ var Sankey = function (userConfig) {
 
   var chart = new dex.component(userConfig, defaults);
 
+  chart.spec = new dex.data.spec("Sankey").anything();
+
+  chart.subscribe(chart, "attr", function (msg) {
+    if (msg.attr == "draggable") {
+      $(chart.config.parent).draggable();
+      $(chart.config.parent).draggable((msg.value === true) ? 'enable' : 'disable');
+    }
+  });
+
   chart.getGuiDefinition = function getGuiDefinition(config) {
     var defaults = {
       "type": "group",
@@ -4900,10 +5218,39 @@ var Sankey = function (userConfig) {
       "contents": [
         dex.config.gui.dimensions(),
         dex.config.gui.general(),
-        dex.config.gui.link({name: "Link: Normal"}, "link.normal"),
-        dex.config.gui.link({name: "Link: Emphasis"}, "link.emphasis"),
-        dex.config.gui.text({"name": "Label: Normal"}, "label.normal"),
-        dex.config.gui.rectangle({"name": "Node: NOrmal"}, "node.normal")
+        dex.config.gui.linkGroup({}, "link"),
+        dex.config.gui.textGroup({}, "label"),
+        dex.config.gui.rectangleGroup({"name": "Nodes"}, "node"),
+        {
+          "type": "group",
+          "name": "Miscellaneous",
+          "contents": [
+            {
+              "name": "Color Scheme",
+              "description": "The color scheme.",
+              "target": "palette",
+              "type": "choice",
+              "choices": dex.color.colormaps({shortlist: true}),
+              "initialValue": "category10"
+            },
+            {
+              "name": "Units",
+              "description": "The units text.",
+              "target": "units",
+              "type": "string",
+              "initialValue": "Units"
+            },
+            {
+              "name": "Layout Iterations",
+              "description": "The number of iterations to spend trying to optimize the layout.",
+              "target": "iterations",
+              "type": "int",
+              "minValue": 1,
+              "maxValue": 400,
+              "initialValue": 32
+            }
+          ]
+        }
       ]
     };
 
@@ -4946,7 +5293,8 @@ var Sankey = function (userConfig) {
       .attr("transform", "translate(" + margin.left + "," +
         margin.top + ") " + config.transform);
 
-    var color = d3.scaleOrdinal(d3.schemeCategory20);
+    //var color = d3.scaleOrdinal(d3.schemeCategory20);
+    var color = d3.scaleOrdinal(dex.color.palette[config.palette]);
 
     // Set the sankey diagram properties
     var sankey = chart.sankey()
@@ -4956,12 +5304,28 @@ var Sankey = function (userConfig) {
 
     var path = sankey.link();
 
-    var graph = csv.getGraph();
+    var graph;
+    var types = csv.guessTypes();
+    dex.console.log("TYPES", types, csv);
+    if (types[csv.header.length - 1] == "number") {
+      var valueFn = function (csv) {
+        return function (unusedCsv, unusedColumnIndex, ri) {
+          return csv.data[ri][csv.header.length - 1];
+        }
+      }(csv);
+
+      graph = csv.exclude([csv.header.length - 1]).getGraph(valueFn);
+    }
+    else {
+      graph = csv.getGraph();
+    }
+
+    dex.console.log("GRAPH: ", graph);
 
     sankey
       .nodes(graph.nodes)
       .links(graph.links)
-      .layout(32);
+      .layout(config.iterations);
 
     // add in the links
     var link = rootG.append("g")
@@ -4998,7 +5362,6 @@ var Sankey = function (userConfig) {
           .style("stroke-width", function (d) {
             return Math.max(1, d.dy);
           });
-        ;
       })
       .on('mouseout', function (d, i) {
         //dex.console.log("MOUSEOUT LINK", d);
@@ -5014,7 +5377,8 @@ var Sankey = function (userConfig) {
     link.append("title")
       .text(function (d) {
         return d.source.name + " -> " +
-          d.target.name + "\n" + d.value;
+          d.target.name + "\n" + d.value + " " +
+          config.units;
       });
 
     // add in the nodes
@@ -5034,11 +5398,12 @@ var Sankey = function (userConfig) {
         })
         .on("drag", dragmove));
 
-// add the rectangles for the nodes
+    // add the rectangles for the nodes
     node.append("rect")
       .call(dex.config.configureRectangle, config.node.normal)
       .on("mouseover", function (d) {
-        //dex.console.log("MOUSEOVER NODE", d);
+        d3.select(this)
+          .call(dex.config.configureRectangle, config.node.emphasis);
         rootG.selectAll(".link[sourceCategory='" + d.category + "']")
           .filter("[sourceName='" + d.name + "']")
           .call(dex.config.configureLink, config.link.emphasis)
@@ -5055,6 +5420,8 @@ var Sankey = function (userConfig) {
           });
       })
       .on("mouseout", function (d) {
+        d3.select(this)
+          .call(dex.config.configureRectangle, config.node.normal);
         rootG.selectAll(".link[sourceCategory='" + d.category + "']")
           .filter("[sourceName='" + d.name + "']")
           .call(dex.config.configureLink, config.link.normal)
@@ -5105,8 +5472,8 @@ var Sankey = function (userConfig) {
       .attr("x", 6 + sankey.nodeWidth())
       .attr("text-anchor", "start");
 
-// the function for moving the nodes
-// the function for moving the nodes
+    // the function for moving the nodes
+    // the function for moving the nodes
     function dragmove(d) {
       d3.select(this).attr("transform",
         "translate(" + (
@@ -5430,7 +5797,7 @@ var Sankey = function (userConfig) {
 };
 
 module.exports = Sankey;
-},{}],26:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 /**
  *
  * This is the base constructor for a D3 ScatterPlot component.
@@ -5656,7 +6023,7 @@ var ScatterPlot = function (userConfig) {
 };
 
 module.exports = ScatterPlot;
-},{}],27:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 /**
  *
  * This is the base constructor for a D3 Sunburst component.
@@ -5964,7 +6331,7 @@ var Sunburst = function (userConfig) {
 };
 
 module.exports = Sunburst;
-},{}],28:[function(require,module,exports){
+},{}],29:[function(require,module,exports){
 /**
  *
  * This is the base constructor for a D3 TopoJsonMap component.
@@ -6257,7 +6624,7 @@ var TopoJsonMap = function (userConfig) {
 };
 
 module.exports = TopoJsonMap;
-},{}],29:[function(require,module,exports){
+},{}],30:[function(require,module,exports){
 /**
  *
  * This is the base constructor for a D3 Treemap component.
@@ -6637,7 +7004,7 @@ dex.console.log("CHART", chart);
 };
 
 module.exports = Treemap;
-},{}],30:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 /**
  *
  * This is the base constructor for a D3 TreemapBarChart component.
@@ -7102,7 +7469,7 @@ var TreemapBarChart = function (userConfig) {
 };
 
 module.exports = TreemapBarChart;
-},{}],31:[function(require,module,exports){
+},{}],32:[function(require,module,exports){
 /**
  *
  * This is the base constructor for a D3 VerticalLegend component.
@@ -7331,7 +7698,7 @@ var VerticalLegend = function (userConfig) {
 };
 
 module.exports = VerticalLegend;
-},{}],32:[function(require,module,exports){
+},{}],33:[function(require,module,exports){
 /**
  *
  * This module provides D3 based visualization components.
@@ -7353,6 +7720,7 @@ d3.Dendrogram = require("./Dendrogram");
 //d3.HorizonChart = require("./../../../graveyard/HorizonChart");
 d3.HorizontalLegend = require("./HorizontalLegend");
 //d3.LineChart = require("./LineChart");
+d3.Legend = require("./Legend");
 d3.MotionBarChart = require("./MotionBarChart");
 //d3.MotionChart = require("./MotionChart");
 //d3.MotionCircleChart = require("./MotionCircleChart");
@@ -7372,7 +7740,7 @@ d3.TreemapBarChart = require("./TreemapBarChart");
 d3.TopoJsonMap = require("./TopoJsonMap");
 
 module.exports = d3;
-},{"../../../lib/d3.v3.5.17.min":1,"../../../lib/d3.v4.4.0.min":2,"./BumpChart":15,"./Chord":16,"./ClusteredForce":17,"./Dendrogram":18,"./HorizontalLegend":19,"./MotionBarChart":20,"./OrbitalLayout":21,"./ParallelCoordinates":22,"./RadarChart":23,"./RadialTree":24,"./Sankey":25,"./ScatterPlot":26,"./Sunburst":27,"./TopoJsonMap":28,"./Treemap":29,"./TreemapBarChart":30,"./VerticalLegend":31}],33:[function(require,module,exports){
+},{"../../../lib/d3.v3.5.17.min":1,"../../../lib/d3.v4.4.0.min":2,"./BumpChart":15,"./Chord":16,"./ClusteredForce":17,"./Dendrogram":18,"./HorizontalLegend":19,"./Legend":20,"./MotionBarChart":21,"./OrbitalLayout":22,"./ParallelCoordinates":23,"./RadarChart":24,"./RadialTree":25,"./Sankey":26,"./ScatterPlot":27,"./Sunburst":28,"./TopoJsonMap":29,"./Treemap":30,"./TreemapBarChart":31,"./VerticalLegend":32}],34:[function(require,module,exports){
 /**
  *
  * This is the base constructor for a D3Plus RingNetwork.
@@ -7489,7 +7857,7 @@ var RingNetwork = function (userConfig) {
 };
 
 module.exports = RingNetwork;
-},{}],34:[function(require,module,exports){
+},{}],35:[function(require,module,exports){
 /**
  *
  * This module provides d3plus based visualizations.
@@ -7502,7 +7870,7 @@ var d3plus = {};
 d3plus.RingNetwork = require("./RingNetwork");
 
 module.exports = d3plus;
-},{"./RingNetwork":33}],35:[function(require,module,exports){
+},{"./RingNetwork":34}],36:[function(require,module,exports){
 /**
  * The base constructor for an EChart.
  *
@@ -7591,7 +7959,7 @@ var EChart = function (userConfig) {
 };
 
 module.exports = EChart;
-},{}],36:[function(require,module,exports){
+},{}],37:[function(require,module,exports){
 /**
  *
  * Create an ECharts LineChart with the given specification.
@@ -7851,7 +8219,7 @@ var LineChart = function (userConfig) {
   return chart;
 };
 module.exports = LineChart;
-},{}],37:[function(require,module,exports){
+},{}],38:[function(require,module,exports){
 /**
  *
  * Create an ECharts Network with the given specification.
@@ -8186,7 +8554,7 @@ var Network = function (userConfig) {
   return chart;
 };
 module.exports = Network;
-},{}],38:[function(require,module,exports){
+},{}],39:[function(require,module,exports){
 /**
  *
  * Create an ECharts Pie Chart with the given specification.
@@ -8471,7 +8839,7 @@ var PieChart = function (userConfig) {
   return chart;
 };
 module.exports = PieChart;
-},{}],39:[function(require,module,exports){
+},{}],40:[function(require,module,exports){
 /**
  *
  * Create an ECharts Polar Plot with the given specification.
@@ -8787,7 +9155,7 @@ var PolarPlot = function (userConfig) {
   return chart;
 };
 module.exports = PolarPlot;
-},{}],40:[function(require,module,exports){
+},{}],41:[function(require,module,exports){
 /**
  *
  * Create an ECharts Radar Chart with the given specification.
@@ -8941,7 +9309,7 @@ var RadarChart = function (userConfig) {
   return chart;
 };
 module.exports = RadarChart;
-},{}],41:[function(require,module,exports){
+},{}],42:[function(require,module,exports){
 /**
  *
  * Create an ECharts Single Axis ScatterPlot with the given specification.
@@ -9181,7 +9549,7 @@ var SingleAxisScatterPlot = function (userConfig) {
   return chart;
 };
 module.exports = SingleAxisScatterPlot;
-},{}],42:[function(require,module,exports){
+},{}],43:[function(require,module,exports){
 /**
  *
  * Create an ECharts SteamGraph with the given specification.
@@ -9359,7 +9727,7 @@ var SteamGraph = function (userConfig) {
   return chart;
 };
 module.exports = SteamGraph;
-},{}],43:[function(require,module,exports){
+},{}],44:[function(require,module,exports){
 /**
  *
  * Create an ECharts Network with the given specification.
@@ -9663,7 +10031,7 @@ var Timeline = function (userConfig) {
   return chart;
 };
 module.exports = Timeline;
-},{}],44:[function(require,module,exports){
+},{}],45:[function(require,module,exports){
 /**
  *
  * @module dex/charts/echarts
@@ -9682,7 +10050,7 @@ echarts.SteamGraph = require("./SteamGraph");
 echarts.RadarChart = require("./RadarChart");
 
 module.exports = echarts;
-},{"./EChart":35,"./LineChart":36,"./Network":37,"./PieChart":38,"./PolarPlot":39,"./RadarChart":40,"./SingleAxisScatterPlot":41,"./SteamGraph":42,"./Timeline":43}],45:[function(require,module,exports){
+},{"./EChart":36,"./LineChart":37,"./Network":38,"./PieChart":39,"./PolarPlot":40,"./RadarChart":41,"./SingleAxisScatterPlot":42,"./SteamGraph":43,"./Timeline":44}],46:[function(require,module,exports){
 /**
  *
  * This is the base constructor for a Elegans ScatterPlot.
@@ -9813,7 +10181,7 @@ var scatterplot = function (userConfig) {
 };
 
 module.exports = scatterplot;
-},{}],46:[function(require,module,exports){
+},{}],47:[function(require,module,exports){
 /**
  *
  * Create charts using WebGL based Elegans.
@@ -9826,7 +10194,7 @@ var elegans = {};
 elegans.ScatterPlot = require("./ScatterPlot");
 
 module.exports = elegans;
-},{"./ScatterPlot":45}],47:[function(require,module,exports){
+},{"./ScatterPlot":46}],48:[function(require,module,exports){
 /**
  *
  * This is the base constructor for Gridster base multiples.
@@ -9993,7 +10361,7 @@ var GridsterMultiples = function (userConfig) {
 };
 
 module.exports = GridsterMultiples;
-},{}],48:[function(require,module,exports){
+},{}],49:[function(require,module,exports){
 /**
  *
  * This module contains components related to producing multiples.
@@ -10006,7 +10374,7 @@ var multiples = {};
 multiples.GridsterMultiples = require("./GridsterMultiples");
 
 module.exports = multiples;
-},{"./GridsterMultiples":47}],49:[function(require,module,exports){
+},{"./GridsterMultiples":48}],50:[function(require,module,exports){
 /**
  *
  * This is the base constructor for a NVD3 BubbleChart.
@@ -10176,7 +10544,7 @@ var BubbleChart = function (userConfig) {
 };
 
 module.exports = BubbleChart;
-},{}],50:[function(require,module,exports){
+},{}],51:[function(require,module,exports){
 /**
  *
  * This is the base constructor for a NVD3 StackedAreaChart.
@@ -10332,7 +10700,7 @@ var StackedAreaChart = function (userConfig) {
 };
 
 module.exports = StackedAreaChart;
-},{}],51:[function(require,module,exports){
+},{}],52:[function(require,module,exports){
 /**
  *
  * This module provides NVD3 based visualization components.
@@ -10346,7 +10714,7 @@ nvd3.StackedAreaChart = require("./StackedAreaChart");
 nvd3.BubbleChart = require("./BubbleChart");
 
 module.exports = nvd3;
-},{"./BubbleChart":49,"./StackedAreaChart":50}],52:[function(require,module,exports){
+},{"./BubbleChart":50,"./StackedAreaChart":51}],53:[function(require,module,exports){
 /**
  *
  * This is the base constructor for a TauChart AreaChart.
@@ -10376,7 +10744,7 @@ var AreaChart = function (userConfig) {
   return chart;
 };
 module.exports = AreaChart;
-},{}],53:[function(require,module,exports){
+},{}],54:[function(require,module,exports){
 /**
  *
  * This is the base constructor for a TauChart BarChart.
@@ -10406,7 +10774,7 @@ var BarChart = function (userConfig) {
   return chart;
 };
 module.exports = BarChart;
-},{}],54:[function(require,module,exports){
+},{}],55:[function(require,module,exports){
 /**
  *
  * This is the base constructor for a TauChart HorizontalBarChart.
@@ -10436,7 +10804,7 @@ var HorizontalBarChart = function (userConfig) {
   return chart;
 };
 module.exports = HorizontalBarChart;
-},{}],55:[function(require,module,exports){
+},{}],56:[function(require,module,exports){
 /**
  *
  * This is the base constructor for a TauChart HorizontalStackedBarChart.
@@ -10466,7 +10834,7 @@ var HorizontalStackedBarChart = function (userConfig) {
   return chart;
 };
 module.exports = HorizontalStackedBarChart;
-},{}],56:[function(require,module,exports){
+},{}],57:[function(require,module,exports){
 /**
  *
  * This is the base constructor for a TauChart LineChart.
@@ -10496,7 +10864,7 @@ var LineChart = function (userConfig) {
   return chart;
 };
 module.exports = LineChart;
-},{}],57:[function(require,module,exports){
+},{}],58:[function(require,module,exports){
 /**
  *
  * This is the base constructor for a TauChart ScatterPlot.
@@ -10526,7 +10894,7 @@ var ScatterPlot = function (userConfig) {
   return chart;
 };
 module.exports = ScatterPlot;
-},{}],58:[function(require,module,exports){
+},{}],59:[function(require,module,exports){
 /**
  *
  * This is the base constructor for a TauChart StackedBarChart.
@@ -10556,7 +10924,7 @@ var StackedBarChart = function (userConfig) {
   return chart;
 };
 module.exports = StackedBarChart;
-},{}],59:[function(require,module,exports){
+},{}],60:[function(require,module,exports){
 /**
  *
  * This is the base constructor for a TauChart.
@@ -10939,7 +11307,7 @@ var TauChart = function (userConfig) {
 };
 
 module.exports = TauChart;
-},{}],60:[function(require,module,exports){
+},{}],61:[function(require,module,exports){
 /**
  *
  * @module dex/charts/taucharts
@@ -10956,7 +11324,7 @@ taucharts.StackedBarChart = require("./StackedBarChart");
 taucharts.HorizontalBarChart = require("./HorizontalBarChart");
 taucharts.HorizontalStackedBarChart = require("./HorizontalStackedBarChart");
 module.exports = taucharts;
-},{"./AreaChart":52,"./BarChart":53,"./HorizontalBarChart":54,"./HorizontalStackedBarChart":55,"./LineChart":56,"./ScatterPlot":57,"./StackedBarChart":58,"./TauChart":59}],61:[function(require,module,exports){
+},{"./AreaChart":53,"./BarChart":54,"./HorizontalBarChart":55,"./HorizontalStackedBarChart":56,"./LineChart":57,"./ScatterPlot":58,"./StackedBarChart":59,"./TauChart":60}],62:[function(require,module,exports){
 /**
  *
  * This is the base constructor for a WebGL ScatterPlot component.
@@ -11337,7 +11705,7 @@ var ScatterPlot = function (userConfig) {
 };
 
 module.exports = ScatterPlot;
-},{}],62:[function(require,module,exports){
+},{}],63:[function(require,module,exports){
 /**
  *
  * This module provides ThreeJS/WebGL based visualization components.
@@ -11350,7 +11718,7 @@ var threejs = {};
 threejs.ScatterPlot = require("./ScatterPlot");
 
 module.exports = threejs;
-},{"./ScatterPlot":61}],63:[function(require,module,exports){
+},{"./ScatterPlot":62}],64:[function(require,module,exports){
 /**
  *
  * This is the base constructor for a VisJS Network component.
@@ -11748,7 +12116,7 @@ var Network = function (userConfig) {
 };
 
 module.exports = Network;
-},{}],64:[function(require,module,exports){
+},{}],65:[function(require,module,exports){
 /**
  *
  * This module provides VisJS based visualizations.
@@ -11761,7 +12129,7 @@ var vis = {};
 vis.Network = require("./Network");
 
 module.exports = vis;
-},{"./Network":63}],65:[function(require,module,exports){
+},{"./Network":64}],66:[function(require,module,exports){
 module.exports = function (dex) {
   /**
    *
@@ -12344,7 +12712,7 @@ module.exports = function (dex) {
   return color;
 };
 
-},{}],66:[function(require,module,exports){
+},{}],67:[function(require,module,exports){
 module.exports = function (dex) {
   /**
    *
@@ -12389,9 +12757,16 @@ module.exports = function (dex) {
        * will perform a miminimal update.  Components which do
        * not support incremental updates will perform a full
        * render.  This behavior is controlled by the "refreshType"
-       * parameter which is set either to "update" or "render".
-       *
+       * component option which is set either to "update" or
+       * "render".
        * @memberof dex/component
+       * @example
+       * var someChart = dex.chart.SomeChart({ refreshType: 'update' }).render();
+       * someChart.refresh(); // Calls update on refresh. ie: partial update.
+       *
+       * var anotherChart = dex.chart.AnotherChart({ refreshType: 'render' )}.render();
+       * // Calls render on refresh.  This means that the entire chart is recreated.
+       * anotherChart.refresh();
        *
        */
       cmp.refresh = function () {
@@ -12403,6 +12778,39 @@ module.exports = function (dex) {
         }
       };
 
+      /**
+       *
+       * There are 3 forms of this method.
+       *
+       * * () - Return the component's configuration.
+       * * (name) - Return the value of a specific named attribute.
+       * * (name, value)- Set the value of an attribute.
+       *
+       * @param {string} name The name of the attribute we are accessing.
+       * @param {*} value The value of the attribute.
+       *
+       * @returns {Component} The component so that this form will support
+       * the chaining of attr calls.
+       *
+       * @memberof dex/component
+       * @example
+       *
+       * // Return the chart's configuration.
+       * var config = chart.attr();
+       *
+       * // Return the height attribute of the chart.
+       * var height = chart.attr("height");
+       *
+       * // Set attribute name to value
+       * chart.attr("name", value);
+       *
+       * // Set param1, param2 and a nested parameter named param3
+       * // using dot-notation.
+       * chart.attr("param1", "value1")
+       *   .attr("param2", "value2")
+       *   .attr("nested.param3", { key: "value" };
+       *
+       */
       cmp.attr = function (name, value) {
         //dex.console.log("SETTING-ATTR: '" + name + "'='" + value + "'", cmp.config);
 
@@ -12423,28 +12831,92 @@ module.exports = function (dex) {
         return cmp;
       };
 
+      /**
+       *
+       * By default, the setter form of attr (having 2 arguments) triggers
+       * an event notifying all concerned listeners that the attribute
+       * has changed.  Sometimes we wish avoid the generation of this
+       * event.
+       *
+       * @param {string} name The attribute name.
+       * @param {*} value The attribute value.
+       * @returns {Component} Returns the component being changed so that
+       * method chaining works.
+       * @memberof dex/component
+       *
+       */
       cmp.attrNoEvent = function (name, value) {
         // This will handle the setting of a single attribute
         dex.object.setHierarchical(cmp.config, name, value, '.');
         return cmp;
       };
 
-      cmp.clone = function (userConfig) {
+      /**
+       *
+       * Components must define a clone function.  This is a
+       * placeholder to indicate that they have not done so
+       * should it get called.
+       *
+       * @param options Dummy operator in this case, but in a
+       * real clone implementation, it would contain the
+       * user specified options for the clone.  Thus, clone
+       * can clone and modify on the fly.
+       * @memberof dex/component
+       *
+       */
+      cmp.clone = function (options) {
         dex.console.log("No clone function defined for", cmp);
       };
 
-      cmp.getGuiDefinition = function (userConfig, prefix) {
+      /**
+       *
+       * Components should define a gui definition for platforms
+       * to modify their settings interactively.  This provides a
+       * generic implementation consisting of common attributes for
+       * components which have not defined their interface.
+       *
+       * @param userGuiDef User supplied gui definitions which will
+       * take precedence over defaults.
+       * @param target The component's configuration target which
+       * will be changed when this GUI is interactec with by the
+       * user.
+       * @returns {GuiDefinition}
+       * @memberof dex/component
+       *
+       */
+      cmp.getGuiDefinition = function (userGuiDef, target) {
         return {
           "type": "group",
           "name": cmp.config.id + " Settings",
           "contents": [
-            dex.config.gui.dimensions(userConfig, prefix),
-            dex.config.gui.general(userConfig, prefix)
+            dex.config.gui.dimensions(userGuiDef, target),
+            dex.config.gui.general(userGuiDef, target)
           ]
         };
       };
 
+      /**
+       *
+       * Subscribe a component to the specified events of another component.
+       *
+       * @param {Component} source The source component.
+       * @param {string} eventType The events we are interested in.
+       * @param {function} callback The callback to invoke when the event is received.
+       * Events may also pass data to this callback.
+       * @returns {handle} A handle which may be used to unsubscribe from
+       * the event channel.  False if something failed.
+       * @memberof dex/component
+       *
+       * @example
+       *
+       * var handle = chart1.subscribe(chart2, 'select', function(event) {
+       *   // do something
+       * });
+       *
+       */
       cmp.subscribe = function (source, eventType, callback) {
+        // TODO: Keep track of handles so I can gracefully delete components
+        // which are listening to events?
         if (arguments.length == 3) {
           var channel = source.config.channel + '/' + eventType;
 
@@ -12460,6 +12932,16 @@ module.exports = function (dex) {
         }
       };
 
+      /**
+       *
+       * Unsubscribe this component from the channel indicated in the
+       * handle.
+       *
+       * @param {handle} The handle attained through cmp.subscribe.
+       * @returns {Component} The component for method chaining support.
+       * @memberof dex/component
+       *
+       */
       cmp.unsubscribe = function (handle) {
         dex.bus.unsubscribe(handle);
         return cmp;
@@ -12565,20 +13047,61 @@ module.exports = function (dex) {
         }
       };
 
+      /**
+       *
+       * Render the chart asynchronously and ensure we don't attempt to
+       * render more than 1x / second via debounce.
+       *
+       * @memberof dex/component
+       *
+       */
       cmp.renderAsync = _.debounce(function () {
         cmp.render();
       }, 1000);
+
+      /**
+       *
+       * Update the chart asynchronously and ensure we don't attempt to
+       * update more than 1x / second via debounce.
+       *
+       * @memberof dex/component
+       *
+       */
       cmp.updateAsync = _.debounce(function () {
         cmp.update();
       }, 1000);
 
+      /**
+       *
+       * Refresh the chart asynchronously and ensure we don't attempt to
+       * refresh more than 1x / second via debounce.
+       *
+       * @memberof dex/component
+       *
+       */
       cmp.refreshAsync = _.debounce(function () {
         cmp.refresh();
       }, 1000);
+
+      /**
+       *
+       * Resize the chart asynchronously and ensure we don't attempt to
+       * resize more than 1x / second via debounce.
+       *
+       * @memberof dex/component
+       *
+       */
       cmp.resizeAsync = _.debounce(function () {
         cmp.resize();
       }, 1000);
 
+      /**
+       *
+       * Delete the chart.  Unregister listeners and delete it gracefully.
+       *
+       * @memberof dex/component
+       *
+       */
       cmp.deleteChart = function () {
         if (window.attachEvent) {
           window.detachEvent('onresize', cmp.resize);
@@ -12592,6 +13115,16 @@ module.exports = function (dex) {
         }
       };
 
+      /**
+       *
+       * Save a specified attribute.
+       *
+       * @param name The attribute name.
+       * @param value The attribute value.
+       * @returns {Component} Returns the component for method chaining.
+       * @memberof dex/component
+       *
+       */
       cmp.attrSave = function (name, value) {
         //dex.console.log("attrSave(" + name + "," + value + ")", cmp);
         if (arguments.length == 2) {
@@ -12602,7 +13135,21 @@ module.exports = function (dex) {
         return cmp;
       };
 
-      // Used to load cmp state from the DOM.
+      /**
+       *
+       * Load component state from the DOM.  It silently looks for the information
+       * within an attribute with id=dexjs-config descended from the HTML page
+       * body.  Each chart configured is encapsulated in a div element with a
+       * chart-id attribute set to the id of that component as defined in it's
+       * config.id option.  This means that if you wish to configure multiple
+       * instances of the same chart type on the same page, you must supply them
+       * with unique id's.
+       *
+       * @returns {Component} Returns the component after having the loaded attributes
+       * applied to it.
+       * @memberof dex/component
+       *
+       */
       cmp.load = function () {
         dex.console.log("Loading Chart: " + cmp.config.id);
         $("body #dexjs-config div[chart-id=" + cmp.config.id + "]").each(function (i, obj) {
@@ -12621,7 +13168,16 @@ module.exports = function (dex) {
         return cmp;
       };
 
-      // Used to save chart state within the DOM.
+      /**
+       *
+       * Save the user modified component state to the DOM.  The information
+       * is stored in an element with selector path: "body div#dexjs-config".
+       * Under this element, individual charts are configured in a descending
+       * div element with attribute "chart-id" set to the component's
+       * config.id.
+       *
+       * @returns {Component} Returns the component for method chaining.
+       */
       cmp.save = function () {
         // Add dexjs-config if it does not exist.
         if ($("body #dexjs-config").length == 0) {
@@ -12642,6 +13198,7 @@ module.exports = function (dex) {
         });
         return cmp;
       };
+
       if (window.attachEvent) {
         dex.console.debug("window.attachEvent");
         window.attachEvent('onresize', cmp.resize);
@@ -12660,11 +13217,11 @@ module.exports = function (dex) {
   return component;
 };
 
-},{}],67:[function(require,module,exports){
+},{}],68:[function(require,module,exports){
 module.exports = function (dex) {
   /**
    *
-   * This module provides routines for dealing with arrays.
+   * This module provides various configuration routines.
    *
    * @module dex/config
    *
@@ -12677,43 +13234,28 @@ module.exports = function (dex) {
    * user to specify deeply nested configuration options without
    * having to deal with nested json structures.
    *
-   * Options like:
-   *
-   * {
- *   'cell' : {
- *     'rect' : {
- *       'width' : 10,
- *       'height' : 20,
- *       'events' : {
- *         'mouseover' : function(d) { console.log("MouseOver: " + d); }
- *       }
- *     }
- *   }
- * }
-   *
-   * Can now be described more succinctly and more readably as:
-   *
-   * {
- *   'cell.rect.width'            : 10,
- *   'cell.rect.height'           : 20,
- *   'cell.rect.events.mouseover' : function(d) { console.log("Mouseover: " + d); }
- * }
-   *
-   * Or a hybrid strategy can be used:
-   *
-   * {
- *   'cell.rect' : {
- *     'width' : 10,
- *     'height' : 20,
- *     'events.mouseover' : function(d) { console.log("Mouseover: " + d); }
- *   }
- * }
-   *
    * @param {object} config The configuration to expand.
-   * @returns {*} The expanded configuration.  The original configuration
-   *   is left untouched.
-   *
+   * @returns {object} An object containing the expanded configuration.
+   *   The original configuration is left untouched.
    * @memberof dex/config
+   *
+   * @example
+   *
+   * {
+   *   'cell' : {
+   *     'rect' : {
+   *       'width' : 10,
+   *       'height' : 20
+   *     }
+   *   }
+   * }
+   *
+   * becomes easier to read when expressed as:
+   *
+   * {
+   *   'cell.rect.width'            : 10,
+   *   'cell.rect.height'           : 20,
+   * }
    *
    */
   config.expand = function expand(config) {
@@ -12724,8 +13266,6 @@ module.exports = function (dex) {
     if (!config) {
       return config;
     }
-
-    //dex.console.log("dex.config.expand(config=", config);
 
     for (var name in config) {
       if (config.hasOwnProperty(name)) {
@@ -12745,8 +13285,14 @@ module.exports = function (dex) {
             //expanded[name] = config[name];
           }
           else {
-            // CSV is a special case.
-            if (config[name].constructor !== undefined &&
+            // CSV is a special case.  Older WebKit browsers such as
+            // that used by JavaFX can't seem to detect the contructor
+            // so i build in a special workaround for any attribute
+            // named csv to be copied as-is.
+            if (name == "csv") {
+              expanded[name] = config[name];
+            }
+            else if (config[name].constructor !== undefined &&
               config[name].constructor.name === "csv") {
               expanded[name] = config[name];
             }
@@ -12765,31 +13311,61 @@ module.exports = function (dex) {
 
   /**
    *
-   * This routine will take two hierarchies, top and bottom, and expand dot ('.')
-   * delimited names such as: 'foo.bar.biz.baz' into a structure:
-   * { 'foo' : { 'bar' : { 'biz' : 'baz' }}}
-   * It will then overlay the top hierarchy onto the bottom one.  This is useful
-   * for configuring objects based upon a default configuration while allowing
-   * the client to conveniently override these defaults as needed.
+   * This routine will take one or more objects and expand each one
+   * via dex.config.expand.  The objects will then be overlaid on top
+   * of each other.  Objects are supplied in descending precedence;
+   * meaning that object conflicts will be resolved by taking the
+   * value from the first supplied object defining it within the
+   * method call.
    *
    * @param {object} top - The top object hierarchy.
    * @param {object} bottom - The bottom, base object hierarchy.
-   * @returns {object} - A new object representing the expanded top object
-   * hierarchy overlaid on top of the expanded bottom object hierarchy.
-   *
+   * @returns {object} - A new object representing the expanded
+   * and overlaid objects.  The objects supplied in the method
+   * call will not be modified.
    * @memberof dex/config
+   *
+   * @example
+   *
+   * Given:
+   *
+   * var first = {
+   *   "name": "first",
+   *   "screen.width" : 800
+   * };
+   *
+   * var second = {
+   *   "name": "second",
+   *   "screen.width": 100,
+   *   "screen.height": 600,
+   *   "secondField": "Only in 2nd"
+   * };
+   *
+   * var third = {
+   *   "name": "third",
+   *   "screen.width": 333,
+   *   "screen.height": 333,
+   *   "thirdField": "Only in 3rd"
+   * };
+   *
+   * Calling:
+   *
+   * var combined = dex.config.expandAndOverlay(first, second, third);
+   *
+   * Yields a combined value of:
+   *
+   * {
+   *   "name": "first",
+   *   "screen": {
+   *     "width": 800,
+   *     "height": 600
+   *   },
+   *   "secondField": "Only in 2nd",
+   *   "thirdField" : "Only in 3rd"
+   * }
    *
    */
   config.expandAndOverlay = function expandAndOverlay() {
-    //dex.console.log(
-    //dex.config.getCallerString(arguments.callee.caller),
-    //"TOP", top,
-    //"BOTTOM", bottom,
-    //"EXPANDED TOP", dex.config.expand(top),
-    //"EXPANDED BOTTOM", dex.config.expand(bottom));
-    //return dex.object.overlay(dex.config.expand(top),
-    //  dex.config.expand(bottom));
-
     switch (arguments.length) {
       case 0: {
         return {};
@@ -12811,55 +13387,38 @@ module.exports = function (dex) {
             expanded.push(dex.config.expand(arguments[i]));
           }
         }
+
         var overlay = dex.object.overlay(expanded[expanded.length - 2],
           expanded[expanded.length - 1]);
 
         for (i = arguments.length - 3; i >= 0; i--) {
           overlay = dex.object.overlay(expanded[i], overlay);
         }
+
         return overlay;
       }
     }
   };
 
-
-  configapply = function apply(chart) {
-    var config = chart.config;
-
-    var node = d3.select(config.parent).select("svg");
-    //dex.console.log("APPLYING STYLE TO NODE:", node);
-    if (node && config && config.apply) {
-      config.apply.forEach(function (applyConfig) {
-        var affectedNodes = node.selectAll(applyConfig["select"]);
-
-        if (applyConfig && applyConfig.styles) {
-          for (styleName in applyConfig.styles) {
-            affectedNodes.style(styleName, applyConfig.styles[styleName]);
-          }
-        }
-
-        if (applyConfig && applyConfig.attributes) {
-          for (attributeName in applyConfig.attributes) {
-            affectedNodes.attr(attributeName, applyConfig.attributes[attributeName]);
-          }
-        }
-      });
-    }
-  };
-
   /**
    *
-   * Return the configuration for a font after the user's customizations
-   * have been applied.
+   * Return the configuration for a font after the user's
+   * customizations have been applied.
    *
-   * @param {d3font_spec} custom - The user customizations.
-   * @returns {d3font_spec} - An object containing the font's specifications
+   * @param {FontSpec} options - The user customizations.
+   * @param {string} [options.family="sans-serif"] - The font family.
+   * @param {number} [options.size=14] - The font size.
+   * @param {string} [options.style="normal"] - The font style.
+   * @param {string} [options.weight="normal"] - The font weight.
+   * @param {string} [options.variant="normal"] - The font variant.
+   *
+   * @returns {object} - An object containing the font's specifications
    * after the user's customizations have been applied.
    *
    * @memberof dex/config
    *
    */
-  config.font = function font(custom) {
+  config.font = function font(options) {
     var defaults = {
       'family': 'sans-serif',
       'size': 14,
@@ -12868,7 +13427,7 @@ module.exports = function (dex) {
       'variant': 'normal'
     };
 
-    var fontSpec = dex.config.expandAndOverlay(custom, defaults);
+    var fontSpec = dex.config.expandAndOverlay(options, defaults);
     return fontSpec;
   };
 
@@ -12876,16 +13435,15 @@ module.exports = function (dex) {
    *
    * Configure the given font with the supplied font specification.
    *
-   * @param {object} node - The node to be configured.
-   * @param {d3font_spec} fontSpec - The font specification to be applied.
-   *
-   * @returns {*} The node after having the font specification applied.
+   * @param {node} node - The node to be configured.
+   * @param {fontSpec} fontSpec - The font specification to be applied.
+   * @param {number} i - The node number.
+   * @returns {node} The node after having the font specification applied.
    *
    * @memberof dex/config
    *
    */
   config.configureFont = function configureFont(node, fontSpec, i) {
-    //dex.console.log("CONFIG-FONT: " + i);
     if (fontSpec) {
       dex.config.setAttr(node, 'font-family', fontSpec.family, i);
       dex.config.setStyle(node, 'font-size', fontSpec.size, i);
@@ -12898,18 +13456,38 @@ module.exports = function (dex) {
 
   /**
    *
-   * Construct a text speficiation.
+   * Construct a text specification.
    *
-   * @param {d3text_spec} custom - The user's adjustments to the default text
-   * specification.
+   * @param {TextSpec} options - The user's options which override the default
+   * text specification.
+   * @param {FontSpec} options.font - The users's font specification.
+   * @param {number} [options.x=0] - The x coordinate of the text.
+   * @param {number} [options.y=0] - The y coordinate of the text.
+   * @param {number} options.textLength - The SVG text length.
+   * @param {string} options.transform - The SVG transform to apply to the text.
+   * @param {string} options.text - The text.
+   * @param {string} [options.decoration=none] - Text decoration.
+   * @param {number} [options.dx=0] - An x offset to apply.
+   * @param {number} [options.dy=0] - A y offset to apply.
+   * @param {fontSpec} [options.writingMode=] - The text writing mode.
+   * @param {fontSpec} [options.anchor=start] - The text anchor.  One of start, middle,
+   * or end.
+   * @param {FillSpec} options.fill - The text fill specification.
+   * @param {StrokeSpec} options.stroke - The text stroke specification.
+   * @param {string} [options.format=] - A format to apply to the text.
+   * @param {EventSpec} options.events - Any text events.
    *
-   * @returns {d3text_spec} A revised text specification after having applied
-   * the user's modfiications.
+   * @returns {TextSpec} A revised text specification after having applied
+   * the user's modifications.
    *
    * @memberof dex/config
    *
+   * @example
+   *
+   * var myText = dex.config.text({ "font.size" : 32 });
+   *
    */
-  config.text = function text(custom) {
+  config.text = function text(options) {
     var defaults =
       {
         'font': dex.config.font(),
@@ -12932,7 +13510,7 @@ module.exports = function (dex) {
         'events': dex.config.events()
       };
 
-    var textSpec = dex.config.expandAndOverlay(custom, defaults);
+    var textSpec = dex.config.expandAndOverlay(options, defaults);
     return textSpec;
   };
 
@@ -12941,12 +13519,20 @@ module.exports = function (dex) {
    * This routine will dynamically configure an SVG text entity based upon the
    * supplied configuration.
    *
-   * @param {object} node The SVG text node to be configured.
-   * @param {d3text_spec} textSpec The text specification for this node.
+   * @param {node} node The SVG text node to be configured.
+   * @param {TextSpec} textSpec The text specification for this node.
+   * @param {number} i The index of the node (if any).
    *
-   * @returns {*} The node after having applied the text specification.
+   * @returns {node} The node after having the text specification applied
+   * to it.
    *
    * @memberof dex/config
+   *
+   * @example
+   *
+   * var textSpec = dex.config.text({ "font.size": 32, "fill.fillColor": "red" });
+   * d3.select("some-nodes")
+   *   .call(dex.config.configureText, textSpec);
    *
    */
   config.configureText = function configureText(node, textSpec, i) {
@@ -12975,7 +13561,7 @@ module.exports = function (dex) {
    *
    * Construct a stroke specification.
    *
-   * @param {d3text_spec} strokeSpec - The user's customizations to the specification.
+   * @param {StrokeSpec} options - The user's customizations to the specification.
    *
    * @returns {d3text_spec} The stroke specification after having applied the user's
    * configuration.
@@ -12983,7 +13569,7 @@ module.exports = function (dex) {
    * @memberof dex/config
    *
    */
-  config.stroke = function stroke(strokeSpec) {
+  config.stroke = function stroke(options) {
     var defaults =
       {
         'width': 1,
@@ -12996,7 +13582,7 @@ module.exports = function (dex) {
         'miterLimit': ''
       };
 
-    var config = dex.config.expandAndOverlay(strokeSpec, defaults);
+    var config = dex.config.expandAndOverlay(options, defaults);
     return config;
   };
 
@@ -13289,84 +13875,16 @@ module.exports = function (dex) {
     return node;
   };
 
-  config.getCallers = function getCallers(caller) {
-    var callers = [caller];
-    var currentCaller = caller;
-    //for (; currentCaller; currentCaller = currentCaller.caller) {
-    //  if (currentCaller.name) {
-    //    callers.push(currentCaller.name);
-    //  }
-    //}
-
-    return callers.reverse();
-  };
-
-  config.getCallerString = function getCallerString(caller) {
-    return dex.config.getCallers(caller).join("->");
-  };
-
-  config.setEventHandler = function setEventHandler(node, eventType, eventHandler, i) {
-    var callerStr = dex.config.getCallerString(arguments.callee.caller);
-
-    //dex.console.debug(callerStr + ": setEventHandler(node=" + node + ", eventType=" + eventType + ", eventHandler=" + eventHandler);
-    if (!node) {
-      dex.console.debug(callerStr + ": dex.config.setEventHandler(eventType='" + eventType + "eventHandler=" + eventHandler + ") : node is null.");
-      return node;
-    }
-    if (!dex.object.isFunction(node.on)) {
-      dex.console.debug(callerStr + ": dex.config.setEventHandler(eventType='" + eventType + "', eventHandler='" + eventHandler +
-        "') : target node is missing function: node.on(eventType,eventHandler).  Node dump:", node);
-      return node;
-    }
-    if (typeof eventHandler != 'undefined') {
-      dex.console.debug(callerStr + ": Set Event Handler: '" + eventType + "'='" + eventHandler + "'");
-      node.on(eventType, eventHandler);
-    }
-    else {
-      dex.console.debug(callerStr += ": Undefined Event Handler: '" + eventType + "'='" + eventHandler + "'");
-    }
-    return node;
-  };
-
   config.setAttr = function setAttr(node, name, value, i) {
-    var callerStr = dex.config.getCallerString(arguments.callee.caller);
-    if (!node) {
-      dex.console.debug(callerStr + ": dex.config.setAttr(name='" + name + "value=" + value + ") : node is null.");
-      return node;
-    }
-    if (!dex.object.isFunction(node.attr)) {
-      dex.console.debug(callerStr + ": dex.config.setAttr(name='" + name + "', value='" + value +
-        "') : target node is missing function: node.attr.  Node dump:", node);
-      return node;
-    }
     if (typeof value != 'undefined') {
-      dex.console.debug(callerStr + ": Set Attr: '" + name + "'='" + value + "'");
       node.attr(name, dex.config.optionValue(value, i, node));
-    }
-    else {
-      dex.console.debug(callerStr += ": Undefined Attr: '" + name + "'='" + value + "'");
     }
     return node;
   };
 
   config.setStyle = function setStyle(node, name, value, i) {
-    var callerStr = dex.config.getCallerString(arguments.callee.caller);
-    if (!node) {
-      dex.console.warn(callerStr + ": dex.config.setAttr(name='" + name + "value=" + value + ") : node is null.");
-      return node;
-    }
-    if (!dex.object.isFunction(node.style)) {
-      dex.console.debug(callerStr + ": dex.config.setStyle(name='" + name + "', value='" + value +
-        "') : target node is missing function: node.style.  Node Dump:", node);
-      return node;
-    }
     if (typeof value !== 'undefined' && node && dex.object.isFunction(node.style)) {
-      dex.console.debug(callerStr + ": Set Style: name='" + name + "', Value Dump:",
-        dex.config.optionValue(value, i));
       node.style(name, dex.config.optionValue(value, i, node));
-    }
-    else {
-      dex.console.debug(callerStr + ": Undefined Style: name='" + name + "', Value Dump:", value);
     }
     return node;
   };
@@ -13495,7 +14013,7 @@ module.exports = function (dex) {
       'events': dex.config.events()
     };
     if (custom) {
-      config = dex.object.overlay(custom, config);
+      config = dex.config.expandAndOverlay(custom, config);
     }
     return config;
   };
@@ -13952,7 +14470,7 @@ module.exports = function (dex) {
 
   return config;
 };
-},{"./gui":68}],68:[function(require,module,exports){
+},{"./gui":69}],69:[function(require,module,exports){
 module.exports = function (dex) {
   /**
    *
@@ -15847,7 +16365,7 @@ module.exports = function (dex) {
 
   return gui;
 };
-},{}],69:[function(require,module,exports){
+},{}],70:[function(require,module,exports){
 module.exports = function (dex) {
   /**
    *
@@ -16023,7 +16541,7 @@ module.exports = function (dex) {
 
   return dexConsole;
 };
-},{}],70:[function(require,module,exports){
+},{}],71:[function(require,module,exports){
 /**
  *
  * Construct a csv from the supplied header and data.
@@ -16069,7 +16587,6 @@ csv.prototype.transpose = function () {
 };
 
 csv.prototype.equals = function (csv) {
-  dex.console.log("COMPARE", csv, this)
   if (csv === undefined || csv.header === undefined || csv.data === undefined) {
     return false;
   }
@@ -16092,7 +16609,7 @@ csv.prototype.equals = function (csv) {
       return false;
     }
   }
-  dex.console.log("TRUE");
+
   return true;
 };
 
@@ -16162,18 +16679,15 @@ csv.prototype.getConnectionMatrix = function () {
 };
 
 csv.prototype.limitRows = function (limit) {
-  var csv = this;
-  var newCsv = {
-    header: dex.array.copy(csv.header),
-    data: []
-  }
+  var self = this;
+  var newCsv = {header: dex.array.copy(self.header), data: []};
 
   var i = 0;
-  for (i = 0; i < csv.data.length && i < limit; i++) {
-    newCsv.data.push(dex.array.copy(csv.data[i]));
+  for (i = 0; i < self.data.length && i < limit; i++) {
+    newCsv.data.push(dex.array.copy(self.data[i]));
   }
 
-  return newCsv;
+  return new csv(newCsv);
 };
 
 csv.prototype.getColumnNumber = function (colIndex, defaultValue) {
@@ -16241,48 +16755,6 @@ csv.prototype.getColumnData = function (colIndex) {
   return this.data.map(function (row) {
     return row[i];
   });
-};
-
-/**
- *
- * @param csv
- * @param keyIndex - Numerical header index or name.
- * @returns {{}}
- *
- */
-csv.prototype.createMap = function (keyIndex) {
-
-  // CSV undefined
-  if (this.invalid()) {
-    throw "csv.createMap(keyIndex) : 'this' is undefined.";
-  }
-  if (keyIndex === undefined) {
-    keyIndex = 0;
-  }
-  else {
-    // 0 : number
-    // [0] : object
-    // '0' : string
-    dex.console.log("UNKNOWN-TYPE", typeof(keyIndex));
-  }
-  return {};
-};
-
-csv.prototype.json2Csv = function (json) {
-  var csv = {'header': [], 'data': []};
-  if (_.isUndefined(json) || json.length <= 0) {
-    return csv;
-  }
-  csv.header = _.keys(json[0]);
-  json.forEach(function (jsonRow) {
-    var row = [];
-    csv.header.forEach(function (columnName) {
-      row.push(jsonRow[columnName]);
-    });
-    csv.data.push(row);
-  });
-
-  return new dex.csv(csv);
 };
 
 /**
@@ -16654,6 +17126,24 @@ csv.prototype.getCategorizationMethod = function (method) {
   }
 };
 
+csv.prototype.getCategories = function (categorize) {
+  var csv = this;
+  var catMap = {};
+  var catNum = 0;
+
+  csv.data.forEach(function (row, ri) {
+    row.forEach(function (col, ci) {
+      var category = categorize(csv, ri, ci);
+      if (typeof catMap[category] == "undefined") {
+        catMap[category] = catNum;
+        catNum++;
+      }
+    });
+  });
+
+  return Object.keys(catMap).sort();
+};
+
 csv.prototype.getCsvFunction = function (param) {
   var csv = this;
   if (param) {
@@ -16689,6 +17179,12 @@ csv.prototype.getCsvFunction = function (param) {
     }
   }
 };
+
+csv.prototype.setCategorization = function (method) {
+  // Column Name
+  // Column Value(S[,S]*) - By column name(s)
+  // Row Number
+}
 
 csv.prototype.getScalingMethods = function () {
   var methods;
@@ -17464,7 +17960,10 @@ csv.prototype.toJsonHierarchy = function (ci) {
   }
 };
 
-csv.prototype.getGraph = function () {
+csv.prototype.getGraph = function (valueFunction) {
+  var valueFn = valueFunction || function () {
+    return 1;
+  };
   var csv = this;
   var nodes = [];
   var links = [];
@@ -17485,7 +17984,11 @@ csv.prototype.getGraph = function () {
 
   for (var ci = 1; ci < csv.header.length; ci++) {
     csv.data.map(function (row, ri) {
-      links.push({'source': indexMap[ci - 1][row[ci - 1]], 'target': indexMap[ci][row[ci]], 'value': 1});
+      links.push({
+        'source': indexMap[ci - 1][row[ci - 1]],
+        'target': indexMap[ci][row[ci]],
+        'value': valueFn(csv, ci - 1, ri, ci, ri)
+      });
     });
   }
 
@@ -17574,7 +18077,7 @@ csv.prototype.getConnectionMap = function () {
 };
 
 module.exports = csv;
-},{}],71:[function(require,module,exports){
+},{}],72:[function(require,module,exports){
 module.exports = function (dex) {
   return function (name) {
     function spec(name) {
@@ -17786,7 +18289,7 @@ module.exports = function (dex) {
     return new spec(name);
   }
 };
-},{}],72:[function(require,module,exports){
+},{}],73:[function(require,module,exports){
 module.exports = function (dex) {
   /**
    *
@@ -18214,7 +18717,7 @@ module.exports = function (dex) {
   return datagen;
 };
 
-},{}],73:[function(require,module,exports){
+},{}],74:[function(require,module,exports){
 /**
  *
  * @type {dex}
@@ -18386,7 +18889,7 @@ if ($.fn.button.noConflict != undefined) {
 }
 
 module.exports = dex;
-},{"./array/array":3,"./charts/charts":14,"./color/color":65,"./component/component":66,"./config/config":67,"./console/console":69,"./csv/csv":70,"./data/spec":71,"./datagen/datagen":72,"./geometry/geometry":74,"./json/json":75,"./matrix/matrix":76,"./object/object":77,"./ui/ui":84,"./util/util":86}],74:[function(require,module,exports){
+},{"./array/array":3,"./charts/charts":14,"./color/color":66,"./component/component":67,"./config/config":68,"./console/console":70,"./csv/csv":71,"./data/spec":72,"./datagen/datagen":73,"./geometry/geometry":75,"./json/json":76,"./matrix/matrix":77,"./object/object":78,"./ui/ui":85,"./util/util":87}],75:[function(require,module,exports){
 module.exports = function (dex) {
   /**
    *
@@ -18642,7 +19145,7 @@ module.exports = function (dex) {
   return geometry;
 };
 
-},{}],75:[function(require,module,exports){
+},{}],76:[function(require,module,exports){
 module.exports = function (dex) {
   /**
    *
@@ -18764,7 +19267,7 @@ module.exports = function (dex) {
   return json;
 };
 
-},{}],76:[function(require,module,exports){
+},{}],77:[function(require,module,exports){
 module.exports = function (dex) {
   /**
    *
@@ -19101,7 +19604,7 @@ module.exports = function (dex) {
   return matrix;
 };
 
-},{}],77:[function(require,module,exports){
+},{}],78:[function(require,module,exports){
 module.exports = function (dex) {
   /**
    *
@@ -19485,7 +19988,7 @@ module.exports = function (dex) {
 };
 
 
-},{}],78:[function(require,module,exports){
+},{}],79:[function(require,module,exports){
 /**
  *
  * Creates a ConfigurationPane component.
@@ -19607,7 +20110,7 @@ var ConfigurationPane = function (userConfig) {
 };
 
 module.exports = ConfigurationPane;
-},{}],79:[function(require,module,exports){
+},{}],80:[function(require,module,exports){
 var datafilterpane = function (userConfig) {
   var chart;
   var INITIALIZING = false;
@@ -19897,7 +20400,7 @@ var datafilterpane = function (userConfig) {
 };
 
 module.exports = datafilterpane;
-},{}],80:[function(require,module,exports){
+},{}],81:[function(require,module,exports){
 var guipane = function (userConfig) {
   var pane;
   var componentMap = {};
@@ -20465,7 +20968,7 @@ var guipane = function (userConfig) {
 };
 
 module.exports = guipane;
-},{}],81:[function(require,module,exports){
+},{}],82:[function(require,module,exports){
 /**
  *
  * Construct a player component.
@@ -20674,7 +21177,7 @@ var Player = function (userConfig) {
 };
 
 module.exports = Player;
-},{}],82:[function(require,module,exports){
+},{}],83:[function(require,module,exports){
 /**
  *
  * This creates a SqlQuery component which provides a SQL
@@ -20769,7 +21272,7 @@ var SqlQuery = function (userConfig) {
 };
 
 module.exports = SqlQuery;
-},{}],83:[function(require,module,exports){
+},{}],84:[function(require,module,exports){
 /**
  *
  * Creates a Table component for visualizing tabular data.
@@ -20865,7 +21368,7 @@ var Table = function (userConfig) {
 };
 
 module.exports = Table;
-},{}],84:[function(require,module,exports){
+},{}],85:[function(require,module,exports){
 module.exports = function (dex) {
   /**
    *
@@ -20885,7 +21388,7 @@ module.exports = function (dex) {
 
   return ui;
 };
-},{"./ConfigurationPane":78,"./DataFilterPane":79,"./GuiPane":80,"./Player":81,"./SqlQuery":82,"./Table":83}],85:[function(require,module,exports){
+},{"./ConfigurationPane":79,"./DataFilterPane":80,"./GuiPane":81,"./Player":82,"./SqlQuery":83,"./Table":84}],86:[function(require,module,exports){
 module.exports = function util(dex) {
   /**
    *
@@ -20971,7 +21474,7 @@ module.exports = function util(dex) {
 
   return d3util;
 };
-},{}],86:[function(require,module,exports){
+},{}],87:[function(require,module,exports){
 module.exports = function (dex) {
 
   var util = {};
@@ -20980,5 +21483,5 @@ module.exports = function (dex) {
 
   return util;
 };
-},{"./d3":85}]},{},[73])(73)
+},{"./d3":86}]},{},[74])(74)
 });

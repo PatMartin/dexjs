@@ -19,6 +19,7 @@ d3.Dendrogram = require("./Dendrogram");
 //d3.HorizonChart = require("./../../../graveyard/HorizonChart");
 d3.HorizontalLegend = require("./HorizontalLegend");
 //d3.LineChart = require("./LineChart");
+d3.Legend = require("./Legend");
 d3.MotionBarChart = require("./MotionBarChart");
 //d3.MotionChart = require("./MotionChart");
 //d3.MotionCircleChart = require("./MotionCircleChart");

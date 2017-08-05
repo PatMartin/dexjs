@@ -1,8 +1,31 @@
 /**
  *
- * This is the base constructor for a D3 ClusteredForce component.
+ * This is the base constructor for a D3 Clustered Force visualization.
  *
- * @param userConfig The chart's configuration.
+ * @param {object} options The chart's configuration.
+ * @param {string} [options.parent=#ClusteredForceParent] A selector pointing to the
+ * parent container to which this chart will be added.
+ * @param {string} [options.id=ClusteredForceId] The id of this chart.  This enables
+ * it to be uniquely styled, even on pages with multiple charts of the same
+ * type.
+ * @param {string} [options.class=ClusterdForceClass] The class of this chart.
+ * This enables groups of similarly classed charts to be styled in a
+ * common manner.
+ * @param {boolean} [options.resizable=true] If true, the chart will resize
+ * itself to the size of the parent container, otherwise, it will observe
+ * any height/width limitations imposed by the options.
+ * @param {csv} options.csv The csv data for this chart.
+ * @param {number|string} [options.width=100%] The width of the chart expressed either
+ * as a number representing the width in pixels, or as a percentage of the
+ * available parent container space.
+ * @param {number|string} [options.height=100%] The height of the chart expressed either
+ * as a number representing the height in pixels, or as a percentage of the
+ * available parent container space.
+ * @param {margin} options.margin The margins of this chart.  Expressed as an
+ * object with properties top, bottom, left and right which represent the top,
+ * bottom, left and right margins respectively.
+ * @param {string} options.transform The transformation to apply to the chart.
+ * ex: rotate(45), size(.5), etc...
  *
  * @returns {ClusteredForce}
  *
@@ -20,10 +43,10 @@ var ClusteredForce = function (userConfig) {
     'width': "100%",
     'resizable': true,
     'margin': {
-      'left': 100,
-      'right': 100,
-      'top': 50,
-      'bottom': 50
+      'left': 0,
+      'right': 0,
+      'top': 0,
+      'bottom': 0
     },
     'csv': {
       'header': ["X", "Y"],
@@ -96,6 +119,13 @@ var ClusteredForce = function (userConfig) {
 
   chart = new dex.component(userConfig, defaults);
 
+  chart.subscribe(chart, "attr", function (msg) {
+    if (msg.attr == "draggable") {
+      $(chart.config.parent).draggable();
+      $(chart.config.parent).draggable((msg.value === true) ? 'enable' : 'disable');
+    }
+  });
+
   chart.getGuiDefinition = function getGuiDefinition(config) {
     var defaults = {
       "type": "group",
@@ -105,7 +135,7 @@ var ClusteredForce = function (userConfig) {
         dex.config.gui.general(),
         {
           "type": "group",
-          "name": "Physics and Sizing",
+          "name": "Physics and Appearance",
           "contents": [
             {
               "name": "Color Scheme",
@@ -168,7 +198,7 @@ var ClusteredForce = function (userConfig) {
             }
           ]
         },
-        dex.config.gui.stroke({name: "Nodes"}, "circle.stroke")
+        dex.config.gui.circle({name: "Nodes"}, "circle")
       ]
     };
     var guiDef = dex.config.expandAndOverlay(config, defaults);
@@ -365,9 +395,6 @@ var ClusteredForce = function (userConfig) {
       },
       track: true
     });
-
-    // Make the entire chart draggable.
-    //$(chart.config.parent).draggable();
   });
 
   return chart;

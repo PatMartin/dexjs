@@ -28,7 +28,9 @@ var Sankey = function (userConfig) {
       'top': 5,
       'bottom': 5
     },
+    'palette': "ECharts",
     units: "UNITS",
+    iterations: 32,
     link: {
       normal: dex.config.link({
         'fill.fillColor': 'none',
@@ -74,6 +76,15 @@ var Sankey = function (userConfig) {
 
   var chart = new dex.component(userConfig, defaults);
 
+  chart.spec = new dex.data.spec("Sankey").anything();
+
+  chart.subscribe(chart, "attr", function (msg) {
+    if (msg.attr == "draggable") {
+      $(chart.config.parent).draggable();
+      $(chart.config.parent).draggable((msg.value === true) ? 'enable' : 'disable');
+    }
+  });
+
   chart.getGuiDefinition = function getGuiDefinition(config) {
     var defaults = {
       "type": "group",
@@ -81,10 +92,39 @@ var Sankey = function (userConfig) {
       "contents": [
         dex.config.gui.dimensions(),
         dex.config.gui.general(),
-        dex.config.gui.link({name: "Link: Normal"}, "link.normal"),
-        dex.config.gui.link({name: "Link: Emphasis"}, "link.emphasis"),
-        dex.config.gui.text({"name": "Label: Normal"}, "label.normal"),
-        dex.config.gui.rectangle({"name": "Node: NOrmal"}, "node.normal")
+        dex.config.gui.linkGroup({}, "link"),
+        dex.config.gui.textGroup({}, "label"),
+        dex.config.gui.rectangleGroup({"name": "Nodes"}, "node"),
+        {
+          "type": "group",
+          "name": "Miscellaneous",
+          "contents": [
+            {
+              "name": "Color Scheme",
+              "description": "The color scheme.",
+              "target": "palette",
+              "type": "choice",
+              "choices": dex.color.colormaps({shortlist: true}),
+              "initialValue": "category10"
+            },
+            {
+              "name": "Units",
+              "description": "The units text.",
+              "target": "units",
+              "type": "string",
+              "initialValue": "Units"
+            },
+            {
+              "name": "Layout Iterations",
+              "description": "The number of iterations to spend trying to optimize the layout.",
+              "target": "iterations",
+              "type": "int",
+              "minValue": 1,
+              "maxValue": 400,
+              "initialValue": 32
+            }
+          ]
+        }
       ]
     };
 
@@ -127,7 +167,8 @@ var Sankey = function (userConfig) {
       .attr("transform", "translate(" + margin.left + "," +
         margin.top + ") " + config.transform);
 
-    var color = d3.scaleOrdinal(d3.schemeCategory20);
+    //var color = d3.scaleOrdinal(d3.schemeCategory20);
+    var color = d3.scaleOrdinal(dex.color.palette[config.palette]);
 
     // Set the sankey diagram properties
     var sankey = chart.sankey()
@@ -137,12 +178,28 @@ var Sankey = function (userConfig) {
 
     var path = sankey.link();
 
-    var graph = csv.getGraph();
+    var graph;
+    var types = csv.guessTypes();
+    dex.console.log("TYPES", types, csv);
+    if (types[csv.header.length - 1] == "number") {
+      var valueFn = function (csv) {
+        return function (unusedCsv, unusedColumnIndex, ri) {
+          return csv.data[ri][csv.header.length - 1];
+        }
+      }(csv);
+
+      graph = csv.exclude([csv.header.length - 1]).getGraph(valueFn);
+    }
+    else {
+      graph = csv.getGraph();
+    }
+
+    dex.console.log("GRAPH: ", graph);
 
     sankey
       .nodes(graph.nodes)
       .links(graph.links)
-      .layout(32);
+      .layout(config.iterations);
 
     // add in the links
     var link = rootG.append("g")
@@ -179,7 +236,6 @@ var Sankey = function (userConfig) {
           .style("stroke-width", function (d) {
             return Math.max(1, d.dy);
           });
-        ;
       })
       .on('mouseout', function (d, i) {
         //dex.console.log("MOUSEOUT LINK", d);
@@ -195,7 +251,8 @@ var Sankey = function (userConfig) {
     link.append("title")
       .text(function (d) {
         return d.source.name + " -> " +
-          d.target.name + "\n" + d.value;
+          d.target.name + "\n" + d.value + " " +
+          config.units;
       });
 
     // add in the nodes
@@ -215,11 +272,12 @@ var Sankey = function (userConfig) {
         })
         .on("drag", dragmove));
 
-// add the rectangles for the nodes
+    // add the rectangles for the nodes
     node.append("rect")
       .call(dex.config.configureRectangle, config.node.normal)
       .on("mouseover", function (d) {
-        //dex.console.log("MOUSEOVER NODE", d);
+        d3.select(this)
+          .call(dex.config.configureRectangle, config.node.emphasis);
         rootG.selectAll(".link[sourceCategory='" + d.category + "']")
           .filter("[sourceName='" + d.name + "']")
           .call(dex.config.configureLink, config.link.emphasis)
@@ -236,6 +294,8 @@ var Sankey = function (userConfig) {
           });
       })
       .on("mouseout", function (d) {
+        d3.select(this)
+          .call(dex.config.configureRectangle, config.node.normal);
         rootG.selectAll(".link[sourceCategory='" + d.category + "']")
           .filter("[sourceName='" + d.name + "']")
           .call(dex.config.configureLink, config.link.normal)
@@ -286,8 +346,8 @@ var Sankey = function (userConfig) {
       .attr("x", 6 + sankey.nodeWidth())
       .attr("text-anchor", "start");
 
-// the function for moving the nodes
-// the function for moving the nodes
+    // the function for moving the nodes
+    // the function for moving the nodes
     function dragmove(d) {
       d3.select(this).attr("transform",
         "translate(" + (

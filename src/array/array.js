@@ -95,6 +95,23 @@ module.exports = function (dex) {
     return arraySlice;
   };
 
+  array.guessType = function (array) {
+    if (array.every(function (elt) {
+        return !isNaN(elt);
+      })) {
+      return "number";
+    }
+
+    // Not a number, so lets try dates.
+    if (array.every(function (elt) {
+        return dex.object.couldBeADate(elt);
+      })) {
+      return "date";
+    }
+    // Congratulations, you have a string!!
+    return "string";
+  };
+
   array.removeIndex = function (targetArray, removeIndex) {
     if (arguments.length >= 2 && Array.isArray(targetArray)) {
       if (Array.isArray(removeIndexes)) {
@@ -266,4 +283,5 @@ module.exports = function (dex) {
     return indices;
   }
   return array;
-};
+}
+;

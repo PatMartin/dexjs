@@ -43,7 +43,6 @@ csv.prototype.transpose = function () {
 };
 
 csv.prototype.equals = function (csv) {
-  dex.console.log("COMPARE", csv, this)
   if (csv === undefined || csv.header === undefined || csv.data === undefined) {
     return false;
   }
@@ -66,7 +65,7 @@ csv.prototype.equals = function (csv) {
       return false;
     }
   }
-  dex.console.log("TRUE");
+
   return true;
 };
 
@@ -136,18 +135,15 @@ csv.prototype.getConnectionMatrix = function () {
 };
 
 csv.prototype.limitRows = function (limit) {
-  var csv = this;
-  var newCsv = {
-    header: dex.array.copy(csv.header),
-    data: []
-  }
+  var self = this;
+  var newCsv = {header: dex.array.copy(self.header), data: []};
 
   var i = 0;
-  for (i = 0; i < csv.data.length && i < limit; i++) {
-    newCsv.data.push(dex.array.copy(csv.data[i]));
+  for (i = 0; i < self.data.length && i < limit; i++) {
+    newCsv.data.push(dex.array.copy(self.data[i]));
   }
 
-  return newCsv;
+  return new csv(newCsv);
 };
 
 csv.prototype.getColumnNumber = function (colIndex, defaultValue) {
@@ -215,48 +211,6 @@ csv.prototype.getColumnData = function (colIndex) {
   return this.data.map(function (row) {
     return row[i];
   });
-};
-
-/**
- *
- * @param csv
- * @param keyIndex - Numerical header index or name.
- * @returns {{}}
- *
- */
-csv.prototype.createMap = function (keyIndex) {
-
-  // CSV undefined
-  if (this.invalid()) {
-    throw "csv.createMap(keyIndex) : 'this' is undefined.";
-  }
-  if (keyIndex === undefined) {
-    keyIndex = 0;
-  }
-  else {
-    // 0 : number
-    // [0] : object
-    // '0' : string
-    dex.console.log("UNKNOWN-TYPE", typeof(keyIndex));
-  }
-  return {};
-};
-
-csv.prototype.json2Csv = function (json) {
-  var csv = {'header': [], 'data': []};
-  if (_.isUndefined(json) || json.length <= 0) {
-    return csv;
-  }
-  csv.header = _.keys(json[0]);
-  json.forEach(function (jsonRow) {
-    var row = [];
-    csv.header.forEach(function (columnName) {
-      row.push(jsonRow[columnName]);
-    });
-    csv.data.push(row);
-  });
-
-  return new dex.csv(csv);
 };
 
 /**
@@ -628,6 +582,24 @@ csv.prototype.getCategorizationMethod = function (method) {
   }
 };
 
+csv.prototype.getCategories = function (categorize) {
+  var csv = this;
+  var catMap = {};
+  var catNum = 0;
+
+  csv.data.forEach(function (row, ri) {
+    row.forEach(function (col, ci) {
+      var category = categorize(csv, ri, ci);
+      if (typeof catMap[category] == "undefined") {
+        catMap[category] = catNum;
+        catNum++;
+      }
+    });
+  });
+
+  return Object.keys(catMap).sort();
+};
+
 csv.prototype.getCsvFunction = function (param) {
   var csv = this;
   if (param) {
@@ -663,6 +635,12 @@ csv.prototype.getCsvFunction = function (param) {
     }
   }
 };
+
+csv.prototype.setCategorization = function (method) {
+  // Column Name
+  // Column Value(S[,S]*) - By column name(s)
+  // Row Number
+}
 
 csv.prototype.getScalingMethods = function () {
   var methods;
@@ -1438,7 +1416,10 @@ csv.prototype.toJsonHierarchy = function (ci) {
   }
 };
 
-csv.prototype.getGraph = function () {
+csv.prototype.getGraph = function (valueFunction) {
+  var valueFn = valueFunction || function () {
+    return 1;
+  };
   var csv = this;
   var nodes = [];
   var links = [];
@@ -1459,7 +1440,11 @@ csv.prototype.getGraph = function () {
 
   for (var ci = 1; ci < csv.header.length; ci++) {
     csv.data.map(function (row, ri) {
-      links.push({'source': indexMap[ci - 1][row[ci - 1]], 'target': indexMap[ci][row[ci]], 'value': 1});
+      links.push({
+        'source': indexMap[ci - 1][row[ci - 1]],
+        'target': indexMap[ci][row[ci]],
+        'value': valueFn(csv, ci - 1, ri, ci, ri)
+      });
     });
   }
 
