@@ -58,6 +58,7 @@
     -webkit-border-bottom-right-radius: 5px;
     border-bottom-right-radius: 5px;
 }
+
 /**
 <div style='height:100%;width:100%;display:flex;align-items:center;" +
 "justify-content:center;'><h1 style='text-align:center;width:100%;" +
@@ -88,12 +89,20 @@
 }
 
 /** Dex Legends **/
-.dex-legend {}
+.dex-legend {
+}
+
+.dex-legend-group-title {
+    clear: both;
+    font-size: 1.4em;
+}
+
 .dex-legend-item {
     float: left;
-    padding: 2px;
+    padding: 1px;
     text-align: center;
     margin: 1px;
+    font-size: .8em;
 }
 
 .dex-legend-item:hover {
@@ -135,4 +144,55 @@
     font: bold 14px "Helvetica Neue", Sans-Serif;
     text-transform: uppercase;
     box-shadow: 0 0 7px black;
+}
+
+.dex-multiples-cell {
+    float: left;
+    padding: 3px;
+    border: 1px solid grey;
+}
+
+.dex-multiples-cell:hover {
+    border: 1px solid red;
+}
+
+.dex-multiples-cell-title {
+    background: #337ab7;
+    text-align: center;
+    font-size: .9vw;
+    font-family: "Segoe UI";
+    font-weight: normal;
+    color: #ffffff;
+}
+
+/** Column Selector **/
+/* dragula-specific example page styles */
+.dex-ui-columnselector > .wrapper {
+    display: table;
+}
+
+.dex-ui-columnselector > .wrapper > .container {
+    display: table-cell;
+    background-color: rgba(255, 255, 0, 0.2);
+    width: 50%;
+}
+
+.dex-ui-columnselector > .wrapper > .container:nth-child(odd) {
+    background-color: rgba(0, 0, 0, 0.2);
+}
+/*
+ * note that styling gu-mirror directly is a bad practice because it's too generic.
+ * you're better off giving the draggable elements a unique class and styling that directly!
+ */
+.dex-ui-columnselector > .wrapper > .container > div,
+.dex-ui-columnselector > .gu-mirror {
+    margin: 1px;
+    padding: 1px;
+    background-color: lightgreen;
+    transition: opacity 0.4s ease-in-out;
+}
+
+.dex-ui-columnselector > .wrapper > .container > div {
+    text-align: center;
+    font-size: 1.5em;
 }

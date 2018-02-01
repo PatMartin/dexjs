@@ -23,8 +23,15 @@
 .ConfigurationPaneClass td > label,
 .ConfigurationPaneClass th,
 .ConfigurationPaneClass td {
-    padding: 0px !important;
-    margin: 0px !important;
+    padding-top: 0px;
+    padding-bottom: 0px;
+    padding-right: 0px;
+    padding-left: 0px;
+    margin: 0px;
+}
+
+.ConfigurationPaneClass tr {
+    margin: auto;
 }
 
 .ConfigurationPaneClass h1,
@@ -34,7 +41,7 @@
 .ConfigurationPaneClass h5,
 .ConfigurationPaneClass h6 {
     padding: 2px !important;
-    margin: 0px !important;
+    margin: 0px;
 }
 
 .ConfigurationPaneClass h1 {
@@ -43,6 +50,14 @@
     color: white;
     background-color: #878787;
     text-align: center;
+}
+
+.ConfigurationPaneClass .column1 {
+    width: 35%;
+}
+
+.ConfigurationPaneClass .column2 {
+    width: 65%;
 }
 
 .ConfigurationPaneClass h2 {
@@ -102,19 +117,30 @@
     margin: 0px !important;
 }
 
-.ConfigurationPaneClass .control-float {
-    margin: 10px;
+.ConfigurationPaneClass .control-int > td > div {
+    padding: 1px !important;
+    margin-top: 35px !important;
+    margin-bottom: 8px !important;
+    margin-left: 0px !important;
+    margin-right: 10px !important;
 }
-.ConfigurationPaneClass .slider {
-    margin-bottom: 10px !important;
+
+.ConfigurationPaneClass .control-int > td > label {
+    margin-top: 35px !important;
 }
-/**
-.ConfigurationPaneClass .slider {
-    margin-left: 5px !important;
-    margin-bottom: 5px !important;
-    margin-top: 0px !important;
+
+.ConfigurationPaneClass .control-float > td {
+    /*height: 4.5em;*/
 }
-**/
-.ConfigurationPaneClass .slider-handle {
-    top: 5px !important;
+
+.ConfigurationPaneClass .control-float > td {
+}
+
+.ConfigurationPaneClass .DataFilterPaneClass_number,
+.ConfigurationPaneClass .DataFilterPaneClass_date
+{
+    margin-top: 35px !important;
+    margin-bottom: 14px !important;
+    margin-left: 44px !important;
+    margin-right: 44px !important;
 }
