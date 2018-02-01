@@ -51,7 +51,7 @@ var SteamGraph = function (userConfig) {
   var combinedConfig = dex.config.expandAndOverlay(userConfig, defaults);
   chart = dex.charts.echarts.EChart(combinedConfig);
   chart.spec = new dex.data.spec("Steam Graph")
-    .string("series")
+    .any("series")
     .any("x")
     .number("value");
 
@@ -62,8 +62,15 @@ var SteamGraph = function (userConfig) {
       "contents": [
         {
           "type": "group",
-          "name": "Miscellaneous",
+          "name": "General",
           "contents": [
+            {
+              "name": "Display Legend",
+              "description": "Determines whether or not to draw the legend or not.",
+              "type": "boolean",
+              "target": "options.legend.show",
+              "initialValue": true
+            },
             {
               "name": "Color Scheme",
               "description": "The color scheme.",
@@ -81,7 +88,14 @@ var SteamGraph = function (userConfig) {
             },
           ]
         },
-        dex.config.gui.echartsLabelGroup({}, "series.label")
+        dex.config.gui.margins({}, "options.singleAxis"),
+        dex.config.gui.echartsTitle({}, "options.title"),
+        dex.config.gui.echartsGrid({}, "options.grid"),
+        dex.config.gui.echartsTooltip({}, "options.tooltip"),
+        dex.config.gui.echartsLabelGroup({}, "series.label"),
+        dex.config.gui.echartsItemStyleGroup({}, "options.itemStyle"),
+        dex.config.gui.echartsAxis({name: "X Axis"}, "options.singleAxis"),
+        dex.config.gui.echartsDataZoom({name: "X Axis: Data Zoom"}, "options.dataZoom")
       ]
     };
 
@@ -156,7 +170,7 @@ var SteamGraph = function (userConfig) {
       data: function (csv) {
         return csv.data.map(function (row, ri) {
           var newRow = [row[xInfo.position], row[valueInfo.position], row[seriesInfo.position]];
-          if (xInfo.type == "string") {
+          if (xInfo.type === "string") {
             newRow[0] = options.singleAxis.data.findIndex(function (val) {
               return val == row[xInfo.position];
             });
@@ -170,6 +184,10 @@ var SteamGraph = function (userConfig) {
 
     //dex.console.log("OPTIONS", JSON.stringify(options));
     return options;
+  };
+
+  chart.clone = function clone(override) {
+    return SteamGraph(dex.config.expandAndOverlay(override, userConfig));
   };
 
   return chart;

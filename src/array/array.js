@@ -9,7 +9,10 @@ module.exports = function (dex) {
   var array = {};
 
   array.unique = function (array) {
-    return _.uniq(array);
+    var uniques = {};
+    array.forEach(function(elt) {uniques[elt] = true;});
+    return Object.keys(uniques);
+    //return _.uniq(array);
   };
 
   array.orderedUnique = function (array) {
@@ -255,10 +258,10 @@ module.exports = function (dex) {
    *
    */
   array.copy = function (array) {
+    // Deep copy
+    return $.extend(true, [], array);
     // Shallow copy
-    return _.clone(array);
-    // Deep copy:
-    //return $.extend(true, {}, array);
+    //return array.slice(0);
   };
 
   array.combine = function (array1, array2) {

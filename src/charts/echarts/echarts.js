@@ -14,5 +14,6 @@ echarts.SingleAxisScatterPlot = require("./SingleAxisScatterPlot");
 echarts.PieChart = require("./PieChart");
 echarts.SteamGraph = require("./SteamGraph");
 echarts.RadarChart = require("./RadarChart");
+echarts.BarChart3D = require("./BarChart3D");
 
 module.exports = echarts;

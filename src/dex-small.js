@@ -25,7 +25,7 @@ var dex = {
 /**
  * @namespace
  */
-dex.array = require('./array/array')(dex);
+dex.array = require("./array/array")(dex);
 dex.color = require("./color/color")(dex);
 
 module.exports = dex;

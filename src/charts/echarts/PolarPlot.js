@@ -215,6 +215,7 @@ var PolarPlot = function (userConfig) {
       chart.getCommonOptions());
     var seriesNames;
 
+    //dex.console.log("SPEC", csvSpec);
 
     seriesInfo = csvSpec.specified[0];
     radiusInfo = csvSpec.specified[1];
@@ -225,7 +226,7 @@ var PolarPlot = function (userConfig) {
     chart.config.angleInfo = angleInfo;
 
     scaling = csvSpec.specified.length > 3 &&
-      csvSpec.specified[3].type == "number";
+      csvSpec.specified[3].type === "number";
 
     if (scaling) {
       scaleInfo = csvSpec.specified[3];
@@ -254,6 +255,9 @@ var PolarPlot = function (userConfig) {
         data: csv.uniqueArray(angleInfo.position)
       }
     }
+    else if (angleInfo.type == "date" || chart.config.angleAxisType == "date") {
+      options.angleAxis = {type: "time"};
+    }
     else {
       options.angleAxis = {type: "value"};
     }
@@ -263,6 +267,9 @@ var PolarPlot = function (userConfig) {
         type: "category",
         data: csv.uniqueArray(radiusInfo.position)
       }
+    }
+    else if (radiusInfo.type == "date" || chart.config.radiusAxisType == "date") {
+      options.radiusAxis = {type: "time"};
     }
     else {
       options.radiusAxis = {type: "value"};
@@ -308,6 +315,10 @@ var PolarPlot = function (userConfig) {
     //dex.console.log("OPTIONS", JSON.stringify(options));
     //dex.console.log("OPTIONS", options);
     return options;
+  };
+
+  chart.clone = function clone(override) {
+    return PolarPlot(dex.config.expandAndOverlay(override, userConfig));
   };
 
   return chart;

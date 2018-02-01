@@ -162,9 +162,9 @@ module.exports = function (dex) {
       else {
         values = dex.matrix.flatten(dex.matrix.slice(matrix, indices));
       }
-      var max = Math.max.apply(null, values);
-      var min = Math.min.apply(null, values);
-      return [min, max];
+      //var max = Math.max.apply(null, values);
+      //var min = Math.min.apply(null, values);
+      return [_.min(values), _.max(values)];
     }
   };
 
@@ -211,9 +211,13 @@ module.exports = function (dex) {
    *
    */
   matrix.copy = function (matrix) {
-    return matrix.map(function (row) {
-      return _.clone(row);
+    var matrixCopy = [];
+
+    matrix.forEach(function (row) {
+      matrixCopy.push(dex.array.copy(row));
     });
+
+    return matrixCopy;
   };
 
   /**

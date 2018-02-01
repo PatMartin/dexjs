@@ -21,15 +21,15 @@ var AreaChart = function (userConfig) {
     'width': "100%",
     'height': "100%",
     "options": {
-      "data.type": "area-spline"
+      "data": { type: "area-spline" }
     }
   };
 
   var combinedConfig = dex.config.expandAndOverlay(userConfig, defaults);
   chart = dex.charts.c3.C3Chart(combinedConfig);
   chart.spec = new dex.data.spec("Area Chart")
-    .string("x")
-    .oneOrMoreMatch("y-values", "number");
+    .any("x")
+    .oneOrMoreMatch("y", "number");
 
   chart.getGuiDefinition = function getGuiDefinition(config) {
     var defaults = {
@@ -103,15 +103,15 @@ var AreaChart = function (userConfig) {
         return {
           data: {
             "columns": summary.data,
-            "color": dex.color.getColormap(chart.config.colorScheme)
+            color: dex.color.getColormap(chart.config.options.colorScheme)
           }
         }
       }
       else {
-        options = {
+        options = dex.config.expandAndOverlay({
           data: {
             "rows": ncsv.data,
-            "color": dex.color.getColormap(chart.config.colorScheme)
+            color: dex.color.getColormap(chart.config.options.colorScheme)
           },
           axis: {
             x: {
@@ -119,11 +119,10 @@ var AreaChart = function (userConfig) {
               categories: columns.data[0]
             }
           }
-        };
+        }, chart.config.options);
         if (chart.config.stack) {
           options.data.groups = [ncsv.header];
         }
-        return options;
       }
     }
     else if (gtypes[0] == "date") {
@@ -131,11 +130,11 @@ var AreaChart = function (userConfig) {
       numericIndices.unshift(0);
       var tcsv = csv.include(numericIndices);
       tcsv.data.unshift(tcsv.header);
-      options = {
+      options = dex.config.expandAndOverlay({
         data: {
           "x": tcsv.header[0],
           "rows": tcsv.data,
-          "color": dex.color.getColormap(chart.config.colorScheme)
+          color: dex.color.getColormap(chart.config.options.colorScheme)
         },
         axis: {
           x: {
@@ -145,29 +144,30 @@ var AreaChart = function (userConfig) {
             }
           }
         }
-      };
+      }, chart.config.options);
 
       if (chart.config.stack) {
         options.data.groups = [ncsv.header];
       }
-      return options;
     }
     else {
-      options = {
+      options = dex.config.expandAndOverlay({
         data: {
           "x": ncsv.header[0],
           "rows": ncsv.data,
-          "color": dex.color.getColormap(chart.config.colorScheme)
+          color: dex.color.getColormap(chart.config.options.colorScheme)
         }
-      };
+      }, chart.config.options);
 
       if (chart.config.stack) {
         options.data.groups = [dex.array.copy(ncsv.header)];
         options.data.groups[0].shift();
       }
-      return options;
     }
-  }
+    dex.console.log("C3 OPTIONS: ", chart.config, options)
+    return options;
+  };
+
   return chart;
 };
 

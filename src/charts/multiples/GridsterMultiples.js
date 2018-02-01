@@ -22,8 +22,8 @@ var GridsterMultiples = function (userConfig) {
     'width': "100%",
     'height': "100%",
     'cell': {
-      'width': 6,
-      'height': 6
+      'width': 8,
+      'height': 4
     },
     'baseChart': dex.charts.d3.Dendrogram(),
     'gridsterConfig': {
@@ -44,7 +44,7 @@ var GridsterMultiples = function (userConfig) {
         stop: function (event, ui, $widget) {
           //dex.console.log("Event", event, ui, $widget);
           cells.forEach(function (cell, i) {
-            cell.render();
+            cell.refresh();
           })
         }
       }
@@ -99,7 +99,9 @@ var GridsterMultiples = function (userConfig) {
 
     if (config.charts) {
       // Unregisters any window resize handlers.
-      config.charts.forEach(function(oldChart) { oldChart.deleteChart(); })
+      config.charts.forEach(function (oldChart) {
+        oldChart.deleteChart();
+      })
     }
     d3.selectAll(config.parent).selectAll("*").remove();
 
@@ -145,7 +147,14 @@ var GridsterMultiples = function (userConfig) {
     });
 
     chart.config.charts = cells;
+
     return chart;
+  };
+
+  chart.refresh = function () {
+    cells.forEach(function (cell) {
+      cell.refresh();
+    })
   };
 
   chart.update = function () {

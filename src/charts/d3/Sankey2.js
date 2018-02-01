@@ -9,7 +9,7 @@
  * @memberof dex/charts/d3
  *
  */
-var Sankey = function (userConfig) {
+var Sankey2 = function (userConfig) {
   d3 = dex.charts.d3.d3v4;
   var chart;
 
@@ -135,7 +135,7 @@ var Sankey = function (userConfig) {
 
   chart.render = function render() {
     d3 = dex.charts.d3.d3v4;
-    return chart.resize().update();
+    return chart.resize();
   };
 
   chart.update = function () {
@@ -255,7 +255,7 @@ var Sankey = function (userConfig) {
       .enter().append("g")
       .attr("class", "node")
       .attr("transform", function (d) {
-        //dex.console.log("CONTAINER-D", d);
+        dex.console.log("CONTAINER-D", d);
         return "translate(" + d.x + "," + d.y + ")";
       })
       .call(d3.drag()
@@ -307,7 +307,7 @@ var Sankey = function (userConfig) {
           });
       })
       .attr("height", function (d) {
-        //dex.console.log("HEIGHT-D", d);
+        dex.console.log("HEIGHT-D", d);
         return d.dy;
         //return 10;
       })
@@ -669,4 +669,4 @@ var Sankey = function (userConfig) {
   return chart;
 };
 
-module.exports = Sankey;
+module.exports = Sankey2;

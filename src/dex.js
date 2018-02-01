@@ -15,6 +15,10 @@ dex.exception.SpecificationException = function (spec, assessment) {
   this.received = assessment.received;
 };
 
+dex.exception.DexException = function (message) {
+  this.message = message;
+};
+
 /**
  * This routine will return an array with the specified range.
  *
@@ -152,6 +156,8 @@ dex.matrix = require("./matrix/matrix")(dex);
 dex.object = require("./object/object")(dex);
 dex.ui = require("./ui/ui")(dex);
 dex.ui.BootstrapSlider = dexbootstrap.slider;
+dex.ui.RangeSlider = require("../lib/noUiSlider/noUiSlider");
+
 dex.util = require('./util/util')(dex);
 
 dex.component = require("./component/component")(dex);

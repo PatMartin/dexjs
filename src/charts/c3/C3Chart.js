@@ -28,13 +28,13 @@ var C3Chart = function (userConfig) {
       'top': 20,
       'bottom': 20
     },
-    "colorScheme": "category10",
     "draggable": false,
     'csv': {
       'header': [],
       'data': []
     },
     'options': {
+      "colorScheme": "category10",
       "tooltip.show": true,
       "subchart.show": true,
       "zoom.enabled": true,
@@ -57,7 +57,7 @@ var C3Chart = function (userConfig) {
         "type": "group",
         "name": "General",
         "contents": [
-          dex.config.gui.c3Dimensions({}, "options"),
+          dex.config.gui.c3Margins({}, "options"),
           {
             "name": "Show Tooltips",
             "description": "If true, show tooltips.",
@@ -113,7 +113,7 @@ var C3Chart = function (userConfig) {
             "description": "Color Scheme",
             "type": "choice",
             "choices": dex.color.colormaps(),
-            "target": "colorScheme"
+            "target": "options.colorScheme"
           },
           {
             "name": "Type",
@@ -146,13 +146,6 @@ var C3Chart = function (userConfig) {
     d3 = dex.charts.d3.d3v3;
     d3.selectAll(config.parent).selectAll("*").remove();
 
-    config.options.padding = {
-      left: +config.margin.left,
-      right: +config.margin.right,
-      top: +config.margin.top,
-      bottom: +config.margin.bottom
-    };
-
     config.options.bindto = config.parent;
     var dataOptions = getDataOptions(csv);
     //dex.console.log("PRE-OPTS", config.options);
@@ -161,6 +154,24 @@ var C3Chart = function (userConfig) {
     //dex.console.log("C3OPTIONS", JSON.stringify(config.options));
     internalChart = c3.generate(config.options);
     chart.resize();
+    return chart;
+  };
+
+  chart.deleteChart = function deleteChart() {
+    var parent = chart.config.parent;
+    //dex.console.log("*** Deleting EChart");
+    chart.deleteComponent();
+    try {
+      if (internalChart !== undefined) {
+        internalChart.destroy();
+        internalChart = undefined;
+      }
+    }
+    catch (exception) {
+      dex.console.log("deleteChart(): Component already disposed.");
+    }
+    $(parent).empty();
+    chart = undefined;
     return chart;
   };
 
@@ -185,7 +196,7 @@ var C3Chart = function (userConfig) {
         return {
           data: {
             "columns": summary.data,
-            "color": dex.color.getColormap(chart.config.colorScheme)
+            "color": dex.color.getColormap(chart.config.options.colorScheme)
           }
         }
       }
@@ -193,7 +204,7 @@ var C3Chart = function (userConfig) {
         options = {
           data: {
             "rows": ncsv.data,
-            "color": dex.color.getColormap(chart.config.colorScheme)
+            "color": dex.color.getColormap(chart.config.options.colorScheme)
           },
           axis: {
             x: {
@@ -217,7 +228,7 @@ var C3Chart = function (userConfig) {
         data: {
           "x": tcsv.header[0],
           "rows": tcsv.data,
-          "color": dex.color.getColormap(chart.config.colorScheme)
+          "color": dex.color.getColormap(chart.config.options.colorScheme)
         },
         axis: {
           x: {
@@ -239,7 +250,7 @@ var C3Chart = function (userConfig) {
         data: {
           "x": ncsv.header[0],
           "rows": ncsv.data,
-          "color": dex.color.getColormap(chart.config.colorScheme)
+          "color": dex.color.getColormap(chart.config.options.colorScheme)
         }
       };
 

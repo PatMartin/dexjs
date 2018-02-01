@@ -12,63 +12,62 @@
 var Network = function (userConfig) {
   var chart;
 
-  var defaults =
-    {
-      // The parent container of this chart.
-      'parent': '#Network',
-      // Set these when you need to CSS style components independently.
-      'id': 'Network',
-      'class': 'Network',
-      'resizable': true,
-      'csv': {
-        'header': [],
-        'data': []
-      },
-      'dataModel': 'default',
-      'width': "100%",
-      'height': "100%",
-      'options': {
-        nodes: {
-          shape: 'dot',
-          scaling: {
-            label: {
-              min: 8,
-              max: 64
-            }
-          },
-          'font': {
-            'color': '#C04D3B'
+  var defaults = {
+    // The parent container of this chart.
+    'parent': '#Network',
+    // Set these when you need to CSS style components independently.
+    'id': 'Network',
+    'class': 'Network',
+    'resizable': true,
+    'csv': {
+      'header': [],
+      'data': []
+    },
+    'dataModel': 'default',
+    'width': "100%",
+    'height': "100%",
+    'options': {
+      nodes: {
+        shape: 'dot',
+        scaling: {
+          label: {
+            min: 8,
+            max: 64
           }
         },
-        'edges': {
-          //'arrows' : 'from',
-          'shadow': true
+        'font': {
+          'color': '#C04D3B'
+        }
+      },
+      'edges': {
+        //'arrows' : 'from',
+        'shadow': true
+      },
+      'physics': {
+        'solver': 'forceAtlas2Based',
+        //'solver' : 'hierarchicalRepulsion',
+        //'solver' : 'repulsion',
+        //'solver' : 'barnesHut',
+        'forceAtlas2Based': {
+          'gravitationalConstant': -50,
+          'springConstant': .08,
+          'centralGravity': .02,
+          'damping': .1,
+          'avoidOverlap': .0,
+          'springLength': 100
         },
-        'physics': {
-          'solver': 'forceAtlas2Based',
-          //'solver' : 'hierarchicalRepulsion',
-          //'solver' : 'repulsion',
-          //'solver' : 'barnesHut',
-          'forceAtlas2Based': {
-            'gravitationalConstant': -50,
-            'springConstant': .08,
-            'centralGravity': .02,
-            'damping': .1,
-            'avoidOverlap': .0,
-            'springLength': 100
-          },
-          maxVelocity: 50,
-          minVelocity: 0.2,
-          stabilization: {
-            enabled: true,
-            iterations: 200,
-            updateInterval: 100,
-            onlyDynamicEdges: false,
-            fit: true
-          },
+        maxVelocity: 50,
+        minVelocity: 0.2,
+        stabilization: {
+          enabled: true,
+          iterations: 200,
+          updateInterval: 100,
+          onlyDynamicEdges: false,
+          fit: true
         },
-      }
-    };
+      },
+    }
+  };
 
   var chart = new dex.component(userConfig, defaults);
 
@@ -268,6 +267,7 @@ var Network = function (userConfig) {
 
     var options = {};
     var network = new vis.Network(container, chart.createData(), config.options);
+    return chart;
   };
 
   chart.update = function () {
@@ -275,6 +275,7 @@ var Network = function (userConfig) {
     var config = chart.config;
     var csv = config.csv;
     chart.render();
+    return chart;
   };
 
   chart.clone = function clone(override) {

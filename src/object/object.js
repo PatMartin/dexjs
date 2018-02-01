@@ -1,4 +1,18 @@
 module.exports = function (dex) {
+  Function.prototype.clone = function() {
+    var fct = this;
+    var clone = function() {
+      return fct.apply(this, arguments);
+    };
+    clone.prototype = fct.prototype;
+    for (property in fct) {
+      if (fct.hasOwnProperty(property) && property !== 'prototype') {
+        clone[property] = fct[property];
+      }
+    }
+    return clone;
+  };
+
   /**
    *
    * This module provides routines for dealing with objects.
@@ -30,6 +44,16 @@ module.exports = function (dex) {
     return keys;
   };
 
+  object.visit = function visit(obj, visitor) {
+    visitor(obj);
+    object.keys(obj).forEach(function(key) {
+      //dex.console.log("Visiting(" + key + ")" + " of type: '" + (typeof obj[key]) + "'");
+      if (obj[key] !== undefined && ((typeof obj[key]) === "object")) {
+        dex.object.visit(obj[key], visitor);
+      }
+    });
+  };
+
   /**
    *
    * A pretty good, but imperfect mechanism for performing a deep
@@ -48,8 +72,9 @@ module.exports = function (dex) {
       return obj;
     }
 
-    // Special type for clone
-    if (obj.constructor !== undefined && obj.constructor.name === "csv") {
+    // Ducktyped CSV.
+    if (obj.data !== undefined && obj.header !== undefined) {
+      // Return a full deep copy
       return new dex.csv(obj);
     }
 
@@ -59,10 +84,12 @@ module.exports = function (dex) {
     switch (typeof obj) {
       case "string":
       case "number":
-      case "boolean":
-      case "function": {
+      case "boolean": {
         copy = obj;
         return copy;
+      }
+      case "function": {
+        return obj.clone();
       }
     }
 
@@ -156,11 +183,13 @@ module.exports = function (dex) {
       // Iterate over the props in top.
       for (prop in top) {
         // Arrays are special cases. [A] on top of [A,B] should give [A], not [A,B]
-        if (top[prop] instanceof Array ||
-          (top[prop] !== undefined && top[prop] != null &&
+        if (top[prop] instanceof Array) {
+          overlay[prop] = dex.array.copy(top[prop]);
+        }
+        else if ((top[prop] !== undefined && top[prop] != null &&
             top[prop].constructor !== undefined &&
             top[prop].constructor.name === "csv")) {
-          overlay[prop] = top[prop];
+          overlay[prop] = new dex.csv(top[prop]);
         }
         else if (typeof top[prop] == 'object' && overlay[prop] != null) {
           //console.log("PROP: " + prop + ", top=" + top + ", overlay=" + overlay);
@@ -258,15 +287,12 @@ module.exports = function (dex) {
 
   object.couldBeADate = function (str) {
     if (typeof str === "string") {
-      var d = dex.moment(str, 'D/M/YYYY');
+      var d = dex.moment(str);
       if (d == null || !d.isValid()) return false;
 
-      return str.indexOf(d.format('D/M/YYYY')) >= 0
-        || str.indexOf(d.format('DD/MM/YYYY')) >= 0
-        || str.indexOf(d.format('D/M/YY')) >= 0
-        || str.indexOf(d.format('DD/MM/YY')) >= 0;
+      return true;
     }
-    return false;
+    return typeof str == "date";
   };
 
   /**

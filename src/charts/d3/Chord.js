@@ -44,7 +44,7 @@ var Chord = function (userConfig) {
     "class": "ChordClass",
     "resizable": true,
     // Our data...
-    "csv": new dex.csv(["A", "B"], [["a", "b"]]),
+    "csv": undefined,
     "width": "100%",
     "height": "100%",
     "margin": {
@@ -53,6 +53,7 @@ var Chord = function (userConfig) {
       "top": 50,
       "bottom": 50
     },
+    "palette": "ECharts",
     "transform": "",
     "draggable": false,
     "padding": 0.05,
@@ -110,7 +111,8 @@ var Chord = function (userConfig) {
         "d": d3.svg.chord()
       }),
     },
-    "color": d3.scale.category20c(),
+    "colorScheme": "category10",
+    "color": d3.scale.category10(),
     "autoRadius": true,
     "innerRadius": 350,
     "outerRadius": 400,
@@ -140,6 +142,13 @@ var Chord = function (userConfig) {
           "type": "group",
           "name": "Miscellaneous",
           "contents": [
+            {
+              "name": "Color Scheme",
+              "description": "Color Scheme",
+              "type": "choice",
+              "choices": dex.color.colormaps({shortlist: true}),
+              "target": "colorScheme"
+            },
             {
               "name": "Auto Radius",
               "description": "Turn auto-radius on/off.",
@@ -197,7 +206,7 @@ var Chord = function (userConfig) {
 
   chart.render = function render() {
     d3 = dex.charts.d3.d3v3;
-    chart.resize();
+    chart.resize().update();
     return chart;
   };
 
@@ -211,6 +220,7 @@ var Chord = function (userConfig) {
     margin.bottom = +margin.bottom;
     margin.left = +margin.left;
     margin.right = +margin.right;
+    config.color = config.color = dex.color.getColormap(config.colorScheme);
 
     var width = +config.width - margin.left - margin.right;
     var height = +config.height - margin.top - margin.bottom;
@@ -305,7 +315,7 @@ var Chord = function (userConfig) {
     ticks.append("line")
       .call(dex.config.configureLine, config.tick);
 
-    ticks.append("text")
+    var text = ticks.append("text")
       .call(dex.config.configureText, config.label.normal)
       .attr("x", +config.tick.padding + (+config.tick.padding / 4))
       .attr("dy", ".35em")
@@ -322,6 +332,22 @@ var Chord = function (userConfig) {
         return d.label;
       });
 
+    var categories = [];
+    csv.header.forEach(function (colName, ci) {
+      var uniques = csv.uniques(ci);
+      var category = { name: colName, values: []};
+      uniques.forEach(function(value) {
+        category.values.push({value: value, color: chart.config.color(value)});
+      });
+      categories.push(category);
+    });
+
+    chart.publish({
+      type: "set-legend",
+      csv: csv,
+      categories: categories
+    });
+
     rootG.append("g")
       .attr("class", "chord")
       .selectAll("path")
@@ -336,6 +362,8 @@ var Chord = function (userConfig) {
         d3.select(this)
           .call(dex.config.configureLink, config.links.normal);
       });
+
+
 
     var chartTitle = rootG.append("text")
       .call(dex.config.configureText, config.title, config.title.text);

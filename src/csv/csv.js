@@ -12,12 +12,42 @@ var csv = function () {
   this.header = [];
   this.data = [];
 
+  if (arguments.length === 0) {
+    // Will return an empty csv so do nothing.
+  }
   // Instantiate either with an empty header or CSV ducktyped object.
-  if (arguments.length == 1) {
+  else if (arguments.length === 1) {
     if (Array.isArray(arguments[0])) {
-      this.header = dex.array.copy(arguments[0]);
-      this.data = [];
+      var args = Array.from(arguments);
+      if (Array.isArray(args[0][0])) {
+        // First row is header, then data
+        if (Array.isArray(args[0][0])) {
+          var i;
+          for (i = 0; i < args[0][0].length; i++) {
+            this.header.push(args[0][0][i]);
+          }
+          for (i = 1; i < args[0][i]; i++) {
+            this.data.push(dex.array.clone(args[0][i]));
+          }
+        }
+      }
+      // Array of json/csv objects
+      else if (typeof args[0][0] == "object") {
+        this.header = Object.keys(args[0][0]);
+        var i;
+        for (i = 0; i < args[0].length; i++) {
+          var row = [];
+          this.header.forEach(function (hdr) {
+            row.push(args[0][i][hdr]);
+          });
+          this.data.push(row);
+        }
+      }
+      else {
+        this.header = dex.array.copy(arguments[0]);
+      }
     }
+    // Else we have another CSV?
     else {
       this.header = dex.array.copy(arguments[0].header);
       this.data = dex.matrix.copy(arguments[0].data);
@@ -27,6 +57,11 @@ var csv = function () {
     this.header = dex.array.copy(arguments[0]);
     this.data = dex.matrix.copy(arguments[1]);
   }
+  else {
+    dex.console.log("UNKNOWN INSTANTIATOR LENGTH: ", arguments.length);
+  }
+
+  this.strictTypes();
 };
 
 /**
@@ -69,6 +104,32 @@ csv.prototype.equals = function (csv) {
   return true;
 };
 
+csv.prototype.addColumn = function (header, value) {
+  var csv = this;
+  dex.console.log("addColumn(header=" + header + ":" + typeof header + ", value=" + value + ":" + typeof value + ")");
+  switch (typeof value) {
+    // Case of setting a new column to a constant value.
+    case "string": {
+      csv.header.push(header);
+      csv.data.forEach(function (row) {
+        row.push(value);
+      });
+      break;
+    }
+    case "function": {
+      csv.header.push(header);
+      csv.data.forEach(function (row) {
+        value(row);
+      });
+      break;
+    }
+    default:
+      dex.console.log("dex.csv.addColumn(): Unrecognized type.  String or function expected, encountered: '" +
+        (typeof value) + "'");
+  }
+
+  return this;
+};
 
 /**
  * Given a CSV, create a connection matrix suitable for feeding into a chord
@@ -688,7 +749,7 @@ csv.prototype.getRowFunction = function (param) {
     else {
       return function (row) {
         return row[param];
-      }
+      };
     }
   }
   // Else, just return the value.
@@ -699,7 +760,7 @@ csv.prototype.getRowFunction = function (param) {
       }
 
       return row[ri];
-    }
+    };
   }
 };
 
@@ -724,6 +785,11 @@ csv.prototype.guessTypes = function () {
   csv.header.forEach(function (hdr, hi) {
 
     if (csv.data.every(function (row) {
+        return (row[hi] instanceof Date);
+      })) {
+      types.push("date");
+    }
+    else if (csv.data.every(function (row) {
         return !isNaN(row[hi]);
       })) {
       types.push("number");
@@ -755,13 +821,21 @@ csv.prototype.strictTypes = function strictTypes() {
   for (var i = 0; i < types.length; i++) {
     if (types[i] == 'date') {
       csv.data.forEach(function (row, ri) {
-        csv.data[ri][i] = new Date(csv.data[ri][i]);
+        if (typeof csv.data[ri][i] === "string") {
+          var m = dex.moment(csv.data[ri][i]);
+          if (m != null && m.isValid()) {
+            csv.data[ri][i] = m.toDate();
+          }
+          else {
+            csv.data[ri][i] = new Date(csv.data[ri][i]);
+          }
+        }
       })
     }
     else {
       if (types[i] == 'number') {
         csv.data.forEach(function (row, ri) {
-          csv.data[ri][i] = new Double(csv.data[ri][i]);
+          csv.data[ri][i] = +(csv.data[ri][i]);
         })
       }
     }
@@ -976,13 +1050,13 @@ csv.prototype.getFramesByColumns = function (columns) {
  *
  */
 csv.prototype.getFramesByIndex = function (columnIndex, sort) {
-  var csv = this;
+  var self = this;
   var types = this.guessTypes();
   //dex.console.log("TYPES", types);
   var frameIndices;
 
   if (types[columnIndex] == "number") {
-    frameIndices = dex.array.orderedUnique(csv.data.map(function (row) {
+    frameIndices = dex.array.orderedUnique(self.data.map(function (row) {
       return row[columnIndex]
     }));
 
@@ -993,7 +1067,7 @@ csv.prototype.getFramesByIndex = function (columnIndex, sort) {
     }
   }
   else if (types[columnIndex] == "date") {
-    frameIndices = dex.array.orderedUnique(csv.data.map(function (row) {
+    frameIndices = dex.array.orderedUnique(self.data.map(function (row) {
       return row[columnIndex]
     }));
 
@@ -1006,7 +1080,7 @@ csv.prototype.getFramesByIndex = function (columnIndex, sort) {
     }
   }
   else {
-    frameIndices = dex.array.orderedUnique(csv.data.map(function (row) {
+    frameIndices = dex.array.orderedUnique(self.data.map(function (row) {
       return row[columnIndex]
     }));
 
@@ -1015,7 +1089,7 @@ csv.prototype.getFramesByIndex = function (columnIndex, sort) {
     }
   }
   //dex.console.log("FRAME-INDICES", frameIndices)
-  var header = dex.array.copy(csv.header);
+  var header = dex.array.copy(self.header);
   var frameIndexName = header.splice(columnIndex, 1);
   var frames = [];
 
@@ -1023,20 +1097,20 @@ csv.prototype.getFramesByIndex = function (columnIndex, sort) {
     var frame = {header: header};
     var frameData = [];
 
-    for (var ri = 0; ri < csv.data.length; ri++) {
-      if (csv.data[ri][columnIndex] == frameIndices[fi]) {
-        var frameRow = dex.array.copy(csv.data[ri]);
+    for (var ri = 0; ri < self.data.length; ri++) {
+      if (self.data[ri][columnIndex] == frameIndices[fi]) {
+        var frameRow = dex.array.copy(self.data[ri]);
         frameRow.splice(columnIndex, 1);
         frameData.push(frameRow);
       }
     }
     frame["data"] = frameData;
-    frames.push(new dex.csv(frame));
+    frames.push(new csv(frame));
   }
 
   return {
-    'frameIndices': frameIndices,
-    'frames': frames
+    "frameIndices": frameIndices,
+    "frames": frames
   }
 };
 
@@ -1511,6 +1585,52 @@ csv.prototype.toNestedJsonChildren = function (cmap, manualWeight) {
 
 //dex.console.log("CHILDREN", children);
   return children;
+};
+
+csv.prototype.toSparseSizedJson = function () {
+  var csv = this;
+  var types = this.guessTypes();
+  var root = {};
+  root[csv.header[0]] = {};
+
+  var lastColumn = function (colNum) {
+    return colNum >= (csv.header.length - 1);
+  }
+  var size = function () {
+    return 1;
+  }
+
+  if (types[types.length - 1] == "number") {
+    lastColumn == function (colNum) {
+      return colNum > -(csv.header.length - 2);
+    };
+    size = function (row) {
+      return row[csv.header.length - 1];
+    };
+  }
+
+  function setSize(root, row, colNum) {
+    if (lastColumn(colNum)) {
+      root[row[colNum]] = size(row);
+    }
+    else if (row[colNum] == undefined || row[colNum] == null ||
+      row[colNum] == "") {
+      setSize(root, row, colNum + 1);
+    }
+    else if (root.hasOwnProperty(row[colNum])) {
+      setSize(root[row[colNum]], row, colNum + 1);
+    }
+    else {
+      root[row[colNum]] = {};
+      setSize(root[row[colNum]], row, colNum + 1);
+    }
+  };
+
+  csv.data.forEach(function (row, ri) {
+    setSize(root[csv.header[0]], row, 0);
+  });
+
+  return root;
 };
 
 csv.prototype.getConnectionMap = function () {

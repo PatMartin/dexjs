@@ -39,19 +39,18 @@ module.exports = function util(dex) {
 
   d3util.getBounds = function (d) {
     var bbox = this.getBBox();
-    var cbbox = this.parentNode.getBBox();
-    var hMargin = Math.min(30, cbbox.height * .1);
-    var wMargin = Math.min(30, cbbox.width * .1);
-    var wscale = Math.min((cbbox.width - wMargin) / bbox.width);
-    var hscale = Math.min((cbbox.height - hMargin) / bbox.height);
+    var parentBBox = this.parentNode.getBBox();
+    var wscale = parentBBox.width / bbox.width;
+    var hscale = parentBBox.height / bbox.height;
 
-    return {
-      'container-bounds': cbbox,
+    d.bounds = {
+      'container-bounds': parentBBox,
       'bounds': bbox,
       'scale': Math.min(wscale, hscale),
       'height-scale': hscale,
       'width-scale': wscale
     };
+    return d.bounds;
   };
 
   d3util.addRadialGradients = function (svg, id, data, colorScheme) {

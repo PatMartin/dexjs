@@ -11,8 +11,6 @@
  */
 var PieChart = function (userConfig) {
   var chart;
-  var internalChart = undefined;
-  var sizeScale = undefined;
   var defaults = {
     'parent': '#ECharts_PieChart',
     'id': 'ECharts_PieChart',

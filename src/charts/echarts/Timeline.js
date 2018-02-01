@@ -49,11 +49,11 @@ var Timeline = function (userConfig) {
   var combinedConfig = dex.config.expandAndOverlay(userConfig, defaults);
   chart = dex.charts.echarts.EChart(combinedConfig);
   chart.spec = new dex.data.spec("Timeline")
-    .string()
-    .match("number|date")
-    .number()
-    .number()
-    .number();
+    .string("series")
+    .match("sequence", "number|date")
+    .number("x")
+    .number("y")
+    .number("size");
 
   chart.getGuiDefinition = function getGuiDefinition(config) {
     var defaults = {
@@ -245,15 +245,21 @@ var Timeline = function (userConfig) {
     chart.config.sizeScale.domain(sizeExtents)
       .range([chart.config.radius.min, chart.config.radius.max]);
 
-    if (xInfo.type == "number") {
+    if (sequenceInfo.type == "date") {
+      options.baseOption.timeline.axisType = "time";
+    }
+
+    if (xInfo.type == "number" || xInfo.type == "date") {
       [options.baseOption.xAxis.min, options.baseOption.xAxis.max] =
         csv.extent([xInfo.position]);
     }
 
-    if (yInfo.type == "number") {
+    if (yInfo.type == "number" || yInfo.type == "date") {
       [options.baseOption.yAxis.min, options.baseOption.yAxis.max] =
         csv.extent([yInfo.position]);
     }
+
+
 
     sequences = csv.uniqueArray(sequenceInfo.position).sort();
     seriesNames = csv.uniqueArray(seriesInfo.position);
@@ -296,6 +302,10 @@ var Timeline = function (userConfig) {
 
     //dex.console.log(JSON.stringify(options));
     return options;
+  };
+
+  chart.clone = function clone(override) {
+    return Timeline(dex.config.expandAndOverlay(override, userConfig));
   };
 
   return chart;

@@ -41,7 +41,7 @@ var ScatterPlot = function (userConfig) {
   chart.render = function () {
     d3 = dex.charts.d3.d3v3;
     window.onresize = this.resize;
-    chart.resize();
+    return chart.resize().update();
   };
 
   chart.resize = function () {

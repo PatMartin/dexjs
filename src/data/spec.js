@@ -135,9 +135,11 @@ module.exports = function (dex) {
       };
 
       spec.parse = function (csv) {
+        // Overkill I think
+        // var csv = new dex.csv(specCsv);
+
         // Initialize our assessment:
         var assessment = {
-          csv: csv,
           valid: true,
           expected: spec.expects(csv),
           unspecified: [],
@@ -186,12 +188,19 @@ module.exports = function (dex) {
         }
         // muliple specifications
         if (Array.isArray(index)) {
-
+          var items = [];
+          index.sort().reverse().forEach(function (i) {
+            var item = assessment.unspecified.splice(i, 1);
+            items.push(item);
+          });
+          items.forEach(function (item) {
+            assessment.specified.push(item[0]);
+          });
         }
-        var items = assessment.unspecified.splice(index, 1);
-        items.forEach(function (item) {
-          assessment.specified.push(item);
-        });
+        else {
+          var item = assessment.unspecified.splice(index, 1);
+          assessment.specified.push(item[0]);
+        }
         return assessment;
       };
 

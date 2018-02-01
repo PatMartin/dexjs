@@ -38,20 +38,21 @@ module.exports = function (dex) {
    * }
    *
    */
-  config.expand = function expand(config) {
+  config.expand = function expand(cfg) {
+    var ecfg= cfg;
     var name, ci;
     var expanded = {};
 
     // We have nothing, return nothing.
-    if (!config) {
-      return config;
+    if (!ecfg) {
+      return undefined;
     }
 
-    for (var name in config) {
-      if (config.hasOwnProperty(name)) {
+    for (var name in ecfg) {
+      if (ecfg.hasOwnProperty(name)) {
         // Name contains hierarchy:
         if (name && name.indexOf('.') > -1) {
-          expanded[name] = config[name];
+          expanded[name] = ecfg[name];
           dex.object.setHierarchical(expanded, name,
             dex.object.clone(expanded[name]), '.');
           delete expanded[name];
@@ -59,10 +60,10 @@ module.exports = function (dex) {
         // Simple name
         else {
           // If the target is an object with no children, clone it.
-          if (dex.object.isEmpty(config[name])) {
-            //dex.console.log("SET PRIMITIVE: " + name + "=" + config[name]);
-            expanded[name] = dex.object.clone(config[name]);
-            //expanded[name] = config[name];
+          if (dex.object.isEmpty(ecfg[name])) {
+            //dex.console.log("SET PRIMITIVE: " + name + "=" + ecfg[name]);
+            expanded[name] = dex.object.clone(ecfg[name]);
+            //expanded[name] = ecfg[name];
           }
           else {
             // CSV is a special case.  Older WebKit browsers such as
@@ -70,22 +71,28 @@ module.exports = function (dex) {
             // so i build in a special workaround for any attribute
             // named csv to be copied as-is.
             if (name == "csv") {
-              expanded[name] = config[name];
+              // Link to the old csv.
+              expanded[name] = ecfg[name];
+              // Allocate an entire new csv.
+              //expanded[name] = new dex.csv(ecfg[name]);
             }
-            else if (config[name].constructor !== undefined &&
-              config[name].constructor.name === "csv") {
-              expanded[name] = config[name];
+            else if (ecfg[name].constructor !== undefined &&
+              ecfg[name].constructor.name === "csv") {
+              // Link to old csv:
+              expanded[name] = ecfg[name];
+              //expanded[name] = new dex.csv(ecfg[name]);
             }
             else {
-              //dex.console.log("SET OBJECT: " + name + " to the expansion of", config[name]);
-              expanded[name] = dex.config.expand(config[name]);
+              //dex.console.log("SET OBJECT: " + name + " to the expansion of", ecfg[name]);
+              expanded[name] = dex.config.expand(ecfg[name]);
             }
           }
         }
       }
     }
 
-    //dex.console.log("CONFIG", config, "EXPANDED", expanded);
+    ecfg = undefined;
+    //dex.console.log("CONFIG", ecfg, "EXPANDED", expanded);
     return expanded;
   };
 
@@ -573,6 +580,16 @@ module.exports = function (dex) {
         //dex.console.log("KEY", key, "VALUE", config[key]);
         dex.config.setEventHandler(node, key, config[key], i);
       }
+    }
+
+    return node;
+  };
+
+
+  config.setEventHandler = function setEventHandler(node, eventType, eventHandler, i) {
+
+    if (typeof eventHandler != 'undefined') {
+      node.on(eventType, eventHandler);
     }
 
     return node;

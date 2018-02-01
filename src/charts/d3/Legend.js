@@ -24,13 +24,22 @@ var Legend = function (userConfig) {
       "top": 0,
       "bottom": 0
     },
+    eventSources : [],
+    categories: [],
     'transform': "",
-    "palette": "category10",
-    'categorizationMethod': "Column Type"
+    "palette": "category10"
   };
 
   //config = dex.object.overlay(dex.config.expand(userConfig), dex.config.expand(defaults));
   chart = new dex.component(userConfig, defaults);
+
+  chart.config.eventSources.forEach(function(cmp) {
+    // Legend updates.
+    chart.subscribe(cmp, "set-legend", function(event) {
+      chart.attrNoEvent("categories", event.categories)
+        .refresh();
+    });
+  });
 
   chart.getGuiDefinition = function getGuiDefinition(config) {
     var defaults = {
@@ -42,22 +51,7 @@ var Legend = function (userConfig) {
           "name": "Legend Options",
           "contents": [
             dex.config.gui.general(),
-            dex.config.gui.dimensions(),
-            {
-              "name": "Color Scheme",
-              "description": "The color scheme.",
-              "target": "palette",
-              "type": "choice",
-              "choices": dex.color.colormaps({shortlist: true}),
-              "initialValue": "category10"
-            },
-            {
-              "name": "Categorize By",
-              "description": "The way we classify data.",
-              "type": "choice",
-              "choices": Object.keys(chart.config.csv.getCategorizationMethods()),
-              "target": "categorizationMethod"
-            }
+            dex.config.gui.dimensions()
           ]
         }
       ]
@@ -79,33 +73,14 @@ var Legend = function (userConfig) {
     var chart = this;
     var config = chart.config;
     var csv = config.csv;
-    var margin = config.margin;
-    margin.top = +margin.top;
-    margin.bottom = +margin.bottom;
-    margin.left = +margin.left;
-    margin.right = +margin.right;
+    var margin = chart.getMargins();
 
     var width = +config.width - margin.left - margin.right;
     var height = +config.height - margin.top - margin.bottom;
 
     d3.selectAll(config.parent).selectAll("*").remove();
 
-    // Dynamically determine our categorization function:
-    var catMethod = csv.getCategorizationMethod(
-      config.categorizationMethod);
-
-    var categories = csv.getCategories(catMethod);
-    var type = dex.array.guessType(categories);
-
-    if (type === "number") {
-      categories = categories.sort(function (a, b) {
-        return a - b;
-      });
-    }
-
-    var color = d3.scaleOrdinal()
-      .domain(categories)
-      .range(dex.color.palette[config.palette]);
+    var categories = config.categories;
 
     var $parent = $(config.parent);
     var $top = $("<div></div>")
@@ -114,35 +89,52 @@ var Legend = function (userConfig) {
       .width(width)
       .height(height);
 
-    categories.forEach(function (category, i) {
-      $cat = $("<div></div>")
-        .addClass("dex-legend-item")
-        .text(category)
-        .css("background-color", color(i))
-        .css("color", "white");
-      $top.append($cat);
+    categories.forEach(function(category, ci) {
+      $group = $("<div></div>")
+        .addClass("dex-legend-group");
+      $group.append("<div class='dex-legend-group-title'>" +
+        category.name + "</div>");
+
+      category.values.forEach(function (catValue, i) {
+        $cat = $("<div></div>")
+          .addClass("dex-legend-item")
+          .text(catValue.value)
+          .css("background-color", catValue.color)
+          .css("color", "white");
+        $group.append($cat);
+      });
+      $top.append($group);
     });
 
     $parent.append($top);
 
-    // Size all elements equally by height and width.
-    var maxHeight = -1;
-    var maxWidth = -1;
+    // Size all elements in each group equally by height and width.
 
-    $(".dex-legend-item").each(function () {
-      maxHeight = maxHeight > $(this).height() ?
-        maxHeight : $(this).height();
-      maxWidth = maxWidth > $(this).width() ?
-        maxWidth : $(this).width();
+    $(".dex-legend-group").each(function() {
+      var maxHeight = -1;
+      var maxWidth = -1;
+
+      $(".dex-legend-item", $(this)).each(function () {
+        maxHeight = maxHeight > $(this).height() ?
+          maxHeight : $(this).height();
+        maxWidth = maxWidth > $(this).width() ?
+          maxWidth : $(this).width();
+      });
+
+      $(".dex-legend-item", $(this)).each(function () {
+        $(this).height(maxHeight).width(maxWidth);
+      });
     });
 
-    $(".dex-legend-item").each(function () {
-      $(this).height(maxHeight).width(maxWidth);
-    });
 
     $(".dex-legend-item").on("mouseover", function(event) {
       //dex.console.log("MOUSEOVER", event);
-      chart.publish({ type: "mouseover", text: event.textContent });
+      chart.publish({ type: "mouseover", text: event.target.textContent });
+    });
+
+    $(".dex-legend-item").on("mouseout", function(event) {
+      //dex.console.log("MOUSEOVER", event);
+      chart.publish({ type: "mouseout", text: event.target.textContent });
     });
 
     return chart;

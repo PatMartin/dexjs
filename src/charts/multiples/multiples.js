@@ -8,5 +8,6 @@
 var multiples = {};
 
 multiples.GridsterMultiples = require("./GridsterMultiples");
+multiples.Multiples = require("./SimpleMultiples");
 
 module.exports = multiples;

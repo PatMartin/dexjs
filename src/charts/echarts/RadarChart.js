@@ -148,6 +148,10 @@ var RadarChart = function (userConfig) {
     return options;
   };
 
+  chart.clone = function clone(override) {
+    return RadarChart(dex.config.expandAndOverlay(override, userConfig));
+  };
+
   return chart;
 };
 module.exports = RadarChart;

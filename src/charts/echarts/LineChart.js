@@ -12,29 +12,30 @@
 var LineChart = function (userConfig) {
   var chart;
   var defaults = {
-    'parent': '#ECharts_LineChart',
-    'id': 'ECharts_LineChart',
-    'class': 'ECharts_LineChart',
-    'resizable': true,
-    'width': "100%",
-    'height': "100%",
-    'type': 'linechart',
-    'palette': "ECharts",
-    'refreshType': "update",
-    'series.symbol': 'circle',
-    'series.symbolSize': 10,
-    'series.type': 'line',
-    'series.showSymbol': true,
-    'series.showAllSymbol': false,
-    'series.stack': false,
-    'series.clipOverflow': true,
-    'series.connectNulls': false,
-    'series.step': false,
+    "parent": "#ECharts_LineChart",
+    "id": "ECharts_LineChart",
+    "class": "ECharts_LineChart",
+    "resizable": true,
+    "width": "100%",
+    "height": "100%",
+    "type": "linechart",
+    "palette": "ECharts",
+    // If I make this csv change aware, I can change update model to "update".
+    "refreshType": "update",
+    "series.symbol": "circle",
+    "series.symbolSize": 10,
+    "series.type": "line",
+    "series.showSymbol": true,
+    "series.showAllSymbol": false,
+    "series.stack": false,
+    "series.clipOverflow": true,
+    "series.connectNulls": false,
+    "series.step": false,
     "options": {
-      legend: { show: true },
+      legend: {show: true},
       dataZoom: [
         {
-          orient: 'horizontal',
+          orient: "horizontal",
           show: true,
           realtime: true,
           start: 0,
@@ -42,7 +43,7 @@ var LineChart = function (userConfig) {
           xAxisIndex: 0
         },
         {
-          orient: 'vertical',
+          orient: "vertical",
           show: true,
           realtime: true,
           start: 0,
@@ -54,15 +55,16 @@ var LineChart = function (userConfig) {
         backgroundColor: "#FFFFFF",
         borderColor: "#000000",
         borderWidth: 2,
-        trigger: 'item',
+        trigger: "item",
+
         formatter: function (d) {
-          //dex.console.log("FORMATTER", d);
+          dex.console.log("FORMATTER", d);
           var str = "<table class='dex-tooltip-table'>";
 
           d.data.forEach(function (value) {
             if (typeof value === "string") {
               var parts = value.split(":::");
-              if (parts.length == 2) {
+              if (parts.length === 2) {
                 str += "<tr><td>" + parts[0] + "</td><td>" + parts[1] + "</td></tr>";
               }
             }
@@ -78,7 +80,7 @@ var LineChart = function (userConfig) {
   chart = dex.charts.echarts.EChart(combinedConfig);
 
   chart.spec = new dex.data.spec("Line Chart")
-    .string("series")
+    .any("series")
     .any("x")
     .any("y");
 
@@ -175,15 +177,19 @@ var LineChart = function (userConfig) {
 
   chart.getOptions = function (csv) {
     var options, seriesNames, seriesInfo, xInfo, yInfo;
+
     var csvSpec = chart.spec.parse(csv);
 
     //dex.console.log("CHART-CONFIG", chart.config);
+    //dex.console.log("LINE-CHART-CSV", csv);
 
     // Override precedence on options: chart, local defs, common defs.
     options = dex.config.expandAndOverlay(
       chart.config.options,
       {series: []},
       chart.getCommonOptions());
+
+    //dex.console.log("LINE-CHART-OPTIONS", options);
 
     if (chart.config.xAxisDataZoom !== undefined) {
       options.dataZoom[0] = dex.config.expandAndOverlay(chart.config.xAxisDataZoom, options.dataZoom[0]);
@@ -210,6 +216,12 @@ var LineChart = function (userConfig) {
         data: csv.uniqueArray(xInfo.position)
       }, options.xAxis);
     }
+    else if (xInfo.type == "date") {
+      options.xAxis = dex.config.expandAndOverlay({
+        type: "time"
+      }, options.xAxis);
+      options.xAxis.data = undefined;
+    }
     else {
       options.xAxis = dex.config.expandAndOverlay({
         type: "value"
@@ -223,6 +235,12 @@ var LineChart = function (userConfig) {
         data: csv.uniqueArray(yInfo.position)
       }, options.yAxis);
     }
+    else if (yInfo.type == "date") {
+      options.yAxis = dex.config.expandAndOverlay({
+        type: "time"
+      }, options.yAxis);
+      options.yAxis.data = undefined;
+    }
     else {
       options.yAxis = dex.config.expandAndOverlay({
         type: "value"
@@ -231,24 +249,25 @@ var LineChart = function (userConfig) {
     }
 
     seriesNames.forEach(function (seriesName) {
+      var selectedCsv = csv.selectRows(function (row) {
+        return row[seriesInfo.position] == seriesName;
+      });
+
+      var seriesData = selectedCsv.data.map(function (row, ri) {
+        var newRow = [row[xInfo.position], row[yInfo.position]];
+        row.forEach(function (col, ci) {
+          newRow.push(selectedCsv.header[ci] + ":::" + col);
+        });
+        return newRow;
+      });
+
       var series = dex.config.expandAndOverlay(chart.config.series, {
         name: seriesName,
-        type: 'line',
-        data: function (csv) {
-          var selectedCsv = csv.selectRows(function (row) {
-            return row[seriesInfo.position] == seriesName;
-          });
-
-          return selectedCsv.data.map(function (row, ri) {
-            var newRow = [row[xInfo.position], row[yInfo.position]];
-            row.forEach(function (col, ci) {
-              newRow.push(selectedCsv.header[ci] + ":::" + col);
-            });
-            return newRow;
-          });
-        }(chart.config.csv)
+        type: "line",
+        data: seriesData
       });
       options.series.push(series);
+      seriesData = undefined;
     });
     //dex.console.log("OPTIONS", JSON.stringify(options));
     return options;

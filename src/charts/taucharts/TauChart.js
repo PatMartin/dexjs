@@ -62,9 +62,9 @@ var TauChart = function (userConfig) {
     'split': undefined,
     'width': "100%",
     'height': "100%",
-    'fitXAxis': false,
-    'fitYAxis': false,
-    'title': "Title",
+    'fitXAxis': true,
+    'fitYAxis': true,
+    'title': "",
     options: {
       guide: {
         size: {minSize: 10, maxSize: 10}
@@ -375,6 +375,10 @@ var TauChart = function (userConfig) {
       $(chart.config.parent).draggable();
     }
   });
+
+  chart.clone = function clone(override) {
+    return TauChart(dex.config.expandAndOverlay(override, userConfig));
+  };
 
   return chart;
 };

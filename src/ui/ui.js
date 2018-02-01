@@ -14,6 +14,6 @@ module.exports = function (dex) {
   ui.ConfigurationPane = require("./ConfigurationPane");
   ui.DataFilterPane = require("./DataFilterPane");
   ui.GuiPane = require("./GuiPane");
-
+  ui.ColumnSelector = require("./ColumnSelector");
   return ui;
 };

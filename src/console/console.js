@@ -31,7 +31,7 @@ module.exports = function (dex) {
    * @param msg One or more messages to be logged.  Strings will simply
    * use console.log while objects will use console.dir.
    *
-   * @returns {dex.console}
+   * @returns {console}
    * @memberof dex/console
    *
    */
@@ -60,7 +60,7 @@ module.exports = function (dex) {
    *
    * @param msg One or more TRACE messages to log.
    *
-   * @returns {dex.console|*}
+   * @returns {console}
    *
    * @memberof dex/console
    *
@@ -142,15 +142,43 @@ module.exports = function (dex) {
     return dex.logLevel;
   };
 
+  /**
+   *
+   * Returns the log levels.
+   *
+   * @returns {{TRACE: number, DEBUG: number, NORMAL: number, WARN: number, FATAL: number, NONE: number}}
+   * @memberof dex/console
+   *
+   */
   dexConsole.logLevels = function () {
     return dex.logLevels;
   };
 
+  /**
+   *
+   * Print a stack trace to the console.
+   *
+   * @memberof dex/console
+   *
+   *
+   */
   dexConsole.stacktrace = function stackTrace() {
     var err = new Error();
     dex.console.log(err.stack);
   }
 
+  /**
+   *
+   * Log the message if log level is equal to or greater than
+   * the supplied log level.
+   *
+   * @param msgLevel
+   * @param caller
+   * @param msg
+   * @returns {module:dex/console}
+   * @memberof dex/console
+   *
+   */
   dexConsole.logStringWithLevel = function (msgLevel, caller, msg) {
     if (dex.logLevel >= msgLevel) {
       var msgStr = caller + ": ";
@@ -166,6 +194,15 @@ module.exports = function (dex) {
     return this;
   };
 
+  /**
+   *
+   * Log the message as a concatentated string to the
+   * console using NORMAL level logLeve.
+   *
+   * @returns {module:dex/console}
+   * @memberof dex/console
+   *
+   */
   dexConsole.logString = function () {
     var caller = arguments.callee.caller.name;
     return dex.console.logStringWithLevel(dex.logLevels.NORMAL, caller, arguments)

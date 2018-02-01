@@ -91,6 +91,53 @@ module.exports = function (dex) {
     };
     return dex.config.expandAndOverlay(userConfig, defaults);
   };
+  gui.margins = function margins(config, prefix) {
+    var ns = (typeof prefix !== 'undefined') ? (prefix + ".") : "";
+    var userConfig = config || {};
+    var defaults = {
+      "type": "group",
+      "name": "Margins",
+      "contents": [
+        {
+          "name": "Top",
+          "description": "The top margin.",
+          "target": ns + "top",
+          "type": "int",
+          "minValue": 0,
+          "maxValue": 500,
+          "initialValue": 50
+        },
+        {
+          "name": "Bottom",
+          "description": "The bottom margin.",
+          "target": ns + "bottom",
+          "type": "int",
+          "minValue": 0,
+          "maxValue": 500,
+          "initialValue": 50
+        },
+        {
+          "name": "Left",
+          "description": "The left margin.",
+          "target": "left",
+          "type": "int",
+          "minValue": 0,
+          "maxValue": 500,
+          "initialValue": 50
+        },
+        {
+          "name": "Right",
+          "description": "The right margin.",
+          "target": "right",
+          "type": "int",
+          "minValue": 0,
+          "maxValue": 500,
+          "initialValue": 50
+        }
+      ]
+    };
+    return dex.config.expandAndOverlay(userConfig, defaults);
+  };
   gui.font = function font(config, prefix) {
     var ns = (typeof prefix !== 'undefined') ? (prefix + ".") : "";
     var userConfig = config || {};
@@ -673,7 +720,7 @@ module.exports = function (dex) {
     dex.config.gui.fill(config, ns + "fill");
     return dex.config.expandAndOverlay(userConfig, defaults);
   };
-  gui.c3Margins = function c3Dimensions(config, prefix) {
+  gui.c3Margins = function c3Margins(config, prefix) {
     var ns = (typeof prefix !== 'undefined') ? (prefix + ".") : "";
     var userConfig = config || {};
     var defaults = {
@@ -733,49 +780,49 @@ module.exports = function (dex) {
           "description": "If true, show tooltips.",
           "type": "boolean",
           "initialValue": true,
-          "target": ns + "options.tooltip.show"
+          "target": ns + "tooltip.show"
         },
         {
           "name": "Group Tooltips",
           "description": "If true, group tooltips.",
           "type": "boolean",
           "initialValue": true,
-          "target": ns + "options.tooltip.grouped"
+          "target": ns + "tooltip.grouped"
         },
         {
           "name": "Show Subchart",
           "description": "If true, show subchart.",
           "type": "boolean",
           "initialValue": true,
-          "target": ns + "options.subchart.show"
+          "target": ns + "subchart.show"
         },
         {
           "name": "Enable Zoom",
           "description": "If true, enable zoom.",
           "type": "boolean",
           "initialValue": true,
-          "target": ns + "options.zoom.enabled"
+          "target": ns + "zoom.enabled"
         },
         {
           "name": "Show Points",
           "description": "If true, show points.",
           "type": "boolean",
           "initialValue": true,
-          "target": ns + "options.point.show"
+          "target": ns + "point.show"
         },
         {
           "name": "Show Legend",
           "description": "Location of legend.",
           "type": "boolean",
           "initialValue": true,
-          "target": ns + "options.legend.show"
+          "target": ns + "legend.show"
         },
         {
           "name": "Enable Interaction",
           "description": "If true, enable chart interaction.",
           "type": "boolean",
           "initialValue": true,
-          "target": ns + "options.interaction.enabled"
+          "target": ns + "interaction.enabled"
         },
         {
           "name": "Transition Duration",
@@ -792,13 +839,13 @@ module.exports = function (dex) {
           "type": "choice",
           "choices": ["right", "bottom", "inset"],
           "initialValue": "right",
-          "target": ns + "options.legend.position"
+          "target": ns + "legend.position"
         },
         {
           "name": "Color Scheme",
           "description": "Color Scheme",
           "type": "choice",
-          "choices": dex.color.colormaps(),
+          "choices": dex.color.colormaps({shortlist: true}),
           "target": ns + "colorScheme"
         },
         {
@@ -807,7 +854,7 @@ module.exports = function (dex) {
           "type": "choice",
           "choices": ["line", "spline", "area",
             "area-spline", "bar", "scatter", "step", "donut", "pie"],
-          "target": ns + "options.data.type"
+          "target": ns + "data.type"
         },
         {
           "name": "Stack",
@@ -828,15 +875,15 @@ module.exports = function (dex) {
       "name": "Axis",
       "contents": [
         dex.config.gui.c3SingleAxis(
-          dex.config.expandAndOverlay({name: "X Axis"}, userConfig), "axis.x"),
+          dex.config.expandAndOverlay({name: "X Axis"}, userConfig), "x"),
         dex.config.gui.c3SingleAxis(
-          dex.config.expandAndOverlay({name: "X Axis"}, userConfig), "axis.y"),
+          dex.config.expandAndOverlay({name: "Y Axis"}, userConfig), "y"),
         {
           "name": "Switch X/Y Axis",
           "description": "If true, switch the x and y axis.",
           "type": "boolean",
           "initialValue": true,
-          "target": ns + "axis.rotate"
+          "target": ns + "rotate"
         }
       ]
     };
@@ -1717,7 +1764,7 @@ module.exports = function (dex) {
     var userConfig = config || {};
     var defaults = {
       "type": "group",
-      "name": "Title",
+      "name": "Axis",
       "contents": [
         {
           "name": "Show Axis",
@@ -1877,7 +1924,7 @@ module.exports = function (dex) {
     if (guiDef.type == "group") {
       guiDef.contents.forEach(function (elt, i) {
         sync(chart, elt);
-      })
+      });
     }
     else {
       var value = chart.attr(guiDef.target);

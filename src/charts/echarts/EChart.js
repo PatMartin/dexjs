@@ -9,80 +9,143 @@
  *
  */
 var EChart = function (userConfig) {
-  var chart;
-  var internalChart;
-  var effectiveOptions;
-  var IS_DISPOSED = true;
+    var chart;
+    var internalChart;
 
-  var defaults = {
-    'parent': '#EChartParent',
-    'id': 'EChartId',
-    'class': 'EChartClass',
-    'resizable': true,
-    'csv': {
-      'header': [],
-      'data': []
-    },
-    'palette': "ECharts",
-    'series': {},
-    'width': "100%",
-    'height': "100%",
-  };
-
-  chart = new dex.component(userConfig, defaults);
-
-  chart.render = function render() {
-    echarts.dispose(d3.select(chart.config.parent)[0][0]);
-    d3.select(chart.config.parent).selectAll("*").remove();
-    IS_DISPOSED = true;
-
-    return chart.update();
-  };
-
-  chart.update = function () {
-    var config = chart.config;
-    var csv = config.csv;
-
-    if (config.categorizationMethod) {
-      config.categories = csv.getCategorizationMethod(config.categorizationMethod);
-    }
-
-    try {
-      if (IS_DISPOSED) {
-        //dex.console.log("PARENT: '" + chart.config.parent + "'");
-        internalChart = echarts.init(d3.select(chart.config.parent)[0][0]);
-      }
-      var dataOptions = chart.getOptions(csv);
-      effectiveOptions = dex.config.expandAndOverlay(dataOptions, config.options);
-      internalChart.setOption(effectiveOptions);
-      internalChart.resize();
-    }
-    catch (ex) {
-      dex.console.log("EXCEPTION", ex.stack);
-      echarts.dispose(d3.select(config.parent)[0][0]);
-      IS_DISPOSED = true;
-      d3.select(config.parent).selectAll("*").remove();
-      if (ex instanceof dex.exception.SpecificationException) {
-        $(config.parent).append(chart.spec.message(ex));
-      }
-    }
-    return chart;
-  };
-
-  chart.getCommonOptions = function () {
-    return {
-      color: dex.color.palette[chart.config.palette]
+    var defaults = {
+      "parent": "#EChartParent",
+      "id": "EChartId",
+      "class": "EChartClass",
+      "resizable": true,
+      "csv": {
+        "header": [],
+        "data": []
+      },
+      "palette": "ECharts",
+      "series": {},
+      "width": "100%",
+      "height": "100%",
     };
-  };
 
-  $(document).ready(function () {
-    // Make the entire chart draggable.
-    if (chart.config.draggable) {
-      $(chart.config.parent).draggable();
-    }
-  });
+    chart = new dex.component(userConfig, defaults);
+    var $parent = (chart.config.parent !== undefined) ?
+      $(chart.config.parent) : undefined;
 
-  return chart;
-};
+    chart.deleteChart = function deleteChart() {
+      //dex.console.log("*** Deleting EChart");
+      chart.deleteComponent();
+      try {
+        if (internalChart !== undefined) {
+          internalChart.dispose();
+          internalChart = undefined;
+        }
+        if ($parent !== undefined) {
+          $(parent).empty();
+          $parent = undefined;
+        }
+      }
+      catch (exception) {
+        dex.console.log("deleteChart(): Component already disposed.");
+      }
+      chart = undefined;
+      return chart;
+    };
+
+    chart.render = function () {
+      //dex.console.log("ECHART-UPDATE");
+      var config = chart.config;
+      var csv = config.csv;
+
+      if (config.categorizationMethod) {
+        config.categories = csv.getCategorizationMethod(config.categorizationMethod);
+      }
+
+      var $parent = $(config.parent);
+
+      try {
+        var dataOptions = chart.getOptions(csv);
+        var effectiveOptions = dex.config.expandAndOverlay(dataOptions, config.options);
+        if (internalChart !== undefined) {
+          internalChart.dispose();
+          internalChart = undefined;
+        }
+        $parent.empty();
+        if ($parent[0] !== undefined) {
+          internalChart = echarts.init($parent[0]);
+          //internalChart.clear();
+          internalChart.setOption(effectiveOptions);
+          //internalChart.resize();
+        }
+        else {
+          dex.console.log("EChart(): Can't instantiate echart on empty parent: '" + config.parent + "'");
+        }
+      }
+      catch (ex) {
+        dex.console.log("EXCEPTION", ex.stack, internalChart, chart, $parent);
+        //echarts.dispose(d3.select(config.parent)[0][0]);
+
+        if (ex instanceof dex.exception.SpecificationException) {
+          $parent.empty();
+          $parent.append(chart.spec.message(ex));
+        }
+      }
+      return chart;
+    };
+
+    chart.update = function render() {
+      try {
+        //dex.console.log("ECHART-UPDATE");
+        var config = chart.config;
+        var csv = config.csv;
+
+        if (config.categorizationMethod) {
+          config.categories = csv.getCategorizationMethod(config.categorizationMethod);
+        }
+
+        var $parent = $(config.parent);
+
+        var effectiveOptions = dex.config.expandAndOverlay(chart.getOptions(csv), config.options);
+        if (internalChart === undefined) {
+          return chart.render();
+        }
+        else {
+          //internalChart = echarts.init($parent[0]);
+          internalChart.clear();
+          internalChart.setOption(effectiveOptions);
+          internalChart.resize();
+        }
+      }
+      catch (ex) {
+        dex.console.log("EXCEPTION", ex.stack, internalChart, chart, $parent);
+        //echarts.dispose(d3.select(config.parent)[0][0]);
+
+        if (ex instanceof dex.exception.SpecificationException) {
+          $parent.empty();
+          $parent.append(chart.spec.message(ex));
+        }
+
+        return chart.render();
+      }
+      return chart;
+    };
+
+    chart.getCommonOptions = function getCommonOptions() {
+      return {
+        color: dex.color.palette[chart.config.palette]
+      };
+    };
+
+    /*
+    chart.clone = function clone(override) {
+      return EChart(dex.config.expandAndOverlay(override, userConfig));
+    };
+*/
+
+    $(document).ready(function () {
+    });
+
+    return chart;
+  }
+;
 
 module.exports = EChart;

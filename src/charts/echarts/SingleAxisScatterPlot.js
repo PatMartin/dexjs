@@ -198,6 +198,9 @@ var SingleAxisScatterPlot = function (userConfig) {
       if (xInfo.type == "string") {
         singleAxis.type = "category";
       }
+      else if (xInfo.type == "date") {
+        singleAxis.type = "time";
+      }
       else {
         singleAxis.type = "value";
       }
@@ -232,6 +235,10 @@ var SingleAxisScatterPlot = function (userConfig) {
     });
     //dex.console.log("OPTIONS", JSON.stringify(options));
     return options;
+  };
+
+  chart.clone = function clone(override) {
+    return SingleAxisScatterPlot(dex.config.expandAndOverlay(override, userConfig));
   };
 
   return chart;

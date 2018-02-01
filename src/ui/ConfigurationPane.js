@@ -13,11 +13,11 @@ var ConfigurationPane = function (userConfig) {
 
   var defaults = {
     // The parent container of this pane.
-    'parent': null,
+    "parent": null,
     "renderType": "update",
-    'id': 'ConfigurationPaneId',
-    'class': 'ConfigurationPaneClass',
-    'components': []
+    "id": "ConfigurationPaneId",
+    "class": "ConfigurationPaneClass",
+    "components": []
   };
 
   pane = new dex.component(userConfig, defaults);
@@ -84,17 +84,6 @@ var ConfigurationPane = function (userConfig) {
       components: config.components
     }).render();
 
-    config.components.forEach(function (component) {
-      //dex.console.log("Component Subscription: ", component, dataFilterPane);
-      if (component === undefined) {
-        return;
-      }
-      component.subscribe(dataFilterPane, "select", function (msg) {
-        dex.console.log("Component: " + component.config.id + " received select csv event", msg);
-        component.attr('csv', msg.selected).refresh();
-      });
-    });
-
     config.dataFilterPane = dataFilterPane;
 
     $("#" + dataFilterParent + " .panel-collapse")
@@ -102,6 +91,20 @@ var ConfigurationPane = function (userConfig) {
 
     $("#" + guiParent + " .control-group .control-group .panel-collapse")
       .collapse({hide: true});
+
+    config.components.forEach(function (component) {
+      //dex.console.log("Component Subscription: ", component, dataFilterPane);
+      if (component === undefined) {
+        return;
+      }
+      component.subscribe(dataFilterPane, "select", function (msg) {
+        dex.console.log("Component: " + component.config.id +
+          " received select csv event from " +
+          dataFilterPane.config.id, msg);
+        //dex.console.stacktrace();
+        component.attr("csv", msg.selected).refreshAsync();
+      });
+    });
 
     return pane;
   };

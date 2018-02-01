@@ -50,26 +50,21 @@ var Dendrogram = function Dendrogram(options) {
       'right': 10
     },
     'transform': '',
-    // diagonal, elbow
-    'connectionType': 'diagonal',
     // Our data...
     'csv': new dex.csv(["X", "Y"], [[0, 0], [1, 1], [2, 4], [3, 9], [4, 16]]),
     // width and height of our chart.
     'width': "100%",
     'height': "100%",
+
     'connection': {
-      'length': 180
-//      'style': {
-//        'stroke': dex.config.stroke()
-//      }
+      'length': "fit-text",
+      // diagonal, elbow
+      'type': 'diagonal',
+      'textPadding': 40
     },
     'root': {
       'name': "ROOT",
-      // Used?
-      //'category': "ROOT"
     },
-    // REM: Used?
-    //'color': d3.scale.category20(),
     'node': {
       'expanded': {
         'label': dex.config.text({
@@ -106,17 +101,28 @@ var Dendrogram = function Dendrogram(options) {
         })
       }
     },
-    'link': dex.config.link({
-      'fill': {
-        'fillColor': 'none'
-      },
-      'stroke': dex.config.stroke({
-        'color': 'green',
-        'width': 1,
-        'opacity': .3,
-        'dasharray': "5 5"
+    'link': {
+      "normal": dex.config.link({
+        'fill': {
+          'fillColor': 'none'
+        },
+        'stroke': dex.config.stroke({
+          'color': 'grey',
+          'width': 1,
+          'opacity': .5
+        })
+      }),
+      "emphasis": dex.config.link({
+        'fill': {
+          'fillColor': 'none'
+        },
+        'stroke': dex.config.stroke({
+          'color': 'red',
+          'width': 1.5,
+          'opacity': .6
+        })
       })
-    })
+    }
   };
 
   chart = new dex.component(options, defaults);
@@ -140,20 +146,49 @@ var Dendrogram = function Dendrogram(options) {
               "initialValue": chart.config.root.name || "ROOT"
             },
             {
+              "name": "Connection Type",
+              "description": "This controls the type of the connections.",
+              "target": "connection.type",
+              "type": "choice",
+              "choices": ["diagonal", "elbow", "extended-elbow"],
+              "initialValue": "diagonal"
+            },
+            {
               "name": "Connection Length",
               "description": "This controls the length of the connections.",
               "target": "connection.length",
               "type": "choice",
               "choices": ["fit-text", "10", "50", "100", "150", "200", "250", "300"],
               "initialValue": "fit-text"
+            },
+            {
+              "name": "Connection Text Padding",
+              "description": "The number of pixels to pad node text with.",
+              "target": "connection.textPadding",
+              "type": "int",
+              "minValue": 0,
+              "maxValue": 100,
+              "initialValue": 40
             }
           ]
         },
-        dex.config.gui.text({name: "Expanded Label"}, "node.expanded.label"),
-        dex.config.gui.circle({name: "Expanded Circle"}, "node.expanded.circle"),
-        dex.config.gui.text({name: "Collapsed Label"}, "node.collapsed.label"),
-        dex.config.gui.circle({name: "Collapsed Circle"}, "node.collapsed.circle"),
-        dex.config.gui.link({}, "link")
+        {
+          "type": "group",
+          "name": "Nodes",
+          "contents": [
+            dex.config.gui.circle({name: "Node: Expanded"}, "node.expanded.circle"),
+            dex.config.gui.circle({name: "Node: Collapsed"}, "node.collapsed.circle")
+          ]
+        },
+        {
+          "type": "group",
+          "name": "Labels",
+          "contents": [
+            dex.config.gui.text({name: "Label: Expanded"}, "node.expanded.label"),
+            dex.config.gui.text({name: "Label: Collapsed"}, "node.collapsed.label")
+          ]
+        },
+        dex.config.gui.linkGroup({}, "link")
       ]
     };
 
@@ -164,14 +199,14 @@ var Dendrogram = function Dendrogram(options) {
 
   chart.render = function render() {
     d3 = dex.charts.d3.d3v3;
-    return chart.resize();
+    return chart.resize().update();
   };
 
   chart.update = function update() {
     d3 = dex.charts.d3.d3v3;
     var chart = this;
     var config = chart.config;
-    var margin = config.margin;
+    var margin = chart.getMargins();
     var csv = config.csv;
     var json;
     var width = config.width - margin.left - margin.right;
@@ -182,23 +217,22 @@ var Dendrogram = function Dendrogram(options) {
     var i = 0, root;
 
     var tree = d3.layout.tree()
-      .size([height, width]);
-
-    var cluster = d3.layout.cluster()
-      .size([height, width]);
+      .size([height, width]).separation(function (a, b) {
+        return (a.parent == b.parent) ? 1 : 1;
+      });
 
     var layout = tree;
 
     var connectionType;
 
-    if (config.connectionType == "extended-elbow") {
+    if (config.connection.type == "extended-elbow") {
       connectionType = function extendedElbow(d, i) {
         return "M" + d.source.y + "," + d.source.x
-          + "H" + (d.source.y + 50)
+          + "H" + (d.source.y + config.connection.textPadding)
           + "V" + d.target.x + "H" + d.target.y;
       }
     }
-    else if (config.connectionType == "elbow") {
+    else if (config.connection.type == "elbow") {
       connectionType = function elbow(d, i) {
         return "M" + d.source.y + "," + d.source.x
           + "V" + d.target.x + "H" + d.target.y;
@@ -223,11 +257,11 @@ var Dendrogram = function Dendrogram(options) {
         margin.left + ',' + margin.top + ') ' +
         config.transform);
 
-    json =     {
-        "name": config.root.name,
-        "category": config.root.category,
-        "children": csv.toHierarchicalJson()
-      };
+    json = {
+      "name": config.root.name,
+      "category": config.root.category,
+      "children": csv.toHierarchicalJson()
+    };
 
     root = json;
     root.x0 = height / 2;
@@ -264,9 +298,8 @@ var Dendrogram = function Dendrogram(options) {
         depthY = String(config.connection.length).split(",")
       }
       else if (String(config.connection.length) === "fit-text") {
-        //dex.console.log("COMPACT");
-        var preText = d3.select(config.parent + " g").append("text");
-        //var charWidth = charText.node().getBBox().width;
+        var preText = d3.select(config.parent + " g")
+          .append("text");
 
         //charText.call(dex.config.configureText);
         fixedLength = false;
@@ -274,7 +307,8 @@ var Dendrogram = function Dendrogram(options) {
         nodes.forEach(function (d) {
           preText.text(d.name);
           // Find start for each connection.
-          var textLen = preText.node().getBBox().width;
+          var textLen = preText.node()
+            .getBBox().width;
           //dex.console.log("D", d, textLen);
           if (depthMap[d.depth]) {
             if (depthMap[d.depth] < textLen) {
@@ -285,13 +319,11 @@ var Dendrogram = function Dendrogram(options) {
             depthMap[d.depth] = textLen;
           }
         });
-        //dex.console.log("LENGTHS", depthMap);
         depthY = [0];
-        var textPadding = 40;
-        var textOffset = textPadding;
+        var textOffset = config.connection.textPadding;
         for (i = 0; depthMap[i]; i++) {
           depthY.push(depthMap[i] + textOffset);
-          textOffset += depthMap[i] + textPadding;
+          textOffset += depthMap[i] + config.connection.textPadding;
         }
         preText.remove();
       }
@@ -306,11 +338,28 @@ var Dendrogram = function Dendrogram(options) {
         }
       });
 
+      function getRootPathId(d) {
+        if (d == null || d === undefined || d.depth == 0) {
+          return undefined;
+        }
+        else if (d.depth == 1) {
+          return d.id;
+        }
+        else if (d.depth > 1) {
+          return getRootPathId(d.parent);
+        }
+      }
+
       // Update the nodes…
       var node = rootG.selectAll("g.node")
         .data(nodes, function (d) {
           return d.id || (d.id = ++i);
         });
+
+      // Append with a path to the root.
+      nodes.forEach(function (d) {
+        d.rootPathId = getRootPathId(d);
+      });
 
       // Enter any new nodes at the parent's previous position.
       var nodeEnter = node.enter().append("svg:g")
@@ -331,7 +380,15 @@ var Dendrogram = function Dendrogram(options) {
             config.node.collapsed.circle : config.node.expanded.circle;
           d3.select(this).call(dex.config.configureCircle, nodeConfig);
         })
-        .attr("r", 1e-6);
+        .attr("r", 1e-6)
+        .on("mouseover", function (d) {
+          d3.selectAll("path.link[rootPathId='" + d.rootPathId + "']")
+            .call(dex.config.configureLink, config.link.emphasis);
+        })
+        .on("mouseout", function (d) {
+          d3.selectAll("path.link[rootPathId='" + d.rootPathId + "']")
+            .call(dex.config.configureLink, config.link.normal);
+        });
 
       // Add text nodes configured like we want them.
       nodeEnter.append("text")
@@ -340,8 +397,15 @@ var Dendrogram = function Dendrogram(options) {
             config.node.collapsed.label : config.node.expanded.label;
           d3.select(this).call(dex.config.configureText, nodeConfig);
         })
-        //.text(function(d) { return (d.name) ? d.name : d.category;})
-        .style("fill-opacity", 1e-6);
+        .style("fill-opacity", 1e-6)
+        .on("mouseover", function (d) {
+          d3.selectAll("path.link[rootPathId='" + d.rootPathId + "']")
+            .call(dex.config.configureLink, config.link.emphasis);
+        })
+        .on("mouseout", function (d) {
+          d3.selectAll("path.link[rootPathId='" + d.rootPathId + "']")
+            .call(dex.config.configureLink, config.link.normal);
+        });
 
       // Transition nodes to their new position.
       var nodeUpdate = node.transition()
@@ -390,17 +454,17 @@ var Dendrogram = function Dendrogram(options) {
       // Enter any new links at the parent's previous position.
       link.enter().insert("svg:path", "g")
         .attr("class", "link")
-        .call(dex.config.configureLink, config.link)
-        //.style("fill", config.link.fill)
-        //.style("fill-opacity", config.link.fillOpacity)
+        .attr("rootPathId", function (d) {
+          return d.source.rootPathId || d.target.rootPathId;
+        })
+        .call(dex.config.configureLink, config.link.normal)
         .attr("d", function (d) {
           var o = {x: source.x0, y: source.y0};
           return connectionType({source: o, target: o});
         })
         .transition()
         .duration(duration)
-        .attr("d", connectionType)
-      ;
+        .attr("d", connectionType);
 
       // Transition links to their new position.
       link.transition()

@@ -8,5 +8,6 @@
 var vis = {};
 
 vis.Network = require("./Network");
+vis.Timeline = require("./Timeline");
 
 module.exports = vis;

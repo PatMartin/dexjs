@@ -6,10 +6,10 @@ var guipane = function (userConfig) {
 
   var defaults = {
     // The parent container of this pane.
-    'parent': null,
-    'id': 'GuiPaneId',
-    'class': 'GuiPaneClass',
-    'components': []
+    "parent": null,
+    "id": "GuiPaneId",
+    "class": "GuiPaneClass",
+    "components": []
   };
 
   pane = new dex.component(userConfig, defaults);
@@ -72,7 +72,8 @@ var guipane = function (userConfig) {
           cmp.attrSave(attName, value);
           if (!INITIALIZING) {
             cmp.refreshAsync();
-          };
+          }
+          ;
         }
       }
     });
@@ -90,7 +91,7 @@ var guipane = function (userConfig) {
       allSelectedText: 'All',
       enableFiltering: true,
       enableFullValueFiltering: true,
-      onChange: function (option, checked, select) {
+      onChange: function toggleOnChange(option, checked, select) {
         //dex.console.log("MULTISELECT-CHOICE-CHANGE", option, checked);
         if (checked) {
           var cmp = componentMap[option[0].getAttribute("targetComponent")];
@@ -99,7 +100,8 @@ var guipane = function (userConfig) {
             cmp.attrSave(attName, option[0].getAttribute("value"));
             if (!INITIALIZING) {
               cmp.refreshAsync();
-            };
+            }
+            ;
           }
         }
         $choices.multiselect('updateButtonText');
@@ -119,44 +121,79 @@ var guipane = function (userConfig) {
           cmp.attrSave(attName, event.target.value);
           if (!INITIALIZING) {
             cmp.refreshAsync();
-          };
+          }
         }
       });
     }
 
     // Enable float sliders
-    var floatSliders = $(config.parent + ' .control-float input');
+    var floatSliders = $(config.parent + ' .control-float div');
     if (floatSliders.length > 0) {
       floatSliders.each(function (i, obj) {
-        var slider = new dex.ui.BootstrapSlider(obj, {});
-        slider.on('slideStop', function (value) {
-          //dex.console.log("FLOAT-SLIDER-STOP");
-          var cmp = componentMap[obj.getAttribute("targetComponent")];
-          var targetAttribute = obj.getAttribute("targetAttribute");
+        var cmpName = obj.getAttribute("slider-component");
+        var targetAttribute = obj.getAttribute("slider-target");
+        var sliderInitial = obj.getAttribute("slider-initial");
+        var sliderMin = obj.getAttribute("slider-min");
+        var sliderMax = obj.getAttribute("slider-max");
+        var sliderStep = +obj.getAttribute("slider-step") || 1;
+
+        var slider = dex.ui.RangeSlider.create(obj, {
+          start: [sliderInitial || sliderMin],
+          range: {min: +sliderMin, max: +sliderMax},
+          step: sliderStep,
+          tooltips: true,
+          behavior: "snap"
+        });
+
+        slider.on("change", function (formattedValues, handle, values, tap, positions) {
+          var cmp = componentMap[cmpName];
           if (cmp != undefined) {
-            cmp.attr(targetAttribute, +value);
+            cmp.attr(targetAttribute, values[0]);
             if (!INITIALIZING) {
               cmp.refreshAsync();
-            };
+            }
           }
         });
       });
     }
 
     // Enable integer sliders
-    var intSliders = $(config.parent + ' .control-int input');
+    var intSliders = $(config.parent + ' .control-int div');
     if (intSliders.length > 0) {
       intSliders.each(function (i, obj) {
-        var slider = new dex.ui.BootstrapSlider(obj, {});
-        slider.on('slideStop', function (value) {
-          //dex.console.log("INT-SLIDE-STOP");
-          var cmp = componentMap[obj.getAttribute("targetComponent")];
-          var targetAttribute = obj.getAttribute("targetAttribute");
+
+        var cmpName = obj.getAttribute("slider-component");
+        var targetAttribute = obj.getAttribute("slider-target");
+        var sliderInitial = obj.getAttribute("slider-initial");
+        var sliderMin = obj.getAttribute("slider-min");
+        var sliderMax = obj.getAttribute("slider-max");
+        var sliderStep = +obj.getAttribute("slider-step") || 1;
+
+        var slider = dex.ui.RangeSlider.create(obj, {
+          start: [sliderInitial || sliderMin],
+          range: {min: +sliderMin, max: +sliderMax},
+          step: sliderStep,
+          tooltips: true,
+          behavior: "snap",
+          format: {
+            to: function (value) {
+              return Math.floor(Math.floor(Math.ceil(value) / sliderStep) * sliderStep);
+            },
+            from: function (value) {
+              return value;
+            }
+          }
+        });
+
+        slider.on("change", function (formattedValues, handle, values, tap, positions) {
+          dex.console.log("CHANGE: ", formattedValues, handle,
+            values, tap, positions);
+          var cmp = componentMap[cmpName];
           if (cmp != undefined) {
-            cmp.attr(targetAttribute, +value);
+            cmp.attr(targetAttribute, values[0]);
             if (!INITIALIZING) {
               cmp.refreshAsync();
-            };
+            }
           }
         });
       });
@@ -172,9 +209,7 @@ var guipane = function (userConfig) {
 
   function getTargetName(name) {
     var targetName = name.replace(/[\. \(\)#:]/g, '-');
-
     //dex.console.log("NAME(" + name + ")->" + targetName);
-
     if (targetList[targetName] === undefined) {
       targetList[targetName] = 1;
     }
@@ -317,6 +352,14 @@ var guipane = function (userConfig) {
       .addClass("panel-body");
 
     var $table = $("<table></table>");
+    var $colgroup = $("<colgroup></colgroup>");
+    var $col1 = $("<col></col>")
+      .addClass("column1");
+    var $col2 = $("<col></col>")
+      .addClass("column2");
+    $colgroup.append($col1);
+    $colgroup.append($col2);
+    $table.append($colgroup);
 
     guiDef.contents.forEach(function (contentDef) {
       addControl(targetComponent, $table, contentDef, depth);
@@ -336,15 +379,15 @@ var guipane = function (userConfig) {
 
   function addColor(targetComponent, $targetElt, guiDef, depth) {
 
-    $container = $("<tr></tr>")
+    var $container = $("<tr></tr>")
       .addClass("control-color");
 
-    $leftCell = $("<td></td>");
-    $label = $("<label></label>")
+    var $leftCell = $("<td></td>");
+    var $label = $("<label></label>")
       .attr("title", guiDef.description)
       .html("<strong>" + guiDef.name + ": </strong>");
-    $rightCell = $("<td></td>");
-    $picker = $("<input></input>")
+    var $rightCell = $("<td></td>");
+    var $picker = $("<input></input>")
       .attr("type", "color")
       .attr("value", guiDef.initialValue)
       .attr("targetAttribute", guiDef.target)
@@ -363,8 +406,8 @@ var guipane = function (userConfig) {
   function addChoice(targetComponent, $targetElt, guiDef, depth) {
     var $row = $("<tr></tr>")
       .addClass("control-choice");
-    $leftCell = $("<td></td>");
-    $rightCell = $("<td></td>");
+    var $leftCell = $("<td></td>");
+    var $rightCell = $("<td></td>");
     var $label = $("<label></label>")
       .attr("title", guiDef.description)
       .html("<strong>" + guiDef.name + ": </strong>")
@@ -397,19 +440,19 @@ var guipane = function (userConfig) {
 
   function addBoolean(targetComponent, $targetElt, guiDef, depth) {
 
-    $row = $("<tr></tr>")
+    var $row = $("<tr></tr>")
       .addClass("control-boolean");
 
-    $leftCell = $("<td></td>");
-    $rightCell = $("<td></td>");
+    var $leftCell = $("<td></td>");
+    var $rightCell = $("<td></td>");
 
-    $checkbox = $("<div></div>")
+    var $checkbox = $("<div></div>")
       .addClass("checkbox");
 
-    $label = $("<label></label>")
+    var $label = $("<label></label>")
       .attr("title", guiDef.description)
       .html("<strong>" + guiDef.name + ": </strong>");
-    $input = $("<input></input>")
+    var $input = $("<input></input>")
       .attr("type", "checkbox")
       .attr("data-toggle", "toggle")
       .attr("data-onstyle", "success")
@@ -453,18 +496,18 @@ var guipane = function (userConfig) {
 
   function addString(targetComponent, $targetElt, guiDef, depth) {
 
-    $row = $("<tr></tr>")
+    var $row = $("<tr></tr>")
       .addClass("control-string");
 
-    $leftCell = $("<td></td>");
-    $rightCell = $("<td></td>");
+    var $leftCell = $("<td></td>");
+    var $rightCell = $("<td></td>");
 
-    $label = $("<label></label>")
+    var $label = $("<label></label>")
       .attr("title", guiDef.description)
       .attr("for", guiDef.target)
       .html("<strong>" + guiDef.name + ": </strong>");
 
-    $input = $("<input></input>")
+    var $input = $("<input></input>")
       .attr("type", "text")
       .attr("targetAttribute", guiDef.target)
       .attr("targetComponent", targetComponent)
@@ -483,34 +526,36 @@ var guipane = function (userConfig) {
 
   function addFloat(targetComponent, $targetElt, guiDef, depth) {
     //dex.console.log("AddFloat", guiDef);
-    $row = $("<tr></tr>")
+    var $row = $("<tr></tr>")
       .addClass("control-float");
 
-    $leftCell = $("<td></td>");
-    $rightCell = $("<td></td>");
+    var $leftCell = $("<td></td>")
+      .attr("rowspan", 2);
+    var $rightCell = $("<td></td>")
+      .attr("rowspan", 2);
 
     // Determine an appropriate step
-    var step = Math.min(Math.abs(+(guiDef.minValue) - (guiDef.maxValue)) * .01, 1);
-    if (step != 0 && Math.log(step) < 0) {
-      step = step.toPrecision(Math.abs(Math.floor(Math.log(step))));
+    var step;
+    if (guiDef.step) {
+      step = guiDef.step;
+    }
+    else {
+      step = Math.min(Math.abs(+(guiDef.minValue) - (guiDef.maxValue)) * .01, 1);
+      if (step != 0 && Math.log(step) < 0) {
+        step = step.toPrecision(Math.abs(Math.floor(Math.log(step))));
+      }
     }
 
-    $label = $("<label></label>")
+    var $label = $("<label></label>")
       .attr("title", guiDef.description)
       .html("<strong>" + guiDef.name + ": </strong>");
-    $slider = $("<input></input>")
-      .attr("type", "text")
-      .addClass("span2")
-      .attr("value", "")
-      .attr("data-slider-min", guiDef.minValue)
-      .attr("data-slider-max", guiDef.maxValue)
-      .attr("targetAttribute", guiDef.target)
-      .attr("targetComponent", targetComponent)
-      .attr("data-slider-step", step);
-
-    if (dex.object.isNumeric(guiDef.initialValue)) {
-      $slider.attr("data-slider-value", guiDef.initialValue);
-    }
+    var $slider = $("<div></div>")
+      .attr("slider-initial", guiDef.initialValue)
+      .attr("slider-min", guiDef.minValue)
+      .attr("slider-max", guiDef.maxValue)
+      .attr("slider-target", guiDef.target)
+      .attr("slider-component", targetComponent)
+      .attr("slider-step", step);
 
     $leftCell.append($label);
     $rightCell.append($slider);
@@ -522,31 +567,38 @@ var guipane = function (userConfig) {
 
   function addInt(targetComponent, $targetElt, guiDef, depth) {
     //dex.console.log("AddInt", guiDef);
-    $row = $("<tr></tr>")
+    var $row = $("<tr></tr>")
       .addClass("control-int");
 
-    $leftCell = $("<td></td>");
-    $rightCell = $("<td></td>");
+    var $leftCell = $("<td></td>");
+    var $rightCell = $("<td></td>");
 
     // Determine an appropriate step
-    var step = 1;
+    var step;
 
-    $label = $("<label></label>")
+    if (guiDef.step) {
+      step = guiDef.step;
+    }
+    else {
+      step = Math.min(Math.abs(+(guiDef.minValue) - (guiDef.maxValue)) * .01, 1);
+      if (step < 1) {
+        step = 1;
+      }
+      else if (step > 1) {
+        step = Math.floor(step);
+      }
+    }
+
+    var $label = $("<label></label>")
       .attr("title", guiDef.description)
       .html("<strong>" + guiDef.name + ": </strong>");
-    $slider = $("<input></input>")
-      .attr("type", "text")
-      .addClass("span2")
-      .attr("value", "")
-      .attr("data-slider-min", guiDef.minValue)
-      .attr("data-slider-max", guiDef.maxValue)
-      .attr("targetAttribute", guiDef.target)
-      .attr("targetComponent", targetComponent)
-      .attr("data-slider-step", step);
-
-    if (dex.object.isNumeric(guiDef.initialValue)) {
-      $slider.attr("data-slider-value", guiDef.initialValue);
-    }
+    var $slider = $("<div></div>")
+      .attr("slider-initial", guiDef.initialValue)
+      .attr("slider-min", guiDef.minValue)
+      .attr("slider-max", guiDef.maxValue)
+      .attr("slider-target", guiDef.target)
+      .attr("slider-component", targetComponent)
+      .attr("slider-step", step);
 
     $leftCell.append($label);
     $rightCell.append($slider);

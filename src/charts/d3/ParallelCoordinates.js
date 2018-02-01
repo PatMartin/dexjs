@@ -21,6 +21,7 @@ var ParallelCoordinates = function (userConfig) {
     'width': "100%",
     'height': "100%",
     'resizable': true,
+    'palette' : "ECharts",
     'color': d3.scale.category20(),
     'title': 'Parallel Coordinates',
     'csv': new dex.csv(["X", "Y"], [[0, 0], [1, 1], [2, 4], [3, 9], [4, 16]]),
@@ -80,7 +81,7 @@ var ParallelCoordinates = function (userConfig) {
           -chart.config.margin.top * .40;
       },
       'font.size': function (d) {
-        return 32
+        return 18
       },
       'fill.fillColor': 'red',
       'anchor': 'middle',
@@ -195,7 +196,7 @@ var ParallelCoordinates = function (userConfig) {
 
   chart.render = function render() {
     d3 = dex.charts.d3.d3v3;
-    return chart.resize();
+    return chart.resize().update();
   };
 
   chart.update = function update() {
@@ -203,11 +204,7 @@ var ParallelCoordinates = function (userConfig) {
     var chart = this;
     var config = chart.config;
     var csv = config.csv;
-    var margin = config.margin;
-    margin.top = +margin.top;
-    margin.bottom = +margin.bottom;
-    margin.left = +margin.left;
-    margin.right = +margin.right;
+    var margin = chart.getMargins();
 
     var width = config.width - margin.left - margin.right;
     var height = config.height - margin.top - margin.bottom;
@@ -220,8 +217,7 @@ var ParallelCoordinates = function (userConfig) {
 
     // Determine increment.  -|-|-
     var widthIncrement = width / (csv.header.length + 1);
-    dex.console.logString("Width: " + width + ", Width Increment: ",
-      widthIncrement);
+
     // Scales
     x = d3.scale.ordinal()
       .rangePoints([0, width], 1);
@@ -243,7 +239,6 @@ var ParallelCoordinates = function (userConfig) {
       .attr("class", config["class"])
       .attr('width', config.width)
       .attr('height', config.height);
-    dex.console.log("MARGIN: ", margin);
 
     var rootG = svg.append("g")
       .attr("transform", "translate(" +
@@ -358,11 +353,7 @@ var ParallelCoordinates = function (userConfig) {
 
         var maxFont = 48;
 
-        var availableHeight = height / (tickLabels[0].length)
-        dex.console.logString("TICK-LABELS: ", "Height: ", height,
-          ", Width: ", width, ", Available Width: ",
-          availableWidth, ", Available Height:", availableHeight,
-          ", Length:", tickLabels[0].length);
+        var availableHeight = height / (tickLabels[0].length);
 
         tickLabels
           .style("font-size", "1px")

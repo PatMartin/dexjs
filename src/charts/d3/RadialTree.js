@@ -167,7 +167,7 @@ var RadialTree = function (userConfig) {
 
   chart.render = function render() {
     d3 = dex.charts.d3.d3v4;
-    return chart.resize();
+    return chart.resize().update();
   };
 
   chart.update = function () {
