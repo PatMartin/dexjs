@@ -14,9 +14,10 @@
         }
 
     </style>
-    <title>Chord Diagram</title>
-    <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css">
-    <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.theme.min.css">
+    <title>ECharts: Network Diagram</title>
+
+    <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.css">
+    <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.theme.min.css">
     <link rel="stylesheet" href="../../dist/dex-jquery.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.css"/>
     <link rel="stylesheet" href="../../dist/dex-bootstrap.css">
@@ -30,6 +31,7 @@
     <script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
     <script src="../../dist/dex-libs.js"></script>
     <script src="../../dist/dex.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/3.6.1/echarts.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Faker/3.1.0/faker.min.js"></script>
 </head>
 <body>
@@ -60,7 +62,7 @@
       ["Millard Fillmore", "Whig", "New York"],
       ["Franklin Pierce", "Democratic", "New Hampshire"],
       ["James Buchanan", "Democratic", "Pennsylvania"],
-      ["Abraham Lincoln", "Rep/Natl-Union", "Illinois"],
+      ["Abraham Lincoln", "Rep/Ntnl-Union", "Illinois"],
       ["Andrew Johnson", "Dem/Natl-Union", "Tennessee"],
       ["Ulysses S. Grant", "Republican", "Ohio"],
       ["Rutherford B. Hayes", "Republican", "Ohio"],
@@ -90,33 +92,49 @@
       ["Barack Obama", "Democratic", "Illinois"],
       ["Donald Trump", "Republican", "New York"]
     ]
-  });
-
-  // Configure a chart.
-  var chart = dex.charts.d3.Chord({
-      'parent': '#Chart',
-      'csv': csv
-    });
+  }).include([1, 2, 0]);
 
   $(document).ready(function () {
+    var chart = dex.charts.multiples.Multiples({
+        parent: "#Chart",
+        csv: new dex.csv(),
+        model: {
+          chartConstructor: dex.charts.echarts.Network,
+          attributes: {
+            series: {
+              layout: "circular"
+            },
+            options: {
+              title: { text: "" },
+              grid: {
+                left: 40,
+                top: 10,
+                right: 30,
+                bottom: 20
+              }
+            }
+          }
+        },
+        cell: {
+          width: 300,
+          height: 300
+        }
+      }
+    ).render();
+
     $('body').layout({
       applyDemoStyles: false,
       west: {
         size: 335
       },
-      onresize: function () {
-        chart.resize();
-      }
+      onresize: chart.refreshAsync
     });
-
-    chart.render();
 
     var configPane = dex.ui.ConfigurationPane({
       "parent": "#ConfigurationPane",
       "csv": csv,
       "components": [chart]
     }).render();
-
   });
 </script>
 </body>

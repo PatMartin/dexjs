@@ -14,7 +14,7 @@
         }
 
     </style>
-    <title>ECharts: Line Chart Multiples</title>
+    <title>ECharts: Polar Plot Multiples</title>
 
     <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.css">
     <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.theme.min.css">
@@ -44,7 +44,7 @@
 </div>
 
 <script>
-  var csv = new dex.csv(['Name', "Item", 'Month', 'Sales', 'Extraneous' ], []);
+  var csv = new dex.csv(['Name', "Item", 'Sales', 'Month', 'Extraneous' ], []);
 
   var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
   var items = ["Car", "Truck", "Services", "Taxes" ];
@@ -53,7 +53,7 @@
     var name = faker.name.firstName();
     months.forEach(function (month) {
       items.forEach(function (item) {
-        csv.data.push([name, item, month, faker.random.number(), faker.random.number()]);
+        csv.data.push([name, item, faker.random.number(), month, faker.random.number()]);
       });
     });
   }
@@ -63,7 +63,7 @@
         parent: "#Chart",
         csv: new dex.csv(),
         model: {
-          chartConstructor: dex.charts.echarts.SteamGraph,
+          chartConstructor: dex.charts.echarts.PolarPlot,
           attributes: {
             series: { label: { normal: { show: false }}},
             options: {
@@ -73,8 +73,8 @@
           }
         },
         cell: {
-          width: 400,
-          height: 250
+          width: 500,
+          height: 500
         }
       }
     ).render();

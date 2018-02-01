@@ -32,18 +32,17 @@
 <body>
 <div id="Nvd3_BubbleChartParent"></div>
 <script>
-  var csv = new dex.csv(['Name', 'Date', 'Y', 'Size']);
+  var csv = new dex.csv(['Name', 'Month', 'Sales', 'Units']);
+
+  var months = [
+    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
   for (var nameIndex = 0; nameIndex < 10; nameIndex++) {
     var name = faker.name.firstName();
-    for (var year = 2015; year < 2017; year++) {
-      for (var month = 0; month < 12; month++) {
-        csv.data.push([name, new Date(year, month, 1),
-          faker.random.number({'min': 0, 'max': 100}),
-          faker.random.number({'min': 1, 'max': 100}
-          )])
-      }
-    }
+    months.forEach(function (month) {
+      csv.data.push([name, month, faker.random.number(), faker.random.number()])
+    });
   }
 
   var bubbleChart = dex.charts.nvd3.BubbleChart({

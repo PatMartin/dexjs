@@ -44,21 +44,22 @@
 </div>
 
 <script>
-  var csv = new dex.csv(['Name', 'Month', 'Sales', 'Extraneous', 'Item'],[]);
-
-  var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
-  var items = ["Car" ];
-
-  for (var nameIndex = 0; nameIndex < 10; nameIndex++) {
-    var name = faker.name.firstName();
-    months.forEach(function (month) {
-      items.forEach(function (item) {
-        csv.data.push([name, month, faker.random.number(), faker.random.number(), item ]);
-      });
-    });
-  }
 
   $(document).ready(function () {
+    var csv = new dex.csv(['Name', 'Month', 'Sales', 'Extraneous', 'Item'],[]);
+
+    var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+    var items = ["Car" ];
+
+    for (var nameIndex = 0; nameIndex < 10; nameIndex++) {
+      var name = faker.name.firstName();
+      months.forEach(function (month) {
+        items.forEach(function (item) {
+          csv.data.push([name, month, faker.random.number(), faker.random.number(), item ]);
+        });
+      });
+    }
+
     $('body').layout({
       applyDemoStyles: false,
       west: {

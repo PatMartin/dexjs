@@ -14,8 +14,7 @@
         }
 
     </style>
-    <title>ECharts: Line Chart Multiples</title>
-
+    <title>dex.js : ECharts Line Chart</title>
     <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.css">
     <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.theme.min.css">
     <link rel="stylesheet" href="../../dist/dex-jquery.css">
@@ -31,8 +30,9 @@
     <script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
     <script src="../../dist/dex-libs.js"></script>
     <script src="../../dist/dex.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/3.6.1/echarts.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/3.6.1/echarts.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Faker/3.1.0/faker.min.js"></script>
+
 </head>
 <body>
 
@@ -44,45 +44,58 @@
 </div>
 
 <script>
-  var csv = new dex.csv(['Name', "Month", 'Sales', 'Service' ], []);
-
-  var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
-
-  for (var nameIndex = 0; nameIndex < 4; nameIndex++) {
-    var name = faker.name.firstName();
-    months.forEach(function (month) {
-        csv.data.push([name, month, faker.random.number(), faker.random.number() ]);
-    });
-  }
 
   $(document).ready(function () {
-    var chart = dex.charts.multiples.Multiples({
-        parent: "#Chart",
-        csv: new dex.csv(),
-        model: {
-          chartConstructor: dex.charts.echarts.PieChart,
-          attributes: {}
-        },
-        cell: {
-          width: 400,
-          height: 250
-        }
+    var csv = new dex.csv(['Name', 'Month', 'Sales', 'Extraneous' ], []);
+
+    var dates = dex.range(1, 10).map(function () {
+      return faker.date.past(1);
+    }).sort(function(a, b) {
+      var time1 = a.getTime();
+      var time2 = b.getTime();
+      if (time1 < time2) {
+        return -1;
       }
-    ).render();
+      else if (time1 > time2) {
+        return 1;
+      }
+      else {
+        return 0;
+      }
+    });
+    dex.console.log("DATES", dates);
+    var items = ["Car"];
+
+    for (var nameIndex = 0; nameIndex < 2; nameIndex++) {
+      var name = faker.name.firstName();
+      dates.forEach(function (date) {
+        csv.data.push([name, date, faker.random.number(), faker.random.number() ]);
+      });
+    }
 
     $('body').layout({
       applyDemoStyles: false,
       west: {
-        size: 335
+        size: 360
       },
-      onresize: chart.refreshAsync
+      onresize: function () {
+        chart.resize();
+      }
     });
+
+    var chart = dex.charts.echarts.LineChart({
+        'parent': '#Chart',
+        'csv': csv
+      }
+    );
+    chart.render();
 
     var configPane = dex.ui.ConfigurationPane({
       "parent": "#ConfigurationPane",
       "csv": csv,
       "components": [chart]
     }).render();
+
   });
 </script>
 </body>

@@ -14,9 +14,10 @@
         }
 
     </style>
-    <title>Chord Diagram</title>
-    <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css">
-    <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.theme.min.css">
+    <title>D3: Chord Multiples</title>
+
+    <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.css">
+    <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.theme.min.css">
     <link rel="stylesheet" href="../../dist/dex-jquery.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.css"/>
     <link rel="stylesheet" href="../../dist/dex-bootstrap.css">
@@ -60,7 +61,7 @@
       ["Millard Fillmore", "Whig", "New York"],
       ["Franklin Pierce", "Democratic", "New Hampshire"],
       ["James Buchanan", "Democratic", "Pennsylvania"],
-      ["Abraham Lincoln", "Rep/Natl-Union", "Illinois"],
+      ["Abraham Lincoln", "Rep/Ntnl-Union", "Illinois"],
       ["Andrew Johnson", "Dem/Natl-Union", "Tennessee"],
       ["Ulysses S. Grant", "Republican", "Ohio"],
       ["Rutherford B. Hayes", "Republican", "Ohio"],
@@ -90,13 +91,7 @@
       ["Barack Obama", "Democratic", "Illinois"],
       ["Donald Trump", "Republican", "New York"]
     ]
-  });
-
-  // Configure a chart.
-  var chart = dex.charts.d3.Chord({
-      'parent': '#Chart',
-      'csv': csv
-    });
+  }).include([1, 2, 0]);
 
   $(document).ready(function () {
     $('body').layout({
@@ -109,14 +104,28 @@
       }
     });
 
-    chart.render();
+    var chart = dex.charts.multiples.Multiples({
+        parent: "#Chart",
+        csv: new dex.csv(),
+        model: {
+          chartConstructor: dex.charts.d3.Chord,
+          attributes: {
+
+          }
+        },
+        cell: {
+          width: 350,
+          height: 250
+        }
+      }
+    ).render();
+
 
     var configPane = dex.ui.ConfigurationPane({
       "parent": "#ConfigurationPane",
       "csv": csv,
       "components": [chart]
     }).render();
-
   });
 </script>
 </body>

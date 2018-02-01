@@ -14,7 +14,7 @@
         }
 
     </style>
-    <title>ECharts: Line Chart Multiples</title>
+    <title>ECharts: Polar BarChart Multiples</title>
 
     <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.css">
     <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.theme.min.css">
@@ -44,14 +44,17 @@
 </div>
 
 <script>
-  var csv = new dex.csv(['Name', "Month", 'Sales', 'Service' ], []);
+  var csv = new dex.csv(['Name', "Item", 'Month', 'Sales', 'Extraneous' ], []);
 
   var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+  var items = ["Car", "Truck", "Services", "Taxes" ];
 
-  for (var nameIndex = 0; nameIndex < 4; nameIndex++) {
+  for (var nameIndex = 0; nameIndex < 10; nameIndex++) {
     var name = faker.name.firstName();
     months.forEach(function (month) {
-        csv.data.push([name, month, faker.random.number(), faker.random.number() ]);
+      items.forEach(function (item) {
+        csv.data.push([name, item, month, faker.random.number(), faker.random.number()]);
+      });
     });
   }
 
@@ -60,12 +63,18 @@
         parent: "#Chart",
         csv: new dex.csv(),
         model: {
-          chartConstructor: dex.charts.echarts.PieChart,
-          attributes: {}
+          chartConstructor: dex.charts.echarts.PolarPlot,
+          attributes: {
+            series: { type: "bar", stack: true, label: { normal: { show: false }}},
+            options: {
+              dataZoom: {show: false},
+              legend: {show: true}
+            }
+          }
         },
         cell: {
-          width: 400,
-          height: 250
+          width: 350,
+          height: 350
         }
       }
     ).render();

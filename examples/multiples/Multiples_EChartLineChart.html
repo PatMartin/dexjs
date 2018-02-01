@@ -44,14 +44,17 @@
 </div>
 
 <script>
-  var csv = new dex.csv(['Name', "Month", 'Sales', 'Service' ], []);
+  var csv = new dex.csv(['Name', 'Month', 'Sales', 'Extraneous', 'Item'], []);
 
   var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+  var items = ["Cars", "Trucks", "SUV", "Accessories", "Repairs", "Trailers", "Taxes", "Titles", "Services" ];
 
-  for (var nameIndex = 0; nameIndex < 4; nameIndex++) {
+  for (var nameIndex = 0; nameIndex < 50; nameIndex++) {
     var name = faker.name.firstName();
     months.forEach(function (month) {
-        csv.data.push([name, month, faker.random.number(), faker.random.number() ]);
+      items.forEach(function (item) {
+        csv.data.push([name, month, faker.random.number(), faker.random.number(), item]);
+      });
     });
   }
 
@@ -60,12 +63,31 @@
         parent: "#Chart",
         csv: new dex.csv(),
         model: {
-          chartConstructor: dex.charts.echarts.PieChart,
-          attributes: {}
+          chartConstructor: dex.charts.echarts.LineChart,
+          attributes: {
+            xAxisDataZoom: {show: false},
+            yAxisDataZoom: {show: false},
+            options: {
+              legend: {show: false},
+              backgroundColor: "#FFFFFD",
+              xAxis: { splitNumber: 2 },
+              yAxis: { splitNumber: 2,
+              axisLabel: {
+                margin: 8,
+                rotate: 45
+              }},
+              grid: {
+                left: 40,
+                top: 10,
+                right: 30,
+                bottom: 20
+              }
+            }
+          }
         },
         cell: {
-          width: 400,
-          height: 250
+          width: 180,
+          height: 100
         }
       }
     ).render();

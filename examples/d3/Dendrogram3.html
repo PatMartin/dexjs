@@ -23,10 +23,8 @@
 <script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
 <script src="../../dist/dex-libs.js"></script>
 <script src="../../dist/dex.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Faker/3.1.0/faker.min.js"></script>
 <body>
 <div id="DendrogramParent"></div>
-
 
 <script>
   var csv = {
@@ -81,8 +79,7 @@
   var dendrogram = dex.charts.d3.Dendrogram({
       'parent': "#DendrogramParent",
       'csv': csv,
-      'root.name': "Party",
-      'connection.length': 'fit-text'
+      'root.name': "Party"
     }
   ).render();
 

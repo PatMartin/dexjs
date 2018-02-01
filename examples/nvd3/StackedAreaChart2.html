@@ -31,18 +31,12 @@
 <body>
 <div id="Nvd3_StackedAreaChartParent"></div>
 <script>
-  dex.console.log("D3", d3.version);
-
-  var csv = {
-    'header': ['Name', 'Number', 'Sales'],
-    'data': []
-  };
+  var csv = new dex.csv(['Name', 'Number', 'Sales']);
 
   for (var nameIndex = 0; nameIndex < 18; nameIndex++) {
     var name = faker.name.firstName();
-    for (var n=1; n<10; n++)
-    {
-        csv.data.push([ name, n, faker.random.number()])
+    for (var n = 1; n < 10; n++) {
+      csv.data.push([name, n, faker.random.number()])
     }
   }
 

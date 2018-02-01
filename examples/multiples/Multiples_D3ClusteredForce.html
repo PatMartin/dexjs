@@ -14,7 +14,7 @@
         }
 
     </style>
-    <title>ECharts: Line Chart Multiples</title>
+    <title>D3: Chord Multiples</title>
 
     <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.css">
     <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.theme.min.css">
@@ -31,7 +31,6 @@
     <script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
     <script src="../../dist/dex-libs.js"></script>
     <script src="../../dist/dex.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/3.6.1/echarts.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Faker/3.1.0/faker.min.js"></script>
 </head>
 <body>
@@ -44,14 +43,17 @@
 </div>
 
 <script>
-  var csv = new dex.csv(['Name', "Month", 'Sales', 'Service' ], []);
+  var csv = new dex.csv(['Name', "Item", 'Month', 'Sales', 'Service'], []);
 
   var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+  var items = ["Car", "Truck", "Services", "Taxes"];
 
-  for (var nameIndex = 0; nameIndex < 4; nameIndex++) {
+  for (var nameIndex = 0; nameIndex < 9; nameIndex++) {
     var name = faker.name.firstName();
     months.forEach(function (month) {
-        csv.data.push([name, month, faker.random.number(), faker.random.number() ]);
+      items.forEach(function (item) {
+        csv.data.push([name, item, month, faker.random.number(), faker.random.number()]);
+      });
     });
   }
 
@@ -60,11 +62,11 @@
         parent: "#Chart",
         csv: new dex.csv(),
         model: {
-          chartConstructor: dex.charts.echarts.PieChart,
+          chartConstructor: dex.charts.d3.ClusteredForce,
           attributes: {}
         },
         cell: {
-          width: 400,
+          width: 350,
           height: 250
         }
       }
@@ -75,7 +77,7 @@
       west: {
         size: 335
       },
-      onresize: chart.refreshAsync
+      onresize: chart.resizeAsync
     });
 
     var configPane = dex.ui.ConfigurationPane({
