@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        html, body, #Chart {
+            height: 100%;
+            min-height: 100%;
+            width: 100%;
+            min-width: 100%;
+        }
+
+        #Chart {
+            display: inline-block;
+        }
+
+    </style>
+    <title>ECharts: Line Chart Multiples</title>
+
+    <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.css">
+    <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.theme.min.css">
+    <link rel="stylesheet" href="../../dist/dex-jquery.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.css"/>
+    <link rel="stylesheet" href="../../dist/dex-bootstrap.css">
+    <link rel="stylesheet" href="../../dist/dex.css">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <script src="../../dist/dex-jquery.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="../../dist/dex-bootstrap.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+    <script src="../../dist/dex-libs.js"></script>
+    <script src="../../dist/dex.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/3.6.1/echarts.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Faker/3.1.0/faker.min.js"></script>
+</head>
+<body>
+
+<div class="ui-layout-center">
+    <div id="Chart"></div>
+</div>
+<div class="ui-layout-west">
+    <div id="ConfigurationPane"></div>
+</div>
+
+<script>
+  var csv = new dex.csv(['Name', "Item", 'Month', 'Sales', 'Extraneous' ], []);
+
+  var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+  var items = ["Car", "Truck", "Services", "Taxes" ];
+
+  for (var nameIndex = 0; nameIndex < 4; nameIndex++) {
+    var name = faker.name.firstName();
+    months.forEach(function (month) {
+      items.forEach(function (item) {
+        csv.data.push([name, item, month, faker.random.number(), faker.random.number()]);
+      });
+    });
+  }
+
+  $(document).ready(function () {
+    var chart = dex.charts.multiples.Multiples({
+        parent: "#Chart",
+        csv: new dex.csv(),
+        model: {
+          chartConstructor: dex.charts.echarts.SteamGraph,
+          attributes: {
+            series: { label: { normal: { show: false }}},
+            options: {
+              dataZoom: {show: false},
+              legend: {show: true}
+            }
+          }
+        },
+        cell: {
+          width: 400,
+          height: 250
+        }
+      }
+    ).render();
+
+    $('body').layout({
+      applyDemoStyles: false,
+      west: {
+        size: 335
+      },
+      onresize: chart.refreshAsync
+    });
+
+    var configPane = dex.ui.ConfigurationPane({
+      "parent": "#ConfigurationPane",
+      "csv": csv,
+      "components": [chart]
+    }).render();
+  });
+</script>
+</body>
+</html>

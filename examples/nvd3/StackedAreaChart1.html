@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 <style>
-    html, body, #Nvd3_BubbleChartParent {
+    html, body, #Nvd3_StackedAreaChartParent {
         height: 100%;
         min-height: 100%;
         width: 100%;
@@ -30,30 +30,28 @@
 <script>d3 = dex.charts.d3.d3v3;</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/nvd3/1.8.5/nv.d3.min.js"></script>
 <body>
-<div id="Nvd3_BubbleChartParent"></div>
+<div id="Nvd3_StackedAreaChartParent"></div>
 <script>
   dex.console.log("D3", d3.version);
 
-  var csv = {
-    'header': ['Name', 'Number', 'Sales'],
-    'data': []
-  };
+  var csv = new dex.csv(['Name', 'Date', 'Sales']);
 
-  var months = [ "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" ]
+  var months = [
+    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
-  for (var nameIndex = 0; nameIndex < 18; nameIndex++) {
+  for (var nameIndex = 0; nameIndex < 10; nameIndex++) {
     var name = faker.name.firstName();
-    for (var n=0; n<months.length; n++)
-    {
-        csv.data.push([ name, months[n], faker.random.number(), faker.random.number() ])
-    }
+    months.forEach(function (month) {
+      csv.data.push([name, month, faker.random.number()])
+    });
   }
 
-  var bubbleChart = new dex.charts.nvd3.BubbleChart({
-      'parent': '#Nvd3_BubbleChartParent',
+  var stackedAreaChart = new dex.charts.nvd3.StackedAreaChart({
+      'parent': '#Nvd3_StackedAreaChartParent',
       'csv': csv
     }
   );
-  bubbleChart.render();
+  stackedAreaChart.render();
 </script>
 
