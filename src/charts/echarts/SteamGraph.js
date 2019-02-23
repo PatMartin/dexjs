@@ -20,6 +20,7 @@ var SteamGraph = function (userConfig) {
     'width': "100%",
     'height': "100%",
     'type': 'steam',
+    "dimensions": { "series": 0, "x": 1, "y": 2 },
     "options": {
       tooltip: {
         backgroundColor: "#FFFFFF",
@@ -53,7 +54,7 @@ var SteamGraph = function (userConfig) {
   chart.spec = new dex.data.spec("Steam Graph")
     .any("series")
     .any("x")
-    .number("value");
+    .number("y");
 
   chart.getGuiDefinition = function getGuiDefinition(config) {
     var defaults = {
@@ -64,6 +65,10 @@ var SteamGraph = function (userConfig) {
           "type": "group",
           "name": "General",
           "contents": [
+            dex.config.gui.columnDimensions({},
+              "dimensions",
+              chart.config.csv,
+              chart.config.dimensions),
             {
               "name": "Display Legend",
               "description": "Determines whether or not to draw the legend or not.",
@@ -85,7 +90,7 @@ var SteamGraph = function (userConfig) {
               "target": "options.backgroundColor",
               "type": "color",
               "initialValue": "#ffffff"
-            },
+            }
           ]
         },
         dex.config.gui.margins({}, "options.singleAxis"),
@@ -106,7 +111,7 @@ var SteamGraph = function (userConfig) {
 
   chart.getOptions = function (csv) {
     var options, seriesNames, seriesInfo, xInfo, valueInfo;
-    var csvSpec = chart.spec.parse(csv);
+    var csvSpec = chart.spec.parse(csv, chart.config.dimensions);
 
     options = dex.config.expandAndOverlay(chart.config.options, {
       title: [],

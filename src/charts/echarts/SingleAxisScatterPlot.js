@@ -23,6 +23,7 @@ var SingleAxisScatterPlot = function (userConfig) {
     'type': 'single-axis',
     'radius': {'min': 1, 'max': 20},
     'sizeMethod': 'linear',
+    'dimensions' : { 'series': 0, 'x': 1, 'size': 2 },
     'sizeScale': function (value) {
       if (typeof sizeScale == "undefined") {
         sizeScale = chart.config.csv.getScalingMethod(
@@ -84,6 +85,10 @@ var SingleAxisScatterPlot = function (userConfig) {
           "type": "group",
           "name": "General",
           "contents": [
+            dex.config.gui.columnDimensions({},
+              "dimensions",
+              chart.config.csv,
+              chart.config.dimensions),
             dex.config.gui.echartsTitle({}, "options.title"),
             dex.config.gui.echartsGrid({}, "options.grid"),
             dex.config.gui.echartsTooltip({}, "options.tooltip"),
@@ -140,7 +145,7 @@ var SingleAxisScatterPlot = function (userConfig) {
 
   chart.getOptions = function (csv) {
     var options, seriesNames, seriesInfo, xInfo;
-    var csvSpec = chart.spec.parse(csv);
+    var csvSpec = chart.spec.parse(csv, chart.config.dimensions);
 
     options = dex.config.expandAndOverlay(chart.config.options, {
       title: [],

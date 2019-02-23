@@ -22,6 +22,7 @@ var Timeline = function (userConfig) {
     'height': "100%",
     'type': 'timeline',
     'palette': 'ECharts',
+    'dimensions' : {'series':0, 'sequence':1, 'x': 2, 'y':3, 'size':4},
     'sizeScale': new dex.csv().getScalingMethods().linear,
     'radius': {min: 5, max: 50},
     'series.type': 'scatter',
@@ -64,6 +65,8 @@ var Timeline = function (userConfig) {
           "type": "group",
           "name": "General Options",
           "contents": [
+            dex.config.gui.columnDimensions({}, "dimensions",
+              chart.config.csv, chart.config.dimensions),
             dex.config.gui.echartsTimeline({}, "options.baseOption.timeline"),
             dex.config.gui.echartsTitle({}, "options.baseOption.title"),
             dex.config.gui.echartsGrid({}, "options.baseOption.grid"),
@@ -111,7 +114,7 @@ var Timeline = function (userConfig) {
   };
 
   chart.getOptions = function (csv) {
-    var csvSpec = chart.spec.parse(csv);
+    var csvSpec = chart.spec.parse(csv, chart.config.dimensions);
 
     var catMap = {};
     var seqMap = {};

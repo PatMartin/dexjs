@@ -19,6 +19,7 @@ var PieChart = function (userConfig) {
     'width': "100%",
     'height': "100%",
     'type': 'pie',
+    'dimensions' : { 'series' : 0, 'category': 1, 'size': 2},
     'palette': 'ECharts',
     'aggregationMethod': "Sum",
     'aggregationFunction': function (values) {
@@ -103,6 +104,10 @@ var PieChart = function (userConfig) {
           "type": "group",
           "name": "General",
           "contents": [
+            dex.config.gui.columnDimensions({},
+              "dimensions",
+              chart.config.csv,
+              chart.config.dimensions),
             dex.config.gui.echartsTitle({}, "options.title"),
             dex.config.gui.echartsGrid({}, "options.grid"),
             dex.config.gui.echartsTooltip({}, "options.tooltip"),
@@ -204,7 +209,7 @@ var PieChart = function (userConfig) {
 
   chart.getOptions = function (csv) {
     var options, seriesNames, seriesInfo, valueInfo, categoryInfo;
-    var csvSpec = chart.spec.parse(csv);
+    var csvSpec = chart.spec.parse(csv, chart.config.dimensions);
 
     options = dex.config.expandAndOverlay({
       tooltip: {

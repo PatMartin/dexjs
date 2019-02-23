@@ -21,11 +21,12 @@ var RadarChart = function (userConfig) {
     'height': "100%",
     'palette': 'ECharts',
     'type': 'radar',
+    'dimensions': { 'series': 0, 'angle': 1, 'radius': 2 },
     'series.itemStyle': {
       normal: {
         lineStyle: {
           width: 1,
-          opacity: .8
+          opacity: .5
         }
       },
       emphasis: {
@@ -70,9 +71,14 @@ var RadarChart = function (userConfig) {
           "type": "group",
           "name": "General Options",
           "contents": [
+            dex.config.gui.columnDimensions({},
+              "dimensions",
+              chart.config.csv,
+              chart.config.dimensions),
             dex.config.gui.echartsTitle({}, "options.title"),
             dex.config.gui.echartsGrid({}, "options.grid"),
             dex.config.gui.echartsSymbol({}, "series"),
+            dex.config.gui.echartsItemStyle({}, "itemStyle"),
             {
               "name": "Color Scheme",
               "description": "The color scheme.",
@@ -90,8 +96,9 @@ var RadarChart = function (userConfig) {
             }
           ]
         },
-        dex.config.gui.echartsLabel({name: "Normal Label"}, "series.label.normal"),
-        dex.config.gui.echartsLabel({name: "Emphasis Label"}, "series.label.emphasis")
+        dex.config.gui.echartsLabelGroup({}, "series.label"),
+        dex.config.gui.echartsLineStyle({}, "series.lineStyle"),
+        dex.config.gui.echartsAreaStyle({}, "series.areaStyle")
       ]
     };
 
@@ -102,7 +109,7 @@ var RadarChart = function (userConfig) {
 
   chart.getOptions = function (csv) {
     var options, seriesNames, seriesInfo, angleInfo, radiusInfo, maxRadius, minRadius;
-    var csvSpec = chart.spec.parse(csv);
+    var csvSpec = chart.spec.parse(csv, chart.config.dimensions);
 
     options = dex.config.expandAndOverlay(chart.config.options, {
       series: [],

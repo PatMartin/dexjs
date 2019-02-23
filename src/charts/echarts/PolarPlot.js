@@ -31,6 +31,7 @@ var PolarPlot = function (userConfig) {
     'series.type': 'line',
     'series.itemStyle.normal.opacity': .6,
     'series.itemStyle.emphasis.opacity': .9,
+    'dimensions': {'series': 0, 'angle': 1, 'radius': 2, 'size': 3 },
     "options": {
       tooltip: {
         backgroundColor: "#FFFFFF",
@@ -84,6 +85,7 @@ var PolarPlot = function (userConfig) {
     .optionalNumber("size");
 
   chart.getGuiDefinition = function getGuiDefinition(config) {
+    dex.console.log("COLUMN NAME FOR SERIES", chart.config.csv.getColumnName(chart.config.dimensions.series));
     var defaults = {
       "type": "group",
       "name": "EChart Polar Plot Settings",
@@ -97,6 +99,10 @@ var PolarPlot = function (userConfig) {
             dex.config.gui.echartsGrid({}, "options.grid"),
             dex.config.gui.echartsTooltip({}, "options.tooltip"),
             dex.config.gui.echartsSymbol({}, "series"),
+            dex.config.gui.columnDimensions({},
+              "dimensions",
+              chart.config.csv,
+              chart.config.dimensions),
             {
               "name": "Chart Type",
               "description": "The chart type.",
@@ -206,7 +212,7 @@ var PolarPlot = function (userConfig) {
     var seriesInfo, radiusInfo, angleInfo, scaleInfo;
     var scaling = false;
 
-    var csvSpec = chart.spec.parse(csv);
+    var csvSpec = chart.spec.parse(csv, chart.config.dimensions);
 
     var options = dex.config.expandAndOverlay(chart.config.options, {
         series: [],
@@ -218,8 +224,8 @@ var PolarPlot = function (userConfig) {
     //dex.console.log("SPEC", csvSpec);
 
     seriesInfo = csvSpec.specified[0];
-    radiusInfo = csvSpec.specified[1];
-    angleInfo = csvSpec.specified[2];
+    angleInfo = csvSpec.specified[1];
+    radiusInfo = csvSpec.specified[2];
 
     chart.config.seriesInfo = seriesInfo;
     chart.config.radiusInfo = radiusInfo;
