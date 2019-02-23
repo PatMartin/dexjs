@@ -13,6 +13,7 @@ module.exports = function (dex) {
   ui.Table = require("./Table");
   ui.ConfigurationPane = require("./ConfigurationPane");
   ui.DataFilterPane = require("./DataFilterPane");
+  //ui.ParameterPane = require("./ParameterPane");
   ui.GuiPane = require("./GuiPane");
   ui.ColumnSelector = require("./ColumnSelector");
   return ui;
