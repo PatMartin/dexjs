@@ -61,6 +61,6 @@
     "watch": "shx echo QUICK WATCH IS BUILDING JS SOURCE... && watch \"npm run build && echo DONE...\" css src lib",
     "watch-css": "shx echo QUICK WATCH IS BUILDING CSS... && watch \"npm run css && echo DONE...\" css",
     "watch-autodeploy": "shx echo AUTODEPLOY WATCH IS BUILDING JS SOURCE... && watch \"npm run build && npm run deploy && echo DONE...\" css src lib",
-    "watch-quick": "shx echo QUICK WATCH IS BUILDING JS SOURCE... && watch \"npm run dex:js && echo DONE...\" src"
+    "watch-quick": "shx echo QUICK WATCH IS BUILDING JS SOURCE... && watch \"browserify src/dex.js --standalone dex > dist/dex.js && echo DONE\" src"
   }
 }
