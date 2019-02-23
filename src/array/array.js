@@ -286,5 +286,4 @@ module.exports = function (dex) {
     return indices;
   }
   return array;
-}
-;
+};
