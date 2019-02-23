@@ -13,5 +13,9 @@ require("../lib/uix-multiselect/uix.multiselect");
 $.widget.bridge("listSelectView", $.uix.multiselect);
 require("../lib/spectrum/spectrum");
 require("../lib/jquery-touchpunch/jquery-touchpunch");
+require("../lib/jqgrid/grid.locale-en");
+require("../lib/jqgrid/jqgrid.min");
+//console.log("GRID");
+//console.dir(grid);
 
 module.exports = dexjquery;
