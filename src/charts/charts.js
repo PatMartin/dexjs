@@ -5,6 +5,7 @@ module.exports = function charts() {
     'd3plus'   : require("./d3plus/d3plus"),
     'echarts'  : require("./echarts/echarts"),
     'elegans'  : require("./elegans/elegans"),
+    'grid'     : require("./grid/grid"),
     'multiples': require("./multiples/multiples"),
     'nvd3'     : require("./nvd3/nvd3"),
     'taucharts': require("./taucharts/taucharts"),
