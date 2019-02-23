@@ -316,9 +316,9 @@ module.exports = function (dex) {
     return dex.config.expandAndOverlay(userConfig, defaults);
   };
   gui.editableText = function editableText(config, prefix) {
-    var config = dex.config.gui.text(config, prefix);
+    var textConfig = dex.config.gui.text(config, prefix);
     var ns = (typeof prefix !== 'undefined') ? (prefix + ".") : "";
-    config.contents[0].contents.unshift(
+    textConfig.contents[0].contents.unshift(
       {
         "name": "Text Contents",
         "description": "The text.",
@@ -327,7 +327,7 @@ module.exports = function (dex) {
         "initialValue": ""
       }
     );
-    return config;
+    return textConfig;
   };
   gui.fill = function fill(config, prefix) {
     var ns = (typeof prefix !== 'undefined') ? (prefix + ".") : "";
@@ -747,7 +747,7 @@ module.exports = function (dex) {
         },
         {
           "name": "Left Margin",
-          "description": "Left top margin of the chart.",
+          "description": "The left margin of the chart.",
           "target": ns + "padding.left",
           "type": "int",
           "minValue": 0,
@@ -1049,7 +1049,7 @@ module.exports = function (dex) {
           "target": ns + "left",
           "type": "int",
           "minValue": 0,
-          "maxValue": 200,
+          "maxValue": 400,
           "initialValue": 0
         },
         {
@@ -1058,7 +1058,7 @@ module.exports = function (dex) {
           "target": ns + "right",
           "type": "int",
           "minValue": 0,
-          "maxValue": 200,
+          "maxValue": 400,
           "initialValue": 0
         },
         {
@@ -1067,7 +1067,7 @@ module.exports = function (dex) {
           "target": ns + "top",
           "type": "int",
           "minValue": 0,
-          "maxValue": 200,
+          "maxValue": 400,
           "initialValue": 0
         },
         {
@@ -1076,7 +1076,7 @@ module.exports = function (dex) {
           "target": ns + "bottom",
           "type": "int",
           "minValue": 0,
-          "maxValue": 200,
+          "maxValue": 400,
           "initialValue": 0
         },
         {
@@ -1101,6 +1101,13 @@ module.exports = function (dex) {
           "minValue": 0,
           "maxValue": 200,
           "initialValue": 0
+        },
+        {
+          "name": "Contains Label",
+          "description": "Set to true in order to accommodate dynamic label sizes.",
+          "target": ns + "containsLabel",
+          "type": "boolean",
+          "initialValue": false
         },
       ]
     };
@@ -1146,7 +1153,8 @@ module.exports = function (dex) {
           "choices": [
             "sans-serif", "arial", "courier", "courier new",
             "arial narrow", "allegro", "lucidia console",
-            "lucida sans", "times", "arial rounded mt bold"
+            "lucida sans", "times", "arial rounded mt bold",
+            "monospace"
           ],
           "initialValue": "sans-serif"
         },
@@ -1171,6 +1179,14 @@ module.exports = function (dex) {
       "name": "Tooltips",
       "contents": [
         dex.config.gui.echartsTextStyle(config.textStyle || {}, ns + "textStyle"),
+        {
+          "name": "Trigger",
+          "description": "Whether the tooltip is triggered by axis location or by item.",
+          "target": ns + "trigger",
+          "type": "choice",
+          "choices": ["item", "axis", "none"],
+          "initialValue": "item"
+        },
         {
           "name": "Formatter",
           "description": "The text format variables {a}-{d}.",
@@ -1260,7 +1276,7 @@ module.exports = function (dex) {
         },
         {
           "name": "Formatter",
-          "description": "Formatter of the label.",
+          "description": "Formatter of the label. Ex: none, comma-delimited, succinct",
           "target": ns + "formatter",
           "type": "string",
           "initialValue": ""
@@ -1494,6 +1510,49 @@ module.exports = function (dex) {
           "minValue": 0,
           "maxValue": 1,
           "initialValue": 0
+        }
+      ]
+    };
+    return dex.config.expandAndOverlay(userConfig, defaults);
+  };
+  gui.echartsAreaStyle = function echartsAreaStyle(config, prefix) {
+    var ns = (typeof prefix !== 'undefined') ? (prefix + ".") : "";
+    var userConfig = config || {};
+    var defaults = {
+      "type": "group",
+      "name": "Area Style",
+      "contents": [
+        {
+          "name": "Color",
+          "description": "Area color.",
+          "target": ns + "color",
+          "type": "color",
+          "initialValue": "#000000"
+        },
+        {
+          "name": "Shadow Blur",
+          "description": "Shadow blur.",
+          "target": ns + "shadowBlur",
+          "type": "float",
+          "minValue": 0,
+          "maxValue": 20,
+          "initialValue": 0
+        },
+        {
+          "name": "Shadow Color",
+          "description": "Shadow color.",
+          "target": ns + "shadowColor",
+          "type": "color",
+          "initialValue": "#000000"
+        },
+        {
+          "name": "Opacity",
+          "description": "Opacity.",
+          "target": ns + "opacity",
+          "type": "float",
+          "minValue": 0,
+          "maxValue": 1,
+          "initialValue": 1
         }
       ]
     };
@@ -1757,6 +1816,32 @@ module.exports = function (dex) {
         dex.config.gui.echartsLineStyle(config.lineStyle || {}, ns + "lineStyle")
       ]
     };
+    return dex.config.expandAndOverlay(userConfig, defaults);
+  };
+  gui.columnDimensions = function columnDimensions(config, prefix, csv, dimensions) {
+    var ns = (typeof prefix !== 'undefined') ? (prefix + ".") : "";
+    var userConfig = config || {};
+
+    var defaults = {
+      "type": "group",
+      "name": "Dimensions",
+      "contents": []
+    };
+
+    Object.keys(dimensions).forEach(function (dimension) {
+      dimensions[dimension] = csv.getColumnName(dimensions[dimension]);
+
+      var name = dimension.charAt(0).toUpperCase() + dimension.slice(1);
+      defaults.contents.push({
+        "name": name,
+        "description": name + " value.",
+        "target": ns + dimension,
+        "type": "choice",
+        "choices": csv.header,
+        "initialValue": dimensions[dimension]
+      });
+    });
+
     return dex.config.expandAndOverlay(userConfig, defaults);
   };
   gui.echartsAxis = function echartsAxis(config, prefix) {
