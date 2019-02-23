@@ -3,6 +3,7 @@ var guipane = function (userConfig) {
   var componentMap = {};
   var targetList = {};
   var INTITIALIZING = false;
+  var CHANGED = false;
 
   var defaults = {
     // The parent container of this pane.
@@ -38,8 +39,8 @@ var guipane = function (userConfig) {
     //dex.console.log("PICKERS", $pickers);
 
     $pickers.spectrum({
-      color: tinycolor,
       showPalette: true,
+      showAlpha: true,
       palette: [
         ["rgb(0, 0, 0)", "rgb(67, 67, 67)", "rgb(102, 102, 102)", /*"rgb(153, 153, 153)","rgb(183, 183, 183)",*/
           "rgb(204, 204, 204)", "rgb(217, 217, 217)", /*"rgb(239, 239, 239)", "rgb(243, 243, 243)",*/ "rgb(255, 255, 255)"],
@@ -69,11 +70,13 @@ var guipane = function (userConfig) {
         var attName = this.getAttribute("targetAttribute");
         var value = color.toHexString();
         if (cmp != undefined) {
-          cmp.attrSave(attName, value);
           if (!INITIALIZING) {
+            cmp.attrSave(attName, value);
             cmp.refreshAsync();
           }
-          ;
+          else {
+            cmp.attr(attName, value);
+          }
         }
       }
     });
@@ -97,18 +100,69 @@ var guipane = function (userConfig) {
           var cmp = componentMap[option[0].getAttribute("targetComponent")];
           var attName = option[0].getAttribute("targetAttribute");
           if (cmp != undefined) {
-            cmp.attrSave(attName, option[0].getAttribute("value"));
             if (!INITIALIZING) {
+              cmp.attrSave(attName, option[0].getAttribute("value"));
               cmp.refreshAsync();
             }
-            ;
+            else {
+              cmp.attr(attName, option[0].getAttribute("value"));
+            }
           }
         }
         $choices.multiselect('updateButtonText');
       }
     });
 
-    $choices.multiselect('updateButtonText');
+    var $multipleChoices = $(config.parent + ' .control-multiple-choice');
+
+    if ($multipleChoices.length > 0) {
+      $multipleChoices.multiselect({
+          includeSelectAllOption: true,
+          allSelectedText: 'All',
+          enableCaseInsensitiveFiltering: true,
+          enableHTML: true,
+          //enableFullValueFiltering: true,
+          buttonText: function buttonTextHandler(options, select) {
+            //dex.console.log("OPTIONS", options, "SELECT", select[0]);
+            if (options !== undefined && select !== undefined && select.length > 0) {
+
+              if (options.length == select[0].children.length) {
+                return "Selected: All (" + select[0].children.length + ")";
+              }
+              else {
+                return "<font color='red'>Selected: " + options.length + " of " +
+                  select[0].children.length + "</font>";
+              }
+            }
+            else {
+              return "Undefined";
+            }
+          },
+          onSelectAll: function selectAllHandler() {
+            CHANGED = true;
+          },
+          onChange: function onChangeHandler(option, checked) {
+            CHANGED = true;
+          },
+          onDropdownHide: function onDropdownHideHandler(evt) {
+            if (this.getSelected().length > 0) {
+              var option = this.getSelected()[0];
+              var vals = this.getSelected().map(function () {
+                return $(this).text();
+              }).get();
+              var cmp = componentMap[option.getAttribute("targetComponent")];
+              var attName = option.getAttribute("targetAttribute");
+              if (cmp != undefined) {
+                cmp.attrSave(attName, vals);
+                cmp.refreshAsync();
+              }
+            }
+          }
+        });
+
+      //$multipleChoices.multiselect('selectAll', false);
+      $multipleChoices.multiselect('updateButtonText', false);
+    }
 
     // Enable String Input
     var stringInputs = $(config.parent + ' .control-string input');
@@ -118,9 +172,12 @@ var guipane = function (userConfig) {
         var cmp = componentMap[event.target.getAttribute("targetComponent")];
         var attName = event.target.getAttribute("targetAttribute");
         if (cmp != undefined) {
-          cmp.attrSave(attName, event.target.value);
           if (!INITIALIZING) {
+            cmp.attrSave(attName, event.target.value);
             cmp.refreshAsync();
+          }
+          else {
+            cmp.attr(attName, event.target.value);
           }
         }
       });
@@ -148,9 +205,12 @@ var guipane = function (userConfig) {
         slider.on("change", function (formattedValues, handle, values, tap, positions) {
           var cmp = componentMap[cmpName];
           if (cmp != undefined) {
-            cmp.attr(targetAttribute, values[0]);
             if (!INITIALIZING) {
+              cmp.attrSave(targetAttribute, values[0]);
               cmp.refreshAsync();
+            }
+            else {
+              cmp.attr(targetAttribute, values[0]);
             }
           }
         });
@@ -190,9 +250,12 @@ var guipane = function (userConfig) {
             values, tap, positions);
           var cmp = componentMap[cmpName];
           if (cmp != undefined) {
-            cmp.attr(targetAttribute, values[0]);
             if (!INITIALIZING) {
+              cmp.attrSave(targetAttribute, values[0]);
               cmp.refreshAsync();
+            }
+            else {
+              cmp.attr(targetAttribute, values[0]);
             }
           }
         });
@@ -309,6 +372,9 @@ var guipane = function (userConfig) {
       case "choice" :
         addChoice(targetComponent, $targetElt, guiDef, depth);
         break;
+      case "multiple-choice" :
+        addMultipleChoice(targetComponent, $targetElt, guiDef, depth);
+        break;
       case "color" :
         addColor(targetComponent, $targetElt, guiDef, depth);
         break;
@@ -422,6 +488,46 @@ var guipane = function (userConfig) {
         .attr("targetComponent", targetComponent)
         .text(choice);
 
+      //dex.console.log("COMPARING CHOICE: '" + choice + "' to '", guiDef);
+      if (choice === guiDef.initialValue) {
+        $option.attr("selected", "selected");
+      }
+
+      $select.append($option);
+    });
+
+    $leftCell.append($label);
+    $rightCell.append($select);
+    $row.append($leftCell);
+    $row.append($rightCell);
+
+    //dex.console.log("CHOICE", guiDef);
+    $targetElt.append($row);
+  }
+
+  function addMultipleChoice(targetComponent, $targetElt, guiDef, depth) {
+    var $row = $("<tr></tr>");
+    var $leftCell = $("<td></td>");
+    var $rightCell = $("<td></td>");
+    var $label = $("<label></label>")
+      .attr("title", guiDef.description)
+      .html("<strong>" + guiDef.name + ": </strong>")
+
+    var $select = $("<select></select>")
+      .attr("multiple", "multiple")
+      .attr("id", guiDef.name)
+      .attr("targetAttribute", guiDef.target)
+      .attr("targetComponent", targetComponent)
+      .addClass("control-multiple-choice");
+
+    guiDef.choices.forEach(function (choice) {
+      var $option = $("<option></option>")
+        .attr("value", choice)
+        .attr("targetAttribute", guiDef.target)
+        .attr("targetComponent", targetComponent)
+        .text(choice);
+
+      //dex.console.log("COMPARING MULTIPLE CHOICE: '" + choice + "' to '", guiDef);
       if (choice === guiDef.initialValue) {
         $option.attr("selected", "selected");
       }
@@ -530,9 +636,11 @@ var guipane = function (userConfig) {
       .addClass("control-float");
 
     var $leftCell = $("<td></td>")
-      .attr("rowspan", 2);
+      .attr("height", "60px")
+      .attr("valign", "center");
     var $rightCell = $("<td></td>")
-      .attr("rowspan", 2);
+      .attr("height", "60px")
+      .attr("valign", "center");
 
     // Determine an appropriate step
     var step;
@@ -568,10 +676,13 @@ var guipane = function (userConfig) {
   function addInt(targetComponent, $targetElt, guiDef, depth) {
     //dex.console.log("AddInt", guiDef);
     var $row = $("<tr></tr>")
+      .attr("rowspan", 2)
       .addClass("control-int");
 
-    var $leftCell = $("<td></td>");
-    var $rightCell = $("<td></td>");
+    var $leftCell = $("<td></td>")
+      .attr("colspan", 1);
+    var $rightCell = $("<td></td>")
+      .attr("colspan", 1);
 
     // Determine an appropriate step
     var step;
