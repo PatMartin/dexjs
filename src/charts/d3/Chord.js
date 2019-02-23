@@ -215,11 +215,8 @@ var Chord = function (userConfig) {
     var chart = this;
     var config = chart.config;
     var csv = config.csv;
-    var margin = config.margin;
-    margin.top = +margin.top;
-    margin.bottom = +margin.bottom;
-    margin.left = +margin.left;
-    margin.right = +margin.right;
+    var margin = chart.getMargins();
+
     config.color = config.color = dex.color.getColormap(config.colorScheme);
 
     var width = +config.width - margin.left - margin.right;
