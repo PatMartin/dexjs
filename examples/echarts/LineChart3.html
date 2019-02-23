@@ -30,7 +30,7 @@
     <script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
     <script src="../../dist/dex-libs.js"></script>
     <script src="../../dist/dex.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/3.6.1/echarts.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/4.1.0/echarts.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Faker/3.1.0/faker.min.js"></script>
 
 </head>
@@ -48,10 +48,11 @@
   $(document).ready(function () {
     var csv = new dex.csv(['Name', 'Month', 'Sales', 'Extraneous', 'Item'],[]);
 
-    var dates = (1..10).map(function() { return faker.date.past(20); });
+    var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+
     var items = ["Car" ];
 
-    for (var nameIndex = 0; nameIndex < 100; nameIndex++) {
+    for (var nameIndex = 0; nameIndex < 20; nameIndex++) {
       var name = faker.name.firstName();
       months.forEach(function (month) {
         items.forEach(function (item) {
