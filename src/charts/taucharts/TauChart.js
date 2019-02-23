@@ -96,12 +96,46 @@ var TauChart = function (userConfig) {
       "name": "TauChart Settings",
       "contents": [
         {
+          "type": "group",
+          "name": "Plugins",
+          "contents": [
+            {
+              "name": "Enable Legend",
+              "description": "Enable the legend.",
+              "type": "boolean",
+              "target": "plugins.legend",
+              "initialValue": true
+            },
+            {
+              "name": "Enable Tooltips",
+              "description": "Enable tooltips.",
+              "type": "boolean",
+              "target": "plugins.tooltips",
+              "initialValue": true
+            },
+            {
+              "name": "Enable Quick Filters",
+              "description": "Enable the quick filters.",
+              "type": "boolean",
+              "target": "plugins.quickfilters",
+              "initialValue": true
+            },
+            {
+              "name": "Enable Trend Lines",
+              "description": "Enable the trendlines plugin.",
+              "type": "boolean",
+              "target": "plugins.trendline",
+              "initialValue": false
+            }
+          ]
+        },
+        {
           "name": "Chart Type",
           "description": "The type of chart.",
           "type": "choice",
           "choices": ["scatterplot", "line", "area", "bar", "horizontal-bar",
             "stacked-bar", "horizontal-stacked-bar"],
-          "target": "options.type",
+          "target": "type",
           "initialValue": "scatterplot"
         },
         {
@@ -208,28 +242,32 @@ var TauChart = function (userConfig) {
           "description": "The X Axis",
           "type": "choice",
           "choices": chart.config.csv.header,
-          "target": "options.x"
+          "target": "options.x",
+          "initialValue": chart.config.csv.header[1]
         },
         {
           "name": "Y-Axis",
           "description": "The Y Axis",
           "type": "choice",
           "choices": chart.config.csv.header,
-          "target": "options.y"
+          "target": "options.y",
+          "initialValue": chart.config.csv.header[2]
         },
         {
           "name": "Color",
           "description": "The color",
           "type": "choice",
           "choices": dex.array.combine(["none"], chart.config.csv.header),
-          "target": "options.color"
+          "target": "options.color",
+          "initialValue": chart.config.csv.header[0]
         },
         {
           "name": "Size",
           "description": "Size by.",
           "type": "choice",
           "choices": dex.array.combine(["none"], chart.config.csv.header),
-          "target": "options.size"
+          "target": "options.size",
+          "initialValue": "none"
         },
         {
           "name": "Split",
@@ -237,34 +275,6 @@ var TauChart = function (userConfig) {
           "type": "choice",
           "choices": dex.array.combine(["none"], chart.config.csv.header),
           "target": "options.split"
-        },
-        {
-          "name": "Enable Legend",
-          "description": "Enable the legend.",
-          "type": "boolean",
-          "target": "plugins.legend",
-          "initialValue": true
-        },
-        {
-          "name": "Enable Tooltips",
-          "description": "Enable tooltips.",
-          "type": "boolean",
-          "target": "plugins.tooltips",
-          "initialValue": true
-        },
-        {
-          "name": "Enable Quick Filters",
-          "description": "Enable the quick filters.",
-          "type": "boolean",
-          "target": "plugins.quickfilters",
-          "initialValue": true
-        },
-        {
-          "name": "Enable Trend Lines",
-          "description": "Enable the trendlines plugin.",
-          "type": "boolean",
-          "target": "plugins.trendline",
-          "initialValue": false
         }
       ]
     };
