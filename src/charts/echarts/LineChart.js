@@ -20,6 +20,7 @@ var LineChart = function (userConfig) {
     "height": "100%",
     "type": "linechart",
     "palette": "ECharts",
+    "dimensions": { "series": 0, "x": 1, "y": 2 },
     // If I make this csv change aware, I can change update model to "update".
     "refreshType": "update",
     "series.symbol": "circle",
@@ -56,9 +57,12 @@ var LineChart = function (userConfig) {
         borderColor: "#000000",
         borderWidth: 2,
         trigger: "item",
-
+        position: function (pos, params, dom, rect, size) {
+          return [pos[0] + 10, pos[1] - 0];
+        },
+        confine: true,
         formatter: function (d) {
-          dex.console.log("FORMATTER", d);
+          //dex.console.log("FORMATTER", d);
           var str = "<table class='dex-tooltip-table'>";
 
           d.data.forEach(function (value) {
@@ -84,6 +88,8 @@ var LineChart = function (userConfig) {
     .any("x")
     .any("y");
 
+  //dex.console.log("SPEC", chart.spec);
+
   chart.getGuiDefinition = function getGuiDefinition(config) {
     var defaults = {
       "type": "group",
@@ -97,6 +103,10 @@ var LineChart = function (userConfig) {
             dex.config.gui.echartsGrid({}, "options.grid"),
             dex.config.gui.echartsTooltip({}, "options.tooltip"),
             dex.config.gui.echartsSymbol({}, "series"),
+            dex.config.gui.columnDimensions({},
+              "dimensions",
+              chart.config.csv,
+              chart.config.dimensions),
             {
               "name": "Color Scheme",
               "description": "The color scheme.",
@@ -178,6 +188,7 @@ var LineChart = function (userConfig) {
   chart.getOptions = function (csv) {
     var options, seriesNames, seriesInfo, xInfo, yInfo;
 
+    //var csvSpec = chart.spec.parse(csv, chart.config.dimensions);
     var csvSpec = chart.spec.parse(csv);
 
     //dex.console.log("CHART-CONFIG", chart.config);
@@ -203,20 +214,25 @@ var LineChart = function (userConfig) {
     xInfo = csvSpec.specified[1];
     yInfo = csvSpec.specified[2];
 
-    chart.config.seriesInfo = seriesInfo;
-    chart.config.xInfo = xInfo;
-    chart.config.yInfo = yInfo;
+    var seriesIndex = csvSpec.specified[0].position;
+    var xIndex = csvSpec.specified[1].position;
+    var yIndex = csvSpec.specified[2].position;
+    var types = csv.guessTypes();
 
-    seriesNames = csv.uniqueArray(seriesInfo.position);
+    var xType = types[xIndex];
+    var yType = types[yIndex];
+    var seriesType = types[seriesIndex];
+
+    seriesNames = csv.uniqueArray(seriesIndex);
     options.legend = {data: seriesNames};
 
-    if (xInfo.type == "string") {
+    if (xType == "string") {
       options.xAxis = dex.config.expandAndOverlay({
         type: "category",
-        data: csv.uniqueArray(xInfo.position)
+        data: csv.uniqueArray(xIndex)
       }, options.xAxis);
     }
-    else if (xInfo.type == "date") {
+    else if (xType == "date") {
       options.xAxis = dex.config.expandAndOverlay({
         type: "time"
       }, options.xAxis);
@@ -229,13 +245,13 @@ var LineChart = function (userConfig) {
       options.xAxis.data = undefined;
     }
 
-    if (yInfo.type == "string") {
+    if (yType == "string") {
       options.yAxis = dex.config.expandAndOverlay({
         type: "category",
-        data: csv.uniqueArray(yInfo.position)
+        data: csv.uniqueArray(yIndex)
       }, options.yAxis);
     }
-    else if (yInfo.type == "date") {
+    else if (yType == "date") {
       options.yAxis = dex.config.expandAndOverlay({
         type: "time"
       }, options.yAxis);
@@ -246,15 +262,26 @@ var LineChart = function (userConfig) {
         type: "value"
       }, options.yAxis);
       options.yAxis.data = undefined;
+    }
+
+    // Set formatters here.
+    if (options.xAxis.axisLabel !== undefined && options.xAxis.axisLabel.formatter !== undefined) {
+      options.xAxis.axisLabel.formatter =
+        dex.config.getFormatter(options.xAxis.axisLabel.formatter, xType);
+    }
+
+    if (options.yAxis.axisLabel !== undefined && options.yAxis.axisLabel.formatter !== undefined) {
+      options.yAxis.axisLabel.formatter =
+        dex.config.getFormatter(options.yAxis.axisLabel.formatter, yType);
     }
 
     seriesNames.forEach(function (seriesName) {
       var selectedCsv = csv.selectRows(function (row) {
-        return row[seriesInfo.position] == seriesName;
+        return row[seriesIndex] == seriesName;
       });
 
       var seriesData = selectedCsv.data.map(function (row, ri) {
-        var newRow = [row[xInfo.position], row[yInfo.position]];
+        var newRow = [row[xIndex], row[yIndex]];
         row.forEach(function (col, ci) {
           newRow.push(selectedCsv.header[ci] + ":::" + col);
         });
