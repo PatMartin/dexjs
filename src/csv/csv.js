@@ -246,12 +246,10 @@ csv.prototype.getColumnName = function (colIndex) {
     return null;
   }
 
-  if (colIndex >= 0 && colIndex < csv.header.length) {
-    return csv.header[colIndex];
-  }
+  var colNum = csv.getColumnNumber(colIndex);
 
-  if (csv.header.indexOf(colIndex) >= 0) {
-    return colIndex;
+  if (colNum >= 0) {
+    return csv.header[colNum];
   }
 
   return null;
@@ -999,35 +997,37 @@ csv.prototype.getFramesByColumns = function (columns) {
   var csv = this;
 
   var columnIndexes = columns.map(function (col) {
-    return this.getColumnNumber(col);
+    return csv.getColumnNumber(col);
   });
 
   var axisCsv = this.include(columnIndexes);
-  var seriesCsv = this.exclude(columnIndexes);
+  var frameMap = {};
 
-  // If there are no series.
-  if (seriesCsv.header.length == 0) {
-    return {
-      frameIndices: [axisCsv.header.join(" vs ")],
-      frames: [axisCsv]
+  var groupedHeader = csv.header.filter(function(hdr, hi) { return !columnIndexes.includes(hi)});
+
+  axisCsv.data.forEach(function(row) {
+    var key = row.join(" > ");
+    if (frameMap[key] === undefined) {
+      frameMap[key] = new dex.csv(groupedHeader);
     }
-  }
+  });
+
+  csv.data.forEach(function(row) {
+    var key = dex.array.slice(row, columnIndexes).join(" > ");
+    frameMap[key].data.push(row.filter(function (col, i) { return !columnIndexes.includes(i); }));
+  });
 
   var frames = {
     frameIndices: [],
     frames: []
   };
 
-  seriesCsv.header.forEach(function (h, hi) {
-    frames.frameIndices.push(h);
-    var frame = new dex.csv(axisCsv);
-    frame.header.push(h);
-    seriesCsv.data.forEach(function (row, ri) {
-      frame.data[ri].push(row[hi]);
-    });
-    frames.frames.push(frame);
+  Object.keys(frameMap).forEach(function(key) {
+    frames.frameIndices.push(key);
+    frames.frames.push(frameMap[key])
   });
-  dex.console.log("FRAMES", frames);
+
+  //dex.console.log("FRAMES", frames);
   return frames;
 };
 
@@ -1522,8 +1522,76 @@ csv.prototype.getGraph = function (valueFunction) {
     });
   }
 
-  //dex.console.log("NODES", nodes, links, indexMap);
+  //dex.console.log("NODES", nodes, "LINKS", JSON.stringify(links), "INDEX-MAP", indexMap);
   return {'nodes': nodes, 'links': links};
+};
+
+csv.prototype.getAggregatedGraph = function (valueFunction) {
+  var valueFn = valueFunction || function () {
+    return 1;
+  };
+  var csv = this;
+  var nodes = [];
+  var linkMap = {};
+  var links = [];
+  var nodeNum = 0;
+  var indexMap = [];
+
+  // Record uniques across the data, treating each column as it's own namespace.
+  csv.header.map(function (col, ci) {
+    indexMap.push({});
+    csv.data.map(function (row, ri) {
+      if (_.isUndefined(indexMap[ci][row[ci]])) {
+        indexMap[ci][row[ci]] = nodeNum;
+        nodes.push({'name': row[ci], 'category': csv.header[ci]});
+        nodeNum++;
+      }
+    });
+  });
+
+  for (var ci = 1; ci < csv.header.length; ci++) {
+    csv.data.map(function (row, ri) {
+      var source = indexMap[ci - 1][row[ci - 1]];
+      var target = indexMap[ci][row[ci]];
+      var value = valueFn(csv, ci - 1, ri, ci, ri);
+
+      if (linkMap[source] === undefined) {
+        linkMap[source] = {};
+      }
+
+      if (linkMap[source][target] === undefined)  {
+        linkMap[source][target] = value;
+      }
+      else {
+        linkMap[source][target] += value;
+      }
+    });
+  }
+
+  Object.keys(linkMap).forEach(function(source) {
+    Object.keys(linkMap[source]).forEach(function(target) {
+      links.push({
+        'source': +source,
+        'target': +target,
+        'value': +(linkMap[source][target])
+      });
+    });
+  });
+
+  //dex.console.log("AGGREGATED > NODES", nodes, "LINKS", JSON.stringify(links), "INDEX-MAP", indexMap);
+  return {'nodes': nodes, 'links': links};
+};
+
+csv.prototype.toNestedJson = function (manualWeight) {
+  var csv = this;
+  manualWeight = manualWeight || false;
+  var result = {
+    'name': csv.header[0],
+    'children': this.toNestedJsonChildren(
+      this.getConnectionMap(csv), manualWeight)
+  };
+  //dex.console.log("toNestedJson.result()", result);
+  return result;
 };
 
 csv.prototype.toNestedJson = function (manualWeight) {
