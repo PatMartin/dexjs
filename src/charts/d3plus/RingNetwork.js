@@ -21,30 +21,39 @@ var RingNetwork = function (userConfig) {
     'class': 'RingNetworkClass',
     'resizable': true,
     // Sample default data...
-    'csv': {
-      'header': ["NAME", "GENDER", "VEHICLE"],
-      'data': [
-        ["JIM", "M", "CAR"],
-        ["JOE", "M", "CAR"],
-        ["PAT", "M", "TRUCK"],
-        ["SALLY", "F", "TRUCK"]
-      ]
-    },
+    'csv': undefined,
     'type': "rings",
     'connect': 'last',
     //'connect' : 'all',
     'width': "100%",
     'height': "100%",
-    'transform': "",
-    'margin': {
-      'left': 100,
-      'right': 100,
-      'top': 50,
-      'bottom': 50
-    }
+    'transform': ""
   };
 
   var chart = new dex.component(userConfig, defaults);
+  chart.spec = new dex.data.spec("Ring Network")
+    .anything("nodes");
+
+  chart.getGuiDefinition = function getGuiDefinition(config) {
+    var defaults = {
+      "type": "group",
+      "name": "D3Plus Ring Network Settings",
+      "contents": [
+        dex.config.gui.general(),
+        dex.config.gui.dimensions(),
+        {
+          "type": "group",
+          "name": "General",
+          "contents": [
+          ]
+        }
+      ]
+    };
+
+    var guiDef = dex.config.expandAndOverlay(config, defaults);
+    dex.config.gui.sync(chart, guiDef);
+    return guiDef;
+  };
 
   chart.render = function render() {
     d3 = dex.charts.d3.d3v3;
