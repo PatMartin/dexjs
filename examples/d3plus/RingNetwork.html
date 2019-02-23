@@ -1,13 +1,20 @@
 <!DOCTYPE html>
-<meta charset="utf-8">
-<style>
-    html, body, #RingNetworkParent {
-        height: 100%;
-        min-height: 100%;
-        width: 100%;
-        min-width: 100%;
-    }
-</style>
+<html>
+<head>
+    <style>
+        html, body, #Chart {
+            height: 100%;
+            min-height: 100%;
+            width: 100%;
+            min-width: 100%;
+        }
+
+        #Chart {
+            display: inline-block;
+        }
+
+    </style>
+    <title>dex.js : D3Plus Ring Network</title>
 <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.css">
 <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.theme.min.css">
 <link rel="stylesheet" href="../../dist/dex-jquery.css">
@@ -25,12 +32,17 @@
 <script src="../../dist/dex.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Faker/3.1.0/faker.min.js"></script>
 <body>
-<div id="RingNetworkParent"></div>
+<div class="ui-layout-center">
+    <div id="Chart"></div>
+</div>
+<div class="ui-layout-west">
+    <div id="ConfigurationPane"></div>
+</div>
 
 <script src="http://www.d3plus.org/js/d3plus.js"></script>
 
 <script>
-  var csv = {
+  var csv = new dex.csv({
     'header': ["President", "Party", "Home State"],
     'data': [
       ["George Washington", "Independent", "Virginia"],
@@ -78,16 +90,33 @@
       ["George W. Bush", "Republican", "Texas"],
       ["Barack Obama", "Democratic", "Illinois"]
     ]
-  };
+  });
+
+  $('body').layout({
+    applyDemoStyles: false,
+    west: {
+      size: 360
+    },
+    onresize: function () {
+      chart.resize();
+    }
+  });
 
   // Configure a chart.
-  var network = dex.charts.d3plus.RingNetwork({
-      'parent': '#RingNetworkParent',
+  var chart = dex.charts.d3plus.RingNetwork({
+      'parent': '#Chart',
       //'connect': 'first',
       'type': 'rings',
       'edges': {'arrows': true},
       'csv': csv
     }
-  ).render();
+  );
+  chart.render();
+
+  var configPane = dex.ui.ConfigurationPane({
+    "parent": "#ConfigurationPane",
+    "csv": csv,
+    "components": [chart]
+  }).render();
 
 </script>
