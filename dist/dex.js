@@ -2613,8 +2613,7 @@ module.exports = function (dex) {
     return indices;
   }
   return array;
-}
-;
+};
 },{}],5:[function(require,module,exports){
 /**
  *
@@ -3332,6 +3331,7 @@ module.exports = function charts() {
     'd3plus'   : require("./d3plus/d3plus"),
     'echarts'  : require("./echarts/echarts"),
     'elegans'  : require("./elegans/elegans"),
+    'grid'     : require("./grid/grid"),
     'multiples': require("./multiples/multiples"),
     'nvd3'     : require("./nvd3/nvd3"),
     'taucharts': require("./taucharts/taucharts"),
@@ -3339,7 +3339,7 @@ module.exports = function charts() {
     'vis'      : require("./vis/vis")
   };
 };
-},{"./c3/c3":14,"./d3/d3":36,"./d3plus/d3plus":38,"./echarts/echarts":49,"./elegans/elegans":51,"./multiples/multiples":54,"./nvd3/nvd3":57,"./taucharts/taucharts":66,"./threejs/threejs":68,"./vis/vis":71}],16:[function(require,module,exports){
+},{"./c3/c3":14,"./d3/d3":36,"./d3plus/d3plus":38,"./echarts/echarts":52,"./elegans/elegans":54,"./grid/grid":56,"./multiples/multiples":59,"./nvd3/nvd3":62,"./taucharts/taucharts":71,"./threejs/threejs":73,"./vis/vis":76}],16:[function(require,module,exports){
 /**
  *
  * This is the base constructor for a D3 BumpChart component.
@@ -4033,11 +4033,8 @@ var Chord = function (userConfig) {
     var chart = this;
     var config = chart.config;
     var csv = config.csv;
-    var margin = config.margin;
-    margin.top = +margin.top;
-    margin.bottom = +margin.bottom;
-    margin.left = +margin.left;
-    margin.right = +margin.right;
+    var margin = chart.getMargins();
+
     config.color = config.color = dex.color.getColormap(config.colorScheme);
 
     var width = +config.width - margin.left - margin.right;
@@ -6701,17 +6698,15 @@ var ParallelCoordinates = function (userConfig) {
         }
       }
     }),
-    'verticalLabel': dex.config.text({
+    'tickLabel': dex.config.text({
       // If you want to stagger labels.
       'dy': function (d, i) {
         return (i % 2) ?
           -chart.config.margin.top * .40 :
           -chart.config.margin.top * .40;
       },
-      'font.size': function (d) {
-        return 18
-      },
-      'fill.fillColor': 'red',
+      'font.size': 18,
+      'fill.fillColor': 'black',
       'anchor': 'middle',
       'text': function (d) {
         return d;
@@ -6809,9 +6804,9 @@ var ParallelCoordinates = function (userConfig) {
           ]
         },
         dex.config.gui.brush({}, "brush"),
-        dex.config.gui.text({name: "Tick Label"}, "axis.label"),
+        dex.config.gui.text({name: "Tick Label"}, "tickLabel"),
         dex.config.gui.path({name: "Axis Line"}, "axis.line"),
-        dex.config.gui.text({name: "Axis Label"}, "verticalLabel"),
+        dex.config.gui.text({name: "Axis Label"}, "axis.label"),
         dex.config.gui.linkGroup({}, "link")
       ]
     };
@@ -6975,11 +6970,14 @@ var ParallelCoordinates = function (userConfig) {
 
         // Now that the axis has rendered, adjust the tick labels based on our spec.
         var tickLabels = d3.select(this)
-          .selectAll('.tick text')
-          .call(dex.config.configureText, myConfig.label, i);
+          .selectAll("text")
+          .call(dex.config.configureText, config.tickLabel, i);
 
+        //var axisLabels = d3.select(this)
+        //  .selectAll('.tick text')
+        //  .call(dex.config.configureText, myConfig.label, i);
 
-        var maxFont = 48;
+        var maxFont = config.tickLabel.font.size;
 
         var availableHeight = height / (tickLabels[0].length);
 
@@ -6995,15 +6993,23 @@ var ParallelCoordinates = function (userConfig) {
             }
           });
 
-        maxFont = Math.min(availableHeight, maxFont);
-        tickLabels.style("font-size", "" + maxFont + "px")
+        maxFont = Math.min(availableHeight - 1, maxFont);
+        tickLabels
+          .style("font-size", "" + maxFont + "px")
+          .attr("visibility", function(d) {
+            "use strict";
+            if (maxFont < 4) {
+              return "hidden";
+            }
+            else {
+              return "visible";
+            }
+          })
           .attr("dy", ".3em")
           .attr("dx", (i < config.csv.header.length - 1) ? "-4px" : "4px");
-
-
       })
       .append("text")
-      .call(dex.config.configureText, config.verticalLabel);
+      .call(dex.config.configureText, config.tickLabel);
 
     // Add and store a brush for each axis.
     var brush = g.append("g")
@@ -7943,11 +7949,12 @@ var Sankey = function (userConfig) {
     'palette': "ECharts",
     units: "UNITS",
     iterations: 32,
+    aggregate: true,
     link: {
       normal: dex.config.link({
         'fill.fillColor': 'none',
         'stroke.color': 'black',
-        'stroke.opacity': .2
+        'stroke.opacity': .05
       }),
       emphasis: dex.config.link({
         'fill.fillColor': 'none',
@@ -7958,7 +7965,7 @@ var Sankey = function (userConfig) {
     node: {
       normal: dex.config.link({
         'width': 20,
-        'padding': 10,
+        'padding': .05,
         'fill.fillColor': 'none',
         'stroke.color': 'black',
         'stroke.opacity': .2
@@ -8034,6 +8041,13 @@ var Sankey = function (userConfig) {
               "minValue": 1,
               "maxValue": 400,
               "initialValue": 32
+            },
+            {
+              "name" : "Aggregate Links",
+              "description": "Aggregate multiple links with same source/target into 1.",
+              "target": "aggregate",
+              "type" : "boolean",
+              "initialValue": true
             }
           ]
         }
@@ -8053,7 +8067,6 @@ var Sankey = function (userConfig) {
   chart.update = function () {
     d3 = dex.charts.d3.d3v4;
     var config = chart.config;
-    var margin = config.margin;
     var csv = config.csv;
     var units = config.units;
 
@@ -8089,6 +8102,8 @@ var Sankey = function (userConfig) {
     var graph;
     var types = csv.guessTypes();
 
+    // When the last number in the data is a number, use it
+    // for proportional scaling.
     if (types[csv.header.length - 1] == "number") {
       var valueFn = function (csv) {
         return function (unusedCsv, unusedColumnIndex, ri) {
@@ -8096,10 +8111,20 @@ var Sankey = function (userConfig) {
         }
       }(csv);
 
-      graph = csv.exclude([csv.header.length - 1]).getGraph(valueFn);
+      if (config.aggregate) {
+        graph = csv.exclude([csv.header.length - 1]).getAggregatedGraph(valueFn);
+      }
+      else {
+        graph = csv.exclude([csv.header.length - 1]).getGraph(valueFn);
+      }
     }
     else {
-      graph = csv.getGraph();
+      if (config.aggregate) {
+        graph = csv.getAggregatedGraph();
+      }
+      else {
+        graph = csv.getGraph();
+      }
     }
 
     sankey
@@ -8167,7 +8192,7 @@ var Sankey = function (userConfig) {
       .enter().append("g")
       .attr("class", "node")
       .attr("transform", function (d) {
-        //dex.console.log("CONTAINER-D", d);
+        //dex.console.log("ADDING NODE AT: ", d);
         return "translate(" + d.x + "," + d.y + ")";
       })
       .call(d3.drag()
@@ -8197,7 +8222,7 @@ var Sankey = function (userConfig) {
           .call(dex.config.configureLink, config.link.emphasis)
           .style("fill", "none")
           .style("stroke-width", function (d) {
-            return Math.max(1, d.dy);
+            return Math.max(.1, d.dy);
           });
       })
       .on("mouseout", function (d) {
@@ -8246,6 +8271,14 @@ var Sankey = function (userConfig) {
       .attr("dy", ".35em")
       .attr("text-anchor", "end")
       .attr("transform", null)
+      .attr("visibility", function(d) {
+        if (d.dy < (chart.config.label.normal.font.size - 1)) {
+          return "hidden";
+        }
+        else {
+          return "visible";
+        }
+      })
       .text(function (d) {
         return d.name;
       })
@@ -8280,7 +8313,7 @@ var Sankey = function (userConfig) {
     d3 = dex.charts.d3.d3v4;
     var sankey = {},
       nodeWidth = 24,
-      nodePadding = 8,
+      nodePadding = .1,
       size = [1, 1],
       nodes = [],
       links = [];
@@ -8457,11 +8490,25 @@ var Sankey = function (userConfig) {
       }
 
       function initializeNodeDepth() {
+        //dex.console.log("Nodes-By-Breadth", nodesByBreadth);
+
+        var maxNodes = d3.max(nodesByBreadth, function(nodes) {
+          return nodes.length;
+        });
+        // Set columnPadding to the number of pixels to space between
+        // nodes with a special case of 1 node being unpadded.
+        var columnPadding = (maxNodes > 1) ?
+          (size[1] * nodePadding) / (maxNodes - 1) : 0;
+
+        // Create base ky based on worst case (most rows)
         var ky = d3.min(nodesByBreadth, function (nodes) {
-          return (size[1] - (nodes.length - 1) * nodePadding) / d3.sum(nodes, value);
+          //dex.console.log("size1", size[1]);
+          return (size[1] - ((nodes.length - 1) * columnPadding)) /
+            d3.sum(nodes, value);
         });
 
         nodesByBreadth.forEach(function (nodes) {
+
           nodes.forEach(function (node, i) {
             node.y = i;
             node.dy = node.value * ky;
@@ -8511,24 +8558,28 @@ var Sankey = function (userConfig) {
             n = nodes.length,
             i;
 
+          var columnPadding = (nodes.length > 1) ?
+            (size[1] * nodePadding) / (nodes.length - 1) :
+            1;
+
           // Push any overlapping nodes down.
           nodes.sort(ascendingDepth);
           for (i = 0; i < n; ++i) {
             node = nodes[i];
             dy = y0 - node.y;
             if (dy > 0) node.y += dy;
-            y0 = node.y + node.dy + nodePadding;
+            y0 = node.y + node.dy + columnPadding;
           }
 
           // If the bottommost node goes outside the bounds, push it back up.
-          dy = y0 - nodePadding - size[1];
+          dy = y0 - columnPadding - size[1];
           if (dy > 0) {
             y0 = node.y -= dy;
 
             // Push any overlapping nodes back up.
             for (i = n - 2; i >= 0; --i) {
               node = nodes[i];
-              dy = node.y + node.dy + nodePadding - y0;
+              dy = node.y + node.dy + columnPadding - y0;
               if (dy > 0) node.y -= dy;
               y0 = node.y;
             }
@@ -9816,11 +9867,11 @@ var TopoJsonMap = function (userConfig) {
     'height': '100%',
     'resizable': true,
     'transform': 'translate(0,0)',
-    'feature' : {
-      "topology" : undefined,
-      "path" : dex.config.path({
-        "fill.fillColor" : "lightgrey",
-        "stroke.color" : "white"
+    'feature': {
+      "topology": undefined,
+      "path": dex.config.path({
+        "fill.fillColor": "lightgrey",
+        "stroke.color": "white"
       })
     },
     'margin': {
@@ -9839,7 +9890,8 @@ var TopoJsonMap = function (userConfig) {
 
   chart.render = function render() {
     d3 = dex.charts.d3.d3v3;
-    return chart.resize().update();
+    chart.resize().update();
+    return chart;
   };
 
   chart.update = function () {
@@ -10072,11 +10124,12 @@ var TopoJsonMap = function (userConfig) {
       .call(zoom);
 
     initialize();
+    return chart;
   };
 
-    chart.clone = function clone(override) {
-        return TopoJsonMap(dex.config.expandAndOverlay(override, userConfig));
-    };
+  chart.clone = function clone(override) {
+    return TopoJsonMap(dex.config.expandAndOverlay(override, userConfig));
+  };
 
   return chart;
 };
@@ -11223,30 +11276,39 @@ var RingNetwork = function (userConfig) {
     'class': 'RingNetworkClass',
     'resizable': true,
     // Sample default data...
-    'csv': {
-      'header': ["NAME", "GENDER", "VEHICLE"],
-      'data': [
-        ["JIM", "M", "CAR"],
-        ["JOE", "M", "CAR"],
-        ["PAT", "M", "TRUCK"],
-        ["SALLY", "F", "TRUCK"]
-      ]
-    },
+    'csv': undefined,
     'type': "rings",
     'connect': 'last',
     //'connect' : 'all',
     'width': "100%",
     'height': "100%",
-    'transform': "",
-    'margin': {
-      'left': 100,
-      'right': 100,
-      'top': 50,
-      'bottom': 50
-    }
+    'transform': ""
   };
 
   var chart = new dex.component(userConfig, defaults);
+  chart.spec = new dex.data.spec("Ring Network")
+    .anything("nodes");
+
+  chart.getGuiDefinition = function getGuiDefinition(config) {
+    var defaults = {
+      "type": "group",
+      "name": "D3Plus Ring Network Settings",
+      "contents": [
+        dex.config.gui.general(),
+        dex.config.gui.dimensions(),
+        {
+          "type": "group",
+          "name": "General",
+          "contents": [
+          ]
+        }
+      ]
+    };
+
+    var guiDef = dex.config.expandAndOverlay(config, defaults);
+    dex.config.gui.sync(chart, guiDef);
+    return guiDef;
+  };
 
   chart.render = function render() {
     d3 = dex.charts.d3.d3v3;
@@ -11797,6 +11859,216 @@ module.exports = EChart;
 },{}],41:[function(require,module,exports){
 /**
  *
+ * Create an ECharts HeatMap with the given specification.
+ *
+ * @param userConfig The chart's configuration.
+ *
+ * @returns {HeatMap} An ECharts Line Chart configured to specification.
+ *
+ * @memberof dex/charts/echarts
+ *
+ */
+var HeatMap = function (userConfig) {
+  var chart;
+  var defaults = {
+    "parent": "#ECharts_HeatMap",
+    "id": "ECharts_HeatMap",
+    "class": "ECharts_HeatMap",
+    "resizable": true,
+    "width": "100%",
+    "height": "100%",
+    "type": "linechart",
+    "palette": "HeatMap 1",
+    "dimensions": {"series": 0, "x": 1, "y": 2},
+    // If I make this csv change aware, I can change update model to "update".
+    "refreshType": "update",
+    "series.minOpacity": 0,
+    "series.maxOpacity": 1,
+    "series.name": "series",
+    "series.type": "heatmap",
+    "series.itemStyle": {
+      emphasis: {
+        borderColor: '#333',
+        borderWidth: 1
+      }
+    },
+    "options": {
+      tooltip: {
+        backgroundColor: "#FFFFFF",
+        borderColor: "#000000",
+        borderWidth: 2,
+        trigger: "item",
+        position: function (pos, params, dom, rect, size) {
+          return [pos[0] + 10, pos[1] - 0];
+        },
+        confine: true
+      },
+      legend: {show: false},
+      visualMap: {
+        min: 1,
+        max: 100,
+        calculable: true,
+        realtime: false,
+        inRange: {
+          color: ['#313695', '#4575b4', '#74add1', '#abd9e9', '#e0f3f8', '#ffffbf', '#fee090', '#fdae61', '#f46d43', '#d73027', '#a50026']
+        }
+      },
+    }
+  };
+
+  var combinedConfig = dex.config.expandAndOverlay(userConfig, defaults);
+  chart = dex.charts.echarts.EChart(combinedConfig);
+
+  chart.spec = new dex.data.spec("Heatmap")
+    .any("x")
+    .any("y")
+    .number("magnitude");
+
+  //dex.console.log("SPEC", chart.spec);
+
+  chart.getGuiDefinition = function getGuiDefinition(config) {
+    var defaults = {
+      "type": "group",
+      "name": "EChart HeatMap Settings",
+      "contents": [
+        {
+          "type": "group",
+          "name": "General Options",
+          "contents": [
+            dex.config.gui.echartsTitle({}, "options.title"),
+            dex.config.gui.echartsGrid({}, "options.grid"),
+            dex.config.gui.echartsTooltip({}, "options.tooltip"),
+            {
+              "name": "Color Scheme",
+              "description": "The color scheme.",
+              "target": "palette",
+              "type": "choice",
+              "choices": dex.color.colormaps({shortlist: true}),
+              "initialValue": "HeatMap 1"
+            },
+            {
+              "name": "Display Legend",
+              "description": "Determines whether or not to draw the legend or not.",
+              "type": "boolean",
+              "target": "options.legend.show",
+              "initialValue": true
+            },
+            {
+              "name": "Background Color",
+              "description": "The color of the background.",
+              "target": "options.backgroundColor",
+              "type": "color",
+              "initialValue": "#000000"
+            }
+          ]
+        }
+      ]
+    };
+
+    var guiDef = dex.config.expandAndOverlay(config, defaults);
+    dex.config.gui.sync(chart, guiDef);
+    return guiDef;
+  };
+
+  chart.getOptions = function (csv) {
+    var options, seriesInfo, xInfo, yInfo, vInfo;
+
+    //var csvSpec = chart.spec.parse(csv, chart.config.dimensions);
+    var csvSpec = chart.spec.parse(csv);
+
+    //dex.console.log("CHART-CONFIG", chart.config);
+    //dex.console.log("LINE-CHART-CSV", csv);
+
+    // Override precedence on options: chart, local defs, common defs.
+    options = dex.config.expandAndOverlay(
+      chart.config.options,
+      {series: []},
+      chart.getCommonOptions());
+
+    //dex.console.log("LINE-CHART-OPTIONS", options);
+
+    xInfo = csvSpec.specified[0];
+    yInfo = csvSpec.specified[1];
+    vInfo = csvSpec.specified[2];
+
+    var xIndex = csvSpec.specified[0].position;
+    var yIndex = csvSpec.specified[1].position;
+    var vIndex = csvSpec.specified[2].position;
+    var types = csv.guessTypes();
+
+    var xType = types[xIndex];
+    var yType = types[yIndex];
+    var vType = types[vIndex];
+
+    var extent = csv.extent(vIndex);
+
+    var xData = csv.uniqueArray(xIndex);
+    var yData = csv.uniqueArray(yIndex);
+
+    options.visualMap.inRange.color = dex.color.palette[chart.config.palette];
+
+    options.xAxis = dex.config.expandAndOverlay({
+      type: "category",
+      data: xData,
+      splitArea: {
+        show: true
+      }
+    }, options.xAxis);
+
+    options.visualMap.min = extent[0];
+    options.visualMap.max = extent[1];
+
+    options.yAxis = dex.config.expandAndOverlay({
+      type: "category",
+      data: yData
+    }, options.yAxis);
+
+    // Set formatters here.
+    if (options.xAxis.axisLabel !== undefined && options.xAxis.axisLabel.formatter !== undefined) {
+      options.xAxis.axisLabel.formatter =
+        dex.config.getFormatter(options.xAxis.axisLabel.formatter, xType);
+    }
+
+    if (options.yAxis.axisLabel !== undefined && options.yAxis.axisLabel.formatter !== undefined) {
+      options.yAxis.axisLabel.formatter =
+        dex.config.getFormatter(options.yAxis.axisLabel.formatter, yType);
+    }
+
+    options.tooltip.formatter =  function (d) {
+      //dex.console.log("FORMATTER", d);
+      var str = "<table class='dex-tooltip-table'>";
+
+      csv.data[d.data[2]].forEach(function(col, ci) {
+        str += "<tr><td>" + csv.header[ci] + "</td><td>" + col + "</td></tr>";
+      });
+
+      str += "</table>";
+      return str;
+    };
+
+    var series = dex.config.expandAndOverlay(chart.config.series, {
+      name: chart.config.series.name,
+      type: "heatmap",
+      data: csv.data.map(function(row, ri) {
+        //dex.console.log("ROW", row, xData);
+        var hdata = [
+          xData.indexOf("" + row[0]),
+          yData.indexOf("" + row[1]), ri, row[2]];
+        return hdata;
+      })
+    });
+    options.series = series;
+
+    //dex.console.log("OPTIONS", JSON.stringify(options));
+    return options;
+  };
+
+  return chart;
+};
+module.exports = HeatMap;
+},{}],42:[function(require,module,exports){
+/**
+ *
  * Create an ECharts LineChart with the given specification.
  *
  * @param userConfig The chart's configuration.
@@ -11817,6 +12089,7 @@ var LineChart = function (userConfig) {
     "height": "100%",
     "type": "linechart",
     "palette": "ECharts",
+    "dimensions": { "series": 0, "x": 1, "y": 2 },
     // If I make this csv change aware, I can change update model to "update".
     "refreshType": "update",
     "series.symbol": "circle",
@@ -11853,9 +12126,12 @@ var LineChart = function (userConfig) {
         borderColor: "#000000",
         borderWidth: 2,
         trigger: "item",
-
+        position: function (pos, params, dom, rect, size) {
+          return [pos[0] + 10, pos[1] - 0];
+        },
+        confine: true,
         formatter: function (d) {
-          dex.console.log("FORMATTER", d);
+          //dex.console.log("FORMATTER", d);
           var str = "<table class='dex-tooltip-table'>";
 
           d.data.forEach(function (value) {
@@ -11881,6 +12157,8 @@ var LineChart = function (userConfig) {
     .any("x")
     .any("y");
 
+  //dex.console.log("SPEC", chart.spec);
+
   chart.getGuiDefinition = function getGuiDefinition(config) {
     var defaults = {
       "type": "group",
@@ -11894,6 +12172,10 @@ var LineChart = function (userConfig) {
             dex.config.gui.echartsGrid({}, "options.grid"),
             dex.config.gui.echartsTooltip({}, "options.tooltip"),
             dex.config.gui.echartsSymbol({}, "series"),
+            dex.config.gui.columnDimensions({},
+              "dimensions",
+              chart.config.csv,
+              chart.config.dimensions),
             {
               "name": "Color Scheme",
               "description": "The color scheme.",
@@ -11975,6 +12257,7 @@ var LineChart = function (userConfig) {
   chart.getOptions = function (csv) {
     var options, seriesNames, seriesInfo, xInfo, yInfo;
 
+    //var csvSpec = chart.spec.parse(csv, chart.config.dimensions);
     var csvSpec = chart.spec.parse(csv);
 
     //dex.console.log("CHART-CONFIG", chart.config);
@@ -12000,20 +12283,25 @@ var LineChart = function (userConfig) {
     xInfo = csvSpec.specified[1];
     yInfo = csvSpec.specified[2];
 
-    chart.config.seriesInfo = seriesInfo;
-    chart.config.xInfo = xInfo;
-    chart.config.yInfo = yInfo;
+    var seriesIndex = csvSpec.specified[0].position;
+    var xIndex = csvSpec.specified[1].position;
+    var yIndex = csvSpec.specified[2].position;
+    var types = csv.guessTypes();
 
-    seriesNames = csv.uniqueArray(seriesInfo.position);
+    var xType = types[xIndex];
+    var yType = types[yIndex];
+    var seriesType = types[seriesIndex];
+
+    seriesNames = csv.uniqueArray(seriesIndex);
     options.legend = {data: seriesNames};
 
-    if (xInfo.type == "string") {
+    if (xType == "string") {
       options.xAxis = dex.config.expandAndOverlay({
         type: "category",
-        data: csv.uniqueArray(xInfo.position)
+        data: csv.uniqueArray(xIndex)
       }, options.xAxis);
     }
-    else if (xInfo.type == "date") {
+    else if (xType == "date") {
       options.xAxis = dex.config.expandAndOverlay({
         type: "time"
       }, options.xAxis);
@@ -12026,13 +12314,13 @@ var LineChart = function (userConfig) {
       options.xAxis.data = undefined;
     }
 
-    if (yInfo.type == "string") {
+    if (yType == "string") {
       options.yAxis = dex.config.expandAndOverlay({
         type: "category",
-        data: csv.uniqueArray(yInfo.position)
+        data: csv.uniqueArray(yIndex)
       }, options.yAxis);
     }
-    else if (yInfo.type == "date") {
+    else if (yType == "date") {
       options.yAxis = dex.config.expandAndOverlay({
         type: "time"
       }, options.yAxis);
@@ -12043,15 +12331,26 @@ var LineChart = function (userConfig) {
         type: "value"
       }, options.yAxis);
       options.yAxis.data = undefined;
+    }
+
+    // Set formatters here.
+    if (options.xAxis.axisLabel !== undefined && options.xAxis.axisLabel.formatter !== undefined) {
+      options.xAxis.axisLabel.formatter =
+        dex.config.getFormatter(options.xAxis.axisLabel.formatter, xType);
+    }
+
+    if (options.yAxis.axisLabel !== undefined && options.yAxis.axisLabel.formatter !== undefined) {
+      options.yAxis.axisLabel.formatter =
+        dex.config.getFormatter(options.yAxis.axisLabel.formatter, yType);
     }
 
     seriesNames.forEach(function (seriesName) {
       var selectedCsv = csv.selectRows(function (row) {
-        return row[seriesInfo.position] == seriesName;
+        return row[seriesIndex] == seriesName;
       });
 
       var seriesData = selectedCsv.data.map(function (row, ri) {
-        var newRow = [row[xInfo.position], row[yInfo.position]];
+        var newRow = [row[xIndex], row[yIndex]];
         row.forEach(function (col, ci) {
           newRow.push(selectedCsv.header[ci] + ":::" + col);
         });
@@ -12073,7 +12372,7 @@ var LineChart = function (userConfig) {
   return chart;
 };
 module.exports = LineChart;
-},{}],42:[function(require,module,exports){
+},{}],43:[function(require,module,exports){
 /**
  *
  * Create an ECharts Network with the given specification.
@@ -12412,7 +12711,208 @@ var Network = function (userConfig) {
   return chart;
 };
 module.exports = Network;
-},{}],43:[function(require,module,exports){
+},{}],44:[function(require,module,exports){
+/**
+ *
+ * Create an ECharts LineChart with the given specification.
+ *
+ * @param userConfig The chart's configuration.
+ *
+ * @returns {ParallelCoordinates} An ECharts Parallel Coordinates chart configured to specification.
+ *
+ * @memberof dex/charts/echarts
+ *
+ */
+var ParallelCoordinates = function (userConfig) {
+  var chart;
+  var defaults = {
+    "parent": "#ECharts_ParallelCoordinates",
+    "id": "ECharts_ParallelCoordinates",
+    "class": "ECharts_ParallelCoordinates",
+    "resizable": true,
+    "width": "100%",
+    "height": "100%",
+    "type": "linechart",
+    "palette": "ECharts",
+    "refreshType": "update",
+    "series": {},
+    "options": {}
+  };
+
+  var combinedConfig = dex.config.expandAndOverlay(userConfig, defaults);
+  chart = dex.charts.echarts.EChart(combinedConfig);
+
+  chart.spec = new dex.data.spec("Parallel Coordinates").anything();
+
+  chart.getGuiDefinition = function getGuiDefinition(config) {
+    var defaults = {
+      "type": "group",
+      "name": "Parallel Coordinates Settings",
+      "contents": [
+        {
+          "type": "group",
+          "name": "General Options",
+          "contents": [
+            dex.config.gui.echartsTitle({}, "options.title"),
+            dex.config.gui.echartsGrid({}, "options.grid"),
+            dex.config.gui.echartsTooltip({}, "options.tooltip"),
+            {
+              "name": "Color Scheme",
+              "description": "The color scheme.",
+              "target": "palette",
+              "type": "choice",
+              "choices": dex.color.colormaps({shortlist: true}),
+              "initialValue": "category10"
+            },
+            {
+              "name": "Top Margin",
+              "description": "The top margin of the chart.",
+              "target": "options.parallel.top",
+              "type": "int",
+              "minValue": 0,
+              "maxValue": 200,
+              "initialValue": 60
+            },
+            {
+              "name": "Bottom Margin",
+              "description": "The bottom margin of the chart.",
+              "target": "options.parallel.bottom",
+              "type": "int",
+              "minValue": 0,
+              "maxValue": 200,
+              "initialValue": 60
+            },
+            {
+              "name": "Left Margin",
+              "description": "The left margin of the chart.",
+              "target": "options.parallel.left",
+              "type": "int",
+              "minValue": 0,
+              "maxValue": 200,
+              "initialValue": 80
+            },
+            {
+              "name": "Right Margin",
+              "description": "The right margin of the chart.",
+              "target": "options.parallel.right",
+              "type": "int",
+              "minValue": 0,
+              "maxValue": 200,
+              "initialValue": 80
+            },
+            {
+              "name": "Display Legend",
+              "description": "Determines whether or not to draw the legend or not.",
+              "type": "boolean",
+              "target": "options.legend.show",
+              "initialValue": true
+            },
+            {
+              "name": "Background Color",
+              "description": "The color of the background.",
+              "target": "options.backgroundColor",
+              "type": "color",
+              "initialValue": "#000000"
+            },
+            {
+              "name": "Active Opacity",
+              "description": "Opacity of active lines.",
+              "target": "series.activeOpacity",
+              "type": "float",
+              "minValue": 0,
+              "maxValue": 1,
+              "initialValue": 1
+            },
+            {
+              "name": "Inactive Opacity",
+              "description": "Opacity of inactive lines.",
+              "target": "series.inactiveOpacity",
+              "type": "float",
+              "minValue": 0,
+              "maxValue": 1,
+              "initialValue": .05
+            }
+          ]
+        },
+        dex.config.gui.echartsLineStyle({name: "Line Style: Normal"}, "series.lineStyle"),
+        dex.config.gui.echartsLineStyle({name: "Line Style: Emphasis"}, "series.lineStyle.emphasis")
+      ]
+    };
+
+    var guiDef = dex.config.expandAndOverlay(config, defaults);
+    dex.config.gui.sync(chart, guiDef);
+    return guiDef;
+  };
+
+  chart.getOptions = function (csv) {
+    var options, seriesNames, seriesInfo, xInfo, yInfo;
+
+    var csvSpec = chart.spec.parse(csv);
+
+    // Override precedence on options: chart, local defs, common defs.
+    options = dex.config.expandAndOverlay(
+      chart.config.options,
+      {
+        parallelAxis: [],
+        series: []
+      },
+      chart.getCommonOptions());
+
+    csvSpec.types.forEach(function (type, ti) {
+      if (type === "string") {
+        options.parallelAxis.push({
+          dim: ti,
+          name: csv.header[ti],
+          type: "category",
+          data: csv.uniqueArray(ti).sort()
+        });
+      }
+      else if (type === "number") {
+        options.parallelAxis.push({
+          dim: ti,
+          name: csv.header[ti]
+        });
+      }
+      else if (type === "date") {
+      }
+      else {
+      }
+    });
+
+    if (csvSpec.types[0] === "string") {
+      var seriesInfo = csvSpec.specified[0];
+      seriesNames = csv.uniqueArray(seriesInfo.position);
+      options.legend = {data: seriesNames};
+
+      seriesNames.forEach(function (seriesName) {
+        var selectedCsv = csv.selectRows(function (row) {
+          return row[seriesInfo.position] == seriesName;
+        });
+
+        var series = dex.config.expandAndOverlay(chart.config.series, {
+          name: seriesName,
+          type: "parallel",
+          data: selectedCsv.data
+        });
+        options.series.push(series);
+        seriesData = undefined;
+      });
+    }
+    else {
+      options.series.push(
+        dex.config.expandAndOverlay(chart.config.series,
+          {type: "parallel", data: csv.data}));
+    }
+
+    //dex.console.log("OPTIONS", JSON.stringify(options.series));
+    //dex.console.log("CONFIG-OPTIONS: ", JSON.stringify(chart.config.options));
+    return options;
+  };
+
+  return chart;
+};
+module.exports = ParallelCoordinates;
+},{}],45:[function(require,module,exports){
 /**
  *
  * Create an ECharts Pie Chart with the given specification.
@@ -12434,6 +12934,7 @@ var PieChart = function (userConfig) {
     'width': "100%",
     'height': "100%",
     'type': 'pie',
+    'dimensions' : { 'series' : 0, 'category': 1, 'size': 2},
     'palette': 'ECharts',
     'aggregationMethod': "Sum",
     'aggregationFunction': function (values) {
@@ -12518,6 +13019,10 @@ var PieChart = function (userConfig) {
           "type": "group",
           "name": "General",
           "contents": [
+            dex.config.gui.columnDimensions({},
+              "dimensions",
+              chart.config.csv,
+              chart.config.dimensions),
             dex.config.gui.echartsTitle({}, "options.title"),
             dex.config.gui.echartsGrid({}, "options.grid"),
             dex.config.gui.echartsTooltip({}, "options.tooltip"),
@@ -12619,7 +13124,7 @@ var PieChart = function (userConfig) {
 
   chart.getOptions = function (csv) {
     var options, seriesNames, seriesInfo, valueInfo, categoryInfo;
-    var csvSpec = chart.spec.parse(csv);
+    var csvSpec = chart.spec.parse(csv, chart.config.dimensions);
 
     options = dex.config.expandAndOverlay({
       tooltip: {
@@ -12695,7 +13200,7 @@ var PieChart = function (userConfig) {
   return chart;
 };
 module.exports = PieChart;
-},{}],44:[function(require,module,exports){
+},{}],46:[function(require,module,exports){
 /**
  *
  * Create an ECharts Polar Plot with the given specification.
@@ -12729,6 +13234,7 @@ var PolarPlot = function (userConfig) {
     'series.type': 'line',
     'series.itemStyle.normal.opacity': .6,
     'series.itemStyle.emphasis.opacity': .9,
+    'dimensions': {'series': 0, 'angle': 1, 'radius': 2, 'size': 3 },
     "options": {
       tooltip: {
         backgroundColor: "#FFFFFF",
@@ -12782,6 +13288,7 @@ var PolarPlot = function (userConfig) {
     .optionalNumber("size");
 
   chart.getGuiDefinition = function getGuiDefinition(config) {
+    dex.console.log("COLUMN NAME FOR SERIES", chart.config.csv.getColumnName(chart.config.dimensions.series));
     var defaults = {
       "type": "group",
       "name": "EChart Polar Plot Settings",
@@ -12795,6 +13302,10 @@ var PolarPlot = function (userConfig) {
             dex.config.gui.echartsGrid({}, "options.grid"),
             dex.config.gui.echartsTooltip({}, "options.tooltip"),
             dex.config.gui.echartsSymbol({}, "series"),
+            dex.config.gui.columnDimensions({},
+              "dimensions",
+              chart.config.csv,
+              chart.config.dimensions),
             {
               "name": "Chart Type",
               "description": "The chart type.",
@@ -12904,7 +13415,7 @@ var PolarPlot = function (userConfig) {
     var seriesInfo, radiusInfo, angleInfo, scaleInfo;
     var scaling = false;
 
-    var csvSpec = chart.spec.parse(csv);
+    var csvSpec = chart.spec.parse(csv, chart.config.dimensions);
 
     var options = dex.config.expandAndOverlay(chart.config.options, {
         series: [],
@@ -12916,8 +13427,8 @@ var PolarPlot = function (userConfig) {
     //dex.console.log("SPEC", csvSpec);
 
     seriesInfo = csvSpec.specified[0];
-    radiusInfo = csvSpec.specified[1];
-    angleInfo = csvSpec.specified[2];
+    angleInfo = csvSpec.specified[1];
+    radiusInfo = csvSpec.specified[2];
 
     chart.config.seriesInfo = seriesInfo;
     chart.config.radiusInfo = radiusInfo;
@@ -13022,7 +13533,7 @@ var PolarPlot = function (userConfig) {
   return chart;
 };
 module.exports = PolarPlot;
-},{}],45:[function(require,module,exports){
+},{}],47:[function(require,module,exports){
 /**
  *
  * Create an ECharts Radar Chart with the given specification.
@@ -13046,11 +13557,12 @@ var RadarChart = function (userConfig) {
     'height': "100%",
     'palette': 'ECharts',
     'type': 'radar',
+    'dimensions': { 'series': 0, 'angle': 1, 'radius': 2 },
     'series.itemStyle': {
       normal: {
         lineStyle: {
           width: 1,
-          opacity: .8
+          opacity: .5
         }
       },
       emphasis: {
@@ -13095,9 +13607,14 @@ var RadarChart = function (userConfig) {
           "type": "group",
           "name": "General Options",
           "contents": [
+            dex.config.gui.columnDimensions({},
+              "dimensions",
+              chart.config.csv,
+              chart.config.dimensions),
             dex.config.gui.echartsTitle({}, "options.title"),
             dex.config.gui.echartsGrid({}, "options.grid"),
             dex.config.gui.echartsSymbol({}, "series"),
+            dex.config.gui.echartsItemStyle({}, "itemStyle"),
             {
               "name": "Color Scheme",
               "description": "The color scheme.",
@@ -13115,8 +13632,9 @@ var RadarChart = function (userConfig) {
             }
           ]
         },
-        dex.config.gui.echartsLabel({name: "Normal Label"}, "series.label.normal"),
-        dex.config.gui.echartsLabel({name: "Emphasis Label"}, "series.label.emphasis")
+        dex.config.gui.echartsLabelGroup({}, "series.label"),
+        dex.config.gui.echartsLineStyle({}, "series.lineStyle"),
+        dex.config.gui.echartsAreaStyle({}, "series.areaStyle")
       ]
     };
 
@@ -13127,7 +13645,7 @@ var RadarChart = function (userConfig) {
 
   chart.getOptions = function (csv) {
     var options, seriesNames, seriesInfo, angleInfo, radiusInfo, maxRadius, minRadius;
-    var csvSpec = chart.spec.parse(csv);
+    var csvSpec = chart.spec.parse(csv, chart.config.dimensions);
 
     options = dex.config.expandAndOverlay(chart.config.options, {
       series: [],
@@ -13180,7 +13698,7 @@ var RadarChart = function (userConfig) {
   return chart;
 };
 module.exports = RadarChart;
-},{}],46:[function(require,module,exports){
+},{}],48:[function(require,module,exports){
 /**
  *
  * Create an ECharts Single Axis ScatterPlot with the given specification.
@@ -13206,6 +13724,7 @@ var SingleAxisScatterPlot = function (userConfig) {
     'type': 'single-axis',
     'radius': {'min': 1, 'max': 20},
     'sizeMethod': 'linear',
+    'dimensions' : { 'series': 0, 'x': 1, 'size': 2 },
     'sizeScale': function (value) {
       if (typeof sizeScale == "undefined") {
         sizeScale = chart.config.csv.getScalingMethod(
@@ -13267,6 +13786,10 @@ var SingleAxisScatterPlot = function (userConfig) {
           "type": "group",
           "name": "General",
           "contents": [
+            dex.config.gui.columnDimensions({},
+              "dimensions",
+              chart.config.csv,
+              chart.config.dimensions),
             dex.config.gui.echartsTitle({}, "options.title"),
             dex.config.gui.echartsGrid({}, "options.grid"),
             dex.config.gui.echartsTooltip({}, "options.tooltip"),
@@ -13323,7 +13846,7 @@ var SingleAxisScatterPlot = function (userConfig) {
 
   chart.getOptions = function (csv) {
     var options, seriesNames, seriesInfo, xInfo;
-    var csvSpec = chart.spec.parse(csv);
+    var csvSpec = chart.spec.parse(csv, chart.config.dimensions);
 
     options = dex.config.expandAndOverlay(chart.config.options, {
       title: [],
@@ -13427,7 +13950,7 @@ var SingleAxisScatterPlot = function (userConfig) {
   return chart;
 };
 module.exports = SingleAxisScatterPlot;
-},{}],47:[function(require,module,exports){
+},{}],49:[function(require,module,exports){
 /**
  *
  * Create an ECharts SteamGraph with the given specification.
@@ -13450,6 +13973,7 @@ var SteamGraph = function (userConfig) {
     'width': "100%",
     'height': "100%",
     'type': 'steam',
+    "dimensions": { "series": 0, "x": 1, "y": 2 },
     "options": {
       tooltip: {
         backgroundColor: "#FFFFFF",
@@ -13483,7 +14007,7 @@ var SteamGraph = function (userConfig) {
   chart.spec = new dex.data.spec("Steam Graph")
     .any("series")
     .any("x")
-    .number("value");
+    .number("y");
 
   chart.getGuiDefinition = function getGuiDefinition(config) {
     var defaults = {
@@ -13494,6 +14018,10 @@ var SteamGraph = function (userConfig) {
           "type": "group",
           "name": "General",
           "contents": [
+            dex.config.gui.columnDimensions({},
+              "dimensions",
+              chart.config.csv,
+              chart.config.dimensions),
             {
               "name": "Display Legend",
               "description": "Determines whether or not to draw the legend or not.",
@@ -13515,7 +14043,7 @@ var SteamGraph = function (userConfig) {
               "target": "options.backgroundColor",
               "type": "color",
               "initialValue": "#ffffff"
-            },
+            }
           ]
         },
         dex.config.gui.margins({}, "options.singleAxis"),
@@ -13536,7 +14064,7 @@ var SteamGraph = function (userConfig) {
 
   chart.getOptions = function (csv) {
     var options, seriesNames, seriesInfo, xInfo, valueInfo;
-    var csvSpec = chart.spec.parse(csv);
+    var csvSpec = chart.spec.parse(csv, chart.config.dimensions);
 
     options = dex.config.expandAndOverlay(chart.config.options, {
       title: [],
@@ -13623,7 +14151,7 @@ var SteamGraph = function (userConfig) {
   return chart;
 };
 module.exports = SteamGraph;
-},{}],48:[function(require,module,exports){
+},{}],50:[function(require,module,exports){
 /**
  *
  * Create an ECharts Network with the given specification.
@@ -13648,6 +14176,7 @@ var Timeline = function (userConfig) {
     'height': "100%",
     'type': 'timeline',
     'palette': 'ECharts',
+    'dimensions' : {'series':0, 'sequence':1, 'x': 2, 'y':3, 'size':4},
     'sizeScale': new dex.csv().getScalingMethods().linear,
     'radius': {min: 5, max: 50},
     'series.type': 'scatter',
@@ -13690,6 +14219,8 @@ var Timeline = function (userConfig) {
           "type": "group",
           "name": "General Options",
           "contents": [
+            dex.config.gui.columnDimensions({}, "dimensions",
+              chart.config.csv, chart.config.dimensions),
             dex.config.gui.echartsTimeline({}, "options.baseOption.timeline"),
             dex.config.gui.echartsTitle({}, "options.baseOption.title"),
             dex.config.gui.echartsGrid({}, "options.baseOption.grid"),
@@ -13737,7 +14268,7 @@ var Timeline = function (userConfig) {
   };
 
   chart.getOptions = function (csv) {
-    var csvSpec = chart.spec.parse(csv);
+    var csvSpec = chart.spec.parse(csv, chart.config.dimensions);
 
     var catMap = {};
     var seqMap = {};
@@ -13937,7 +14468,181 @@ var Timeline = function (userConfig) {
   return chart;
 };
 module.exports = Timeline;
-},{}],49:[function(require,module,exports){
+},{}],51:[function(require,module,exports){
+/**
+ *
+ * Create an ECharts Tree with the given specification.
+ *
+ * @param userConfig The chart's configuration.
+ *
+ * @returns {Network} An ECharts Tree configured to specification.
+ *
+ * @memberof dex/charts/echarts
+ *
+ */
+var Tree = function (userConfig) {
+  var chart;
+  var defaults = {
+    'parent': '#ECharts_Tree',
+    'id': 'ECharts_Tree',
+    'class': 'ECharts_Tree',
+    'refreshType': "update",
+    'resizable': true,
+    'width': "100%",
+    'height': "100%",
+    'displayLegend': false,
+    'palette': "ECharts",
+    'series.circular': {},
+    'series.type': 'tree',
+    'series.layout': 'orthogonal',
+    'series.orient': 'LR',
+    'series.initialTreeDepth' : 4,
+    'series.top' : '2%',
+    'series.bottom' : '2%',
+    'series.left' : '2%',
+    'series.right' : '20%',
+    "options": {
+      title: {
+        text: 'Title',
+        subtext: 'Subtext',
+        bottom: true,
+        left: true
+      },
+      tooltip: {}
+    }
+  };
+
+  var combinedConfig = dex.config.expandAndOverlay(userConfig, defaults);
+  chart = dex.charts.echarts.EChart(combinedConfig);
+  chart.spec = new dex.data.spec("Tree")
+    .anything();
+
+  chart.getGuiDefinition = function getGuiDefinition(config) {
+    var defaults = {
+      "type": "group",
+      "name": "EChart Network Settings",
+      "contents": [
+        {
+          "type": "group",
+          "name": "General Options",
+          "contents": [
+            dex.config.gui.echartsTitle({}, "options.title"),
+            dex.config.gui.echartsGrid({}, "options.grid"),
+            dex.config.gui.echartsSymbol({}, "series"),
+            dex.config.gui.echartsTooltip({}, "options.tooltip"),
+            {
+              "name": "Layout",
+              "description": "The layout of the tree.",
+              "type": "choice",
+              "choices": ["orthogonal", "radial"],
+              "target": "series.layout",
+              "initialValue": "force"
+            },
+            {
+              "name": "Orientation",
+              "description": "The direction of the layout of the tree.",
+              "type": "choice",
+              "choices": ["LR", "RL", "TB", "BT"],
+              "target": "series.orient",
+              "initialValue": "LR"
+            },
+            {
+              "name": "Color Scheme",
+              "description": "The color scheme.",
+              "target": "palette",
+              "type": "choice",
+              "choices": dex.color.colormaps({shortlist: true}),
+              "initialValue": "category10"
+            },
+            {
+              "name": "Display Legend",
+              "description": "Determines whether or not to draw the legend or not.",
+              "type": "boolean",
+              "target": "displayLegend",
+              "initialValue": false
+            },
+            {
+              "name": "Background Color",
+              "description": "The color of the background.",
+              "target": "options.backgroundColor",
+              "type": "color",
+              "initialValue": "#ffffff"
+            },
+            {
+              "name": "Roam",
+              "description": "Allow the tree to zoom and pan.",
+              "type": "boolean",
+              "target": "series.roam",
+              "initialValue": true
+            }
+          ]
+        },
+        {
+          "type": "group",
+          "name": "Items",
+          "contents": [
+            dex.config.gui.echartsItemStyle({name: "Nodes: Normal"}, "series.itemStyle.normal"),
+            dex.config.gui.echartsItemStyle({name: "Nodes: Emphasis"}, "series.itemStyle.emphasis")
+          ]
+        },
+        {
+          "type": "group",
+          "name": "Styles",
+          "contents": [
+            dex.config.gui.echartsItemStyle({name: "Items: Normal"}, "series.itemStyle"),
+            dex.config.gui.echartsItemStyle({name: "Items: Emphasis"}, "series.emphasis.itemStyle"),
+            dex.config.gui.echartsLineStyle({name: "Lines: Normal"}, "series.lineStyle"),
+            dex.config.gui.echartsLineStyle({name: "Lines: Emphasis"}, "series.emphasis.lineStyle"),
+            dex.config.gui.echartsLabel({name: "Labels: Normal"}, "series.label"),
+            dex.config.gui.echartsLabel({name: "Labels: Emphasis"}, "series.emphasis.label")
+          ]
+        }
+      ]
+    };
+
+    var guiDef = dex.config.expandAndOverlay(config, defaults);
+    dex.config.gui.sync(chart, guiDef);
+    return guiDef;
+  };
+
+  chart.getOptions = function (csv) {
+    var csvSpec = chart.spec.parse(csv);
+    var options = dex.config.expandAndOverlay(chart.config.options,
+      {}, chart.getCommonOptions());
+
+   json = {
+      "name": csv.header[0],
+      "children": csv.toHierarchicalJson()
+    };
+
+   dex.console.log(JSON.stringify(json));
+
+    options.series = dex.config.expandAndOverlay(chart.config.series,
+      {
+        name: "series",
+        type: 'tree',
+        layout: 'orthogonal',
+        data: [json],
+        label: {
+          normal: {
+            position: 'right',
+            formatter: '{b}'
+          }
+        }
+      });
+
+    dex.console.log("OPTIONS", options);
+    return options;
+  };
+
+  chart.clone = function clone(override) {
+    return Tree(dex.config.expandAndOverlay(override, userConfig));
+  };
+
+  return chart;
+};
+module.exports = Tree;
+},{}],52:[function(require,module,exports){
 /**
  *
  * @module dex/charts/echarts
@@ -13946,7 +14651,10 @@ module.exports = Timeline;
 var echarts = {};
 
 echarts.EChart = require("./EChart");
+
+echarts.HeatMap = require("./HeatMap");
 echarts.LineChart = require("./LineChart");
+echarts.ParallelCoordinates = require("./ParallelCoordinates");
 echarts.PolarPlot = require("./PolarPlot");
 echarts.Timeline = require("./Timeline");
 echarts.Network = require("./Network");
@@ -13954,10 +14662,11 @@ echarts.SingleAxisScatterPlot = require("./SingleAxisScatterPlot");
 echarts.PieChart = require("./PieChart");
 echarts.SteamGraph = require("./SteamGraph");
 echarts.RadarChart = require("./RadarChart");
+echarts.Tree = require("./Tree");
 echarts.BarChart3D = require("./BarChart3D");
 
 module.exports = echarts;
-},{"./BarChart3D":39,"./EChart":40,"./LineChart":41,"./Network":42,"./PieChart":43,"./PolarPlot":44,"./RadarChart":45,"./SingleAxisScatterPlot":46,"./SteamGraph":47,"./Timeline":48}],50:[function(require,module,exports){
+},{"./BarChart3D":39,"./EChart":40,"./HeatMap":41,"./LineChart":42,"./Network":43,"./ParallelCoordinates":44,"./PieChart":45,"./PolarPlot":46,"./RadarChart":47,"./SingleAxisScatterPlot":48,"./SteamGraph":49,"./Timeline":50,"./Tree":51}],53:[function(require,module,exports){
 /**
  *
  * This is the base constructor for a Elegans ScatterPlot.
@@ -14088,7 +14797,7 @@ var scatterplot = function (userConfig) {
 };
 
 module.exports = scatterplot;
-},{}],51:[function(require,module,exports){
+},{}],54:[function(require,module,exports){
 /**
  *
  * Create charts using WebGL based Elegans.
@@ -14101,7 +14810,203 @@ var elegans = {};
 elegans.ScatterPlot = require("./ScatterPlot");
 
 module.exports = elegans;
-},{"./ScatterPlot":50}],52:[function(require,module,exports){
+},{"./ScatterPlot":53}],55:[function(require,module,exports){
+/**
+ *
+ * This is the base constructor for a JS Grid.
+ *
+ * @param userConfig The chart's configuration.
+ *
+ * @returns {JqGrid}
+ *
+ * @memberof dex/charts/grid
+ *
+ */
+var JqGrid = function (userConfig) {
+  var chart;
+
+  var defaults = {
+    'parent': '#Grid_JqGridParent',
+    'id': 'Grid_JqGridId',
+    'class': 'Grid_JqGridClass',
+    'resizable': true,
+    'width': "100%",
+    'height': "100%",
+    'margin': {top: 5, bottom: 5, left: 5, right: 5},
+    'grid': {
+      "datatype": "local",
+      "search": true,
+      "page": 1,
+      "height": "auto",
+      "width": "auto",
+      "loadonce": true,
+      "rowNum": 1000,
+      "shrinkToFit": false
+    }
+  };
+
+  chart = new dex.component(userConfig, defaults);
+
+  chart.getGuiDefinition = function getGuiDefinition(config) {
+    var defaults = {
+      "type": "group",
+      "name": "Grid Configuration",
+      "contents": [
+        dex.config.gui.dimensions(),
+        dex.config.gui.general(),
+        {
+          "type": "group",
+          "name": "Miscellaneous",
+          "contents": [
+            {
+              "name": "Shrink To Fit",
+              "description": "Shrink/Grow the grid to the available parent dimensions, otherwise scroll.",
+              "target": "grid.shrinkToFit",
+              "type": "boolean",
+              "initialValue": true
+            },
+          ]
+        }
+      ]
+    };
+
+    var guiDef = dex.config.expandAndOverlay(config, defaults);
+    dex.config.gui.sync(chart, guiDef);
+    return guiDef;
+  };
+
+  chart.render = function render() {
+    d3 = dex.charts.d3.d3v3;
+    chart.resize().update();
+    return chart;
+  };
+
+  chart.update = function update() {
+    var config = chart.config;
+    var csv = config.csv;
+    var margin = chart.getMargins();
+
+    var width = +config.width - margin.left - margin.right;
+    var height = +config.height - margin.top - margin.bottom;
+
+    // Remove the old stuff
+    d3.selectAll(config.parent).selectAll("*").remove();
+
+    var colModel = csv.guessTypes().map(function (type, hi) {
+      switch (type) {
+        case "string": {
+          return {
+            name: csv.header[hi],
+            index: csv.header[hi],
+            width: 40
+          }
+        }
+        case "number" : {
+          return {
+            name: csv.header[hi],
+            index: csv.header[hi],
+            sorttype: "float",
+            width: 30
+          }
+        }
+        default: {
+          return {
+            name: csv.header[hi],
+            index: csv.header[hi],
+            sorttype: "text",
+            width: 20
+          }
+        }
+      }
+    });
+
+    //dex.console.log("FIELDS", fields);
+    var $parent = $(config.parent);
+    //dex.console.log("parent", $parent);
+
+    config.grid.colModel = colModel;
+    var $list = $("<table id='" + config.id + "_list'></table>");
+    var $pager = $("<div id='" + config.id + "_pager'></div>");
+
+    $parent.append($list);
+    $parent.append($pager);
+
+    config.grid.data = csv.toJson();
+    config.grid.colNames = csv.header;
+    config.grid.pager = "#" + config.id + "_pager";
+    //dex.console.log("height", $parent.height());
+    //dex.console.log("width", $parent.width());
+    config.grid.height = height * .9;
+    config.grid.width = width;
+
+    config.grid.numRows = 1000;
+    config.grid.scroll = 1;
+
+    //dex.console.log("config.grid", config.grid);
+    $("#" + config.id + "_list").jqGrid(config.grid);
+    $list.navGrid("#" + config.id + "_pager",
+      {
+        search: true,
+        add: false,
+        edit: false,
+        del: false,
+        refresh: true
+      },
+      // Edit options
+      {},
+      // Add options
+      {},
+      // Delete options
+      {},
+      // Search options
+      {
+        multipleSearch: true,
+        multipleGroup: true,
+        buttons: [
+          {
+            side: "right",
+            text: "Custom",
+            position: "first",
+            click: function (form, params, event) {
+              alert("Custom action in search form");
+            }
+          }
+        ]
+      }
+    );
+
+    return chart;
+  };
+
+  chart.refresh = function () {
+    return chart.update();
+  };
+
+  $(document).ready(function () {
+    var config = chart.config;
+    // Make the entire chart draggable.
+    //$(chart.config.parent).draggable();
+  });
+
+  return chart;
+
+};
+
+module.exports = JqGrid;
+},{}],56:[function(require,module,exports){
+/**
+ *
+ * This module contains components related to grids and tables of information.
+ *
+ * @module dex/charts/grid
+ *
+ */
+var grid = {};
+
+grid.JqGrid = require("./JqGrid");
+
+module.exports = grid;
+},{"./JqGrid":55}],57:[function(require,module,exports){
 /**
  *
  * This is the base constructor for Gridster base multiples.
@@ -14277,7 +15182,7 @@ var GridsterMultiples = function (userConfig) {
 };
 
 module.exports = GridsterMultiples;
-},{}],53:[function(require,module,exports){
+},{}],58:[function(require,module,exports){
 /**
  *
  * This is the base constructor for Simple HTML based multiples.
@@ -14290,186 +15195,208 @@ module.exports = GridsterMultiples;
  *
  */
 var Multiples = function (userConfig) {
-  var chart;
-  var cells;
-  var baseInstance;
+    var chart;
+    var cells;
+    var baseInstance;
 
-  var defaults = {
-    "parent": "#MultiplesParent",
-    "id": "MultiplesId",
-    "class": "MultiplesClass",
-    "resizable": true,
-    "width": "100%",
-    "height": "100%",
-    "model": {options: {}, attributes: {}},
-    "refreshType": "update",
-    "cell.height": 300,
-    "cell.width": 400,
-    "limit": 100
-  };
-
-  chart = new dex.component(userConfig, defaults);
-
-  //dex.console.log("CHART", chart);
-
-  baseInstance = chart.config.model.chartConstructor(chart.config.model.attributes || {});
-
-  // Good for debugging
-  //chart.subscribe(chart, "attr", function (evt) {
-  //  dex.console.log("Setting: '" + evt.attr + "'='" + evt.value + "'");
-  //});
-
-  chart.getGuiDefinition = function getGuiDefinition(config) {
     var defaults = {
-      "type": "group",
-      "name": "Multiples Configuration",
-      "contents": [
-        {
-          "type": "group",
-          "name": "Dimensions",
-          "contents": [
-            {
-              "name": "Cell Height",
-              "description": "Cell Height",
-              "type": "int",
-              "minValue": 50,
-              "maxValue": 1600,
-              "step": 10,
-              "initialValue": 300,
-              "target": "cell.height"
-            },
-            {
-              "name": "Cell Width",
-              "description": "Cell Width",
-              "type": "int",
-              "minValue": 50,
-              "maxValue": 2000,
-              "step": 10,
-              "initialValue": 400,
-              "target": "cell.width"
-            }
-          ]
-        }
-      ]
+      "parent": "#MultiplesParent",
+      "id": "MultiplesId",
+      "class": "MultiplesClass",
+      "resizable": true,
+      "width": "100%",
+      "height": "100%",
+      "model": {options: {}, attributes: {}},
+      "refreshType": "update",
+      "cell.height": 300,
+      "cell.width": 400,
+      "limit": 500,
+      "groupBy": ""
     };
 
-    var guiDef = dex.config.expandAndOverlay(config, defaults);
-    guiDef = dex.config.gui.sync(chart, guiDef);
+    chart = new dex.component(userConfig, defaults);
 
-    var biGuiDef = baseInstance.getGuiDefinition();
-    // Redefine default gui configuration to be a child of Multiples
-    // with the base path of: target='model.attributes.${original_path}'
-    // This causes the engine to keep state for a multiples base-chart
-    // encapsulated within itself.  IE: No eventing models necessary to
-    // communicate basic changes.
-    //
-    //  We do this by visiting every object withini the gui-def of the
-    // name 'target'.  We rename the object key to have the given
-    // prefixed target.
-    //
-    // Basically stitches the basechart gui-config into the Multiples
-    // component and simplifies the interface.
-    dex.object.visit(biGuiDef, function (obj) {
-      //dex.console.log("BI-GUI-DEF Visiting: ", name + "=" + obj);
-      if (obj["target"] !== undefined) {
-        obj["target"] = "model.attributes." + obj["target"];
-        //dex.console.log("Renaming: '" + obj["target"] +
-        //  "' to 'model.attributes." + obj["target"] + "'");
-      }
-    });
+    //dex.console.log("CHART", chart);
 
-    guiDef.contents.push(biGuiDef);
-    //dex.console.log("GUI-DEF:", biGuiDef);
-    return guiDef;
-  };
+    baseInstance = chart.config.model.chartConstructor(chart.config.model.attributes || {});
 
-  chart.render = function render() {
-    var config = chart.config;
-    var csv = config.csv;
-    var $parent = $(config.parent);
+    // Good for debugging
+    //chart.subscribe(chart, "attr", function (evt) {
+    //  dex.console.log("Setting: '" + evt.attr + "'='" + evt.value + "'");
+    //});
 
-    // If we have previous cells, delete them and start with a new array of cells.
-    if (cells !== undefined) {
-      dex.console.log("-- REMOVING " + cells.length + " CELLS");
-      // Unregisters any window resize handlers.
-      cells.forEach(function (cell, i) {
-        //dex.console.log("-- REMOVING CELL[" + i + "]=", cell);
-        cell.deleteChart();
-      });
-    }
-
-    cells = [];
-
-    //dex.console.log("dex.charts.multiples.SimpleMultiples.baseInstance=", baseInstance,
-    //  "CHART=", chart);
-
-    // Remove the children of the chart's parent.
-    $parent.empty();
-
-    var frames = csv.getFramesByIndex(0);
-    if (frames.frameIndices.length > config.limit) {
-      $parent.append("<h3>Limit of " + config.limit + " multiples imposed.  Attempted to chart " +
-        frames.frameIndices.length + " multiples.</h3>");
-      return chart;
-    }
-    //dex.console.stacktrace();
-    //dex.console.log("SIMPLE-MULTIPLES-FRAMES", frames);
-
-    var $container = $parent.append("<div></div>")
-      .addClass("dex-multiples")
-      .attr("width", config.width)
-      .attr("height", config.height);
-
-    frames.frames.forEach(function (frame, i) {
-      var cellId = config.id + "_cell_" + i;
-      var $cell = $("<div></div>")
-        .addClass("dex-multiples-cell")
-        .attr("id", cellId);
-
-      var title = frames.frameIndices[i];
-      var $title = $("<div></div>")
-        .addClass("dex-multiples-cell-title")
-        .text(title)
-        .css("width", config.cell.width);
-      $cell.append($title);
-
-      var $cellContents = $("<div></div>")
-        .addClass("dex-multiples-cell-contents")
-        .css("width", config.cell.width)
-        .css("height", config.cell.height);
-
-      $cell.append($cellContents);
-
-      $container.append($cell);
-
-      var cellConfig = {
-        "parent": "#" + cellId + " .dex-multiples-cell-contents",
-        "csv": frame
+    chart.getGuiDefinition = function getGuiDefinition(config) {
+      var defaults = {
+        "type": "group",
+        "name": "Multiples Configuration",
+        "contents": [
+          {
+            "type": "group",
+            "name": "Cell Dimensions",
+            "contents": [
+              {
+                "name": "Cell Height",
+                "description": "Cell Height",
+                "type": "int",
+                "minValue": 50,
+                "maxValue": 1600,
+                "step": 10,
+                "initialValue": 300,
+                "target": "cell.height"
+              },
+              {
+                "name": "Cell Width",
+                "description": "Cell Width",
+                "type": "int",
+                "minValue": 50,
+                "maxValue": 2000,
+                "step": 10,
+                "initialValue": 400,
+                "target": "cell.width"
+              }
+            ]
+          },
+          {
+            "name": "Group By",
+            "description": "Pick the columns on which to categorize or group the multiples by.",
+            "type": "multiple-choice",
+            "choices": chart.config.csv.header,
+            "initialValue": chart.config.csv.header[0],
+            "target": "groupBy"
+          }
+        ]
       };
 
-      var cellChart = chart.config.model.chartConstructor(
-        dex.config.expandAndOverlay(cellConfig, chart.config.model.attributes || {}));
+      var guiDef = dex.config.expandAndOverlay(config, defaults);
+      guiDef = dex.config.gui.sync(chart, guiDef);
 
-      cellChart.render();
-      cells.push(cellChart);
+      var biGuiDef = baseInstance.getGuiDefinition();
+      // Redefine default gui configuration to be a child of Multiples
+      // with the base path of: target='model.attributes.${original_path}'
+      // This causes the engine to keep state for a multiples base-chart
+      // encapsulated within itself.  IE: No eventing models necessary to
+      // communicate basic changes.
+      //
+      //  We do this by visiting every object withini the gui-def of the
+      // name 'target'.  We rename the object key to have the given
+      // prefixed target.
+      //
+      // Basically stitches the basechart gui-config into the Multiples
+      // component and simplifies the interface.
+      dex.object.visit(biGuiDef, function (obj) {
+        //dex.console.log("BI-GUI-DEF Visiting: ", name + "=" + obj);
+        if (obj !== undefined && obj !== null && obj["target"] !== undefined
+          && obj["target"] !== null) {
+          obj["target"] = "model.attributes." + obj["target"];
+          //dex.console.log("Renaming: '" + obj["target"] +
+          //  "' to 'model.attributes." + obj["target"] + "'");
+        }
+      });
+
+      guiDef.contents.push(biGuiDef);
+      //dex.console.log("GUI-DEF:", biGuiDef);
+      return guiDef;
+    };
+
+    chart.render = function render() {
+      var config = chart.config;
+      var csv = config.csv;
+      var $parent = $(config.parent);
+
+      // If we have previous cells, delete them and start with a new array of cells.
+      if (cells !== undefined) {
+        dex.console.log("-- REMOVING " + cells.length + " CELLS");
+        // Unregisters any window resize handlers.
+        cells.forEach(function (cell, i) {
+          //dex.console.log("-- REMOVING CELL[" + i + "]=", cell);
+          cell.deleteChart();
+        });
+      }
+
+      cells = [];
+
+      //dex.console.log("dex.charts.multiples.SimpleMultiples.baseInstance=", baseInstance,
+      //  "CHART=", chart);
+
+      // Remove the children of the chart's parent.
+      $parent.empty();
+
+      //dex.console.log("GROUPING-BY: ", config.groupBy);
+      var frames;
+
+      if (config.groupBy !== undefined && config.groupBy.length > 0) {
+        //dex.console.log("GROUP-BY", config.groupBy);
+        //var columnNames = config.groupBy.split(",");
+        frames = csv.getFramesByColumns(config.groupBy);
+      }
+      else {
+        frames = csv.getFramesByIndex(0);
+      }
+
+      if (frames.frameIndices.length > config.limit) {
+        $parent.append("<h3>Limit of " + config.limit + " multiples imposed.  Attempted to chart " +
+          frames.frameIndices.length + " multiples.</h3>");
+        return chart;
+      }
+      //dex.console.stacktrace();
+      //dex.console.log("SIMPLE-MULTIPLES-FRAMES", frames);
+
+      var $container = $parent.append("<div></div>")
+        .addClass("dex-multiples")
+        .attr("width", config.width)
+        .attr("height", config.height);
+
+      frames.frames.forEach(function (frame, i) {
+        var cellId = config.id + "_cell_" + i;
+        var $cell = $("<div></div>")
+          .addClass("dex-multiples-cell")
+          .attr("id", cellId);
+
+        var title = frames.frameIndices[i];
+        var $title = $("<div></div>")
+          .addClass("dex-multiples-cell-title")
+          .text(title)
+          .css("width", config.cell.width);
+        $cell.append($title);
+
+        var $cellContents = $("<div></div>")
+          .addClass("dex-multiples-cell-contents")
+          .css("width", config.cell.width)
+          .css("height", config.cell.height);
+
+        $cell.append($cellContents);
+
+        $container.append($cell);
+
+        var cellConfig = {
+          "parent": "#" + cellId + " .dex-multiples-cell-contents",
+          "csv": frame
+        };
+
+        var cellChart = chart.config.model.chartConstructor(
+          dex.config.expandAndOverlay(cellConfig, chart.config.model.attributes || {}));
+
+        cellChart.render();
+        cells.push(cellChart);
+      });
+
+      return chart;
+    };
+
+    chart.update = function () {
+      return chart.render();
+    };
+
+    $(document).ready(function () {
+      //var config = chart.config;
     });
 
     return chart;
-  };
-
-  chart.update = function () {
-    return chart.render();
-  };
-
-  $(document).ready(function () {
-    //var config = chart.config;
-  });
-
-  return chart;
-};
+  }
+;
 
 module.exports = Multiples;
-},{}],54:[function(require,module,exports){
+},{}],59:[function(require,module,exports){
 /**
  *
  * This module contains components related to producing multiples.
@@ -14483,7 +15410,7 @@ multiples.GridsterMultiples = require("./GridsterMultiples");
 multiples.Multiples = require("./SimpleMultiples");
 
 module.exports = multiples;
-},{"./GridsterMultiples":52,"./SimpleMultiples":53}],55:[function(require,module,exports){
+},{"./GridsterMultiples":57,"./SimpleMultiples":58}],60:[function(require,module,exports){
 /**
  *
  * This is the base constructor for a NVD3 BubbleChart.
@@ -14653,7 +15580,7 @@ var BubbleChart = function (userConfig) {
 };
 
 module.exports = BubbleChart;
-},{}],56:[function(require,module,exports){
+},{}],61:[function(require,module,exports){
 /**
  *
  * This is the base constructor for a NVD3 StackedAreaChart.
@@ -14808,7 +15735,7 @@ var StackedAreaChart = function (userConfig) {
 };
 
 module.exports = StackedAreaChart;
-},{}],57:[function(require,module,exports){
+},{}],62:[function(require,module,exports){
 /**
  *
  * This module provides NVD3 based visualization components.
@@ -14822,7 +15749,7 @@ nvd3.StackedAreaChart = require("./StackedAreaChart");
 nvd3.BubbleChart = require("./BubbleChart");
 
 module.exports = nvd3;
-},{"./BubbleChart":55,"./StackedAreaChart":56}],58:[function(require,module,exports){
+},{"./BubbleChart":60,"./StackedAreaChart":61}],63:[function(require,module,exports){
 /**
  *
  * This is the base constructor for a TauChart AreaChart.
@@ -14852,7 +15779,7 @@ var AreaChart = function (userConfig) {
   return chart;
 };
 module.exports = AreaChart;
-},{}],59:[function(require,module,exports){
+},{}],64:[function(require,module,exports){
 /**
  *
  * This is the base constructor for a TauChart BarChart.
@@ -14882,7 +15809,7 @@ var BarChart = function (userConfig) {
   return chart;
 };
 module.exports = BarChart;
-},{}],60:[function(require,module,exports){
+},{}],65:[function(require,module,exports){
 /**
  *
  * This is the base constructor for a TauChart HorizontalBarChart.
@@ -14912,7 +15839,7 @@ var HorizontalBarChart = function (userConfig) {
   return chart;
 };
 module.exports = HorizontalBarChart;
-},{}],61:[function(require,module,exports){
+},{}],66:[function(require,module,exports){
 /**
  *
  * This is the base constructor for a TauChart HorizontalStackedBarChart.
@@ -14942,7 +15869,7 @@ var HorizontalStackedBarChart = function (userConfig) {
   return chart;
 };
 module.exports = HorizontalStackedBarChart;
-},{}],62:[function(require,module,exports){
+},{}],67:[function(require,module,exports){
 /**
  *
  * This is the base constructor for a TauChart LineChart.
@@ -14972,7 +15899,7 @@ var LineChart = function (userConfig) {
   return chart;
 };
 module.exports = LineChart;
-},{}],63:[function(require,module,exports){
+},{}],68:[function(require,module,exports){
 /**
  *
  * This is the base constructor for a TauChart ScatterPlot.
@@ -15002,7 +15929,7 @@ var ScatterPlot = function (userConfig) {
   return chart;
 };
 module.exports = ScatterPlot;
-},{}],64:[function(require,module,exports){
+},{}],69:[function(require,module,exports){
 /**
  *
  * This is the base constructor for a TauChart StackedBarChart.
@@ -15032,7 +15959,7 @@ var StackedBarChart = function (userConfig) {
   return chart;
 };
 module.exports = StackedBarChart;
-},{}],65:[function(require,module,exports){
+},{}],70:[function(require,module,exports){
 /**
  *
  * This is the base constructor for a TauChart.
@@ -15131,12 +16058,46 @@ var TauChart = function (userConfig) {
       "name": "TauChart Settings",
       "contents": [
         {
+          "type": "group",
+          "name": "Plugins",
+          "contents": [
+            {
+              "name": "Enable Legend",
+              "description": "Enable the legend.",
+              "type": "boolean",
+              "target": "plugins.legend",
+              "initialValue": true
+            },
+            {
+              "name": "Enable Tooltips",
+              "description": "Enable tooltips.",
+              "type": "boolean",
+              "target": "plugins.tooltips",
+              "initialValue": true
+            },
+            {
+              "name": "Enable Quick Filters",
+              "description": "Enable the quick filters.",
+              "type": "boolean",
+              "target": "plugins.quickfilters",
+              "initialValue": true
+            },
+            {
+              "name": "Enable Trend Lines",
+              "description": "Enable the trendlines plugin.",
+              "type": "boolean",
+              "target": "plugins.trendline",
+              "initialValue": false
+            }
+          ]
+        },
+        {
           "name": "Chart Type",
           "description": "The type of chart.",
           "type": "choice",
           "choices": ["scatterplot", "line", "area", "bar", "horizontal-bar",
             "stacked-bar", "horizontal-stacked-bar"],
-          "target": "options.type",
+          "target": "type",
           "initialValue": "scatterplot"
         },
         {
@@ -15243,28 +16204,32 @@ var TauChart = function (userConfig) {
           "description": "The X Axis",
           "type": "choice",
           "choices": chart.config.csv.header,
-          "target": "options.x"
+          "target": "options.x",
+          "initialValue": chart.config.csv.header[1]
         },
         {
           "name": "Y-Axis",
           "description": "The Y Axis",
           "type": "choice",
           "choices": chart.config.csv.header,
-          "target": "options.y"
+          "target": "options.y",
+          "initialValue": chart.config.csv.header[2]
         },
         {
           "name": "Color",
           "description": "The color",
           "type": "choice",
           "choices": dex.array.combine(["none"], chart.config.csv.header),
-          "target": "options.color"
+          "target": "options.color",
+          "initialValue": chart.config.csv.header[0]
         },
         {
           "name": "Size",
           "description": "Size by.",
           "type": "choice",
           "choices": dex.array.combine(["none"], chart.config.csv.header),
-          "target": "options.size"
+          "target": "options.size",
+          "initialValue": "none"
         },
         {
           "name": "Split",
@@ -15272,34 +16237,6 @@ var TauChart = function (userConfig) {
           "type": "choice",
           "choices": dex.array.combine(["none"], chart.config.csv.header),
           "target": "options.split"
-        },
-        {
-          "name": "Enable Legend",
-          "description": "Enable the legend.",
-          "type": "boolean",
-          "target": "plugins.legend",
-          "initialValue": true
-        },
-        {
-          "name": "Enable Tooltips",
-          "description": "Enable tooltips.",
-          "type": "boolean",
-          "target": "plugins.tooltips",
-          "initialValue": true
-        },
-        {
-          "name": "Enable Quick Filters",
-          "description": "Enable the quick filters.",
-          "type": "boolean",
-          "target": "plugins.quickfilters",
-          "initialValue": true
-        },
-        {
-          "name": "Enable Trend Lines",
-          "description": "Enable the trendlines plugin.",
-          "type": "boolean",
-          "target": "plugins.trendline",
-          "initialValue": false
         }
       ]
     };
@@ -15419,7 +16356,7 @@ var TauChart = function (userConfig) {
 };
 
 module.exports = TauChart;
-},{}],66:[function(require,module,exports){
+},{}],71:[function(require,module,exports){
 /**
  *
  * @module dex/charts/taucharts
@@ -15436,7 +16373,7 @@ taucharts.StackedBarChart = require("./StackedBarChart");
 taucharts.HorizontalBarChart = require("./HorizontalBarChart");
 taucharts.HorizontalStackedBarChart = require("./HorizontalStackedBarChart");
 module.exports = taucharts;
-},{"./AreaChart":58,"./BarChart":59,"./HorizontalBarChart":60,"./HorizontalStackedBarChart":61,"./LineChart":62,"./ScatterPlot":63,"./StackedBarChart":64,"./TauChart":65}],67:[function(require,module,exports){
+},{"./AreaChart":63,"./BarChart":64,"./HorizontalBarChart":65,"./HorizontalStackedBarChart":66,"./LineChart":67,"./ScatterPlot":68,"./StackedBarChart":69,"./TauChart":70}],72:[function(require,module,exports){
 /**
  *
  * This is the base constructor for a WebGL ScatterPlot component.
@@ -15817,7 +16754,7 @@ var ScatterPlot = function (userConfig) {
 };
 
 module.exports = ScatterPlot;
-},{}],68:[function(require,module,exports){
+},{}],73:[function(require,module,exports){
 /**
  *
  * This module provides ThreeJS/WebGL based visualization components.
@@ -15830,7 +16767,7 @@ var threejs = {};
 threejs.ScatterPlot = require("./ScatterPlot");
 
 module.exports = threejs;
-},{"./ScatterPlot":67}],69:[function(require,module,exports){
+},{"./ScatterPlot":72}],74:[function(require,module,exports){
 /**
  *
  * This is the base constructor for a VisJS Network component.
@@ -16229,7 +17166,7 @@ var Network = function (userConfig) {
 };
 
 module.exports = Network;
-},{}],70:[function(require,module,exports){
+},{}],75:[function(require,module,exports){
 /**
  *
  * This is the base constructor for a VisJS Timeline component.
@@ -16374,7 +17311,7 @@ var Network = function (userConfig) {
 };
 
 module.exports = Network;
-},{}],71:[function(require,module,exports){
+},{}],76:[function(require,module,exports){
 /**
  *
  * This module provides VisJS based visualizations.
@@ -16388,7 +17325,7 @@ vis.Network = require("./Network");
 vis.Timeline = require("./Timeline");
 
 module.exports = vis;
-},{"./Network":69,"./Timeline":70}],72:[function(require,module,exports){
+},{"./Network":74,"./Timeline":75}],77:[function(require,module,exports){
 module.exports = function (dex) {
   /**
    *
@@ -16508,7 +17445,7 @@ module.exports = function (dex) {
         "RdYlGn_11", "Accent_8", "Dark2_8", "Paired_12",
         "Pastel1_9", "Pastel2_8", "Set1_9", "Set2_8", "Set3_12",
         "Stop Light", "White to Red", "White to Blue",
-        "Red White and Blue"
+        "Red White and Blue", "HeatMap 1"
       ];
     }
     return Object.keys(dex.color.palette);
@@ -16965,13 +17902,14 @@ module.exports = function (dex) {
     "Set3_10": ["#8dd3c7", "#ffffb3", "#bebada", "#fb8072", "#80b1d3", "#fdb462", "#b3de69", "#fccde5", "#d9d9d9", "#bc80bd"],
     "Set3_11": ["#8dd3c7", "#ffffb3", "#bebada", "#fb8072", "#80b1d3", "#fdb462", "#b3de69", "#fccde5", "#d9d9d9", "#bc80bd", "#ccebc5"],
     "Set3_12": ["#8dd3c7", "#ffffb3", "#bebada", "#fb8072",
-      "#80b1d3", "#fdb462", "#b3de69", "#fccde5", "#d9d9d9", "#bc80bd", "#ccebc5", "#ffed6f"]
+      "#80b1d3", "#fdb462", "#b3de69", "#fccde5", "#d9d9d9", "#bc80bd", "#ccebc5", "#ffed6f"],
+    "HeatMap 1": ['#313695', '#4575b4', '#74add1', '#abd9e9', '#e0f3f8', '#ffffbf', '#fee090', '#fdae61', '#f46d43', '#d73027', '#a50026']
   };
 
   return color;
 };
 
-},{}],73:[function(require,module,exports){
+},{}],78:[function(require,module,exports){
 module.exports = function (dex) {
   /**
    *
@@ -17558,7 +18496,7 @@ module.exports = function (dex) {
   return component;
 };
 
-},{}],74:[function(require,module,exports){
+},{}],79:[function(require,module,exports){
 module.exports = function (dex) {
   /**
    *
@@ -17745,6 +18683,55 @@ module.exports = function (dex) {
 
         return overlay;
       }
+    }
+  };
+
+  config.getFormatter = function getFormatter(name, type) {
+    dex.console.log("getFormatter", name);
+    var formatters = {
+      "none" : function(value, i) {
+        dex.console.log("default formatting of: '" + value + "'");
+        return value;
+      },
+
+      "abbreviate" : function(value) {
+        if (type === "number") {
+          if (value > 1000000000000000000) {
+            return parseInt(value / 1000000000000000) + "E"
+          }
+          else if (value > 1000000000000000) {
+            return parseInt(value / 1000000000000) + "P"
+          }
+          else if (value > 1000000000000) {
+            return parseInt(value / 1000000000) + "T"
+          }
+          else if (value > 1000000000) {
+            return parseInt(value / 1000000000) + "G"
+          }
+          else if (value > 1000000) {
+            return parseInt(value / 1000000) + "M"
+          }
+          else if (value > 1000) {
+            return parseInt(value / 1000) + "K"
+          }
+          else {
+            return value;
+          }
+        }
+        // Non numbers simply pass thru
+        else {
+          return value;
+        }
+      }
+    };
+    if (name === undefined || name.length == 0) {
+      return formatters.default;
+    }
+    else if (formatters[name] !== undefined) {
+      return formatters[name];
+    }
+    else {
+      return name;
     }
   };
 
@@ -18828,7 +19815,7 @@ module.exports = function (dex) {
 
   return config;
 };
-},{"./gui":75}],75:[function(require,module,exports){
+},{"./gui":80}],80:[function(require,module,exports){
 module.exports = function (dex) {
   /**
    *
@@ -19147,9 +20134,9 @@ module.exports = function (dex) {
     return dex.config.expandAndOverlay(userConfig, defaults);
   };
   gui.editableText = function editableText(config, prefix) {
-    var config = dex.config.gui.text(config, prefix);
+    var textConfig = dex.config.gui.text(config, prefix);
     var ns = (typeof prefix !== 'undefined') ? (prefix + ".") : "";
-    config.contents[0].contents.unshift(
+    textConfig.contents[0].contents.unshift(
       {
         "name": "Text Contents",
         "description": "The text.",
@@ -19158,7 +20145,7 @@ module.exports = function (dex) {
         "initialValue": ""
       }
     );
-    return config;
+    return textConfig;
   };
   gui.fill = function fill(config, prefix) {
     var ns = (typeof prefix !== 'undefined') ? (prefix + ".") : "";
@@ -19578,7 +20565,7 @@ module.exports = function (dex) {
         },
         {
           "name": "Left Margin",
-          "description": "Left top margin of the chart.",
+          "description": "The left margin of the chart.",
           "target": ns + "padding.left",
           "type": "int",
           "minValue": 0,
@@ -19880,7 +20867,7 @@ module.exports = function (dex) {
           "target": ns + "left",
           "type": "int",
           "minValue": 0,
-          "maxValue": 200,
+          "maxValue": 400,
           "initialValue": 0
         },
         {
@@ -19889,7 +20876,7 @@ module.exports = function (dex) {
           "target": ns + "right",
           "type": "int",
           "minValue": 0,
-          "maxValue": 200,
+          "maxValue": 400,
           "initialValue": 0
         },
         {
@@ -19898,7 +20885,7 @@ module.exports = function (dex) {
           "target": ns + "top",
           "type": "int",
           "minValue": 0,
-          "maxValue": 200,
+          "maxValue": 400,
           "initialValue": 0
         },
         {
@@ -19907,7 +20894,7 @@ module.exports = function (dex) {
           "target": ns + "bottom",
           "type": "int",
           "minValue": 0,
-          "maxValue": 200,
+          "maxValue": 400,
           "initialValue": 0
         },
         {
@@ -19932,6 +20919,13 @@ module.exports = function (dex) {
           "minValue": 0,
           "maxValue": 200,
           "initialValue": 0
+        },
+        {
+          "name": "Contains Label",
+          "description": "Set to true in order to accommodate dynamic label sizes.",
+          "target": ns + "containsLabel",
+          "type": "boolean",
+          "initialValue": false
         },
       ]
     };
@@ -19977,7 +20971,8 @@ module.exports = function (dex) {
           "choices": [
             "sans-serif", "arial", "courier", "courier new",
             "arial narrow", "allegro", "lucidia console",
-            "lucida sans", "times", "arial rounded mt bold"
+            "lucida sans", "times", "arial rounded mt bold",
+            "monospace"
           ],
           "initialValue": "sans-serif"
         },
@@ -20002,6 +20997,14 @@ module.exports = function (dex) {
       "name": "Tooltips",
       "contents": [
         dex.config.gui.echartsTextStyle(config.textStyle || {}, ns + "textStyle"),
+        {
+          "name": "Trigger",
+          "description": "Whether the tooltip is triggered by axis location or by item.",
+          "target": ns + "trigger",
+          "type": "choice",
+          "choices": ["item", "axis", "none"],
+          "initialValue": "item"
+        },
         {
           "name": "Formatter",
           "description": "The text format variables {a}-{d}.",
@@ -20091,7 +21094,7 @@ module.exports = function (dex) {
         },
         {
           "name": "Formatter",
-          "description": "Formatter of the label.",
+          "description": "Formatter of the label. Ex: none, comma-delimited, succinct",
           "target": ns + "formatter",
           "type": "string",
           "initialValue": ""
@@ -20325,6 +21328,49 @@ module.exports = function (dex) {
           "minValue": 0,
           "maxValue": 1,
           "initialValue": 0
+        }
+      ]
+    };
+    return dex.config.expandAndOverlay(userConfig, defaults);
+  };
+  gui.echartsAreaStyle = function echartsAreaStyle(config, prefix) {
+    var ns = (typeof prefix !== 'undefined') ? (prefix + ".") : "";
+    var userConfig = config || {};
+    var defaults = {
+      "type": "group",
+      "name": "Area Style",
+      "contents": [
+        {
+          "name": "Color",
+          "description": "Area color.",
+          "target": ns + "color",
+          "type": "color",
+          "initialValue": "#000000"
+        },
+        {
+          "name": "Shadow Blur",
+          "description": "Shadow blur.",
+          "target": ns + "shadowBlur",
+          "type": "float",
+          "minValue": 0,
+          "maxValue": 20,
+          "initialValue": 0
+        },
+        {
+          "name": "Shadow Color",
+          "description": "Shadow color.",
+          "target": ns + "shadowColor",
+          "type": "color",
+          "initialValue": "#000000"
+        },
+        {
+          "name": "Opacity",
+          "description": "Opacity.",
+          "target": ns + "opacity",
+          "type": "float",
+          "minValue": 0,
+          "maxValue": 1,
+          "initialValue": 1
         }
       ]
     };
@@ -20590,6 +21636,32 @@ module.exports = function (dex) {
     };
     return dex.config.expandAndOverlay(userConfig, defaults);
   };
+  gui.columnDimensions = function columnDimensions(config, prefix, csv, dimensions) {
+    var ns = (typeof prefix !== 'undefined') ? (prefix + ".") : "";
+    var userConfig = config || {};
+
+    var defaults = {
+      "type": "group",
+      "name": "Dimensions",
+      "contents": []
+    };
+
+    Object.keys(dimensions).forEach(function (dimension) {
+      dimensions[dimension] = csv.getColumnName(dimensions[dimension]);
+
+      var name = dimension.charAt(0).toUpperCase() + dimension.slice(1);
+      defaults.contents.push({
+        "name": name,
+        "description": name + " value.",
+        "target": ns + dimension,
+        "type": "choice",
+        "choices": csv.header,
+        "initialValue": dimensions[dimension]
+      });
+    });
+
+    return dex.config.expandAndOverlay(userConfig, defaults);
+  };
   gui.echartsAxis = function echartsAxis(config, prefix) {
     var ns = (typeof prefix !== 'undefined') ? (prefix + ".") : "";
     var userConfig = config || {};
@@ -20770,7 +21842,7 @@ module.exports = function (dex) {
 
   return gui;
 };
-},{}],76:[function(require,module,exports){
+},{}],81:[function(require,module,exports){
 module.exports = function (dex) {
   /**
    *
@@ -20983,7 +22055,7 @@ module.exports = function (dex) {
 
   return dexConsole;
 };
-},{}],77:[function(require,module,exports){
+},{}],82:[function(require,module,exports){
 /**
  *
  * Construct a csv from the supplied header and data.
@@ -21232,12 +22304,10 @@ csv.prototype.getColumnName = function (colIndex) {
     return null;
   }
 
-  if (colIndex >= 0 && colIndex < csv.header.length) {
-    return csv.header[colIndex];
-  }
+  var colNum = csv.getColumnNumber(colIndex);
 
-  if (csv.header.indexOf(colIndex) >= 0) {
-    return colIndex;
+  if (colNum >= 0) {
+    return csv.header[colNum];
   }
 
   return null;
@@ -21985,35 +23055,37 @@ csv.prototype.getFramesByColumns = function (columns) {
   var csv = this;
 
   var columnIndexes = columns.map(function (col) {
-    return this.getColumnNumber(col);
+    return csv.getColumnNumber(col);
   });
 
   var axisCsv = this.include(columnIndexes);
-  var seriesCsv = this.exclude(columnIndexes);
+  var frameMap = {};
 
-  // If there are no series.
-  if (seriesCsv.header.length == 0) {
-    return {
-      frameIndices: [axisCsv.header.join(" vs ")],
-      frames: [axisCsv]
+  var groupedHeader = csv.header.filter(function(hdr, hi) { return !columnIndexes.includes(hi)});
+
+  axisCsv.data.forEach(function(row) {
+    var key = row.join(" > ");
+    if (frameMap[key] === undefined) {
+      frameMap[key] = new dex.csv(groupedHeader);
     }
-  }
+  });
+
+  csv.data.forEach(function(row) {
+    var key = dex.array.slice(row, columnIndexes).join(" > ");
+    frameMap[key].data.push(row.filter(function (col, i) { return !columnIndexes.includes(i); }));
+  });
 
   var frames = {
     frameIndices: [],
     frames: []
   };
 
-  seriesCsv.header.forEach(function (h, hi) {
-    frames.frameIndices.push(h);
-    var frame = new dex.csv(axisCsv);
-    frame.header.push(h);
-    seriesCsv.data.forEach(function (row, ri) {
-      frame.data[ri].push(row[hi]);
-    });
-    frames.frames.push(frame);
+  Object.keys(frameMap).forEach(function(key) {
+    frames.frameIndices.push(key);
+    frames.frames.push(frameMap[key])
   });
-  dex.console.log("FRAMES", frames);
+
+  //dex.console.log("FRAMES", frames);
   return frames;
 };
 
@@ -22508,8 +23580,76 @@ csv.prototype.getGraph = function (valueFunction) {
     });
   }
 
-  //dex.console.log("NODES", nodes, links, indexMap);
+  //dex.console.log("NODES", nodes, "LINKS", JSON.stringify(links), "INDEX-MAP", indexMap);
   return {'nodes': nodes, 'links': links};
+};
+
+csv.prototype.getAggregatedGraph = function (valueFunction) {
+  var valueFn = valueFunction || function () {
+    return 1;
+  };
+  var csv = this;
+  var nodes = [];
+  var linkMap = {};
+  var links = [];
+  var nodeNum = 0;
+  var indexMap = [];
+
+  // Record uniques across the data, treating each column as it's own namespace.
+  csv.header.map(function (col, ci) {
+    indexMap.push({});
+    csv.data.map(function (row, ri) {
+      if (_.isUndefined(indexMap[ci][row[ci]])) {
+        indexMap[ci][row[ci]] = nodeNum;
+        nodes.push({'name': row[ci], 'category': csv.header[ci]});
+        nodeNum++;
+      }
+    });
+  });
+
+  for (var ci = 1; ci < csv.header.length; ci++) {
+    csv.data.map(function (row, ri) {
+      var source = indexMap[ci - 1][row[ci - 1]];
+      var target = indexMap[ci][row[ci]];
+      var value = valueFn(csv, ci - 1, ri, ci, ri);
+
+      if (linkMap[source] === undefined) {
+        linkMap[source] = {};
+      }
+
+      if (linkMap[source][target] === undefined)  {
+        linkMap[source][target] = value;
+      }
+      else {
+        linkMap[source][target] += value;
+      }
+    });
+  }
+
+  Object.keys(linkMap).forEach(function(source) {
+    Object.keys(linkMap[source]).forEach(function(target) {
+      links.push({
+        'source': +source,
+        'target': +target,
+        'value': +(linkMap[source][target])
+      });
+    });
+  });
+
+  //dex.console.log("AGGREGATED > NODES", nodes, "LINKS", JSON.stringify(links), "INDEX-MAP", indexMap);
+  return {'nodes': nodes, 'links': links};
+};
+
+csv.prototype.toNestedJson = function (manualWeight) {
+  var csv = this;
+  manualWeight = manualWeight || false;
+  var result = {
+    'name': csv.header[0],
+    'children': this.toNestedJsonChildren(
+      this.getConnectionMap(csv), manualWeight)
+  };
+  //dex.console.log("toNestedJson.result()", result);
+  return result;
 };
 
 csv.prototype.toNestedJson = function (manualWeight) {
@@ -22639,7 +23779,7 @@ csv.prototype.getConnectionMap = function () {
 };
 
 module.exports = csv;
-},{}],78:[function(require,module,exports){
+},{}],83:[function(require,module,exports){
 module.exports = function (dex) {
   return function (name) {
     function spec(name) {
@@ -22776,9 +23916,7 @@ module.exports = function (dex) {
         return spec;
       };
 
-      spec.parse = function (csv) {
-        // Overkill I think
-        // var csv = new dex.csv(specCsv);
+      spec.parse = function (csv, assignments) {
 
         // Initialize our assessment:
         var assessment = {
@@ -22795,16 +23933,45 @@ module.exports = function (dex) {
           return spec.specError(assessment);
         }
 
-        assessment.types = csv.guessTypes();
-        assessment.received = "[" + assessment.types.join(",") + "]";
-        assessment.unspecified = csv.header.map(function (hdr, hi) {
-          return {header: hdr, position: hi, type: assessment.types[hi]};
-        });
-        assessment.specified = [];
+        if (assignments !== undefined) {
+          assessment.types = csv.guessTypes();
+          assessment.received = "[" + assessment.types.join(",") + "]";
 
-        spec.specs.forEach(function (s) {
-          s.specify(assessment);
-        });
+          assessment.unspecified = csv.header.map(function (hdr, hi) {
+            if (assignments[hdr] !== undefined) {
+              // Manually defined, therefore specified.
+            }
+            else {
+              return {header: hdr, position: hi, type: assessment.types[hi]};
+            }
+          });
+          assessment.specified = [];
+
+          Object.keys(assignments).forEach(function(key) {
+            var header = assignments[key];
+            var name = csv.getColumnName(header);
+            var position = csv.getColumnNumber(header);
+
+            //dex.console.log("KEY", key, "HEADER", header, "NAME", name,
+            //  "POS", position);
+            assessment.specified.push({
+              header: name,
+              position: position,
+              type: assessment.types[position]})
+          });
+        }
+        else {
+          assessment.types = csv.guessTypes();
+          assessment.received = "[" + assessment.types.join(",") + "]";
+          assessment.unspecified = csv.header.map(function (hdr, hi) {
+            return {header: hdr, position: hi, type: assessment.types[hi]};
+          });
+          assessment.specified = [];
+
+          spec.specs.forEach(function (s) {
+            s.specify(assessment);
+          });
+        }
 
         if (assessment.valid == false) {
           return spec.specError(assessment);
@@ -22860,7 +24027,7 @@ module.exports = function (dex) {
     return new spec(name);
   }
 };
-},{}],79:[function(require,module,exports){
+},{}],84:[function(require,module,exports){
 module.exports = function (dex) {
   /**
    *
@@ -23288,7 +24455,7 @@ module.exports = function (dex) {
   return datagen;
 };
 
-},{}],80:[function(require,module,exports){
+},{}],85:[function(require,module,exports){
 /**
  *
  * @type {dex}
@@ -23458,6 +24625,37 @@ dex.data.spec = require("./data/spec")(dex);
 
 dex.charts = require("./charts/charts")(dex);
 
+///////////////
+//
+// Polyfills:
+//
+///////////////
+if (!String.prototype.includes) {
+  String.prototype.includes = function(search, start) {
+    if (typeof start !== 'number') {
+      start = 0;
+    }
+
+    if (start + search.length > this.length) {
+      return false;
+    } else {
+      return this.indexOf(search, start) !== -1;
+    }
+  };
+}
+
+if (!Array.prototype.includes) {
+  Object.defineProperty(Array.prototype, "includes", {
+    enumerable: false,
+    value: function(obj) {
+      var newArr = this.filter(function(el) {
+        return el == obj;
+      });
+      return newArr.length > 0;
+    }
+  });
+}
+
 d3 = dex.charts.d3.d3v3;
 
 // This fixes a JQueryUI/Bootstrap icon conflict.
@@ -23466,7 +24664,7 @@ if ($.fn.button.noConflict != undefined) {
 }
 
 module.exports = dex;
-},{"../lib/noUiSlider/noUiSlider":3,"./array/array":4,"./charts/charts":15,"./color/color":72,"./component/component":73,"./config/config":74,"./console/console":76,"./csv/csv":77,"./data/spec":78,"./datagen/datagen":79,"./geometry/geometry":81,"./json/json":82,"./matrix/matrix":83,"./object/object":84,"./ui/ui":92,"./util/util":94}],81:[function(require,module,exports){
+},{"../lib/noUiSlider/noUiSlider":3,"./array/array":4,"./charts/charts":15,"./color/color":77,"./component/component":78,"./config/config":79,"./console/console":81,"./csv/csv":82,"./data/spec":83,"./datagen/datagen":84,"./geometry/geometry":86,"./json/json":87,"./matrix/matrix":88,"./object/object":89,"./ui/ui":97,"./util/util":99}],86:[function(require,module,exports){
 module.exports = function (dex) {
   /**
    *
@@ -23722,7 +24920,7 @@ module.exports = function (dex) {
   return geometry;
 };
 
-},{}],82:[function(require,module,exports){
+},{}],87:[function(require,module,exports){
 module.exports = function (dex) {
   /**
    *
@@ -23844,7 +25042,7 @@ module.exports = function (dex) {
   return json;
 };
 
-},{}],83:[function(require,module,exports){
+},{}],88:[function(require,module,exports){
 module.exports = function (dex) {
   /**
    *
@@ -24185,7 +25383,7 @@ module.exports = function (dex) {
   return matrix;
 };
 
-},{}],84:[function(require,module,exports){
+},{}],89:[function(require,module,exports){
 module.exports = function (dex) {
   Function.prototype.clone = function() {
     var fct = this;
@@ -24233,13 +25431,15 @@ module.exports = function (dex) {
   };
 
   object.visit = function visit(obj, visitor) {
-    visitor(obj);
-    object.keys(obj).forEach(function(key) {
-      //dex.console.log("Visiting(" + key + ")" + " of type: '" + (typeof obj[key]) + "'");
-      if (obj[key] !== undefined && ((typeof obj[key]) === "object")) {
-        dex.object.visit(obj[key], visitor);
-      }
-    });
+    if (obj !== undefined && visitor !== undefined) {
+      visitor(obj);
+      object.keys(obj).forEach(function (key) {
+        //dex.console.log("Visiting(" + key + ")" + " of type: '" + (typeof obj[key]) + "'");
+        if (obj[key] !== undefined && ((typeof obj[key]) === "object")) {
+          dex.object.visit(obj[key], visitor);
+        }
+      });
+    }
   };
 
   /**
@@ -24475,9 +25675,13 @@ module.exports = function (dex) {
 
   object.couldBeADate = function (str) {
     if (typeof str === "string") {
-      var d = dex.moment(str);
-      if (d == null || !d.isValid()) return false;
-
+      try {
+        var d = dex.moment(str);
+        if (d == null || !d.isValid()) return false;
+      }
+      catch (err) {
+        return false;
+      }
       return true;
     }
     return typeof str == "date";
@@ -24595,7 +25799,7 @@ module.exports = function (dex) {
 };
 
 
-},{}],85:[function(require,module,exports){
+},{}],90:[function(require,module,exports){
 /**
  *
  * Creates a Table component for visualizing tabular data.
@@ -24675,7 +25879,7 @@ var ColumnSelector = function (userConfig) {
 };
 
 module.exports = ColumnSelector;
-},{}],86:[function(require,module,exports){
+},{}],91:[function(require,module,exports){
 /**
  *
  * Creates a ConfigurationPane component.
@@ -24800,7 +26004,7 @@ var ConfigurationPane = function (userConfig) {
 };
 
 module.exports = ConfigurationPane;
-},{}],87:[function(require,module,exports){
+},{}],92:[function(require,module,exports){
 var datafilterpane = function (userConfig) {
   var chart;
   var INITIALIZING = false;
@@ -24937,7 +26141,7 @@ var datafilterpane = function (userConfig) {
 
       $root.append($dateContainer);
     }
-
+    
     $panelBody.append($root);
     $panelCollapser.append($panelBody);
     $panel.append($panelHeading);
@@ -24953,8 +26157,9 @@ var datafilterpane = function (userConfig) {
       categoryFilters.multiselect({
           includeSelectAllOption: true,
           allSelectedText: 'All',
-          enableFiltering: true,
-          enableFullValueFiltering: true,
+          enableCaseInsensitiveFiltering: true,
+          enableHTML: true,
+          //enableFullValueFiltering: true,
           buttonText: function buttonTextHandler(options, select) {
             //dex.console.log("OPTIONS", options, "SELECT", select[0]);
             if (options !== undefined && select !== undefined && select.length > 0) {
@@ -24963,7 +26168,8 @@ var datafilterpane = function (userConfig) {
                 return select[0].id + ": All (" + select[0].children.length + ")";
               }
               else {
-                return select[0].id + ": " + options.length + " of " + select[0].children.length;
+                return "<font color='red'>" + select[0].id + ": " + options.length + " of " +
+                  select[0].children.length + "</font>";
               }
             }
             else {
@@ -25028,16 +26234,7 @@ var datafilterpane = function (userConfig) {
         if (delta < 1) {
           return delta;
         }
-        if (delta < 2) {
-          return 1;
-        }
-        if (delta < 10) {
-          return 5;
-        }
-        if (delta < 50) {
-          return 10;
-        }
-        return Math.round(delta / 2);
+        return 1;
       }
       catch (ex) {
         return 1;
@@ -25128,11 +26325,14 @@ var datafilterpane = function (userConfig) {
       splitRatio: .5
     });
 
+    //dex.console.log("COLUMN-SELECTOR", columnSelector);
+
     function updateCsv() {
       // Ignore spurious events until we have completed initialization.
       var config = chart.config;
       var csv = config.csv;
 
+      //dex.console.log("UPDATE CSV", "INITIALIZING", INITIALIZING, "CSV", csv);
       if (INITIALIZING) {
         return;
       }
@@ -25143,10 +26343,11 @@ var datafilterpane = function (userConfig) {
 
       if (selected !== undefined && selected.length > 0) {
         for (i = 0; i < selected.length; i++) {
-          selectedColumns.push(selected[i].innerText);
+          //dex.console.log("SELECTED[" + i + "]='", selected[i].innerHTML);
+          selectedColumns.push(selected[i].innerHTML);
         }
       }
-      //dex.console.log("SELECTED-COLUMNS", selectedColumns);
+      //dex.console.log("SELECTED-COLUMNS", selected, selectedColumns);
       // Update the selection map
       $(config.parent + ' .' + config["class"] + "_category").each(function (i, obj) {
         var colMap = {};
@@ -25194,8 +26395,6 @@ var datafilterpane = function (userConfig) {
         }
       );
 
-      //dex.console.log("SELECTED-CSV", selectedCsv);
-
       // Publish the selected subset of the csv.
       chart.publish({
         "type": "select",
@@ -25215,6 +26414,7 @@ var datafilterpane = function (userConfig) {
           result.push(opt.value || opt.text);
         }
       }
+      //dex.console.log("GET SELECT VALUES: ", select, "RESULT", result);
       return result;
     }
 
@@ -25253,12 +26453,13 @@ var datafilterpane = function (userConfig) {
 };
 
 module.exports = datafilterpane;
-},{}],88:[function(require,module,exports){
+},{}],93:[function(require,module,exports){
 var guipane = function (userConfig) {
   var pane;
   var componentMap = {};
   var targetList = {};
   var INTITIALIZING = false;
+  var CHANGED = false;
 
   var defaults = {
     // The parent container of this pane.
@@ -25294,8 +26495,8 @@ var guipane = function (userConfig) {
     //dex.console.log("PICKERS", $pickers);
 
     $pickers.spectrum({
-      color: tinycolor,
       showPalette: true,
+      showAlpha: true,
       palette: [
         ["rgb(0, 0, 0)", "rgb(67, 67, 67)", "rgb(102, 102, 102)", /*"rgb(153, 153, 153)","rgb(183, 183, 183)",*/
           "rgb(204, 204, 204)", "rgb(217, 217, 217)", /*"rgb(239, 239, 239)", "rgb(243, 243, 243)",*/ "rgb(255, 255, 255)"],
@@ -25325,11 +26526,13 @@ var guipane = function (userConfig) {
         var attName = this.getAttribute("targetAttribute");
         var value = color.toHexString();
         if (cmp != undefined) {
-          cmp.attrSave(attName, value);
           if (!INITIALIZING) {
+            cmp.attrSave(attName, value);
             cmp.refreshAsync();
           }
-          ;
+          else {
+            cmp.attr(attName, value);
+          }
         }
       }
     });
@@ -25353,18 +26556,69 @@ var guipane = function (userConfig) {
           var cmp = componentMap[option[0].getAttribute("targetComponent")];
           var attName = option[0].getAttribute("targetAttribute");
           if (cmp != undefined) {
-            cmp.attrSave(attName, option[0].getAttribute("value"));
             if (!INITIALIZING) {
+              cmp.attrSave(attName, option[0].getAttribute("value"));
               cmp.refreshAsync();
             }
-            ;
+            else {
+              cmp.attr(attName, option[0].getAttribute("value"));
+            }
           }
         }
         $choices.multiselect('updateButtonText');
       }
     });
 
-    $choices.multiselect('updateButtonText');
+    var $multipleChoices = $(config.parent + ' .control-multiple-choice');
+
+    if ($multipleChoices.length > 0) {
+      $multipleChoices.multiselect({
+          includeSelectAllOption: true,
+          allSelectedText: 'All',
+          enableCaseInsensitiveFiltering: true,
+          enableHTML: true,
+          //enableFullValueFiltering: true,
+          buttonText: function buttonTextHandler(options, select) {
+            //dex.console.log("OPTIONS", options, "SELECT", select[0]);
+            if (options !== undefined && select !== undefined && select.length > 0) {
+
+              if (options.length == select[0].children.length) {
+                return "Selected: All (" + select[0].children.length + ")";
+              }
+              else {
+                return "<font color='red'>Selected: " + options.length + " of " +
+                  select[0].children.length + "</font>";
+              }
+            }
+            else {
+              return "Undefined";
+            }
+          },
+          onSelectAll: function selectAllHandler() {
+            CHANGED = true;
+          },
+          onChange: function onChangeHandler(option, checked) {
+            CHANGED = true;
+          },
+          onDropdownHide: function onDropdownHideHandler(evt) {
+            if (this.getSelected().length > 0) {
+              var option = this.getSelected()[0];
+              var vals = this.getSelected().map(function () {
+                return $(this).text();
+              }).get();
+              var cmp = componentMap[option.getAttribute("targetComponent")];
+              var attName = option.getAttribute("targetAttribute");
+              if (cmp != undefined) {
+                cmp.attrSave(attName, vals);
+                cmp.refreshAsync();
+              }
+            }
+          }
+        });
+
+      //$multipleChoices.multiselect('selectAll', false);
+      $multipleChoices.multiselect('updateButtonText', false);
+    }
 
     // Enable String Input
     var stringInputs = $(config.parent + ' .control-string input');
@@ -25374,9 +26628,12 @@ var guipane = function (userConfig) {
         var cmp = componentMap[event.target.getAttribute("targetComponent")];
         var attName = event.target.getAttribute("targetAttribute");
         if (cmp != undefined) {
-          cmp.attrSave(attName, event.target.value);
           if (!INITIALIZING) {
+            cmp.attrSave(attName, event.target.value);
             cmp.refreshAsync();
+          }
+          else {
+            cmp.attr(attName, event.target.value);
           }
         }
       });
@@ -25404,9 +26661,12 @@ var guipane = function (userConfig) {
         slider.on("change", function (formattedValues, handle, values, tap, positions) {
           var cmp = componentMap[cmpName];
           if (cmp != undefined) {
-            cmp.attr(targetAttribute, values[0]);
             if (!INITIALIZING) {
+              cmp.attrSave(targetAttribute, values[0]);
               cmp.refreshAsync();
+            }
+            else {
+              cmp.attr(targetAttribute, values[0]);
             }
           }
         });
@@ -25446,9 +26706,12 @@ var guipane = function (userConfig) {
             values, tap, positions);
           var cmp = componentMap[cmpName];
           if (cmp != undefined) {
-            cmp.attr(targetAttribute, values[0]);
             if (!INITIALIZING) {
+              cmp.attrSave(targetAttribute, values[0]);
               cmp.refreshAsync();
+            }
+            else {
+              cmp.attr(targetAttribute, values[0]);
             }
           }
         });
@@ -25565,6 +26828,9 @@ var guipane = function (userConfig) {
       case "choice" :
         addChoice(targetComponent, $targetElt, guiDef, depth);
         break;
+      case "multiple-choice" :
+        addMultipleChoice(targetComponent, $targetElt, guiDef, depth);
+        break;
       case "color" :
         addColor(targetComponent, $targetElt, guiDef, depth);
         break;
@@ -25678,6 +26944,46 @@ var guipane = function (userConfig) {
         .attr("targetComponent", targetComponent)
         .text(choice);
 
+      //dex.console.log("COMPARING CHOICE: '" + choice + "' to '", guiDef);
+      if (choice === guiDef.initialValue) {
+        $option.attr("selected", "selected");
+      }
+
+      $select.append($option);
+    });
+
+    $leftCell.append($label);
+    $rightCell.append($select);
+    $row.append($leftCell);
+    $row.append($rightCell);
+
+    //dex.console.log("CHOICE", guiDef);
+    $targetElt.append($row);
+  }
+
+  function addMultipleChoice(targetComponent, $targetElt, guiDef, depth) {
+    var $row = $("<tr></tr>");
+    var $leftCell = $("<td></td>");
+    var $rightCell = $("<td></td>");
+    var $label = $("<label></label>")
+      .attr("title", guiDef.description)
+      .html("<strong>" + guiDef.name + ": </strong>")
+
+    var $select = $("<select></select>")
+      .attr("multiple", "multiple")
+      .attr("id", guiDef.name)
+      .attr("targetAttribute", guiDef.target)
+      .attr("targetComponent", targetComponent)
+      .addClass("control-multiple-choice");
+
+    guiDef.choices.forEach(function (choice) {
+      var $option = $("<option></option>")
+        .attr("value", choice)
+        .attr("targetAttribute", guiDef.target)
+        .attr("targetComponent", targetComponent)
+        .text(choice);
+
+      //dex.console.log("COMPARING MULTIPLE CHOICE: '" + choice + "' to '", guiDef);
       if (choice === guiDef.initialValue) {
         $option.attr("selected", "selected");
       }
@@ -25786,9 +27092,11 @@ var guipane = function (userConfig) {
       .addClass("control-float");
 
     var $leftCell = $("<td></td>")
-      .attr("rowspan", 2);
+      .attr("height", "60px")
+      .attr("valign", "center");
     var $rightCell = $("<td></td>")
-      .attr("rowspan", 2);
+      .attr("height", "60px")
+      .attr("valign", "center");
 
     // Determine an appropriate step
     var step;
@@ -25824,10 +27132,13 @@ var guipane = function (userConfig) {
   function addInt(targetComponent, $targetElt, guiDef, depth) {
     //dex.console.log("AddInt", guiDef);
     var $row = $("<tr></tr>")
+      .attr("rowspan", 2)
       .addClass("control-int");
 
-    var $leftCell = $("<td></td>");
-    var $rightCell = $("<td></td>");
+    var $leftCell = $("<td></td>")
+      .attr("colspan", 1);
+    var $rightCell = $("<td></td>")
+      .attr("colspan", 1);
 
     // Determine an appropriate step
     var step;
@@ -25873,7 +27184,7 @@ var guipane = function (userConfig) {
 };
 
 module.exports = guipane;
-},{}],89:[function(require,module,exports){
+},{}],94:[function(require,module,exports){
 /**
  *
  * Construct a player component.
@@ -26082,7 +27393,7 @@ var Player = function (userConfig) {
 };
 
 module.exports = Player;
-},{}],90:[function(require,module,exports){
+},{}],95:[function(require,module,exports){
 /**
  *
  * This creates a SqlQuery component which provides a SQL
@@ -26177,7 +27488,7 @@ var SqlQuery = function (userConfig) {
 };
 
 module.exports = SqlQuery;
-},{}],91:[function(require,module,exports){
+},{}],96:[function(require,module,exports){
 /**
  *
  * Creates a Table component for visualizing tabular data.
@@ -26273,7 +27584,7 @@ var Table = function (userConfig) {
 };
 
 module.exports = Table;
-},{}],92:[function(require,module,exports){
+},{}],97:[function(require,module,exports){
 module.exports = function (dex) {
   /**
    *
@@ -26289,11 +27600,12 @@ module.exports = function (dex) {
   ui.Table = require("./Table");
   ui.ConfigurationPane = require("./ConfigurationPane");
   ui.DataFilterPane = require("./DataFilterPane");
+  //ui.ParameterPane = require("./ParameterPane");
   ui.GuiPane = require("./GuiPane");
   ui.ColumnSelector = require("./ColumnSelector");
   return ui;
 };
-},{"./ColumnSelector":85,"./ConfigurationPane":86,"./DataFilterPane":87,"./GuiPane":88,"./Player":89,"./SqlQuery":90,"./Table":91}],93:[function(require,module,exports){
+},{"./ColumnSelector":90,"./ConfigurationPane":91,"./DataFilterPane":92,"./GuiPane":93,"./Player":94,"./SqlQuery":95,"./Table":96}],98:[function(require,module,exports){
 module.exports = function util(dex) {
   /**
    *
@@ -26378,7 +27690,7 @@ module.exports = function util(dex) {
 
   return d3util;
 };
-},{}],94:[function(require,module,exports){
+},{}],99:[function(require,module,exports){
 module.exports = function (dex) {
 
   var util = {};
@@ -26387,5 +27699,5 @@ module.exports = function (dex) {
 
   return util;
 };
-},{"./d3":93}]},{},[80])(80)
+},{"./d3":98}]},{},[85])(85)
 });
