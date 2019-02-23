@@ -45,13 +45,15 @@ module.exports = function (dex) {
   };
 
   object.visit = function visit(obj, visitor) {
-    visitor(obj);
-    object.keys(obj).forEach(function(key) {
-      //dex.console.log("Visiting(" + key + ")" + " of type: '" + (typeof obj[key]) + "'");
-      if (obj[key] !== undefined && ((typeof obj[key]) === "object")) {
-        dex.object.visit(obj[key], visitor);
-      }
-    });
+    if (obj !== undefined && visitor !== undefined) {
+      visitor(obj);
+      object.keys(obj).forEach(function (key) {
+        //dex.console.log("Visiting(" + key + ")" + " of type: '" + (typeof obj[key]) + "'");
+        if (obj[key] !== undefined && ((typeof obj[key]) === "object")) {
+          dex.object.visit(obj[key], visitor);
+        }
+      });
+    }
   };
 
   /**
@@ -287,9 +289,13 @@ module.exports = function (dex) {
 
   object.couldBeADate = function (str) {
     if (typeof str === "string") {
-      var d = dex.moment(str);
-      if (d == null || !d.isValid()) return false;
-
+      try {
+        var d = dex.moment(str);
+        if (d == null || !d.isValid()) return false;
+      }
+      catch (err) {
+        return false;
+      }
       return true;
     }
     return typeof str == "date";
