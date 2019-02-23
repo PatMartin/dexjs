@@ -73,17 +73,15 @@ var ParallelCoordinates = function (userConfig) {
         }
       }
     }),
-    'verticalLabel': dex.config.text({
+    'tickLabel': dex.config.text({
       // If you want to stagger labels.
       'dy': function (d, i) {
         return (i % 2) ?
           -chart.config.margin.top * .40 :
           -chart.config.margin.top * .40;
       },
-      'font.size': function (d) {
-        return 18
-      },
-      'fill.fillColor': 'red',
+      'font.size': 18,
+      'fill.fillColor': 'black',
       'anchor': 'middle',
       'text': function (d) {
         return d;
@@ -181,9 +179,9 @@ var ParallelCoordinates = function (userConfig) {
           ]
         },
         dex.config.gui.brush({}, "brush"),
-        dex.config.gui.text({name: "Tick Label"}, "axis.label"),
+        dex.config.gui.text({name: "Tick Label"}, "tickLabel"),
         dex.config.gui.path({name: "Axis Line"}, "axis.line"),
-        dex.config.gui.text({name: "Axis Label"}, "verticalLabel"),
+        dex.config.gui.text({name: "Axis Label"}, "axis.label"),
         dex.config.gui.linkGroup({}, "link")
       ]
     };
@@ -347,11 +345,14 @@ var ParallelCoordinates = function (userConfig) {
 
         // Now that the axis has rendered, adjust the tick labels based on our spec.
         var tickLabels = d3.select(this)
-          .selectAll('.tick text')
-          .call(dex.config.configureText, myConfig.label, i);
+          .selectAll("text")
+          .call(dex.config.configureText, config.tickLabel, i);
 
+        //var axisLabels = d3.select(this)
+        //  .selectAll('.tick text')
+        //  .call(dex.config.configureText, myConfig.label, i);
 
-        var maxFont = 48;
+        var maxFont = config.tickLabel.font.size;
 
         var availableHeight = height / (tickLabels[0].length);
 
@@ -367,15 +368,23 @@ var ParallelCoordinates = function (userConfig) {
             }
           });
 
-        maxFont = Math.min(availableHeight, maxFont);
-        tickLabels.style("font-size", "" + maxFont + "px")
+        maxFont = Math.min(availableHeight - 1, maxFont);
+        tickLabels
+          .style("font-size", "" + maxFont + "px")
+          .attr("visibility", function(d) {
+            "use strict";
+            if (maxFont < 4) {
+              return "hidden";
+            }
+            else {
+              return "visible";
+            }
+          })
           .attr("dy", ".3em")
           .attr("dx", (i < config.csv.header.length - 1) ? "-4px" : "4px");
-
-
       })
       .append("text")
-      .call(dex.config.configureText, config.verticalLabel);
+      .call(dex.config.configureText, config.tickLabel);
 
     // Add and store a brush for each axis.
     var brush = g.append("g")
