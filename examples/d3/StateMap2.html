@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 <style>
-    html, body, #container, #StateMap {
+    html, body, #container, #StateMap, #BarChart {
         height: 100%;
         min-height: 100%;
         width: 100%;
@@ -64,14 +64,14 @@
 
     var mapWidth = $("#top_div").width();
     var mapHeight = $("#top_div").height();
-dex.console.log("MAP: " + mapWidth + "x" + mapHeight);
+
     var map = dex.charts.d3.TopoJsonMap({
       'parent': "#StateMap",
       'topology': topology,
-      'projection' : d3.geo.albersUsa(),
-      'resizable': true,
-      'transform' : 'scale(.5)translate(' + mapWidth/3 + ' 0)',
-      'feature': topology.objects.cb_2013_us_state_20m,
+      //'projection' : d3.geo.albersUsa(),
+      //'resizable': true,
+      //'transform' : 'scale(.5)translate(' + mapWidth/3 + ' 0)',
+      'feature.topology': topology.objects["cb_2013_us_state_20m"],
       //'transform' : 'scale(.1)'
     });
 
@@ -137,8 +137,6 @@ dex.console.log("MAP: " + mapWidth + "x" + mapHeight);
       ["Delaware", 0, 0, 5, 0, 15, 24, 0, 14, 30, 20, 0, 0, 112, 1, 13, 2, 0, 84, 16, 273, 63, 2, 76, 0, 1, 749]
     ];
 
-    dex.console.log("DEX", dex);
-
     var abbrevIndex = dex.datagen.usStateInfo('abbrev2name');
     var nameIndex = dex.datagen.usStateInfo('name2abbrev');
     dex.console.log("Name Index", nameIndex);
@@ -152,7 +150,7 @@ dex.console.log("MAP: " + mapWidth + "x" + mapHeight);
     dex.console.log("STATE-MAP", stateMap);
     var selectedStates = {};
 
-    var barChart = dex.charts.c3.StackedBarChart({
+    var lineChart = dex.charts.c3.LineChart({
         'parent': "#BarChart",
         'csv': csv,
         'order' : 'desc',
@@ -160,32 +158,36 @@ dex.console.log("MAP: " + mapWidth + "x" + mapHeight);
       }
     );
 
-    barChart.subscribe(map, "selectFeature", function (msg) {
+    lineChart.subscribe(map, "select", function (msg) {
       dex.console.log("SELECT MSG", msg);
+      dex.console.log("SELECTED STATE: '" + msg.target.id + "'");
 
-      if (stateMap[nameIndex[msg.feature.id]] != null) {
-        selectedStates[nameIndex[msg.feature.id]] = true;
-        barChart.attr('csv', csv.selectRows(function (row) {
+      if (stateMap[nameIndex[msg.target.id]] != null) {
+        selectedStates[nameIndex[msg.target.id]] = true;
+        dex.console.log("SELECTED_STATES: ", csv.selectRows(function (row) {
           return row[0] in selectedStates && selectedStates[row[0]];
         }));
-        barChart.update();
+        lineChart.attr('csv', csv.selectRows(function (row) {
+          return row[0] in selectedStates && selectedStates[row[0]];
+        }));
+        lineChart.render();
       }
     });
 
-    barChart.subscribe(map, "deselectFeature", function (msg) {
+    lineChart.subscribe(map, "unselect", function (msg) {
       dex.console.log("DESELECT MSG", msg);
 
-      if (stateMap[nameIndex[msg.feature.id]] != null) {
-        selectedStates[nameIndex[msg.feature.id]] = false;
+      if (stateMap[nameIndex[msg.target.id]] != null) {
+        selectedStates[nameIndex[msg.target.id]] = false;
         var newCsv = csv.selectRows(function (row) {
           return row[0] in selectedStates && selectedStates[row[0]];
         });
-        barChart.attr('csv',newCsv.data.length > 0 ? newCsv : csv);
-        barChart.update();
+        lineChart.attr('csv',newCsv.data.length > 0 ? newCsv : csv);
+        lineChart.render();
       }
     });
 
-    barChart.render();
+    lineChart.render();
     map.render();
   });
 </script>

@@ -7,20 +7,9 @@
         width: 100%;
         min-width: 100%;
     }
-
-    path {
-        fill: #ccc;
-        stroke: #fff;
-        stroke-width: .5px;
-    }
-
-    path:hover {
-        fill: steelblue;
-    }
-
 </style>
 <body>
-<svg id="StateMap" height="100%" width="100%"></svg>
+<svg id="CountyMap" height="100%" width="100%"></svg>
 <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.css">
 <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.theme.min.css">
 <link rel="stylesheet" href="../../dist/dex-jquery.css">
@@ -44,9 +33,9 @@
   d3.json("../../data/maps/us.json", function (error, topology) {
 
     var map = dex.charts.d3.TopoJsonMap({
-      'parent': "#StateMap",
+      'parent': "#CountyMap",
       'topology': topology,
-      'feature': topology.objects.counties
+      'feature.topology': topology.objects.counties
     }).render();
   });
 </script>
