@@ -134,7 +134,7 @@ var datafilterpane = function (userConfig) {
 
       $root.append($dateContainer);
     }
-
+    
     $panelBody.append($root);
     $panelCollapser.append($panelBody);
     $panel.append($panelHeading);
@@ -150,8 +150,9 @@ var datafilterpane = function (userConfig) {
       categoryFilters.multiselect({
           includeSelectAllOption: true,
           allSelectedText: 'All',
-          enableFiltering: true,
-          enableFullValueFiltering: true,
+          enableCaseInsensitiveFiltering: true,
+          enableHTML: true,
+          //enableFullValueFiltering: true,
           buttonText: function buttonTextHandler(options, select) {
             //dex.console.log("OPTIONS", options, "SELECT", select[0]);
             if (options !== undefined && select !== undefined && select.length > 0) {
@@ -160,7 +161,8 @@ var datafilterpane = function (userConfig) {
                 return select[0].id + ": All (" + select[0].children.length + ")";
               }
               else {
-                return select[0].id + ": " + options.length + " of " + select[0].children.length;
+                return "<font color='red'>" + select[0].id + ": " + options.length + " of " +
+                  select[0].children.length + "</font>";
               }
             }
             else {
@@ -225,16 +227,7 @@ var datafilterpane = function (userConfig) {
         if (delta < 1) {
           return delta;
         }
-        if (delta < 2) {
-          return 1;
-        }
-        if (delta < 10) {
-          return 5;
-        }
-        if (delta < 50) {
-          return 10;
-        }
-        return Math.round(delta / 2);
+        return 1;
       }
       catch (ex) {
         return 1;
@@ -325,11 +318,14 @@ var datafilterpane = function (userConfig) {
       splitRatio: .5
     });
 
+    //dex.console.log("COLUMN-SELECTOR", columnSelector);
+
     function updateCsv() {
       // Ignore spurious events until we have completed initialization.
       var config = chart.config;
       var csv = config.csv;
 
+      //dex.console.log("UPDATE CSV", "INITIALIZING", INITIALIZING, "CSV", csv);
       if (INITIALIZING) {
         return;
       }
@@ -340,10 +336,11 @@ var datafilterpane = function (userConfig) {
 
       if (selected !== undefined && selected.length > 0) {
         for (i = 0; i < selected.length; i++) {
-          selectedColumns.push(selected[i].innerText);
+          //dex.console.log("SELECTED[" + i + "]='", selected[i].innerHTML);
+          selectedColumns.push(selected[i].innerHTML);
         }
       }
-      //dex.console.log("SELECTED-COLUMNS", selectedColumns);
+      //dex.console.log("SELECTED-COLUMNS", selected, selectedColumns);
       // Update the selection map
       $(config.parent + ' .' + config["class"] + "_category").each(function (i, obj) {
         var colMap = {};
@@ -391,8 +388,6 @@ var datafilterpane = function (userConfig) {
         }
       );
 
-      //dex.console.log("SELECTED-CSV", selectedCsv);
-
       // Publish the selected subset of the csv.
       chart.publish({
         "type": "select",
@@ -412,6 +407,7 @@ var datafilterpane = function (userConfig) {
           result.push(opt.value || opt.text);
         }
       }
+      //dex.console.log("GET SELECT VALUES: ", select, "RESULT", result);
       return result;
     }
 
