@@ -117,7 +117,7 @@ module.exports = function (dex) {
         "RdYlGn_11", "Accent_8", "Dark2_8", "Paired_12",
         "Pastel1_9", "Pastel2_8", "Set1_9", "Set2_8", "Set3_12",
         "Stop Light", "White to Red", "White to Blue",
-        "Red White and Blue"
+        "Red White and Blue", "HeatMap 1"
       ];
     }
     return Object.keys(dex.color.palette);
@@ -574,7 +574,8 @@ module.exports = function (dex) {
     "Set3_10": ["#8dd3c7", "#ffffb3", "#bebada", "#fb8072", "#80b1d3", "#fdb462", "#b3de69", "#fccde5", "#d9d9d9", "#bc80bd"],
     "Set3_11": ["#8dd3c7", "#ffffb3", "#bebada", "#fb8072", "#80b1d3", "#fdb462", "#b3de69", "#fccde5", "#d9d9d9", "#bc80bd", "#ccebc5"],
     "Set3_12": ["#8dd3c7", "#ffffb3", "#bebada", "#fb8072",
-      "#80b1d3", "#fdb462", "#b3de69", "#fccde5", "#d9d9d9", "#bc80bd", "#ccebc5", "#ffed6f"]
+      "#80b1d3", "#fdb462", "#b3de69", "#fccde5", "#d9d9d9", "#bc80bd", "#ccebc5", "#ffed6f"],
+    "HeatMap 1": ['#313695', '#4575b4', '#74add1', '#abd9e9', '#e0f3f8', '#ffffbf', '#fee090', '#fdae61', '#f46d43', '#d73027', '#a50026']
   };
 
   return color;
