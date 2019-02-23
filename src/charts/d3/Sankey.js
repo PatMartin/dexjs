@@ -31,11 +31,12 @@ var Sankey = function (userConfig) {
     'palette': "ECharts",
     units: "UNITS",
     iterations: 32,
+    aggregate: true,
     link: {
       normal: dex.config.link({
         'fill.fillColor': 'none',
         'stroke.color': 'black',
-        'stroke.opacity': .2
+        'stroke.opacity': .05
       }),
       emphasis: dex.config.link({
         'fill.fillColor': 'none',
@@ -46,7 +47,7 @@ var Sankey = function (userConfig) {
     node: {
       normal: dex.config.link({
         'width': 20,
-        'padding': 10,
+        'padding': .05,
         'fill.fillColor': 'none',
         'stroke.color': 'black',
         'stroke.opacity': .2
@@ -122,6 +123,13 @@ var Sankey = function (userConfig) {
               "minValue": 1,
               "maxValue": 400,
               "initialValue": 32
+            },
+            {
+              "name" : "Aggregate Links",
+              "description": "Aggregate multiple links with same source/target into 1.",
+              "target": "aggregate",
+              "type" : "boolean",
+              "initialValue": true
             }
           ]
         }
@@ -141,7 +149,6 @@ var Sankey = function (userConfig) {
   chart.update = function () {
     d3 = dex.charts.d3.d3v4;
     var config = chart.config;
-    var margin = config.margin;
     var csv = config.csv;
     var units = config.units;
 
@@ -177,6 +184,8 @@ var Sankey = function (userConfig) {
     var graph;
     var types = csv.guessTypes();
 
+    // When the last number in the data is a number, use it
+    // for proportional scaling.
     if (types[csv.header.length - 1] == "number") {
       var valueFn = function (csv) {
         return function (unusedCsv, unusedColumnIndex, ri) {
@@ -184,10 +193,20 @@ var Sankey = function (userConfig) {
         }
       }(csv);
 
-      graph = csv.exclude([csv.header.length - 1]).getGraph(valueFn);
+      if (config.aggregate) {
+        graph = csv.exclude([csv.header.length - 1]).getAggregatedGraph(valueFn);
+      }
+      else {
+        graph = csv.exclude([csv.header.length - 1]).getGraph(valueFn);
+      }
     }
     else {
-      graph = csv.getGraph();
+      if (config.aggregate) {
+        graph = csv.getAggregatedGraph();
+      }
+      else {
+        graph = csv.getGraph();
+      }
     }
 
     sankey
@@ -255,7 +274,7 @@ var Sankey = function (userConfig) {
       .enter().append("g")
       .attr("class", "node")
       .attr("transform", function (d) {
-        //dex.console.log("CONTAINER-D", d);
+        //dex.console.log("ADDING NODE AT: ", d);
         return "translate(" + d.x + "," + d.y + ")";
       })
       .call(d3.drag()
@@ -285,7 +304,7 @@ var Sankey = function (userConfig) {
           .call(dex.config.configureLink, config.link.emphasis)
           .style("fill", "none")
           .style("stroke-width", function (d) {
-            return Math.max(1, d.dy);
+            return Math.max(.1, d.dy);
           });
       })
       .on("mouseout", function (d) {
@@ -334,6 +353,14 @@ var Sankey = function (userConfig) {
       .attr("dy", ".35em")
       .attr("text-anchor", "end")
       .attr("transform", null)
+      .attr("visibility", function(d) {
+        if (d.dy < (chart.config.label.normal.font.size - 1)) {
+          return "hidden";
+        }
+        else {
+          return "visible";
+        }
+      })
       .text(function (d) {
         return d.name;
       })
@@ -368,7 +395,7 @@ var Sankey = function (userConfig) {
     d3 = dex.charts.d3.d3v4;
     var sankey = {},
       nodeWidth = 24,
-      nodePadding = 8,
+      nodePadding = .1,
       size = [1, 1],
       nodes = [],
       links = [];
@@ -545,11 +572,25 @@ var Sankey = function (userConfig) {
       }
 
       function initializeNodeDepth() {
+        //dex.console.log("Nodes-By-Breadth", nodesByBreadth);
+
+        var maxNodes = d3.max(nodesByBreadth, function(nodes) {
+          return nodes.length;
+        });
+        // Set columnPadding to the number of pixels to space between
+        // nodes with a special case of 1 node being unpadded.
+        var columnPadding = (maxNodes > 1) ?
+          (size[1] * nodePadding) / (maxNodes - 1) : 0;
+
+        // Create base ky based on worst case (most rows)
         var ky = d3.min(nodesByBreadth, function (nodes) {
-          return (size[1] - (nodes.length - 1) * nodePadding) / d3.sum(nodes, value);
+          //dex.console.log("size1", size[1]);
+          return (size[1] - ((nodes.length - 1) * columnPadding)) /
+            d3.sum(nodes, value);
         });
 
         nodesByBreadth.forEach(function (nodes) {
+
           nodes.forEach(function (node, i) {
             node.y = i;
             node.dy = node.value * ky;
@@ -599,24 +640,28 @@ var Sankey = function (userConfig) {
             n = nodes.length,
             i;
 
+          var columnPadding = (nodes.length > 1) ?
+            (size[1] * nodePadding) / (nodes.length - 1) :
+            1;
+
           // Push any overlapping nodes down.
           nodes.sort(ascendingDepth);
           for (i = 0; i < n; ++i) {
             node = nodes[i];
             dy = y0 - node.y;
             if (dy > 0) node.y += dy;
-            y0 = node.y + node.dy + nodePadding;
+            y0 = node.y + node.dy + columnPadding;
           }
 
           // If the bottommost node goes outside the bounds, push it back up.
-          dy = y0 - nodePadding - size[1];
+          dy = y0 - columnPadding - size[1];
           if (dy > 0) {
             y0 = node.y -= dy;
 
             // Push any overlapping nodes back up.
             for (i = n - 2; i >= 0; --i) {
               node = nodes[i];
-              dy = node.y + node.dy + nodePadding - y0;
+              dy = node.y + node.dy + columnPadding - y0;
               if (dy > 0) node.y -= dy;
               y0 = node.y;
             }
