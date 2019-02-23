@@ -187,6 +187,55 @@ module.exports = function (dex) {
     }
   };
 
+  config.getFormatter = function getFormatter(name, type) {
+    dex.console.log("getFormatter", name);
+    var formatters = {
+      "none" : function(value, i) {
+        dex.console.log("default formatting of: '" + value + "'");
+        return value;
+      },
+
+      "abbreviate" : function(value) {
+        if (type === "number") {
+          if (value > 1000000000000000000) {
+            return parseInt(value / 1000000000000000) + "E"
+          }
+          else if (value > 1000000000000000) {
+            return parseInt(value / 1000000000000) + "P"
+          }
+          else if (value > 1000000000000) {
+            return parseInt(value / 1000000000) + "T"
+          }
+          else if (value > 1000000000) {
+            return parseInt(value / 1000000000) + "G"
+          }
+          else if (value > 1000000) {
+            return parseInt(value / 1000000) + "M"
+          }
+          else if (value > 1000) {
+            return parseInt(value / 1000) + "K"
+          }
+          else {
+            return value;
+          }
+        }
+        // Non numbers simply pass thru
+        else {
+          return value;
+        }
+      }
+    };
+    if (name === undefined || name.length == 0) {
+      return formatters.default;
+    }
+    else if (formatters[name] !== undefined) {
+      return formatters[name];
+    }
+    else {
+      return name;
+    }
+  };
+
   /**
    *
    * Return the configuration for a font after the user's
