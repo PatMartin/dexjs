@@ -134,9 +134,7 @@ module.exports = function (dex) {
         return spec;
       };
 
-      spec.parse = function (csv) {
-        // Overkill I think
-        // var csv = new dex.csv(specCsv);
+      spec.parse = function (csv, assignments) {
 
         // Initialize our assessment:
         var assessment = {
@@ -153,16 +151,45 @@ module.exports = function (dex) {
           return spec.specError(assessment);
         }
 
-        assessment.types = csv.guessTypes();
-        assessment.received = "[" + assessment.types.join(",") + "]";
-        assessment.unspecified = csv.header.map(function (hdr, hi) {
-          return {header: hdr, position: hi, type: assessment.types[hi]};
-        });
-        assessment.specified = [];
+        if (assignments !== undefined) {
+          assessment.types = csv.guessTypes();
+          assessment.received = "[" + assessment.types.join(",") + "]";
 
-        spec.specs.forEach(function (s) {
-          s.specify(assessment);
-        });
+          assessment.unspecified = csv.header.map(function (hdr, hi) {
+            if (assignments[hdr] !== undefined) {
+              // Manually defined, therefore specified.
+            }
+            else {
+              return {header: hdr, position: hi, type: assessment.types[hi]};
+            }
+          });
+          assessment.specified = [];
+
+          Object.keys(assignments).forEach(function(key) {
+            var header = assignments[key];
+            var name = csv.getColumnName(header);
+            var position = csv.getColumnNumber(header);
+
+            //dex.console.log("KEY", key, "HEADER", header, "NAME", name,
+            //  "POS", position);
+            assessment.specified.push({
+              header: name,
+              position: position,
+              type: assessment.types[position]})
+          });
+        }
+        else {
+          assessment.types = csv.guessTypes();
+          assessment.received = "[" + assessment.types.join(",") + "]";
+          assessment.unspecified = csv.header.map(function (hdr, hi) {
+            return {header: hdr, position: hi, type: assessment.types[hi]};
+          });
+          assessment.specified = [];
+
+          spec.specs.forEach(function (s) {
+            s.specify(assessment);
+          });
+        }
 
         if (assessment.valid == false) {
           return spec.specError(assessment);
