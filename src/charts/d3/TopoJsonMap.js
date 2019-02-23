@@ -24,11 +24,11 @@ var TopoJsonMap = function (userConfig) {
     'height': '100%',
     'resizable': true,
     'transform': 'translate(0,0)',
-    'feature' : {
-      "topology" : undefined,
-      "path" : dex.config.path({
-        "fill.fillColor" : "lightgrey",
-        "stroke.color" : "white"
+    'feature': {
+      "topology": undefined,
+      "path": dex.config.path({
+        "fill.fillColor": "lightgrey",
+        "stroke.color": "white"
       })
     },
     'margin': {
@@ -47,7 +47,8 @@ var TopoJsonMap = function (userConfig) {
 
   chart.render = function render() {
     d3 = dex.charts.d3.d3v3;
-    return chart.resize().update();
+    chart.resize().update();
+    return chart;
   };
 
   chart.update = function () {
@@ -280,11 +281,12 @@ var TopoJsonMap = function (userConfig) {
       .call(zoom);
 
     initialize();
+    return chart;
   };
 
-    chart.clone = function clone(override) {
-        return TopoJsonMap(dex.config.expandAndOverlay(override, userConfig));
-    };
+  chart.clone = function clone(override) {
+    return TopoJsonMap(dex.config.expandAndOverlay(override, userConfig));
+  };
 
   return chart;
 };
