@@ -288,10 +288,11 @@ module.exports = function (dex) {
   };
 
   object.couldBeADate = function (str) {
+    //dex.console.log("TYPEOF: " + typeof(str));
     if (typeof str === "string") {
       try {
         var d = dex.moment(str);
-        if (d == null || !d.isValid()) return false;
+        if (d == null || !d.isValid() || isNaN(d.getTime())) return false;
       }
       catch (err) {
         return false;

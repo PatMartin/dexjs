@@ -783,7 +783,11 @@ csv.prototype.guessTypes = function () {
   csv.header.forEach(function (hdr, hi) {
 
     if (csv.data.every(function (row) {
-        return (row[hi] instanceof Date);
+        // This is miscategorizing stuff like: CATEGORY-1 as a date
+        // return (row[hi] instanceof Date);
+        // So lets be pickier:
+        //dex.console.log("COULD BE A DATE: '" + row[hi] + "' = " + dex.object.couldBeADate(row[hi]));
+        return dex.object.couldBeADate(row[hi]);
       })) {
       types.push("date");
     }

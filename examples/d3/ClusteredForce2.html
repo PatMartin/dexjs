@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 <style>
-    html, body, #ClusteredForceParent {
+    html, body, #Chart {
         height: 100%;
         min-height: 100%;
         width: 100%;
@@ -26,55 +26,27 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Faker/3.1.0/faker.min.js"></script>
 
 <body>
-<div id="ClusteredForceParent"></div>
+<div id="Chart"></div>
 
 <script>
+  var numCategories = 10;
+  var numLabels = 10;
+  var minValue = 1;
+  var maxValue = 100;
 
-  // Configure a chart.
-  var cforce = new dex.charts.d3.ClusteredForce({
-      'parent': "#ClusteredForceParent",
-      'width': 800,
-      'height': 800,
-      'csv': new dex.csv({
-        'header': d3.range(100).map(function (d) {
-          return "C" + d;
-        }),
-        'data': dex.datagen.randomMatrix({
-          'rows': 20,
-          'columns': 10,
-          'min': 1,
-          'max': 10
-        })
-      }),
-      'circle.fill.fillColor': function (d, i) {
-        var darkColor = dex.color.shadeColor(d.color, -20);
-        var gradientId = "gradient" + d.color.substring(1)
-        var grad = d3.select("#gradients").selectAll("#" + gradientId)
-          .data([gradientId])
-          .enter()
-          .append("radialGradient")
-          .attr("class", "colorGradient")
-          .attr("id", gradientId)
-          .attr("gradientUnits", "objectBoundingBox")
-          .attr("fx", "30%")
-          .attr("fy", "30%");
-        grad.append("stop")
-          .attr("offset", "0%")
-          .attr("style", "stop-color:#FFFFFF");
+  var csv = new dex.csv(["category", "label", "value"]);
 
-        // Middle
-        grad.append("stop")
-          .attr("offset", "40%")
-          .attr("style", "stop-color:" + d.color);
-
-        // Outer Edges
-        grad.append("stop")
-          .attr("offset", "100%")
-          .attr("style", "stop-color:" + darkColor);
-
-        return "url(#" + gradientId + ")";
-      }
+  for (var ci = 1; ci <= numCategories; ci++) {
+    for (var li = 1; li <= numLabels; li++) {
+      csv.data.push(["Category " + ci, "Item " + li,
+        Math.floor((Math.random() * maxValue)) + minValue]);
     }
-  );
-  cforce.render();
+  }
+
+  chart = dex.charts.d3.ClusteredForce({
+    "parent": "#Chart",
+    "csv": csv,
+    "groups": [{"label": "label", "value": "value", "category": "category"}]
+  }).render();
+
 </script>
