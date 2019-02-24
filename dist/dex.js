@@ -11772,11 +11772,14 @@ var EChart = function (userConfig) {
       try {
         var dataOptions = chart.getOptions(csv);
         var effectiveOptions = dex.config.expandAndOverlay(dataOptions, config.options);
-        if (internalChart !== undefined) {
-          internalChart.dispose();
-          internalChart = undefined;
-        }
+
+        echarts.dispose($parent[0]);
+        //if (internalChart !== undefined) {
+        //  internalChart.dispose();
+        //  internalChart = undefined;
+        //}
         $parent.empty();
+
         if ($parent[0] !== undefined) {
           internalChart = echarts.init($parent[0]);
           //internalChart.clear();
@@ -11799,7 +11802,7 @@ var EChart = function (userConfig) {
       return chart;
     };
 
-    chart.update = function render() {
+    chart.update = function () {
       try {
         //dex.console.log("ECHART-UPDATE");
         var config = chart.config;
@@ -11825,13 +11828,14 @@ var EChart = function (userConfig) {
       catch (ex) {
         dex.console.log("EXCEPTION", ex.stack, internalChart, chart, $parent);
         //echarts.dispose(d3.select(config.parent)[0][0]);
+        $parent.empty();
 
         if (ex instanceof dex.exception.SpecificationException) {
-          $parent.empty();
           $parent.append(chart.spec.message(ex));
         }
-
-        return chart.render();
+        else {
+          return chart.render();
+        }
       }
       return chart;
     };
@@ -25989,7 +25993,13 @@ var ConfigurationPane = function (userConfig) {
           " received select csv event from " +
           dataFilterPane.config.id, msg);
         //dex.console.stacktrace();
-        component.attr("csv", msg.selected).refreshAsync();
+        // Detect if this is a spurious event:
+        if (!component.attr("csv").equals(msg.selected)) {
+          component.attr("csv", msg.selected).refreshAsync();
+        }
+        else {
+          dex.console.log("SPURIOUS EVENT FILTERED.", component.attr("csv"));
+        }
       });
     });
 

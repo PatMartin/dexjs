@@ -102,7 +102,13 @@ var ConfigurationPane = function (userConfig) {
           " received select csv event from " +
           dataFilterPane.config.id, msg);
         //dex.console.stacktrace();
-        component.attr("csv", msg.selected).refreshAsync();
+        // Detect if this is a spurious event:
+        if (!component.attr("csv").equals(msg.selected)) {
+          component.attr("csv", msg.selected).refreshAsync();
+        }
+        else {
+          dex.console.log("SPURIOUS EVENT FILTERED.", component.attr("csv"));
+        }
       });
     });
 
