@@ -221,7 +221,7 @@ Let's assume that we have a US map component that allows the user to select
 individual states and a grid component which wants to do something with that
 information.
 
-```
+```javascript
 grid.subscribe(map, 'select', function(msg) {
   dex.console.log("grid received message: ", msg);
   // do something with the message...
