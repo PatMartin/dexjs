@@ -442,8 +442,6 @@ var ParallelCoordinates = function (userConfig) {
 
     // Handles a brush event, toggling the display of foreground lines.
     function brushend() {
-      dex.console.log("BRUSH-END: ", foreground);
-      dex.console.log("chart: ", chart);
       var activeData = [];
       var i;
 
