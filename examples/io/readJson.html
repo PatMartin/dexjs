@@ -9,7 +9,7 @@
             min-width: 100%;
         }
     </style>
-    <title>Read XML</title>
+    <title>Read JSON</title>
 
     <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.css">
     <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.theme.min.css">
@@ -34,12 +34,7 @@
 
 <script>
 
-  var xpaths = {
-    letter: "//letter/@id",
-    frequency: "//frequency"
-  };
-
-  var dataPromise = dex.io.readXml('/dexjs/data/io/letterFrequency.xml', xpaths)
+  var dataPromise = dex.io.readJson('https://jsonplaceholder.typicode.com/todos')
     .then(function (csv) {
       renderChart(csv)
     });

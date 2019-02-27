@@ -7067,8 +7067,6 @@ var ParallelCoordinates = function (userConfig) {
 
     // Handles a brush event, toggling the display of foreground lines.
     function brushend() {
-      dex.console.log("BRUSH-END: ", foreground);
-      dex.console.log("chart: ", chart);
       var activeData = [];
       var i;
 
@@ -22123,7 +22121,7 @@ var csv = function () {
     dex.console.log("UNKNOWN INSTANTIATOR LENGTH: ", arguments.length);
   }
 
-  this.strictTypes();
+  return this.strictTypes();
 };
 
 /**
@@ -24617,6 +24615,7 @@ dex.console = require("./console/console")(dex);
 dex.csv = require("./csv/csv");
 dex.datagen = require("./datagen/datagen")(dex);
 dex.geometry = require("./geometry/geometry")(dex);
+dex.io = require("./io/io")(dex);
 dex.json = require("./json/json")(dex);
 dex.matrix = require("./matrix/matrix")(dex);
 dex.object = require("./object/object")(dex);
@@ -24672,7 +24671,7 @@ if ($.fn.button.noConflict != undefined) {
 }
 
 module.exports = dex;
-},{"../lib/noUiSlider/noUiSlider":3,"./array/array":4,"./charts/charts":15,"./color/color":77,"./component/component":78,"./config/config":79,"./console/console":81,"./csv/csv":82,"./data/spec":83,"./datagen/datagen":84,"./geometry/geometry":86,"./json/json":87,"./matrix/matrix":88,"./object/object":89,"./ui/ui":97,"./util/util":99}],86:[function(require,module,exports){
+},{"../lib/noUiSlider/noUiSlider":3,"./array/array":4,"./charts/charts":15,"./color/color":77,"./component/component":78,"./config/config":79,"./console/console":81,"./csv/csv":82,"./data/spec":83,"./datagen/datagen":84,"./geometry/geometry":86,"./io/io":87,"./json/json":88,"./matrix/matrix":89,"./object/object":90,"./ui/ui":98,"./util/util":100}],86:[function(require,module,exports){
 module.exports = function (dex) {
   /**
    *
@@ -24932,6 +24931,102 @@ module.exports = function (dex) {
 module.exports = function (dex) {
   /**
    *
+   * This module provides input/output routines.
+   *
+   * @module dex/io
+   *
+   */
+  var io = {};
+
+  io.readCsv = function (path) {
+    return new dex.promise(function (resolve) {
+
+      d3.csv(path, function (input) {
+        var header = Object.keys(input[0]);
+        var data = input.map(function (row) {
+          var csvRow = header.map(function (col) {
+            return row[col];
+          });
+          return csvRow;
+        });
+
+        resolve(new dex.csv(header, data));
+      });
+    });
+  };
+
+  io.readTsv = function (path) {
+    return new dex.promise(function (resolve) {
+
+      d3.tsv(path, function (input) {
+        var header = Object.keys(input[0]);
+        var data = input.map(function (row) {
+          var csvRow = header.map(function (col) {
+            return row[col];
+          });
+          return csvRow;
+        });
+
+        resolve(new dex.csv(header, data));
+      });
+    });
+  };
+
+  io.readXml = function (path, xpaths) {
+    return new dex.promise(function (resolve) {
+
+      var header = Object.keys(xpaths);
+      var csv = new dex.csv(header);
+
+      d3.xml(path, function (xml) {
+
+        header.map(function (h) {
+          //dex.console.log("XPATHS[" + h + "] = " + xpaths[h]);
+          xpath = xml.evaluate(xpaths[h], xml);
+          //dex.console.log(xpath);
+          var xi = 0;
+          try {
+            var thisNode = xpath.iterateNext();
+
+            while (thisNode) {
+              if (!csv.data[xi]) {
+                csv.data[xi] = [ thisNode.textContent ];
+              }
+              else {
+                csv.data[xi].push(thisNode.textContent);
+              }
+              xi++;
+              //dex.console.log("NODE", thisNode.textContent);
+              thisNode = xpath.iterateNext();
+            }
+          }
+          catch (e) {
+            alert( 'Error: Document tree modified during iteration ' + e );
+          }
+        })
+        resolve(csv);
+      });
+    });
+  };
+
+  io.readJson = function (path, transformer) {
+    var transform = transformer || function(json) { return json; }
+
+    return new dex.promise(function (resolve) {
+
+      d3.json(path, function (json) {
+        resolve(new dex.csv(transform(json)));
+      });
+    });
+  };
+
+  return io;
+};
+
+},{}],88:[function(require,module,exports){
+module.exports = function (dex) {
+  /**
+   *
    * This module provides routines for dealing with json.
    *
    * @module dex/json
@@ -25050,7 +25145,7 @@ module.exports = function (dex) {
   return json;
 };
 
-},{}],88:[function(require,module,exports){
+},{}],89:[function(require,module,exports){
 module.exports = function (dex) {
   /**
    *
@@ -25391,7 +25486,7 @@ module.exports = function (dex) {
   return matrix;
 };
 
-},{}],89:[function(require,module,exports){
+},{}],90:[function(require,module,exports){
 module.exports = function (dex) {
   Function.prototype.clone = function() {
     var fct = this;
@@ -25808,7 +25903,7 @@ module.exports = function (dex) {
 };
 
 
-},{}],90:[function(require,module,exports){
+},{}],91:[function(require,module,exports){
 /**
  *
  * Creates a Table component for visualizing tabular data.
@@ -25888,7 +25983,7 @@ var ColumnSelector = function (userConfig) {
 };
 
 module.exports = ColumnSelector;
-},{}],91:[function(require,module,exports){
+},{}],92:[function(require,module,exports){
 /**
  *
  * Creates a ConfigurationPane component.
@@ -26019,7 +26114,7 @@ var ConfigurationPane = function (userConfig) {
 };
 
 module.exports = ConfigurationPane;
-},{}],92:[function(require,module,exports){
+},{}],93:[function(require,module,exports){
 var datafilterpane = function (userConfig) {
   var chart;
   var INITIALIZING = false;
@@ -26468,7 +26563,7 @@ var datafilterpane = function (userConfig) {
 };
 
 module.exports = datafilterpane;
-},{}],93:[function(require,module,exports){
+},{}],94:[function(require,module,exports){
 var guipane = function (userConfig) {
   var pane;
   var componentMap = {};
@@ -27199,7 +27294,7 @@ var guipane = function (userConfig) {
 };
 
 module.exports = guipane;
-},{}],94:[function(require,module,exports){
+},{}],95:[function(require,module,exports){
 /**
  *
  * Construct a player component.
@@ -27408,7 +27503,7 @@ var Player = function (userConfig) {
 };
 
 module.exports = Player;
-},{}],95:[function(require,module,exports){
+},{}],96:[function(require,module,exports){
 /**
  *
  * This creates a SqlQuery component which provides a SQL
@@ -27503,7 +27598,7 @@ var SqlQuery = function (userConfig) {
 };
 
 module.exports = SqlQuery;
-},{}],96:[function(require,module,exports){
+},{}],97:[function(require,module,exports){
 /**
  *
  * Creates a Table component for visualizing tabular data.
@@ -27599,7 +27694,7 @@ var Table = function (userConfig) {
 };
 
 module.exports = Table;
-},{}],97:[function(require,module,exports){
+},{}],98:[function(require,module,exports){
 module.exports = function (dex) {
   /**
    *
@@ -27620,7 +27715,7 @@ module.exports = function (dex) {
   ui.ColumnSelector = require("./ColumnSelector");
   return ui;
 };
-},{"./ColumnSelector":90,"./ConfigurationPane":91,"./DataFilterPane":92,"./GuiPane":93,"./Player":94,"./SqlQuery":95,"./Table":96}],98:[function(require,module,exports){
+},{"./ColumnSelector":91,"./ConfigurationPane":92,"./DataFilterPane":93,"./GuiPane":94,"./Player":95,"./SqlQuery":96,"./Table":97}],99:[function(require,module,exports){
 module.exports = function util(dex) {
   /**
    *
@@ -27705,7 +27800,7 @@ module.exports = function util(dex) {
 
   return d3util;
 };
-},{}],99:[function(require,module,exports){
+},{}],100:[function(require,module,exports){
 module.exports = function (dex) {
 
   var util = {};
@@ -27714,5 +27809,5 @@ module.exports = function (dex) {
 
   return util;
 };
-},{"./d3":98}]},{},[85])(85)
+},{"./d3":99}]},{},[85])(85)
 });

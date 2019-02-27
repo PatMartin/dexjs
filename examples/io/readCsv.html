@@ -9,7 +9,7 @@
             min-width: 100%;
         }
     </style>
-    <title>Loading Data via D3</title>
+    <title>Read CSV</title>
 
     <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.css">
     <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.theme.min.css">
@@ -35,9 +35,9 @@
 <script>
 
   var dataPromise = dex.io.readCsv('/dexjs/data/io/presidents.csv')
-    .then(function(csv) { doSomething(csv)});
+    .then(function(csv) { renderChart(csv)});
 
-  function doSomething(csv) {
+  function renderChart(csv) {
     var chart = new dex.charts.d3.ParallelCoordinates({
       parent: "#Chart",
       csv: csv.include(["Party", "Home State", "President", "Presidency"])

@@ -9,7 +9,7 @@
             min-width: 100%;
         }
     </style>
-    <title>Read XML</title>
+    <title>Read JSON</title>
 
     <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.css">
     <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.theme.min.css">
@@ -34,12 +34,18 @@
 
 <script>
 
-  var xpaths = {
-    letter: "//letter/@id",
-    frequency: "//frequency"
-  };
+  function converter(json) {
+    var converted = [];
+    for (key in json.bpi)
+    {
+      var row = json.bpi[key];
+      row.currency = key;
+      converted.push(row);
+    }
+    return converted;
+  }
 
-  var dataPromise = dex.io.readJson('https://jsonplaceholder.typicode.com/todos')
+  var dataPromise = dex.io.readJson('https://api.coindesk.com/v1/bpi/currentprice.json', converter)
     .then(function (csv) {
       renderChart(csv)
     });
