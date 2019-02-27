@@ -8,12 +8,65 @@ interface while also extending them to interoperate with one another.
 Dex.js offers powerful filters for sifting through the noise and gui controls for
 controling the finer details of how the data is presented.
 
-# Data
+# Examples
+
+## C3
+
+![alt text](https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/c3_area_chart.png?raw=true)
+![alt text](https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/c3_bar_chart.png?raw=true)
+![alt text](https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/c3_donut_chart.png?raw=true)
+![alt text](https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/c3_line_chart.png?raw=true)
+![alt text](https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/c3_pie_chart.png?raw=true)
+![alt text](https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/c3_scatter_plot.png?raw=true)
+
+## D3
+
+![alt text](https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/d3_bump_chart.png?raw=true)
+![alt text](https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/d3_chord.png?raw=true)
+![alt text](https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/d3_clustered_force.png?raw=true)
+![alt text](https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/d3_dendrogram.png?raw=true)
+![alt text](https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/d3_map.png?raw=true)
+![alt text](https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/d3_motion_bar_chart.png?raw=true)
+![alt text](https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/d3_orbital_layout.png?raw=true)
+![alt text](https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/d3_parallel_coordinates.png?raw=true)
+![alt text](https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/d3_radar_chart.png?raw=true)
+![alt text](https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/d3_radial_tree.png?raw=true)
+![alt text](https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/d3_sankey.png?raw=true)
+![alt text](https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/d3_sunburst.png?raw=true)
+![alt text](https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/d3_treemap.png?raw=true)
+![alt text](https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/d3_treemap_barchart.png?raw=true)
+
+## ECharts
+
+![alt text](https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/echarts_circular_network.png?raw=true)
+![alt text](https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/echarts_force_network.png?raw=true)
+![alt text](https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/echarts_heatmap.png?raw=true)
+![alt text](https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/echarts_linechart.png?raw=true)
+![alt text](https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/echarts_piechart.png?raw=true)
+![alt text](https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/echarts_polar_barchart.png?raw=true)
+![alt text](https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/echarts_polar_categorical_scatterplut.png?raw=true)
+![alt text](https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/echarts_polar_linechart.png?raw=true)
+![alt text](https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/echarts_polar_scatterplot.png?raw=true)
+![alt text](https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/echarts_steamgraph.png?raw=true)
+![alt text](https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/echarts_timeline.png?raw=true)
+
+## Miscellaneous
+
+![alt text](https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/d3plus_ring_network.png?raw=true)
+![alt text](https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/elegans_scatter_plot.png?raw=true)
+![alt text](https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/nvd3_bubble_chart.png?raw=true)
+![alt text](https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/nvd3_stacked_area_chart.png?raw=true)
+![alt text](https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/visjs_network.png?raw=true)
+
+
+# Tutorial
+
+## Data
 
 All dex components operate upon a csv object. The csv object can be created a variety of ways.
 These are but a few:
 
-## Creating a CSV from local data
+### Creating a CSV from local data
 
 We can create it directly from a local json object
 ```javascript
@@ -45,13 +98,13 @@ csv.data.push(['Miles', 'M', 40]);
 csv.data.push(['Jane','F',32]);
 ```
 
-## Acquiring data
+### Acquiring data
 
 Due to the asynchronous nature of JavaScript, we must resort to a promise
 based model to acquire data from external sources.
 
 Reading from a csv file:
-```
+```javascript
 var dataPromise = dex.io.readCsv('/dexjs/data/io/presidents.csv')
   .then(function(csv) { renderChart(csv)});
 
@@ -64,7 +117,7 @@ function renderChart(csv) {
 ```
 
 Reading from a tsv file:
-```
+```javascript
 var dataPromise = dex.io.readTsv('/dexjs/data/io/presidents.tsv')
   .then(function(csv) { renderChart(csv)});
 
@@ -82,7 +135,7 @@ of flexibility.
 
 Given an xml file of the form:
 
-```
+```xml
 <?xml version="1.0" encoding="utf-8"?>
 <data>
     <letter id="A"><frequency>.08167</frequency></letter>
@@ -95,7 +148,7 @@ Given an xml file of the form:
 
 The following will create a csv with columns 'letter' and 'frequency':
 
-```
+```javascript
   var xpaths = {
     letter: "//letter/@id",
     frequency: "//frequency"
@@ -118,7 +171,7 @@ Most often, we will want to read in data from JSON files and RESTful services.
 By default, we accept json files which are arrays of shallow name value pairs
 such as:
 
-```
+```javascript
 [
   { name: "jack", age: 100 },
   { name: "jill", age: 99 }
@@ -127,7 +180,7 @@ such as:
 
 Here we call a RESTful service which already returns data in the form we need:
 
-```
+```javascript
   var dataPromise = dex.io.readJson('https://jsonplaceholder.typicode.com/todos')
     .then(function (csv) {
       renderChart(csv)
@@ -144,7 +197,7 @@ Here we call a RESTful service which already returns data in the form we need:
 Here is a slightly more complex example where we must supply a transformation
 function to map the json into the form we require:
 
-```
+```javascript
   function converter(json) {
     var converted = [];
     for (key in json.bpi)
@@ -169,7 +222,7 @@ function to map the json into the form we require:
   }
 ```
 
-# Visualizing the data
+## Visualizing the data
 
 Now lets talk about data visualization.  We first start off by supplying a
 target div container for our chart.
@@ -206,7 +259,7 @@ var chart = new dex.charts.c3.Scatterplot({
 By now I hope you've noticed that the interfaces between different visuals
 is quite consistent.
 
-# Chart interaction
+## Chart interaction
 
 Charts can listen and react to each other.  They do so via a publish subscribe
 model.  In dex.js, components communicate interesting changes via a publish operation.
@@ -215,7 +268,7 @@ out all data outside of a certain range.  Other charts and components may in tur
 listen for these types of changes via subscribing and receiving and reacting
 to these changes in realtime.
 
-## Example
+### Example
 
 Let's assume that we have a US map component that allows the user to select
 individual states and a grid component which wants to do something with that
@@ -227,4 +280,3 @@ grid.subscribe(map, 'select', function(msg) {
   // do something with the message...
 });
 ```
-
