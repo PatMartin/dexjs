@@ -151,6 +151,7 @@ dex.console = require("./console/console")(dex);
 dex.csv = require("./csv/csv");
 dex.datagen = require("./datagen/datagen")(dex);
 dex.geometry = require("./geometry/geometry")(dex);
+dex.io = require("./io/io")(dex);
 dex.json = require("./json/json")(dex);
 dex.matrix = require("./matrix/matrix")(dex);
 dex.object = require("./object/object")(dex);
