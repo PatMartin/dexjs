@@ -61,7 +61,7 @@ var csv = function () {
     dex.console.log("UNKNOWN INSTANTIATOR LENGTH: ", arguments.length);
   }
 
-  this.strictTypes();
+  return this.strictTypes();
 };
 
 /**
