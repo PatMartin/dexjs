@@ -245,7 +245,7 @@ or via a tree (aka dendrogram):
 ```javascript
 var chart = new dex.charts.d3.Dendrogram({
   parent: '#Chart',
-  csv: csv);
+  csv: csv});
 ```
 
 or a scatterplot:
@@ -253,7 +253,7 @@ or a scatterplot:
 ```javascript
 var chart = new dex.charts.c3.Scatterplot({
   parent: '#Chart',
-  csv: csv);
+  csv: csv});
 ```
 
 By now I hope you've noticed that the interfaces between different visuals
@@ -278,5 +278,7 @@ information.
 grid.subscribe(map, 'select', function(msg) {
   dex.console.log("grid received message: ", msg);
   // do something with the message...
+  // like updating the grid with the data returned from the map
+  grid.attr("csv", msg.csv).update();
 });
 ```
