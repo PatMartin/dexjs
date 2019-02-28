@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<csv>
+    <row>
+        <firstName>Bob</firstName>
+        <vehicle>truck</vehicle>
+        <age>72</age>
+    </row>
+    <row>
+        <firstName>Monica</firstName>
+        <vehicle>car</vehicle>
+        <age>23</age>
+    </row>
+    <row>
+        <firstName>Jim</firstName>
+        <vehicle>car</vehicle>
+        <age>53</age>
+    </row>
+</csv>
