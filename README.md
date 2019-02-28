@@ -1,12 +1,15 @@
 # Introduction
 
-Dex.js is a javascript framework for visual components.
+Dex.js is a javascript framework for visual components.  Dex.js is a child
+project of Dex for the purpose of achieving visuals which were easily
+embedded in other javascript and non-javascript projects.
 
-Dex.js takes the best open source visual frameworks and wraps them in a consistent
-interface while also extending them to interoperate with one another.
+Dex.js takes many of the best open source visual frameworks and wraps them in a consistent
+interface while also extending their capabilities and creating a way for them to
+communicate and interoperate with one another.
 
-Dex.js offers powerful filters for sifting through the noise and gui controls for
-controling the finer details of how the data is presented.
+Additionally, dex.js offers powerful filters for sifting through the noise
+and gui controls for controling the finer details of how the data is presented.
 
 # Examples
 
@@ -61,6 +64,9 @@ controling the finer details of how the data is presented.
 
 # Tutorial
 
+The best tutorials are probably the included examples.  However, here we will touch
+on some of the high points of dex.js.
+
 ## Data
 
 All dex components operate upon a csv object. The csv object can be created a variety of ways.
@@ -83,7 +89,7 @@ var csv = new dex.csv(['Name', 'Gender', 'Age'],
   [['Miles', 'M', 40],['Jane','F',34]]);
 ```
 
-Create a csv with a header and load as we go:
+Or we can create a csv with a header and load as we go:
 ```javascript
 var csv = new dex.csv(['Name', 'Gender', 'Age']);
 csv.data.push(['Miles', 'M', 40]);
@@ -133,7 +139,26 @@ Reading from an xml file is a bit different.  Each column must be
 expressed as it's own xpath expression.  This allows us a great deal
 of flexibility.
 
-Given an xml file of the form:
+We can read an xml of the form:
+
+```xml
+<csv>
+  <row><firstName>joe</firstName><age>22</age></row>
+  <row><firstName>jim</firstName><age>33</age></row>
+  <row><firstName>sue</firstName><age>44</age></row>
+</csv>
+```
+
+via:
+
+```javascript
+var dataPromise = dex.io.readXml('/dexjs/data/io/people.xml')
+  .then(function (csv) {
+    renderChart(csv)
+  });
+```
+
+Given an xml files in alternate forms, we can supply an apprpriate transform:
 
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
@@ -154,17 +179,11 @@ The following will create a csv with columns 'letter' and 'frequency':
     frequency: "//frequency"
   };
 
-  var dataPromise = dex.io.readXml('/dexjs/data/io/letterFrequency.xml', xpaths)
+  var dataPromise = dex.io.readXml('/dexjs/data/io/letterFrequency.xml',
+    dex.io.transform.xml.xpath({letter:"//letter/@id",frequency:"//frequency"})
     .then(function (csv) {
       renderChart(csv)
     });
-
-  function renderChart(csv) {
-    dex.charts.d3.ParallelCoordinates({
-      parent: "#Chart",
-      csv: csv
-    }).render();
-  }
 ```
 
 Most often, we will want to read in data from JSON files and RESTful services.
@@ -194,22 +213,23 @@ Here we call a RESTful service which already returns data in the form we need:
   }
 ```
 
-Here is a slightly more complex example where we must supply a transformation
-function to map the json into the form we require:
+Here is a slightly more complex example where we must supply a custom
+transformation in order to map the json into the form we require:
 
 ```javascript
-  function converter(json) {
-    var converted = [];
+  function transform(json) {
+    var transformed = [];
     for (key in json.bpi)
     {
       var row = json.bpi[key];
       row.currency = key;
-      converted.push(row);
+      transformed.push(row);
     }
-    return converted;
+    return new dex.csv(transformed);
   }
 
-  var dataPromise = dex.io.readJson('https://api.coindesk.com/v1/bpi/currentprice.json', converter)
+  var dataPromise = dex.io.readJson(
+    'https://api.coindesk.com/v1/bpi/currentprice.json', transform)
     .then(function (csv) {
       renderChart(csv)
     });
