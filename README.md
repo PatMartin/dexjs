@@ -20,47 +20,46 @@ and gui controls for controling the finer details of how the data is presented.
 <a href="https://dexjs.net/examples/charts/c3/DonutChart.html"><img src="https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/c3_donut_chart.png?raw=true" style="border: 0;"></a>
 <a href="https://dexjs.net/examples/charts/c3/LineChart.html"><img src="https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/c3_line_chart.png?raw=true" style="border: 0;"></a>
 <a href="https://dexjs.net/examples/charts/c3/PieChart.html"><img src="https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/c3_pie_chart.png?raw=true" style="border: 0;"></a>
-<a href="https://dexjs.net/examples/charts/c3/ScatterPlot.html"><img src="https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/c3_scatterplot.png?raw=true" style="border: 0;"></a>
+<a href="https://dexjs.net/examples/charts/c3/ScatterPlot.html"><img src="https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/c3_scatter_plot.png?raw=true" style="border: 0;"></a>
 
 ## D3
 
-![alt text](https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/d3_bump_chart.png?raw=true)
-![alt text](https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/d3_chord.png?raw=true)
-![alt text](https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/d3_clustered_force.png?raw=true)
-![alt text](https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/d3_dendrogram.png?raw=true)
-![alt text](https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/d3_map.png?raw=true)
-![alt text](https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/d3_motion_bar_chart.png?raw=true)
-![alt text](https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/d3_orbital_layout.png?raw=true)
-![alt text](https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/d3_parallel_coordinates.png?raw=true)
-![alt text](https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/d3_radar_chart.png?raw=true)
-![alt text](https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/d3_radial_tree.png?raw=true)
-![alt text](https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/d3_sankey.png?raw=true)
-![alt text](https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/d3_sunburst.png?raw=true)
-![alt text](https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/d3_treemap.png?raw=true)
-![alt text](https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/d3_treemap_barchart.png?raw=true)
+<a href="https://dexjs.net/examples/charts/d3/BumpChart.html"><img src="https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/d3_bump_chart.png?raw=true" style="border: 0;"></a>
+<a href="https://dexjs.net/examples/charts/d3/Chord.html"><img src="https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/d3_chord.png?raw=true" style="border: 0;"></a>
+<a href="https://dexjs.net/examples/charts/d3/ClusteredForce.html"><img src="https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/d3_clustered_force.png?raw=true" style="border: 0;"></a>
+<a href="https://dexjs.net/examples/charts/d3/Dendrogram.html"><img src="https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/d3_dendrogram.png?raw=true" style="border: 0;"></a>
+<a href="https://dexjs.net/examples/charts/d3/Map.html"><img src="https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/d3_map.png?raw=true" style="border: 0;"></a>
+<a href="https://dexjs.net/examples/charts/d3/MotionBarChart.html"><img src="https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/d3_motion_bar_chart.png?raw=true" style="border: 0;"></a>
+<a href="https://dexjs.net/examples/charts/d3/OrbitalLayout.html"><img src="https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/d3_orbital_layout.png?raw=true" style="border: 0;"></a>
+<a href="https://dexjs.net/examples/charts/d3/ParallelCoordinates.html"><img src="https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/d3_parallel_coordinates.png?raw=true" style="border: 0;"></a>
+<a href="https://dexjs.net/examples/charts/d3/RadarChart.html"><img src="https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/d3_radar_chart.png?raw=true" style="border: 0;"></a>
+<a href="https://dexjs.net/examples/charts/d3/RadialTree.html"><img src="https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/d3_radial_tree.png?raw=true" style="border: 0;"></a>
+<a href="https://dexjs.net/examples/charts/d3/Sankey.html"><img src="https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/d3_sankey.png?raw=true" style="border: 0;"></a>
+<a href="https://dexjs.net/examples/charts/d3/Sunburst.html"><img src="https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/d3_sunburst.png?raw=true" style="border: 0;"></a>
+<a href="https://dexjs.net/examples/charts/d3/Treemap.html"><img src="https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/d3_treemap.png?raw=true" style="border: 0;"></a>
+<a href="https://dexjs.net/examples/charts/d3/TreemapBarChart.html"><img src="https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/d3_treemap_barchart.png?raw=true" style="border: 0;"></a>
 
 ## ECharts
 
-![alt text](https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/echarts_circular_network.png?raw=true)
-![alt text](https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/echarts_force_network.png?raw=true)
-![alt text](https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/echarts_heatmap.png?raw=true)
-![alt text](https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/echarts_linechart.png?raw=true)
-![alt text](https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/echarts_piechart.png?raw=true)
-![alt text](https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/echarts_polar_barchart.png?raw=true)
-![alt text](https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/echarts_polar_categorical_scatterplot.png?raw=true)
-![alt text](https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/echarts_polar_linechart.png?raw=true)
-![alt text](https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/echarts_polar_scatterplot.png?raw=true)
-![alt text](https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/echarts_steamgraph.png?raw=true)
-![alt text](https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/echarts_timeline.png?raw=true)
+<a href="https://dexjs.net/examples/charts/echarts/CircularNetwork.html"><img src="https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/echarts_circular_network.png?raw=true" style="border: 0;"></a>
+<a href="https://dexjs.net/examples/charts/echarts/ForceNetwork.html"><img src="https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/echarts_force_network.png?raw=true" style="border: 0;"></a>
+<a href="https://dexjs.net/examples/charts/echarts/HeatMap.html"><img src="https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/echarts_heatmap.png?raw=true" style="border: 0;"></a>
+<a href="https://dexjs.net/examples/charts/echarts/LineChart.html"><img src="https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/echarts_linechart.png?raw=true" style="border: 0;"></a>
+<a href="https://dexjs.net/examples/charts/echarts/PieChart.html"><img src="https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/echarts_piechart.png?raw=true" style="border: 0;"></a>
+<a href="https://dexjs.net/examples/charts/echarts/PolarBarChart.html"><img src="https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/echarts_polar_barchart.png?raw=true" style="border: 0;"></a>
+<a href="https://dexjs.net/examples/charts/echarts/PolarCategoricalScatterPlot.html"><img src="https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/echarts_polar_categorical_scatterplot.png?raw=true" style="border: 0;"></a>
+<a href="https://dexjs.net/examples/charts/echarts/PolarLineChart.html"><img src="https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/echarts_polar_linechart.png?raw=true" style="border: 0;"></a>
+<a href="https://dexjs.net/examples/charts/echarts/PolarScatterPlot.html"><img src="https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/echarts_polar_scatterplot.png?raw=true" style="border: 0;"></a>
+<a href="https://dexjs.net/examples/charts/echarts/SteamGraph.html"><img src="https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/echarts_steamgraph.png?raw=true" style="border: 0;"></a>
+<a href="https://dexjs.net/examples/charts/echarts/Timeline.html"><img src="https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/echarts_timeline.png?raw=true" style="border: 0;"></a>
 
 ## Miscellaneous
 
-![alt text](https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/d3plus_ring_network.png?raw=true)
-![alt text](https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/elegans_scatter_plot.png?raw=true)
-![alt text](https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/nvd3_bubble_chart.png?raw=true)
-![alt text](https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/nvd3_stacked_area_chart.png?raw=true)
-![alt text](https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/visjs_network.png?raw=true)
-
+<a href="https://dexjs.net/examples/charts/d3plus/RingNetwork.html"><img src="https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/d3plus_ring_network.png?raw=true" style="border: 0;"></a>
+<a href="https://dexjs.net/examples/charts/elegans/ScatterPlot.html"><img src="https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/elegans_scatter_plot.png?raw=true" style="border: 0;"></a>
+<a href="https://dexjs.net/examples/charts/nvd3/BubbleChart.html"><img src="https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/nvd3_bubble_chart.png?raw=true" style="border: 0;"></a>
+<a href="https://dexjs.net/examples/charts/nvd3/StackedAreaChart.html"><img src="https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/nvd3_stacked_area_chart.png?raw=true" style="border: 0;"></a>
+<a href="https://dexjs.net/examples/charts/visjs/Network.html"><img src="https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/visjs_network.png?raw=true" style="border: 0;"></a>
 
 # Tutorial
 
