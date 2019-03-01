@@ -47,7 +47,7 @@ and gui controls for controling the finer details of how the data is presented.
 ![alt text](https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/echarts_linechart.png?raw=true)
 ![alt text](https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/echarts_piechart.png?raw=true)
 ![alt text](https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/echarts_polar_barchart.png?raw=true)
-![alt text](https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/echarts_polar_categorical_scatterplut.png?raw=true)
+![alt text](https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/echarts_polar_categorical_scatterplot.png?raw=true)
 ![alt text](https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/echarts_polar_linechart.png?raw=true)
 ![alt text](https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/echarts_polar_scatterplot.png?raw=true)
 ![alt text](https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/echarts_steamgraph.png?raw=true)
@@ -265,7 +265,7 @@ or via a tree (aka dendrogram):
 ```javascript
 var chart = new dex.charts.d3.Dendrogram({
   parent: '#Chart',
-  csv: csv);
+  csv: csv});
 ```
 
 or a scatterplot:
@@ -273,7 +273,7 @@ or a scatterplot:
 ```javascript
 var chart = new dex.charts.c3.Scatterplot({
   parent: '#Chart',
-  csv: csv);
+  csv: csv});
 ```
 
 By now I hope you've noticed that the interfaces between different visuals
@@ -298,5 +298,7 @@ information.
 grid.subscribe(map, 'select', function(msg) {
   dex.console.log("grid received message: ", msg);
   // do something with the message...
+  // like updating the grid with the data returned from the map
+  grid.attr("csv", msg.csv).update();
 });
 ```
