@@ -2335,14 +2335,49 @@ module.exports = function (dex) {
    */
   var array = {};
 
+  /**
+   *
+   * Return the unique members of an array.
+   *
+   * dex.array.unique(array) - Return an array containing the unique values
+   * within the array.
+   *
+   * @param {any[]} array - The array to evaluate.
+   * @returns {any[]} - An array of unique values within the given array.
+   *
+   * @example
+   *
+   * // Returns: [ 1, 2, 3]
+   * dex.array.unique([1, 1, 2, 2, 3];
+   *
+   * @memberof dex/array
+   *
+   */
   array.unique = function (array) {
     var uniques = {};
     array.forEach(function(elt) {uniques[elt] = true;});
     return Object.keys(uniques);
-    //return _.uniq(array);
   };
 
-  array.orderedUnique = function (array) {
+  /**
+   *
+   * Return the unique members of an array in the natural order they occur.
+   *
+   * dex.array.naturalUnique(array) - Return an array containing the unique values
+   * within the array.
+   *
+   * @param {any[]} array - The array to evaluate.
+   *
+   * @returns {any[]} - An array of unique values within the given array.
+   * @example
+   *
+   * // Returns: [ 3, 2, 1 ]
+   * dex.array.naturalUnique([3, 2, 1, 2, 3];
+   *
+   * @memberof dex/array
+   *
+   */
+  array.naturalUnique = function (array) {
     var map = {};
     var uniqueArray = [];
     if (Array.isArray(array)) {
@@ -2366,9 +2401,12 @@ module.exports = function (dex) {
    * dex.array.slice(array, rowRange, maxRows) - Copy the array, then return a slice
    * within the specified range up to, but not exceeding, maxRows rows.
    *
-   * @param (array) array - The array to slice.
-   * @param (array|number) rowRange - If supplied an array, the range defined by the of rows to slice.
-   * @param {number} maxRows - The maximum number of rows to return.
+   * @param {any[]} array - The array to slice.
+   * @param {array|number} rowRange - If supplied an array, return the elements in
+   * the columns defined by the rowRange.  If rowRange is a number, return the
+   * array starting at the given index.
+   * @param {number} maxRows - If supplied, return at most, this number of elements
+   * in the resulant array.
    *
    * @example
    * var myArray = [ 1, 2, 3, 4, 5 ];
@@ -2379,15 +2417,10 @@ module.exports = function (dex) {
    * // Returns: [ 1, 3, 5 ]
    * slice(myArray, [0, 2, 4]);
    *
-   * // I am not sure why you would do this, but in the interest of supporting
-   * // the Principle of Least Surprise, this returns the array unchanged.
-   * // Returns: [ 1, 2, 3, 4, 5 ]
-   * slice(myArray)
-   *
    * @memberof dex/array
    *
    */
-  array.slice = function (array, rowRange, maxRows) {
+  array.slice = function (array, rowRange, maxElt) {
     var arraySlice = [];
     var range;
     var i;
@@ -2413,7 +2446,7 @@ module.exports = function (dex) {
         range = rowRange;
       }
       else {
-        range = dex.range(rowRange, maxRows);
+        range = dex.range(rowRange, maxElt);
       }
     }
 
@@ -2425,6 +2458,19 @@ module.exports = function (dex) {
     return arraySlice;
   };
 
+  /**
+   *
+   * Inspect each element of the array and guess the overall type of
+   * the array.
+   *
+   * @param {any[]) array - The array to evaluate.
+   * @returns {string} - A string representing the type of the array.
+   * "date" if every element in the array is a date.  "number" if every
+   * element in the array is a number.  Otherwise return "string".
+   *
+   * @memberof dex/array
+   *
+   */
   array.guessType = function (array) {
     if (array.every(function (elt) {
         return !isNaN(elt);
@@ -3175,12 +3221,11 @@ module.exports = LineChart;
 },{}],10:[function(require,module,exports){
 /**
  *
- * This module provides a C3 Pie Chart.
+ * This is the base constructor for a C3 Pie Chart.
  *
- * @name dex/charts/c3/PieChart
+ * @param userConfig The chart's configuration.
  *
- * @param userConfig
- * @returns {PieChart}
+ * @returns {DonutChart}
  *
  * @memberof dex/charts/c3
  *
