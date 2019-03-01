@@ -46,10 +46,10 @@ and gui controls for controling the finer details of how the data is presented.
 <a href="https://dexjs.net/examples/charts/echarts/HeatMap.html"><img src="https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/echarts_heatmap.png?raw=true" style="border: 0;"></a>
 <a href="https://dexjs.net/examples/charts/echarts/LineChart.html"><img src="https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/echarts_linechart.png?raw=true" style="border: 0;"></a>
 <a href="https://dexjs.net/examples/charts/echarts/PieChart.html"><img src="https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/echarts_piechart.png?raw=true" style="border: 0;"></a>
-<a href="https://dexjs.net/examples/charts/echarts/PolarBarChart.html"><img src="https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/echarts_polar_barchart.png?raw=true" style="border: 0;"></a>
-<a href="https://dexjs.net/examples/charts/echarts/PolarCategoricalScatterPlot.html"><img src="https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/echarts_polar_categorical_scatterplot.png?raw=true" style="border: 0;"></a>
-<a href="https://dexjs.net/examples/charts/echarts/PolarLineChart.html"><img src="https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/echarts_polar_linechart.png?raw=true" style="border: 0;"></a>
-<a href="https://dexjs.net/examples/charts/echarts/PolarScatterPlot.html"><img src="https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/echarts_polar_scatterplot.png?raw=true" style="border: 0;"></a>
+<a href="https://dexjs.net/examples/charts/echarts/PolarPlot.html"><img src="https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/echarts_polar_barchart.png?raw=true" style="border: 0;"></a>
+<a href="https://dexjs.net/examples/charts/echarts/PolarPlot.html"><img src="https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/echarts_polar_categorical_scatterplot.png?raw=true" style="border: 0;"></a>
+<a href="https://dexjs.net/examples/charts/echarts/PolarPlot.html"><img src="https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/echarts_polar_linechart.png?raw=true" style="border: 0;"></a>
+<a href="https://dexjs.net/examples/charts/echarts/PolarPlot.html"><img src="https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/echarts_polar_scatterplot.png?raw=true" style="border: 0;"></a>
 <a href="https://dexjs.net/examples/charts/echarts/SteamGraph.html"><img src="https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/echarts_steamgraph.png?raw=true" style="border: 0;"></a>
 <a href="https://dexjs.net/examples/charts/echarts/Timeline.html"><img src="https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/echarts_timeline.png?raw=true" style="border: 0;"></a>
 
@@ -69,11 +69,12 @@ on some of the high points of dex.js.
 ## Data
 
 All dex components operate upon a csv object. The csv object can be created a variety of ways.
-These are but a few:
+Here are a few:
 
 ### Creating a CSV from local data
 
-We can create it directly from a local json object
+#### From a local json object:
+
 ```javascript
 // From JSON
 var json = {
@@ -82,20 +83,22 @@ var json = {
 var csv = new dex.csv(json);
 ```
 
-Or we can create it by supplying the header and data arrays independently
+#### From local header and data arrays
 ```javascript
 var csv = new dex.csv(['Name', 'Gender', 'Age'],
   [['Miles', 'M', 40],['Jane','F',34]]);
 ```
 
-Or we can create a csv with a header and load as we go:
+#### Create csv with header and load as we go:
+
 ```javascript
 var csv = new dex.csv(['Name', 'Gender', 'Age']);
 csv.data.push(['Miles', 'M', 40]);
 csv.data.push(['Jane','F',32]);
 ```
 
-Or create everything as we go:
+#### Create everything as we go:
+
 ```javascript
 var csv = new dex.csv();
 csv.header = ['Name', 'Gender', 'Age'];
@@ -105,10 +108,11 @@ csv.data.push(['Jane','F',32]);
 
 ### Acquiring data
 
-Due to the asynchronous nature of JavaScript, we must resort to a promise
-based model to acquire data from external sources.
+Due to the asynchronous nature of JavaScript, dex.js leverages bluebird
+promises in order to provide versatile ways for loading data.
 
-Reading from a csv file:
+#### Reading from csv:
+
 ```javascript
 var dataPromise = dex.io.readCsv('/dexjs/data/io/presidents.csv')
   .then(function(csv) { renderChart(csv)});
@@ -121,7 +125,8 @@ function renderChart(csv) {
 }
 ```
 
-Reading from a tsv file:
+#### Reading from a tsv file:
+
 ```javascript
 var dataPromise = dex.io.readTsv('/dexjs/data/io/presidents.tsv')
   .then(function(csv) { renderChart(csv)});
@@ -133,6 +138,8 @@ function renderChart(csv) {
   }).render();
 }
 ```
+
+#### Reading from an XML file:
 
 Reading from an xml file is a bit different.  Each column must be
 expressed as it's own xpath expression.  This allows us a great deal
@@ -185,6 +192,8 @@ The following will create a csv with columns 'letter' and 'frequency':
     });
 ```
 
+#### Reading from JSON files:
+
 Most often, we will want to read in data from JSON files and RESTful services.
 By default, we accept json files which are arrays of shallow name value pairs
 such as:
@@ -196,7 +205,7 @@ such as:
 ]
 ```
 
-Here we call a RESTful service which already returns data in the form we need:
+Here we call a RESTful service which already returns data in the expected name/value pair form:
 
 ```javascript
   var dataPromise = dex.io.readJson('https://jsonplaceholder.typicode.com/todos')
@@ -278,6 +287,23 @@ var chart = new dex.charts.c3.Scatterplot({
 By now I hope you've noticed that the interfaces between different visuals
 is quite consistent.
 
+## UI Components
+
+### Configuration Pane
+
+The configuration pane is a special component which provides to main sections:
+
+<a href="https://dexjs.net/examples/ui/ConfigurationPane.html"><img src="https://raw.githubusercontent.com/PatMartin/dexjs-site/master/static/images/ui/config_pane.png?raw=true"></a>
+
+* A data pane for ordering and filtering the data
+* A GUI pane for controlling the presentation of the visual.
+
+### Data Player
+
+dex.js offers the capability for dividing a dataset into frames via a sequence value and
+combining any of the other charts via chart interaction in order to turn the data into
+an interactive movie of sorts.
+
 ## Chart interaction
 
 Charts can listen and react to each other.  They do so via a publish subscribe
@@ -287,17 +313,34 @@ out all data outside of a certain range.  Other charts and components may in tur
 listen for these types of changes via subscribing and receiving and reacting
 to these changes in realtime.
 
-### Example
+### Chart Interaction Example
 
 Let's assume that we have a US map component that allows the user to select
 individual states and a grid component which wants to do something with that
 information.
 
 ```javascript
-grid.subscribe(map, 'select', function(msg) {
-  dex.console.log("grid received message: ", msg);
-  // do something with the message...
-  // like updating the grid with the data returned from the map
-  grid.attr("csv", msg.csv).update();
-});
+  var pcChart = new dex.charts.d3.ParallelCoordinates({
+      'parent': "#ParallelCoordinates",
+      'margin': {'top': 40, 'bottom': 30, 'left': 50, 'right': 50},
+      'csv': csv
+    }
+  );
+
+  // Configure a chart.
+  var chord = dex.charts.d3.Chord({
+      'parent': '#Chord',
+      'margin': {'top': 10, 'bottom': 20, 'left': 10, 'right': 10},
+      'csv': csv
+    }
+  );
+
+  chord.subscribe(pcChart, "select", function (msg) {
+    // Set the csv data of the chord diagram to the contents of
+    // the selected data from the Parallel Coordinates diagram.
+    chord.attr('csv', msg.selected).update();
+  });
+
+  pcChart.render();
+  chord.render();
 ```
