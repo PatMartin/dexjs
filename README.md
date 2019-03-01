@@ -16,11 +16,11 @@ and gui controls for controling the finer details of how the data is presented.
 ## C3
 
 <a href="https://dexjs.net/examples/charts/c3/AreaChart.html"><img src="https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/c3_area_chart.png?raw=true" style="border: 0;"></a>
-![alt text](https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/c3_bar_chart.png?raw=true)
-![alt text](https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/c3_donut_chart.png?raw=true)
-![alt text](https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/c3_line_chart.png?raw=true)
-![alt text](https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/c3_pie_chart.png?raw=true)
-![alt text](https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/c3_scatter_plot.png?raw=true)
+<a href="https://dexjs.net/examples/charts/c3/BarChart.html"><img src="https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/c3_bar_chart.png?raw=true" style="border: 0;"></a>
+<a href="https://dexjs.net/examples/charts/c3/DonutChart.html"><img src="https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/c3_donut_chart.png?raw=true" style="border: 0;"></a>
+<a href="https://dexjs.net/examples/charts/c3/LineChart.html"><img src="https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/c3_line_chart.png?raw=true" style="border: 0;"></a>
+<a href="https://dexjs.net/examples/charts/c3/PieChart.html"><img src="https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/c3_pie_chart.png?raw=true" style="border: 0;"></a>
+<a href="https://dexjs.net/examples/charts/c3/ScatterPlot.html"><img src="https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/c3_scatterplot.png?raw=true" style="border: 0;"></a>
 
 ## D3
 
