@@ -15,7 +15,7 @@ and gui controls for controling the finer details of how the data is presented.
 
 ## C3
 
-![alt text](https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/c3_area_chart.png?raw=true)
+<a href="https://dexjs.net/examples/charts/c3/AreaChart.html"><img src="https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/c3_area_chart.png?raw=true"></a>
 ![alt text](https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/c3_bar_chart.png?raw=true)
 ![alt text](https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/c3_donut_chart.png?raw=true)
 ![alt text](https://github.com/PatMartin/dexjs-site/blob/master/static/images/charts/c3_line_chart.png?raw=true)
