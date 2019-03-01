@@ -1,11 +1,10 @@
 /**
  *
- * This module provides a C3 Pie Chart.
+ * This is the base constructor for a C3 Pie Chart.
  *
- * @name dex/charts/c3/PieChart
+ * @param userConfig The chart's configuration.
  *
- * @param userConfig
- * @returns {PieChart}
+ * @returns {DonutChart}
  *
  * @memberof dex/charts/c3
  *
