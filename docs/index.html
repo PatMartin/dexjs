@@ -89,27 +89,15 @@
                     <li class='h5'><span>Static members</span></li>
                     
                       <li><a
-                        href='#dex/arrayunique'
+                        href='#dex/arraycombine'
                         class='regular pre-open'>
-                        .unique
+                        .combine
                       </a></li>
                     
                       <li><a
-                        href='#dex/arraynaturalUnique'
+                        href='#dex/arraycopy'
                         class='regular pre-open'>
-                        .naturalUnique
-                      </a></li>
-                    
-                      <li><a
-                        href='#dex/arrayslice'
-                        class='regular pre-open'>
-                        .slice
-                      </a></li>
-                    
-                      <li><a
-                        href='#dex/arrayguessType'
-                        class='regular pre-open'>
-                        .guessType
+                        .copy
                       </a></li>
                     
                       <li><a
@@ -119,9 +107,57 @@
                       </a></li>
                     
                       <li><a
-                        href='#dex/arraycopy'
+                        href='#dex/arrayfindIndexes'
                         class='regular pre-open'>
-                        .copy
+                        .findIndexes
+                      </a></li>
+                    
+                      <li><a
+                        href='#dex/arraygetCombinations'
+                        class='regular pre-open'>
+                        .getCombinations
+                      </a></li>
+                    
+                      <li><a
+                        href='#dex/arraygetPermutations'
+                        class='regular pre-open'>
+                        .getPermutations
+                      </a></li>
+                    
+                      <li><a
+                        href='#dex/arrayguessType'
+                        class='regular pre-open'>
+                        .guessType
+                      </a></li>
+                    
+                      <li><a
+                        href='#dex/arrayisNumeric'
+                        class='regular pre-open'>
+                        .isNumeric
+                      </a></li>
+                    
+                      <li><a
+                        href='#dex/arraynaturalUnique'
+                        class='regular pre-open'>
+                        .naturalUnique
+                      </a></li>
+                    
+                      <li><a
+                        href='#dex/arrayremoveIndex'
+                        class='regular pre-open'>
+                        .removeIndex
+                      </a></li>
+                    
+                      <li><a
+                        href='#dex/arrayslice'
+                        class='regular pre-open'>
+                        .slice
+                      </a></li>
+                    
+                      <li><a
+                        href='#dex/arrayunique'
+                        class='regular pre-open'>
+                        .unique
                       </a></li>
                     
                     </ul>
@@ -1063,6 +1099,12 @@
                       </a></li>
                     
                       <li><a
+                        href='#dex/componentgetSaved'
+                        class='regular pre-open'>
+                        .getSaved
+                      </a></li>
+                    
+                      <li><a
                         href='#dex/componentattr'
                         class='regular pre-open'>
                         .attr
@@ -1093,6 +1135,12 @@
                       </a></li>
                     
                       <li><a
+                        href='#dex/componentgetMargins'
+                        class='regular pre-open'>
+                        .getMargins
+                      </a></li>
+                    
+                      <li><a
                         href='#dex/componentunsubscribe'
                         class='regular pre-open'>
                         .unsubscribe
@@ -1114,6 +1162,12 @@
                         href='#dex/componentupdate'
                         class='regular pre-open'>
                         .update
+                      </a></li>
+                    
+                      <li><a
+                        href='#dex/componentresize'
+                        class='regular pre-open'>
+                        .resize
                       </a></li>
                     
                       <li><a
@@ -1141,6 +1195,12 @@
                       </a></li>
                     
                       <li><a
+                        href='#dex/componentdeleteChart'
+                        class='regular pre-open'>
+                        .deleteChart
+                      </a></li>
+                    
+                      <li><a
                         href='#dex/componentdeleteComponent'
                         class='regular pre-open'>
                         .deleteComponent
@@ -1158,32 +1218,18 @@
                         .load
                       </a></li>
                     
+                      <li><a
+                        href='#dex/componentsave'
+                        class='regular pre-open'>
+                        .save
+                      </a></li>
+                    
                     </ul>
                   
                   
                   
                   
                 </div>
-                
-                </li>
-              
-                
-                <li><a
-                  href='#deletechart'
-                  class="">
-                  deleteChart
-                  
-                </a>
-                
-                </li>
-              
-                
-                <li><a
-                  href='#save'
-                  class="">
-                  save
-                  
-                </a>
                 
                 </li>
               
@@ -2268,11 +2314,11 @@ arrays will be copied by reference, not duplicated.</p>
     <div class='py1 quiet mt1 prose-big'>Static Members</div>
     <div class="clearfix">
   
-    <div class='border-bottom' id='dex/arrayunique'>
+    <div class='border-bottom' id='dex/arraycombine'>
       <div class="clearfix small pointer toggle-sibling">
         <div class="py1 contain">
             <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>unique(array)</span>
+            <span class='code strong strong truncate'>combine(array1, array2)</span>
         </div>
       </div>
       <div class="clearfix display-none toggle-target">
@@ -2280,12 +2326,570 @@ arrays will be copied by reference, not duplicated.</p>
 
   
 
-  <p>Return the unique members of an array.</p>
-<p>dex.array.unique(array) - Return an array containing the unique values
-within the array.</p>
+  <p>Combine two arrays into one.</p>
 
 
-  <div class='pre p1 fill-light mt0'>unique(array: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;any>): <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;any></div>
+  <div class='pre p1 fill-light mt0'>combine(array1: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;any>, array2: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;any>): <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;any></div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>array1</span> <code class='quiet'>(<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;any>)</code>
+	    The first array.
+
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>array2</span> <code class='quiet'>(<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;any>)</code>
+	    The second array.
+
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;any></code>:
+        A new concatentated copy of array1 and array2.
+
+      
+    
+  
+
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Example</div>
+    
+      
+      <pre class='p1 overflow-auto round fill-light'><span class="hljs-comment">// returns [1, 2, 3, 4, 5]</span>
+dex.array.combine([<span class="hljs-number">1</span>, <span class="hljs-number">2</span>], [<span class="hljs-number">3</span>, <span class="hljs-number">4</span>, <span class="hljs-number">5</span>]);</pre>
+    
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='dex/arraycopy'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>copy(array)</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+
+  <p>Return a distinct deep copy of an array.</p>
+
+
+  <div class='pre p1 fill-light mt0'>copy(array: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;any>): <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;any></div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>array</span> <code class='quiet'>(<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;any>)</code>
+	    The array to copy.
+
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;any></code>:
+        A distinct deep copy of the array.
+
+      
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='dex/arrayextent'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>extent(array)</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+
+  <p>Returns an array of the mathematically smallest and largest
+elements within the array.</p>
+
+
+  <div class='pre p1 fill-light mt0'>extent(array: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>>): [any, any]</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>array</span> <code class='quiet'>(<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>>)</code>
+	    The array to evaluate.
+
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>[any, any]</code>:
+        An array consisting of 
+[
+ min, max 
+]
+ of the array.
+
+      
+    
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Throws</div>
+    <ul>
+      
+        <li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error">Error</a>: An error occurred.
+</li>
+      
+    </ul>
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='dex/arrayfindIndexes'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>findIndexes(array, condition)</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+
+  <p>Returns elements of an array where the supplied condition is matched.</p>
+
+
+  <div class='pre p1 fill-light mt0'>findIndexes(array: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;any>, condition: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function">function</a>): <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>></div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>array</span> <code class='quiet'>(<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;any>)</code>
+	    The array to evaluate.
+
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>condition</span> <code class='quiet'>(<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function">function</a>)</code>
+	    A conditional function that when true, indicates
+that the index of this element should be returned.
+
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>></code>:
+        An array consisting of the indexes of the elements
+which match the supplied condition.
+
+      
+    
+  
+
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Example</div>
+    
+      
+      <pre class='p1 overflow-auto round fill-light'><span class="hljs-comment">// returns [ 0, 1, 2, 3]</span>
+dex.array.findIndexes([<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>,<span class="hljs-number">4</span>,<span class="hljs-number">5</span>],<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">e</span>)</span>{<span class="hljs-keyword">return</span> e&lt;<span class="hljs-number">5</span>;}));
+<span class="hljs-comment">// returns [3, 5]</span>
+dex.array.findIndexes([<span class="hljs-string">"a"</span>, <span class="hljs-string">"b"</span>, <span class="hljs-string">"c"</span>, <span class="hljs-string">"d"</span>, <span class="hljs-string">"e"</span>, <span class="hljs-string">"d"</span>],
+  <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">e</span>) </span>{<span class="hljs-keyword">return</span> e==<span class="hljs-string">"d"</span>;}</pre>
+    
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='dex/arraygetCombinations'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getCombinations(arr, comboLength)</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+
+  <p>Returns all possible combinations of length comboLength
+from the given array.</p>
+
+
+  <div class='pre p1 fill-light mt0'>getCombinations(arr: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;any>, comboLength: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>arr</span> <code class='quiet'>(<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;any>)</code>
+	    The array to be used to generate combinations.
+
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>comboLength</span> <code class='quiet'>(<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</code>
+	    The length of the combinations to
+be generated.
+
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Example</div>
+    
+      
+      <pre class='p1 overflow-auto round fill-light'>:
+
+<span class="hljs-comment">// returns: [[1,2], [1,3], [1,4], [2,3], [2,4], [3,4]]</span>
+dex.array.getCombinations([<span class="hljs-number">1</span>, <span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>,<span class="hljs-number">4</span>], <span class="hljs-number">2</span>)</pre>
+    
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='dex/arraygetPermutations'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getPermutations(list, permLength, arr)</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+
+  <p>Returns all possible permutations of length maxLen
+from the given array.</p>
+
+
+  <div class='pre p1 fill-light mt0'>getPermutations(list: any, permLength: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, arr: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;any>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>list</span> <code class='quiet'>(any)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>permLength</span> <code class='quiet'>(<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</code>
+	    The length of the permutations to
+be generated.
+
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>arr</span> <code class='quiet'>(<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;any>)</code>
+	    The array to be used to generate permutations.
+
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Example</div>
+    
+      
+      <pre class='p1 overflow-auto round fill-light'>:
+
+<span class="hljs-comment">// returns: [[1,2],[1,3],[1,4],[2,3],[2,4],[3,4]]</span>
+dex.array.getPermutations([<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>,<span class="hljs-number">4</span>], <span class="hljs-number">2</span>)</pre>
+    
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='dex/arrayguessType'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>guessType(array)</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+
+  <p>Inspect each element of the array and guess the overall type of
+the array.</p>
+
+
+  <div class='pre p1 fill-light mt0'>guessType(array: any): <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>array</span> <code class='quiet'>(any)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></code>:
+        A string representing the type of the array.
+"date" if every element in the array is a date.  "number" if every
+element in the array is a number.  Otherwise return "string".
+
+      
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='dex/arrayisNumeric'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>isNumeric(array)</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+
+  <p>Returns whether every element in an array is numeric or not.</p>
+
+
+  <div class='pre p1 fill-light mt0'>isNumeric(array: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;any>): <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></div>
   
   
 
@@ -2317,8 +2921,8 @@ within the array.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;any></code>:
-        An array of unique values within the given array.
+      <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></code>:
+        True, if every element in the array is numeric, otherwise false.
 
       
     
@@ -2330,8 +2934,10 @@ within the array.</p>
     <div class='py1 quiet mt1 prose-big'>Example</div>
     
       
-      <pre class='p1 overflow-auto round fill-light'><span class="hljs-comment">// Returns: [ 1, 2, 3]</span>
-dex.array.unique([<span class="hljs-number">1</span>, <span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>];</pre>
+      <pre class='p1 overflow-auto round fill-light'><span class="hljs-comment">// Returns true</span>
+dex.array.isNumeric([<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>]);
+<span class="hljs-comment">// Returns false</span>
+dex.array.isNumeric([<span class="hljs-string">"A"</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>]);</pre>
     
   
 
@@ -2422,6 +3028,85 @@ dex.array.naturalUnique([<span class="hljs-number">3</span>, <span class="hljs-n
       </div>
     </div>
   
+    <div class='border-bottom' id='dex/arrayremoveIndex'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>removeIndex(targetArray, removeIndexes)</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+
+  <p>Remove the specified elements indicated by the removeIndex field.</p>
+
+
+  <div class='pre p1 fill-light mt0'>removeIndex(targetArray: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;any>, removeIndexes: (<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>>)): <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;any></div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>targetArray</span> <code class='quiet'>(<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;any>)</code>
+	    The array from which we are removing elements.
+
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>removeIndexes</span> <code class='quiet'>((<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>>))</code>
+	    The index, or indices which are to
+be removed.
+
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;any></code>:
+        The resultant array after the removal option has been
+performed.
+
+      
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
     <div class='border-bottom' id='dex/arrayslice'>
       <div class="clearfix small pointer toggle-sibling">
         <div class="py1 contain">
@@ -2435,14 +3120,9 @@ dex.array.naturalUnique([<span class="hljs-number">3</span>, <span class="hljs-n
   
 
   <p>Return the specified slice of an array without modifying the original array.</p>
-<p>dex.array.slice(array) - Return a copy of the array.
-dex.array.slice(array, rowRange) - Copy the array, then return a slice
-within the specified range.
-dex.array.slice(array, rowRange, maxRows) - Copy the array, then return a slice
-within the specified range up to, but not exceeding, maxRows rows.</p>
 
 
-  <div class='pre p1 fill-light mt0'>slice(array: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;any>, rowRange: (<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">array</a> | <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>), maxElt: any, maxRows: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</div>
+  <div class='pre p1 fill-light mt0'>slice(array: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;any>, rowRange: (<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>> | <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>), maxElt: any, maxRows: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</div>
   
   
 
@@ -2468,7 +3148,7 @@ within the specified range up to, but not exceeding, maxRows rows.</p>
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>rowRange</span> <code class='quiet'>((<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">array</a> | <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>))</code>
+            <span class='code bold'>rowRange</span> <code class='quiet'>((<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>> | <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>))</code>
 	    If supplied an array, return the elements in
 the columns defined by the rowRange.  If rowRange is a number, return the
 array starting at the given index.
@@ -2488,7 +3168,7 @@ array starting at the given index.
         <div class='space-bottom0'>
           <div>
             <span class='code bold'>maxRows</span> <code class='quiet'>(<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</code>
-	    If supplied, return at most, this number of elements
+	    If supplied, return at most, this number of rows
 in the resulant array.
 
           </div>
@@ -2514,7 +3194,10 @@ in the resulant array.
 slice(myArray, <span class="hljs-number">2</span>);
 
 <span class="hljs-comment">// Returns: [ 1, 3, 5 ]</span>
-slice(myArray, [<span class="hljs-number">0</span>, <span class="hljs-number">2</span>, <span class="hljs-number">4</span>]);</pre>
+slice(myArray, [<span class="hljs-number">0</span>, <span class="hljs-number">2</span>, <span class="hljs-number">4</span>]);
+
+<span class="hljs-comment">// returns a copy of the array:</span>
+slice(myArray);</pre>
     
   
 
@@ -2528,11 +3211,11 @@ slice(myArray, [<span class="hljs-number">0</span>, <span class="hljs-number">2<
       </div>
     </div>
   
-    <div class='border-bottom' id='dex/arrayguessType'>
+    <div class='border-bottom' id='dex/arrayunique'>
       <div class="clearfix small pointer toggle-sibling">
         <div class="py1 contain">
             <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>guessType(array)</span>
+            <span class='code strong strong truncate'>unique(array)</span>
         </div>
       </div>
       <div class="clearfix display-none toggle-target">
@@ -2540,11 +3223,12 @@ slice(myArray, [<span class="hljs-number">0</span>, <span class="hljs-number">2<
 
   
 
-  <p>Inspect each element of the array and guess the overall type of
-the array.</p>
+  <p>Return the unique members of an array.</p>
+<p>dex.array.unique(array) - Return an array containing the unique values
+within the array.</p>
 
 
-  <div class='pre p1 fill-light mt0'>guessType(array: any): <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></div>
+  <div class='pre p1 fill-light mt0'>unique(array: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;any>): <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;any></div>
   
   
 
@@ -2561,92 +3245,13 @@ the array.</p>
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>array</span> <code class='quiet'>(any)</code>
-	    
-          </div>
-          
-        </div>
-      
-    </div>
-  
-
-  
-
-  
-    
-      <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></code>:
-        A string representing the type of the array.
-"date" if every element in the array is a date.  "number" if every
-element in the array is a number.  Otherwise return "string".
-
-      
-    
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-</section>
-
-      </div>
-    </div>
-  
-    <div class='border-bottom' id='dex/arrayextent'>
-      <div class="clearfix small pointer toggle-sibling">
-        <div class="py1 contain">
-            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>extent(matrix, indices)</span>
-        </div>
-      </div>
-      <div class="clearfix display-none toggle-target">
-        <section class='p2 mb2 clearfix bg-white minishadow'>
-
-  
-
-  <p>Returns an array of the mathematically smallest and largest
-elements within the array.</p>
-
-
-  <div class='pre p1 fill-light mt0'>extent(matrix: any, indices: any): <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></div>
-  
-  
-
-  
-  
-  
-  
-  
-  
-
-  
-    <div class='py1 quiet mt1 prose-big'>Parameters</div>
-    <div class='prose'>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>matrix</span> <code class='quiet'>(any)</code>
+            <span class='code bold'>array</span> <code class='quiet'>(<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;any>)</code>
 	    The array to evaluate.
 
           </div>
           
         </div>
       
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>indices</span> <code class='quiet'>(any)</code>
-	    The array indices to be considered in the evaluation.
-
-          </div>
-          
-        </div>
-      
     </div>
   
 
@@ -2655,12 +3260,8 @@ elements within the array.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></code>:
-        An array consisting of 
-[
- min, max 
-]
- of the array.
+      <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;any></code>:
+        An array of unique values within the given array.
 
       
     
@@ -2669,73 +3270,12 @@ elements within the array.</p>
   
 
   
-
-  
-
-  
-
-  
-</section>
-
-      </div>
-    </div>
-  
-    <div class='border-bottom' id='dex/arraycopy'>
-      <div class="clearfix small pointer toggle-sibling">
-        <div class="py1 contain">
-            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>copy(array)</span>
-        </div>
-      </div>
-      <div class="clearfix display-none toggle-target">
-        <section class='p2 mb2 clearfix bg-white minishadow'>
-
-  
-
-  <p>Return a distinct copy of an array.</p>
-
-
-  <div class='pre p1 fill-light mt0'>copy(array: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>): <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></div>
-  
-  
-
-  
-  
-  
-  
-  
-  
-
-  
-    <div class='py1 quiet mt1 prose-big'>Parameters</div>
-    <div class='prose'>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>array</span> <code class='quiet'>(<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>)</code>
-	    The array to copy.
-
-          </div>
-          
-        </div>
-      
-    </div>
-  
-
-  
-
-  
+    <div class='py1 quiet mt1 prose-big'>Example</div>
     
-      <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></code>:
-        The copy of the array.
-
       
+      <pre class='p1 overflow-auto round fill-light'><span class="hljs-comment">// Returns: [ 1, 2, 3]</span>
+dex.array.unique([<span class="hljs-number">1</span>, <span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>];</pre>
     
-  
-
-  
-
   
 
   
@@ -2898,7 +3438,7 @@ values will lighten the color, positive values will darken it.
   <p>Given two colors, blend them together.</p>
 
 
-  <div class='pre p1 fill-light mt0'>blendColors(color1: any, color2: any, percent: any): <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></div>
+  <div class='pre p1 fill-light mt0'>blendColors(color1: color, color2: color, percent: percent): <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></div>
   
   
 
@@ -2915,24 +3455,27 @@ values will lighten the color, positive values will darken it.
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>color1</span> <code class='quiet'>(any)</code>
-	    
+            <span class='code bold'>color1</span> <code class='quiet'>(color)</code>
+	    The first color to blend.
+
           </div>
           
         </div>
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>color2</span> <code class='quiet'>(any)</code>
-	    
+            <span class='code bold'>color2</span> <code class='quiet'>(color)</code>
+	    The second color to blend.
+
           </div>
           
         </div>
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>percent</span> <code class='quiet'>(any)</code>
-	    
+            <span class='code bold'>percent</span> <code class='quiet'>(percent)</code>
+	    The percent to blend.
+
           </div>
           
         </div>
@@ -2946,7 +3489,7 @@ values will lighten the color, positive values will darken it.
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
       <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></code>:
-        
+        The resulant color.
 
       
     
@@ -3073,7 +3616,7 @@ preset color assignments.
   <p>Return the list of available named colormaps.</p>
 
 
-  <div class='pre p1 fill-light mt0'>colormaps(options: any): <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>></div>
+  <div class='pre p1 fill-light mt0'>colormaps(options: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a>): <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>></div>
   
   
 
@@ -3090,8 +3633,9 @@ preset color assignments.
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>options</span> <code class='quiet'>(any)</code>
-	    
+            <span class='code bold'>options</span> <code class='quiet'>(<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a>)</code>
+	    An options list.  Ex: { shortlist: true }
+
           </div>
           
         </div>
@@ -11616,7 +12160,7 @@ in which this element can expand.</p>
   <p>The base constructor for a dex component.</p>
 
 
-  <div class='pre p1 fill-light mt0'>dex/component</div>
+  <div class='pre p1 fill-light mt0'>new dex/component(userConfig: any, defaultConfig: any)</div>
   
   
 
@@ -11726,6 +12270,60 @@ anotherChart.refresh();</pre>
       </div>
     </div>
   
+    <div class='border-bottom' id='dex/componentgetSaved'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getSaved()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+
+  <p>Get reconstruct the saved component from the saved parameters.</p>
+
+
+  <div class='pre p1 fill-light mt0'>getSaved(): any</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>any</code>:
+        the reconstructed component.
+
+      
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
     <div class='border-bottom' id='dex/componentattr'>
       <div class="clearfix small pointer toggle-sibling">
         <div class="py1 contain">
@@ -11738,7 +12336,8 @@ anotherChart.refresh();</pre>
 
   
 
-  <p>There are 3 forms of this method.</p>
+  <p>Get or set a component's attribute.  When called without
+arguments, retrieve all the attributes of that component.</p>
 <ul>
 <li>() - Return the component's configuration.</li>
 <li>(name) - Return the value of a specific named attribute.</li>
@@ -12153,6 +12752,60 @@ the event channel.  False if something failed.
       </div>
     </div>
   
+    <div class='border-bottom' id='dex/componentgetMargins'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getMargins()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+
+  <p>Get the component's margins.</p>
+
+
+  <div class='pre p1 fill-light mt0'>getMargins(): <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a></div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a></code>:
+        The component's margins.
+
+      
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
     <div class='border-bottom' id='dex/componentunsubscribe'>
       <div class="clearfix small pointer toggle-sibling">
         <div class="py1 contain">
@@ -12410,6 +13063,60 @@ current component relative to any new setting or data changes.</p>
       </div>
     </div>
   
+    <div class='border-bottom' id='dex/componentresize'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>resize()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+
+  <p>Resize the component.</p>
+
+
+  <div class='pre p1 fill-light mt0'>resize(): component</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>component</code>:
+        
+
+      
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
     <div class='border-bottom' id='dex/componentrenderAsync'>
       <div class="clearfix small pointer toggle-sibling">
         <div class="py1 contain">
@@ -12568,6 +13275,52 @@ resize more than 1x / second via debounce.</p>
 
 
   <div class='pre p1 fill-light mt0'>resizeAsync</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='dex/componentdeleteChart'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>deleteChart()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+
+  <p>Default implementation for chart deletion.</p>
+
+
+  <div class='pre p1 fill-light mt0'>deleteChart()</div>
   
   
 
@@ -12782,76 +13535,16 @@ applied to it.
       </div>
     </div>
   
-</div>
+    <div class='border-bottom' id='dex/componentsave'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>save()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
 
-  
-
-  
-
-  
-</section>
-
-          
-        
-          
-            <section class='p2 mb2 clearfix bg-white minishadow'>
-
-  
-  <div class='clearfix'>
-    
-    <h3 class='fl m0' id='deletechart'>
-      deleteChart
-    </h3>
-    
-    
-  </div>
-  
-
-  <p>Default implementation for chart deletion.</p>
-
-
-  <div class='pre p1 fill-light mt0'>deleteChart()</div>
-  
-  
-
-  
-  
-  
-  
-  
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-</section>
-
-          
-        
-          
-            <section class='p2 mb2 clearfix bg-white minishadow'>
-
-  
-  <div class='clearfix'>
-    
-    <h3 class='fl m0' id='save'>
-      save
-    </h3>
-    
-    
-  </div>
   
 
   <p>Save the user modified component state to the DOM.  The information
@@ -12889,6 +13582,18 @@ config.id.</p>
   
 
   
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+</div>
 
   
 
@@ -13149,7 +13854,7 @@ config.id.</p>
       <div class="clearfix small pointer toggle-sibling">
         <div class="py1 contain">
             <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>AreaChart(userConfig)</span>
+            <span class='code strong strong truncate'>new AreaChart(userConfig)</span>
         </div>
       </div>
       <div class="clearfix display-none toggle-target">
@@ -13160,7 +13865,7 @@ config.id.</p>
   <p>This is the base constructor for a C3 Area Chart.</p>
 
 
-  <div class='pre p1 fill-light mt0'>AreaChart(userConfig: any): AreaChart</div>
+  <div class='pre p1 fill-light mt0'>new AreaChart(userConfig: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a>): AreaChart</div>
   
   
 
@@ -13177,7 +13882,7 @@ config.id.</p>
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>userConfig</span> <code class='quiet'>(any)</code>
+            <span class='code bold'>userConfig</span> <code class='quiet'>(<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a>)</code>
 	    The chart's configuration.
 
           </div>

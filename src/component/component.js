@@ -4,6 +4,7 @@ module.exports = function (dex) {
    * The base constructor for a dex component.
    *
    * @module dex/component
+   * @constructor
    *
    */
   var component = function (userConfig, defaultConfig) {
@@ -45,7 +46,7 @@ module.exports = function (dex) {
      * render.  This behavior is controlled by the "refreshType"
      * component option which is set either to "update" or
      * "render".
-     * @memberof dex/component
+     *
      * @example
      * var someChart = dex.chart.SomeChart({ refreshType: 'update' }).render();
      * someChart.refresh(); // Calls update on refresh. ie: partial update.
@@ -53,6 +54,8 @@ module.exports = function (dex) {
      * var anotherChart = dex.chart.AnotherChart({ refreshType: 'render' )}.render();
      * // Calls render on refresh.  This means that the entire chart is recreated.
      * anotherChart.refresh();
+     *
+     *  @memberof dex/component
      *
      */
     cmp.refresh = function () {
@@ -64,13 +67,23 @@ module.exports = function (dex) {
       }
     };
 
+    /**
+     *
+     * Get reconstruct the saved component from the saved parameters.
+     *
+     * @return the reconstructed component.
+     *
+     * @memberof dex/component
+     *
+     */
     cmp.getSaved = function () {
       return dex.object.clone(cmp.saved);
     };
 
     /**
      *
-     * There are 3 forms of this method.
+     * Get or set a component's attribute.  When called without
+     * arguments, retrieve all the attributes of that component.
      *
      * * () - Return the component's configuration.
      * * (name) - Return the value of a specific named attribute.
@@ -229,6 +242,15 @@ module.exports = function (dex) {
       }
     };
 
+    /**
+     *
+     * Get the component's margins.
+     *
+     * @returns {object} The component's margins.
+     *
+     * @memberof dex/component
+     *
+     */
     cmp.getMargins = function () {
       var margin = {top: 0, bottom: 0, left: 0, right: 0};
       if (cmp.config.margin !== undefined) {
@@ -314,7 +336,15 @@ module.exports = function (dex) {
       return cmp;
     };
 
-    // Generic routine for resizing a cmp instance.
+    /**
+     *
+     * Resize the component.
+     *
+     * @returns {component}
+     *
+     * @memberof dex/component
+     *
+     */
     cmp.resize = function () {
       if (cmp.config && cmp.config.resizable) {
         var width;
@@ -421,6 +451,8 @@ module.exports = function (dex) {
 
     /**
      *  Default implementation for chart deletion.
+     *
+     *  @memberof dex/component
      */
     cmp.deleteChart = function () {
       cmp.deleteComponent();
@@ -477,6 +509,7 @@ module.exports = function (dex) {
      * @param name The attribute name.
      * @param value The attribute value.
      * @returns {Component} Returns the component for method chaining.
+     *
      * @memberof dex/component
      *
      */
@@ -542,6 +575,9 @@ module.exports = function (dex) {
      * config.id.
      *
      * @returns {Component} Returns the component for method chaining.
+     *
+     * @memberof dex/component
+     *
      */
     cmp.save = function () {
       // Add dexjs-config if it does not exist.

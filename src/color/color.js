@@ -7,6 +7,7 @@ module.exports = function (dex) {
    *
    */
   var color = {};
+
   /**
    *
    * Given a color, lighten or darken it by the requested percent.
@@ -32,10 +33,10 @@ module.exports = function (dex) {
    *
    * Given two colors, blend them together.
    *
-   * @param color1
-   * @param color2
-   * @param percent
-   * @returns {string}
+   * @param {color} color1 - The first color to blend.
+   * @param {color} color2 - The second color to blend.
+   * @param {percent} percent - The percent to blend.
+   * @returns {string} The resulant color.
    *
    * @memberof dex/color
    *
@@ -50,6 +51,7 @@ module.exports = function (dex) {
       (Math.round((G2 - G1) * percent) + G1) * 0x100 +
       (Math.round((B2 - B1) * percent) + B1)).toString(16).slice(1);
   };
+
   /**
    *
    * Given an palette or array of colors and some optional color
@@ -64,6 +66,7 @@ module.exports = function (dex) {
    * @example
    * // Assigns a colormap of red, white and blue
    * var usColormap = dex.color.colormap(['red', 'white', 'blue']);
+
    * @example
    * // Assigns a colormap of grey, brown and yellow and reserves red for
    * // Republicans and blue for Democrats.
@@ -95,6 +98,7 @@ module.exports = function (dex) {
    *
    * Return the list of available named colormaps.
    *
+   * @param {object} options - An options list.  Ex: { shortlist: true }
    * @return {string[]} The list of available colormaps.
    *
    * @memberof dex/color

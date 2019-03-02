@@ -2,7 +2,9 @@
  *
  * This is the base constructor for a C3 Area Chart.
  *
- * @param userConfig The chart's configuration.
+ * @constructor
+ *
+ * @param {object} userConfig The chart's configuration.
  *
  * @returns {AreaChart} A C3 AreaChart configured to the supplied
  * specification.
